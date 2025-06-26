@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_snackbar"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="snackbar UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/snackbar.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_snackbar"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_snackbar"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_snackbar"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_snackbar"/>
+                <LineNo value="-1"/>
+                <name value="message"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>snackbar로 보여줄 메세지</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="snackbar로 보여줄 메세지"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_snackbar"/>
+                <LineNo value="-1"/>
+                <name value="time"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>snackbar 가 호출되는 시간&lt;br /&gt;(action이 있는 경우 해당 옵션 무시)</description>
+                <options value="[short time, long time]"/>
+                <necessary value="N"/>
+                <descSummary value="snackbar 가 호출되는 시간"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_snackbar"/>
+                <LineNo value="-1"/>
+                <name value="buttonText"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>상호작용 버튼에 보여질 텍스트</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="상호작용 버튼에 보여질 텍스트"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_snackbar"/>
+                <LineNo value="-1"/>
+                <name value="onClickEvent"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>상호작용 버튼 클릭 시 실행 될 javascript</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="상호작용 버튼 클릭 시 실행 될 javascript"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_snackbar"/>
+                <LineNo value="-1"/>
+                <name value="actionOnClickEvent"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>터치 시 실행 할 javascript 텍스트&lt;br /&gt;actionButtonText 사용 시 해당 속성 값 필수</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="터치 시 실행 할 javascript 텍스트"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_snackbar"/>
+                <LineNo value="-1"/>
+                <name value="actionButtonText"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>버튼 텍스트</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="버튼 텍스트"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_snackbar"/>
+                <LineNo value="-1"/>
+                <name value="show"/>
+                <eventType value=""/>
+                <description>message를 snackbar로 보여준다</description>
+                <descSummary value="message를 snackbar로 보여준다"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_snackbar.show();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_snackbar"/>
+                <LineNo value="-1"/>
+                <name value="show"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>snackbar를 보여준다</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="snackbar를 보여준다"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

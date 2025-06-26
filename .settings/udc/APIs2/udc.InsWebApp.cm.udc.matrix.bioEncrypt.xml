@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_bioEncrypt"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="Biometric Encrypt"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/bioEncrypt.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_bioEncrypt"/>
+                <LineNo value="-1"/>
+                <name value="key"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>암호화할 대상에 키</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="암호화할 대상에 키"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_bioEncrypt"/>
+                <LineNo value="-1"/>
+                <name value="data"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>암호화할 대상에 데이터</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="암호화할 대상에 데이터"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_bioEncrypt"/>
+                <LineNo value="-1"/>
+                <name value="onResult"/>
+                <eventType value=""/>
+                <description>암호화 결과값을 반환받는 이벤트</description>
+                <descSummary value="암호화 결과값을 반환받는 이벤트"/>
+                <params index="1">
+                    <param description="바이오암호화 결과를 받는다." index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">(async ()=&gt;{
+      const param = {
+          "key":"test",
+          "data":"1234"
+      };
+      const result = await $c.biometric.encryptData(param);
+      return result;
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_bioEncrypt"/>
+                <LineNo value="-1"/>
+                <name value="ecnryptData"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>key값과 data로 바이오정보를 이용하여 암호화 하여 저장한다.&lt;br /&gt;플랫폼 별 저장위치&lt;br /&gt;Android: keystore&lt;br /&gt;iOS: keychain</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="key값과 data로 바이오정보를 이용하여 암호화 하여 저장한다."/>
+                <params index="2">
+                    <param description="암호화 데이터의 키" index="0" name="Key" necessary="Y" type="string"/>
+                    <param description="암호화할 데이터" index="1" name="Data" necessary="Y" type="string"/>
+                </params>
+                <returns index="1">
+                    <return description="&#10; &quot;statusCode&quot;:1000,&#10; &quot;msg&quot;: &quot;Success&quot;,&#10; &quot;data&quot; : &quot;&quot;&#10; }" index="0" name="{" type="Object"/>
+                </returns>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

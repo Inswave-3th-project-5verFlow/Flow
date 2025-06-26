@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_notification"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="notification UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/notification.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_notification"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_notification"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_notification"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_notification"/>
+                <LineNo value="-1"/>
+                <name value="title"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>Notification에 보여줄 Title 문구</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="Notification에 보여줄 Title 문구"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_notification"/>
+                <LineNo value="-1"/>
+                <name value="message"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>Notification 에 보여줄 message 문구</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="Notification 에 보여줄 message 문구"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_notification"/>
+                <LineNo value="-1"/>
+                <name value="icon"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>Notification 에 보여줄 Icon Image&lt;br /&gt;(Base64 형태의 string 값)</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="Notification 에 보여줄 Icon Image"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_notification"/>
+                <LineNo value="-1"/>
+                <name value="action"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>실행 할 javascript 함수</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="실행 할 javascript 함수"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_notification"/>
+                <LineNo value="-1"/>
+                <name value="sendPush"/>
+                <eventType value=""/>
+                <description>message 를 notification 으로 보여준다</description>
+                <descSummary value="message 를 notification 으로 보여준다"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_notification.sendPush();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_notification"/>
+                <LineNo value="-1"/>
+                <name value="sendPush"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>알림을 보낸다</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="알림을 보낸다"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

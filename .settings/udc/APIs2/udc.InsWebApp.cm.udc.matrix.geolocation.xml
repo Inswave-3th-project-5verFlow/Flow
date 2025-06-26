@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_geolocation"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="geolocation UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/geolocation.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_geolocation"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_geolocation"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_geolocation"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_geolocation"/>
+                <LineNo value="-1"/>
+                <name value="timestamp"/>
+                <propertyType value="number"/>
+                <bindparent value=""/>
+                <description>타임스탬프</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="타임스탬프"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_geolocation"/>
+                <LineNo value="-1"/>
+                <name value="velocity"/>
+                <propertyType value="number"/>
+                <bindparent value=""/>
+                <description>속도</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="속도"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_geolocation"/>
+                <LineNo value="-1"/>
+                <name value="altitudeAccuracy"/>
+                <propertyType value="number"/>
+                <bindparent value=""/>
+                <description>고도정확도</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="고도정확도"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_geolocation"/>
+                <LineNo value="-1"/>
+                <name value="accuracy"/>
+                <propertyType value="number"/>
+                <bindparent value=""/>
+                <description>정확도</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="정확도"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_geolocation"/>
+                <LineNo value="-1"/>
+                <name value="heading"/>
+                <propertyType value="number"/>
+                <bindparent value=""/>
+                <description>헤딩</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="헤딩"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_geolocation"/>
+                <LineNo value="-1"/>
+                <name value="altitude"/>
+                <propertyType value="number"/>
+                <bindparent value=""/>
+                <description>고도</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="고도"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_geolocation"/>
+                <LineNo value="-1"/>
+                <name value="latitude"/>
+                <propertyType value="number"/>
+                <bindparent value=""/>
+                <description>위도</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="위도"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_geolocation"/>
+                <LineNo value="-1"/>
+                <name value="longitude"/>
+                <propertyType value="number"/>
+                <bindparent value=""/>
+                <description>경도</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="경도"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_geolocation"/>
+                <LineNo value="-1"/>
+                <name value="getCurrentPosition"/>
+                <eventType value=""/>
+                <description>현재 위치 정보 가져오기</description>
+                <descSummary value="현재 위치 정보 가져오기"/>
+                <params index="1">
+                    <param description="현재 위치에 위도, 경도 등을 가져온다" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_geolocation.getCurrentPosition();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_geolocation"/>
+                <LineNo value="-1"/>
+                <name value="getCurrentPosition"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>geolocation getCurrentPosition</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="geolocation getCurrentPosition"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

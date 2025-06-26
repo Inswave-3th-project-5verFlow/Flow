@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_fromToCalendar"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value=""/>
+            <displaySrc value="/InsWebApp/cm/udc/fromToCalendar.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fromToCalendar"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>메인화면에서 사용할 UDC ID</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="메인화면에서 사용할 UDC ID"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fromToCalendar"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>Class ID</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="Class ID"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fromToCalendar"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>메안화면의 style</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="메안화면의 style"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fromToCalendar"/>
+                <LineNo value="-1"/>
+                <name value="refStDt"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>bind 할 메인화면의  dataMap 컬럼 ID ( 시작날짜 )</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="bind 할 메인화면의  dataMap 컬럼 ID ( 시작날짜 )"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fromToCalendar"/>
+                <LineNo value="-1"/>
+                <name value="refEdDt"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>bind 할 메인화면의  dataMap 컬럼 ID ( 종료날짜 )</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="bind 할 메인화면의  dataMap 컬럼 ID ( 종료날짜 )"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fromToCalendar"/>
+                <LineNo value="-1"/>
+                <name value="refDataMap"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>bind 할 메인화면의 dataMap  ID (메인화면의 데이타 맵인 경우   예: ../dataMapid )</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="bind 할 메인화면의 dataMap  ID (메인화면의 데이타 맵인 경우   예: "/>
+            </property>
+        </properties>
+        <methods>
+            <method>
+                <componentID value="_InsWebApp_cm_udc_fromToCalendar"/>
+                <LineNo value="-1"/>
+                <name value="setInitDate"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>desc</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="desc"/>
+                <params index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

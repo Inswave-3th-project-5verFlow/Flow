@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_toast"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="toast UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/toast.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_toast"/>
+                <LineNo value="-1"/>
+                <name value="message"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>팝업으로 보여줄 메세지</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="팝업으로 보여줄 메세지"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_toast"/>
+                <LineNo value="-1"/>
+                <name value="time"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>팝업 실행 시간</description>
+                <options value="[short time, long time]"/>
+                <necessary value="Y"/>
+                <descSummary value="팝업 실행 시간"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_toast"/>
+                <LineNo value="-1"/>
+                <name value="toast"/>
+                <eventType value=""/>
+                <description>팝업을 띄운다</description>
+                <descSummary value="팝업을 띄운다"/>
+                <params index="1">
+                    <param description="message를 팝업으로 보여준다" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_toast.show();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_toast"/>
+                <LineNo value="-1"/>
+                <name value="show"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>toast show</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="toast show"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

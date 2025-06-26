@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_bioDecrypt"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="Biometric decrypt"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/bioDecrypt.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_bioDecrypt"/>
+                <LineNo value="-1"/>
+                <name value="Key"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>복호화활 데이터에 키 값</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="복호화활 데이터에 키 값"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_bioDecrypt"/>
+                <LineNo value="-1"/>
+                <name value="onResult"/>
+                <eventType value=""/>
+                <description>암호화 결과값을 반환받는 이벤트</description>
+                <descSummary value="암호화 결과값을 반환받는 이벤트"/>
+                <params index="1">
+                    <param description="복호화된 결과값을 받는다." index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <children/>
+    </component>
+</WebSquare>

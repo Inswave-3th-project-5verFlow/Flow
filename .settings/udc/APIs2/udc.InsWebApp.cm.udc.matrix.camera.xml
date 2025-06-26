@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_camera"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="카메라UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/camera.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_camera"/>
+                <LineNo value="-1"/>
+                <name value="quality"/>
+                <propertyType value="number"/>
+                <bindparent value=""/>
+                <description>사진 퀄리티</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="사진 퀄리티"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_camera"/>
+                <LineNo value="-1"/>
+                <name value="destinationType"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>리턴되는 결과 타입</description>
+                <options value="[DATA_URL, FILE_URL]"/>
+                <necessary value="Y"/>
+                <descSummary value="리턴되는 결과 타입"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_camera"/>
+                <LineNo value="-1"/>
+                <name value="sourceType"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>카메라 옵션</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="카메라 옵션"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_camera"/>
+                <LineNo value="-1"/>
+                <name value="allowedit"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>사진촬영 후 수정여부</description>
+                <options value="[true, false]"/>
+                <necessary value="N"/>
+                <descSummary value="사진촬영 후 수정여부"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_camera"/>
+                <LineNo value="-1"/>
+                <name value="encodingType"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>jpeg, png 이미지 타입</description>
+                <options value="[jpeg, png]"/>
+                <necessary value="Y"/>
+                <descSummary value="jpeg, png 이미지 타입"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_camera"/>
+                <LineNo value="-1"/>
+                <name value="mediaType"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>사진, 비디오 타입</description>
+                <options value="[Picture, Video]"/>
+                <necessary value="Y"/>
+                <descSummary value="사진, 비디오 타입"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_camera"/>
+                <LineNo value="-1"/>
+                <name value="correctOrientation"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>사진방향</description>
+                <options value="[true, false]"/>
+                <necessary value="N"/>
+                <descSummary value="사진방향"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_camera"/>
+                <LineNo value="-1"/>
+                <name value="saveToPhotoAlbum"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>앨범 저장 여부</description>
+                <options value="[true, false]"/>
+                <necessary value="N"/>
+                <descSummary value="앨범 저장 여부"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_camera"/>
+                <LineNo value="-1"/>
+                <name value="cameraDirection"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>카메라 방향</description>
+                <options value="[Back, Front]"/>
+                <necessary value="N"/>
+                <descSummary value="카메라 방향"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_camera"/>
+                <LineNo value="-1"/>
+                <name value="popoverOptions"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>팝업 카메라 사용여부</description>
+                <options value="[true, false]"/>
+                <necessary value="N"/>
+                <descSummary value="팝업 카메라 사용여부"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_camera"/>
+                <LineNo value="-1"/>
+                <name value="targetWidth"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>이미지의 가로 크기 설정(pixel)&lt;br /&gt;targetHeight 와 같이 사용</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="이미지의 가로 크기 설정(pixel)"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_camera"/>
+                <LineNo value="-1"/>
+                <name value="targetHeight"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>이미지의 세로 크기 설정(pixel)&lt;br /&gt;targetWidth와 같이 사용</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="이미지의 세로 크기 설정(pixel)"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_camera"/>
+                <LineNo value="-1"/>
+                <name value="onCapture"/>
+                <eventType value=""/>
+                <description>카메라 플러그인이 동작하고 결과값을 반환받는 이벤트</description>
+                <descSummary value="카메라 플러그인이 동작하고 결과값을 반환받는 이벤트"/>
+                <params index="1">
+                    <param description="카메라 촬영 후 결과를 받는다." index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_camera.capturePhoto();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_camera"/>
+                <LineNo value="-1"/>
+                <name value="capturePhoto"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>사진을 찍는다.</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="사진을 찍는다"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

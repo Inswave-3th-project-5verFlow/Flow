@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_barcode"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="barcodescanner UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/barcode.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_barcode"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_barcode"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_barcode"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_barcode"/>
+                <LineNo value="-1"/>
+                <name value="type"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>barcode type: qrcode, etc...</description>
+                <options value="[All, QRCODE, EAN_8, CODE_128, CODE_39, EAN_13]"/>
+                <necessary value="Y"/>
+                <descSummary value="barcode type: qrcode, etc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_barcode"/>
+                <LineNo value="-1"/>
+                <name value="disableSuccessBeep"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>Barcode Scanner 성공 시 성공음 출력 여부</description>
+                <options value="[true, false]"/>
+                <necessary value="N"/>
+                <descSummary value="Barcode Scanner 성공 시 성공음 출력 여부"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_barcode"/>
+                <LineNo value="-1"/>
+                <name value="preferFrontCamera"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>Barcode Scanner 실행 시 전면 카메라 사용 여부</description>
+                <options value="[true, false]"/>
+                <necessary value="N"/>
+                <descSummary value="Barcode Scanner 실행 시 전면 카메라 사용 여부"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_barcode"/>
+                <LineNo value="-1"/>
+                <name value="showTorchButton"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>Barcode Scanner 화면에 Flash 버튼 표시 여부</description>
+                <options value="[true, false]"/>
+                <necessary value="N"/>
+                <descSummary value="Barcode Scanner 화면에 Flash 버튼 표시 여부"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_barcode"/>
+                <LineNo value="-1"/>
+                <name value="showFlipCameraButton"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>Barcode Scanner 화면에 전면, 후면 카메라 전환 버튼표시 여부</description>
+                <options value="[true, false]"/>
+                <necessary value="N"/>
+                <descSummary value="Barcode Scanner 화면에 전면, 후면 카메라 전환 버튼표시 여부"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_barcode"/>
+                <LineNo value="-1"/>
+                <name value="torchOn"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>Barcode Scanner 실행 시 Flash 사용여부</description>
+                <options value="[true, false]"/>
+                <necessary value="N"/>
+                <descSummary value="Barcode Scanner 실행 시 Flash 사용여부"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_barcode"/>
+                <LineNo value="-1"/>
+                <name value="onScan"/>
+                <eventType value=""/>
+                <description>barcode 스캔정보 반환</description>
+                <descSummary value="barcode 스캔정보 반환"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_barcode.scan();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_barcode"/>
+                <LineNo value="-1"/>
+                <name value="scan"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>barcode scan</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="barcode scan"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

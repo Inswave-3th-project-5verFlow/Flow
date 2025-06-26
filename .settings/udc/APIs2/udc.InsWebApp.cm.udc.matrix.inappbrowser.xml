@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_inappbrowser"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="inappbrowser inner UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/inappbrowser.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_inappbrowser"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_inappbrowser"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_inappbrowser"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_inappbrowser"/>
+                <LineNo value="-1"/>
+                <name value="type"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>브라우저 호출 타입</description>
+                <options value="[내부 브라우저, 외부 브라우저]"/>
+                <necessary value="Y"/>
+                <descSummary value="브라우저 호출 타입"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_inappbrowser"/>
+                <LineNo value="-1"/>
+                <name value="url"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>내부(웹뷰) 브라우저 화면 URL</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="내부(웹뷰) 브라우저 화면 URL"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_inappbrowser"/>
+                <LineNo value="-1"/>
+                <name value="open"/>
+                <eventType value=""/>
+                <description>별도 웹뷰를 붙여서 화면을 띄움</description>
+                <descSummary value="별도 웹뷰를 붙여서 화면을 띄움"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_inappbrowser.open();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_inappbrowser"/>
+                <LineNo value="-1"/>
+                <name value="open"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>inappbrowser inner open</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="inappbrowser inner open"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

@@ -1,0 +1,7 @@
+
+### Custom Ignores for inswebapp ###
+# Maven target directory
+target/
+
+# WebPack output directory  
+src/main/webapp/_wpack_/

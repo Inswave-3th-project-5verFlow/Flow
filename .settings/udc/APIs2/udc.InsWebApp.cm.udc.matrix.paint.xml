@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_paint"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="paint UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/paint.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_paint"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_paint"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_paint"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_paint"/>
+                <LineNo value="-1"/>
+                <name value="color"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>펜 색상 값 배열</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="펜 색상 값 배열"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_paint"/>
+                <LineNo value="-1"/>
+                <name value="openPaint"/>
+                <eventType value=""/>
+                <description>웹뷰 위에 레이어를 띄워 펜기능을 제공</description>
+                <descSummary value="웹뷰 위에 레이어를 띄워 펜기능을 제공"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_paint.openPaint();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_paint"/>
+                <LineNo value="-1"/>
+                <name value="openPaint"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>paint open</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="paint open"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_screenrecorder"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="screenrecorder UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/screenrecorder.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenrecorder"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenrecorder"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenrecorder"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenrecorder"/>
+                <LineNo value="-1"/>
+                <name value="fileName"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>파일 이름&lt;br /&gt;(입력 값이 없을 경우 생성된 날짜로 지정됨)</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="파일 이름"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenrecorder"/>
+                <LineNo value="-1"/>
+                <name value="audio"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>오디오 녹음 여부</description>
+                <options value="[true, false]"/>
+                <necessary value="Y"/>
+                <descSummary value="오디오 녹음 여부"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenrecorder"/>
+                <LineNo value="-1"/>
+                <name value="inInternal"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>녹음 파일을 내부/외부 저장소 중 저장할 곳 설정&lt;br /&gt;true: 내부 저장소 (default)&lt;br /&gt;false: 외부 저장소</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="녹음 파일을 내부/외부 저장소 중 저장할 곳 설정"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenrecorder"/>
+                <LineNo value="-1"/>
+                <name value="saveToGallery"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>녹음 파일 앨범에 저장 유무</description>
+                <options value="[true, false]"/>
+                <necessary value="Y"/>
+                <descSummary value="녹음 파일 앨범에 저장 유무"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenrecorder"/>
+                <LineNo value="-1"/>
+                <name value="recordScreen"/>
+                <eventType value=""/>
+                <description>화면 녹화를 시작한다.</description>
+                <descSummary value="화면 녹화를 시작한다"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenrecorder"/>
+                <LineNo value="-1"/>
+                <name value="recordFinish"/>
+                <eventType value=""/>
+                <description>화면 녹화를 종료 및 저장한다</description>
+                <descSummary value="화면 녹화를 종료 및 저장한다"/>
+                <params index="1">
+                    <param description="실행결과&#10; (파일경로, 녹화 시간 etc..)" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_screenrecorder.recordScreen();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenrecorder"/>
+                <LineNo value="-1"/>
+                <name value="recordScreen"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>녹화를 시작한다</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="녹화를 시작한다"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_screenrecorder.recordFinish();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenrecorder"/>
+                <LineNo value="-1"/>
+                <name value="recordFinish"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>녹화를 저장 및 종료한다</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="녹화를 저장 및 종료한다"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

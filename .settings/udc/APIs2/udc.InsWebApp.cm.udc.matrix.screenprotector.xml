@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_screenprotector"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="screenprotector UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/screenprotector.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenprotector"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenprotector"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenprotector"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenprotector"/>
+                <LineNo value="-1"/>
+                <name value="start"/>
+                <eventType value=""/>
+                <description>화면 캡쳐 방지 시작</description>
+                <descSummary value="화면 캡쳐 방지 시작"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenprotector"/>
+                <LineNo value="-1"/>
+                <name value="stop"/>
+                <eventType value=""/>
+                <description>화면 캡쳐 방지 중지</description>
+                <descSummary value="화면 캡쳐 방지 중지"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_screenprotector.stop();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenprotector"/>
+                <LineNo value="-1"/>
+                <name value="stop"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>화면 캡쳐 방지 중지</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="화면 캡쳐 방지 중지"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_screenprotector.start();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_screenprotector"/>
+                <LineNo value="-1"/>
+                <name value="start"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>화면 캡쳐 방지 시작</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="화면 캡쳐 방지 시작"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

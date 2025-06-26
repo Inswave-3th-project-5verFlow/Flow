@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_screencapture"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="screencapture UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/screencapture.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screencapture"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screencapture"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screencapture"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screencapture"/>
+                <LineNo value="-1"/>
+                <name value="allView"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>Native 포함한 모든 View의 캡쳐 여부</description>
+                <options value="[true, false]"/>
+                <necessary value="N"/>
+                <descSummary value="Native 포함한 모든 View의 캡쳐 여부"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screencapture"/>
+                <LineNo value="-1"/>
+                <name value="saveAlbum"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>화면 캡쳐한 이미지 앨범 저장 여부</description>
+                <options value="[true, false]"/>
+                <necessary value="N"/>
+                <descSummary value="화면 캡쳐한 이미지 앨범 저장 여부"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_screencapture"/>
+                <LineNo value="-1"/>
+                <name value="quality"/>
+                <propertyType value="number"/>
+                <bindparent value=""/>
+                <description>캡쳐 할 이미지 quality&lt;br /&gt;(default: 70)</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="캡쳐 할 이미지 quality"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_screencapture"/>
+                <LineNo value="-1"/>
+                <name value="onCapture"/>
+                <eventType value=""/>
+                <description>현재 보이는 화면을 캡쳐하여 해당 base64를 결과 값으로 반환</description>
+                <descSummary value="현재 보이는 화면을 캡쳐하여 해당 base64를 결과 값으로 반환"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_screencapture.onCapture();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_screencapture"/>
+                <LineNo value="-1"/>
+                <name value="onCapture"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>현재 보이는 화면을 캡쳐하여 base64 결과값 반환</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="현재 보이는 화면을 캡쳐하여 base64 결과값 반환"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

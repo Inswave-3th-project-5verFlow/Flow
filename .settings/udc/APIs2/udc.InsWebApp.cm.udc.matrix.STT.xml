@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_STT"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="speakSTT(Speech To Text) UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/STT.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_STT"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_STT"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_STT"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_STT"/>
+                <LineNo value="-1"/>
+                <name value="startSTT"/>
+                <eventType value=""/>
+                <description>음성 인식 후 인식된 텍스트를 리턴하는 이벤트</description>
+                <descSummary value="음성 인식 후 인식된 텍스트를 리턴하는 이벤트"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_STT"/>
+                <LineNo value="-1"/>
+                <name value="stopSTT"/>
+                <eventType value=""/>
+                <description>음성 인식 엔진을 중지하는 이벤트</description>
+                <descSummary value="음성 인식 엔진을 중지하는 이벤트"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_STT.startSTT();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_STT"/>
+                <LineNo value="-1"/>
+                <name value="startSTT"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>start speech to text</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="start speech to text"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_STT.stopSTT();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_STT"/>
+                <LineNo value="-1"/>
+                <name value="stopSTT"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>stop speech to text</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="stop speech to text"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

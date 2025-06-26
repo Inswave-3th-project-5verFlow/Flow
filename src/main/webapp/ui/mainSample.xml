@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:type>COMPONENT</w2:type>
+        <w2:buildDate/>
+        <w2:MSA/>
+        <xf:model>
+            <w2:dataCollection baseNode="map">
+            	<w2:dataList baseNode="list" repeatNode="map" id="dataList1" saveRemovedData="true">
+            		<w2:columnInfo>
+            			<w2:column id="depth" name="name1" dataType="text"></w2:column>
+            			<w2:column id="value" name="name2" dataType="text"></w2:column>
+            			<w2:column id="label" name="name3" dataType="text"></w2:column>
+            		</w2:columnInfo>
+            		<w2:data use="true">
+            			<w2:row>
+            				<depth><![CDATA[1]]></depth>
+            				<value><![CDATA[m1]]></value>
+            				<label><![CDATA[프로젝트 관리]]></label>
+            			</w2:row>
+            			<w2:row>
+            				<depth><![CDATA[2]]></depth>
+            				<value><![CDATA[m1-1]]></value>
+            				<label><![CDATA[단계 등록]]></label>
+            			</w2:row>
+            			<w2:row>
+            				<depth><![CDATA[1]]></depth>
+            				<label><![CDATA[업무 관리]]></label>
+            				<value><![CDATA[m2]]></value>
+            			</w2:row>
+            			<w2:row>
+            				<depth><![CDATA[2]]></depth>
+            				<value><![CDATA[m2-1]]></value>
+            				<label><![CDATA[업무 등록/조회]]></label>
+            			</w2:row>
+            		</w2:data>
+            	</w2:dataList>
+            </w2:dataCollection>
+            <w2:workflowCollection/>
+        </xf:model>
+        <w2:layoutInfo/>
+        <w2:publicInfo method=""/>
+        <script lazy="false" type="text/javascript"><![CDATA[
+scwin.onpageload = function() {
+	
+};
+
+
+scwin.treeView01_onlabelclick = function (value, node, index) {
+    switch(value){
+        case "m1" :
+            
+            break;
+        
+        case "m1-1" :
+            
+            break;
+
+        case "m2" :
+           
+            break;
+
+        case "m2-1" :
+            pageFrame01.setSrc("tab/taskTab.xml");
+            break;
+    };
+}
+]]></script>
+    </head>
+    <body ev:onpageload="scwin.onpageload">
+    	<xf:group class="sub_contents" id="" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true" meta_snippetName="0_01 페이지시작"
+    		style="">
+    		<xf:group class="pgtbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_01 페이지타이틀"
+    			style="">
+    			<w2:textbox class="pgt_tit" id="" label="FLOW" style="" tagname=""></w2:textbox>
+    			<xf:group class="breadcrumb" id="" style="">
+    				<xf:group id="" style="" tagname="ul">
+    					<xf:group class="home" id="" style="" tagname="li">
+    						<w2:anchor id="" outerDiv="false" style="">
+    							<xf:label><![CDATA[Home]]></xf:label>
+    						</w2:anchor>
+    					</xf:group>
+    					<xf:group id="" style="" tagname="li">
+    						<w2:anchor id="" outerDiv="false" style="">
+    							<xf:label><![CDATA[1Depth Menu]]></xf:label>
+    						</w2:anchor>
+    					</xf:group>
+    					<xf:group id="" style="" tagname="li">
+    						<w2:anchor id="" outerDiv="false" style="">
+    							<xf:label><![CDATA[2Depth Menu]]></xf:label>
+    						</w2:anchor>
+    					</xf:group>
+    					<xf:group id="" style="" tagname="li">
+    						<w2:span id="" label="3Depth Menu" style=""></w2:span>
+    					</xf:group>
+    				</xf:group>
+    			</xf:group>
+    			<xf:trigger class="btn_fav" id="" style="" type="button">
+    				<xf:label></xf:label>
+    			</xf:trigger>
+    		</xf:group>
+    	</xf:group>
+    	<xf:group class="lybox" id="" meta_snippetCategory="01_화면분할" meta_snippetKeyComponent="true"
+    		meta_snippetName="1_05 좌측 고정 2단 분할_width값 200px" style="">
+    		<xf:group adaptiveThreshold="" class="col_fix" id="" style="margin-left: 10px;width:200px;border: 1px solid;">
+    			<w2:treeview tooltipGroupClass="false" dataType="listed" style="height:300px;" id="treeView01" class="tvw" ev:onlabelclick="scwin.treeView01_onlabelclick">
+    				<w2:itemset nodeset="data:dataList1">
+    					<w2:label ref="label"></w2:label>
+    					<w2:value ref="value"></w2:value>
+    					<w2:depth ref="depth"></w2:depth>
+    					<w2:folder ref=""></w2:folder>
+    					<w2:checkbox ref=""></w2:checkbox>
+    					<w2:checkboxDisabled ref=""></w2:checkboxDisabled>
+    					<w2:image ref=""></w2:image>
+    					<w2:iconImage ref=""></w2:iconImage>
+    					<w2:selectedImage ref=""></w2:selectedImage>
+    					<w2:expandedImage ref=""></w2:expandedImage>
+    					<w2:leafImage ref=""></w2:leafImage>
+    				</w2:itemset>
+    			</w2:treeview>
+    		</xf:group>
+    		<xf:group class="" id="" style="">
+    			<w2:pageFrame style="" id="pageFrame01"></w2:pageFrame>
+    		</xf:group>
+    	</xf:group>
+    </body>
+</html>

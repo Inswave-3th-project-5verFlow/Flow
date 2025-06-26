@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value=""/>
+            <displaySrc value="/InsWebApp/cm/udc/fileMultiUpload.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+                <LineNo value="-1"/>
+                <name value="maxFileCount"/>
+                <propertyType value="number"/>
+                <bindparent value=""/>
+                <description>업로드 가능한 전체 첨부 파일 개수 ( default : 10개 )</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="업로드 가능한 전체 첨부 파일 개수 ( default : 10개 )"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+                <LineNo value="-1"/>
+                <name value="maxFileSize"/>
+                <propertyType value="number"/>
+                <bindparent value=""/>
+                <description>업로드 가능한 개별 첨부 파일 크기 (단위 : Byte , default : 5,242,880 Byte(5MB) )</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="업로드 가능한 개별 첨부 파일 크기 (단위 : Byte , default : 5,242,880 Byte(5MB) )"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+                <LineNo value="-1"/>
+                <name value="totalFileSize"/>
+                <propertyType value="number"/>
+                <bindparent value=""/>
+                <description>업로드 가능한 전체 첨부 파일 크기 (단위 : MB , default : 50 )</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="업로드 가능한 전체 첨부 파일 크기 (단위 : MB , default : 50 )"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+                <LineNo value="-1"/>
+                <name value="filter"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>업로드할 파일 확장자 필터</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="업로드할 파일 확장자 필터"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+                <LineNo value="-1"/>
+                <name value="aliasDataList"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>bind 할 메인화면의 dataLiist ID (메인화면의 데이타 맵인 경우   예: ../dataListid )</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="bind 할 메인화면의 dataLiist ID (메인화면의 데이타 맵인 경우   예: "/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+                <LineNo value="-1"/>
+                <name value="fileStoredPath"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>upload한 파일 Path를 바인딩할 컬럼ID</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="upload한 파일 Path를 바인딩할 컬럼ID"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+                <LineNo value="-1"/>
+                <name value="fileStoredNm"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>upload한 파일 실제 물리명을 바인딩할 컬럼ID</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="upload한 파일 실제 물리명을 바인딩할 컬럼ID"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+                <LineNo value="-1"/>
+                <name value="fileOrginNm"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>UPLOAD하기전에 파일명을 바인딩할 컬럼ID</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="UPLOAD하기전에 파일명을 바인딩할 컬럼ID"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+                <LineNo value="-1"/>
+                <name value="fileSize"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>파일 시이즈를 바인딩할 컬럼 id</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="파일 시이즈를 바인딩할 컬럼 id"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+                <LineNo value="-1"/>
+                <name value="chk"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>파일 선택을 위하여 만든 컬럼id</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="파일 선택을 위하여 만든 컬럼id"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+                <LineNo value="-1"/>
+                <name value="onFileUploadDone"/>
+                <eventType value=""/>
+                <description>파일 업로드 완료후 발생</description>
+                <descSummary value="파일 업로드 완료후 발생"/>
+                <params index="0"/>
+            </event>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_fileMultiUpload"/>
+                <LineNo value="-1"/>
+                <name value="onFileDelete"/>
+                <eventType value=""/>
+                <description>선택한 파일 삭제 이벤트</description>
+                <descSummary value="선택한 파일 삭제 이벤트"/>
+                <params index="0"/>
+            </event>
+        </events>
+        <children/>
+    </component>
+</WebSquare>

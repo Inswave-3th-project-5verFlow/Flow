@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_call"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="misc sendCall UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/call.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_call"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_call"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_call"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_call"/>
+                <LineNo value="-1"/>
+                <name value="number"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>전화번호 ( '-' 빼고 입력 가능)</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="전화번호 ( '-' 빼고 입력 가능)"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_call"/>
+                <LineNo value="-1"/>
+                <name value="sendCall"/>
+                <eventType value=""/>
+                <description>전화를 건다</description>
+                <descSummary value="전화를 건다"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_misc_call.sendCall();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_call"/>
+                <LineNo value="-1"/>
+                <name value="sendCall"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>전화를 건다</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="전화를 건다"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

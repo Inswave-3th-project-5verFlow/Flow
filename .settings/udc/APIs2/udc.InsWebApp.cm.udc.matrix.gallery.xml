@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_gallery"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="gallery UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/gallery.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_gallery"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_gallery"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_gallery"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_gallery"/>
+                <LineNo value="-1"/>
+                <name value="quality"/>
+                <propertyType value="number"/>
+                <bindparent value=""/>
+                <description>저장될 이미지에 quality 값을 지정&lt;br /&gt;(default: 50, 최대 100까지 가능)</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="저장될 이미지에 quality 값을 지정"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_gallery"/>
+                <LineNo value="-1"/>
+                <name value="sourceType"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>사진 소스 선택 유형</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="사진 소스 선택 유형"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_gallery"/>
+                <LineNo value="-1"/>
+                <name value="allowedit"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>사진 촬영 후 보정 유무</description>
+                <options value="[true, false]"/>
+                <necessary value="N"/>
+                <descSummary value="사진 촬영 후 보정 유무"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_gallery"/>
+                <LineNo value="-1"/>
+                <name value="encodingType"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>리턴되는 이미지 타입</description>
+                <options value="[jpeg, png]"/>
+                <necessary value="Y"/>
+                <descSummary value="리턴되는 이미지 타입"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_gallery"/>
+                <LineNo value="-1"/>
+                <name value="destinationType"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>결과 콜백 함수에 리턴되는 타입</description>
+                <options value="[DATA_URL, FILE_URL]"/>
+                <necessary value="Y"/>
+                <descSummary value="결과 콜백 함수에 리턴되는 타입"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_gallery"/>
+                <LineNo value="-1"/>
+                <name value="mediaType"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>갤러리 타입</description>
+                <options value="[Picture, Video, All]"/>
+                <necessary value="Y"/>
+                <descSummary value="갤러리 타입"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_gallery"/>
+                <LineNo value="-1"/>
+                <name value="openGallery"/>
+                <eventType value=""/>
+                <description>갤리러에서 사진을 가져온다.</description>
+                <descSummary value="갤리러에서 사진을 가져온다"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_gallery.openGallery();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_gallery"/>
+                <LineNo value="-1"/>
+                <name value="openGallery"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>갤러리 열기</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="갤러리 열기"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="file download UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/fileDownload.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+                <LineNo value="-1"/>
+                <name value="url"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>다운로드 url</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="다운로드 url"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+                <LineNo value="-1"/>
+                <name value="progress"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>다운로드 진행상황 상단 Notification Bar 표시 여부</description>
+                <options value="[true, false]"/>
+                <necessary value="Y"/>
+                <descSummary value="다운로드 진행상황 상단 Notification Bar 표시 여부"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+                <LineNo value="-1"/>
+                <name value="open"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>다운로드가 완료되면 해당 파일 open 여부</description>
+                <options value="[true, false]"/>
+                <necessary value="Y"/>
+                <descSummary value="다운로드가 완료되면 해당 파일 open 여부"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+                <LineNo value="-1"/>
+                <name value="notify"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>다운로드가 완료되면 toast로 다운로드 완료 여부 표시</description>
+                <options value="[true, false]"/>
+                <necessary value="Y"/>
+                <descSummary value="다운로드가 완료되면 toast로 다운로드 완료 여부 표시"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+                <LineNo value="-1"/>
+                <name value="location"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>다운로드가 될 위치 지정&lt;br /&gt;(default: Download)</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="다운로드가 될 위치 지정"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+                <LineNo value="-1"/>
+                <name value="requestType"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>다운로드 request type</description>
+                <options value="[POST, GET]"/>
+                <necessary value="Y"/>
+                <descSummary value="다운로드 request type"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+                <LineNo value="-1"/>
+                <name value="fileName"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>다운로드 후 저장될 파일 이름&lt;br /&gt;(request type: post 일 경우 필수 속성)</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="다운로드 후 저장될 파일 이름"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+                <LineNo value="-1"/>
+                <name value="saveName"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>저장되는 파일 이름</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="저장되는 파일 이름"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+                <LineNo value="-1"/>
+                <name value="filePath"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>저장되는 파일 경로</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="저장되는 파일 경로"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+                <LineNo value="-1"/>
+                <name value="dataType"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>ex) application/json</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="ex) application/json"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+                <LineNo value="-1"/>
+                <name value="download"/>
+                <eventType value=""/>
+                <description>url에 파일을 다운로드한다</description>
+                <descSummary value="url에 파일을 다운로드한다"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="1">
+                    <sample index="0">ex)
+ (async()=&gt;{
+     const result = await udc_fileDownload.download();
+ })();</sample>
+                </samples>
+                <componentID value="_InsWebApp_cm_udc_matrix_fileDownload"/>
+                <LineNo value="-1"/>
+                <name value="download"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>file download</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="file download"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>

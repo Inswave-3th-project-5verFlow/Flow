@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_quit"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="앱 종료"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/quit.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_quit"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_quit"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_quit"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_quit"/>
+                <LineNo value="-1"/>
+                <name value="message"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>팝업 메세지에 들어갈 메세지</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="팝업 메세지에 들어갈 메세지"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_quit"/>
+                <LineNo value="-1"/>
+                <name value="popup"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>팝업사용여부</description>
+                <options value="[true, false]"/>
+                <necessary value="Y"/>
+                <descSummary value="팝업사용여부"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_quit"/>
+                <LineNo value="-1"/>
+                <name value="cancelButton"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>취소버튼여부</description>
+                <options value="[true, false]"/>
+                <necessary value="Y"/>
+                <descSummary value="취소버튼여부"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_quit"/>
+                <LineNo value="-1"/>
+                <name value="onResult"/>
+                <eventType value=""/>
+                <description>팝업 메세지를 띄워 종료 메시지를 알리고 결과값을 반환받는 이벤트</description>
+                <descSummary value="팝업 메세지를 띄워 종료 메시지를 알리고 결과값을 반환받는 이벤트"/>
+                <params index="1">
+                    <param description="종료 팝업 메시지를 띄운 후 앱을 종료한다." index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <children/>
+    </component>
+</WebSquare>

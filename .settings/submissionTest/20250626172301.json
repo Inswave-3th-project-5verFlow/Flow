@@ -1,0 +1,9 @@
+{
+   "charset": "UTF-8",
+   "reqMethod": "POST",
+   "serviceURL": "http://localhost:9093/InsWebApp/TASK001Ins.pwkjson",
+   "contentType": "application/json",
+   "requestContent": "{\n   \"taskVo\": {\n      \"endDate\": \"SampleValue_5\",\n      \"taskDescription\": \"SampleValue_3\",\n      \"taskName\": \"SampleValue_1\",\n      \"pitStgId\": \"SampleValue_7\",\n      \"taskId\": \"SampleValue_0\",\n      \"startDate\": \"SampleValue_4\",\n      \"taskStatus\": \"SampleValue_6\",\n      \"taskOrder\": \"SampleValue_2\"\n   },\n   \"dmp_taskVoDetail\": {\n      \"endDate\": \"SampleValue_5\",\n      \"taskDescription\": \"SampleValue_3\",\n      \"taskName\": \"SampleValue_1\",\n      \"pitStgId\": \"SampleValue_7\",\n      \"taskId\": \"SampleValue_0\",\n      \"startDate\": \"SampleValue_4\",\n      \"taskStatus\": \"SampleValue_6\",\n      \"taskOrder\": \"SampleValue_2\"\n   }\n}",
+   "responseContent": "{\"elHeader\":{\"reqUrl\":\"/InsWebApp/TASK001Ins.pwkjson\",\"traceId\":\"2025062617230119300026632\",\"serviceKey\":\"TASK001Ins\",\"bArgResolveParsing\":false,\"resSuc\":false,\"resMsg\":\"세션이 존재하지 않습니다.\",\"resCode\":\"ERROR.LOGIN.004\",\"validateSuc\":false,\"saveTokenKey\":false,\"removeTokenKey\":false,\"locale\":\"ko\",\"language\":\"ko\",\"startTime\":0,\"svcTimeOut\":0,\"inOutDataEnc\":true,\"dbDataEnc\":false,\"gTraceId\":\"2025062617230119300026632\",\"fieldApplyAttr\":true,\"simurate\":false,\"deferredSvc\":false,\"centerCutSvc\":false}}",
+   "sendTime": "2025-06-26 17:23:01"
+}

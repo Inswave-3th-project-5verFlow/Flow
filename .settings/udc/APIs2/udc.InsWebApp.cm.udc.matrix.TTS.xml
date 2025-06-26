@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<WebSquare>
+    <component>
+        <Information>
+            <componentID value="_InsWebApp_cm_udc_matrix_TTS"/>
+            <buildName value=""/>
+            <componentType value="pageComponent"/>
+            <componentDesc value="speakTTS(Text To Speech) UDC"/>
+            <displaySrc value="/InsWebApp/cm/udc/matrix/TTS.xml"/>
+            <inheritComponent value=""/>
+        </Information>
+        <properties>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_TTS"/>
+                <LineNo value="-1"/>
+                <name value="id"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_TTS"/>
+                <LineNo value="-1"/>
+                <name value="class"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_TTS"/>
+                <LineNo value="-1"/>
+                <name value="style"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>desc</description>
+                <options value=""/>
+                <necessary value="N"/>
+                <descSummary value="desc"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_TTS"/>
+                <LineNo value="-1"/>
+                <name value="language"/>
+                <propertyType value="combobox"/>
+                <bindparent value=""/>
+                <description>언어코드</description>
+                <options value="[한국어, 영어]"/>
+                <necessary value="Y"/>
+                <descSummary value="언어코드"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_TTS"/>
+                <LineNo value="-1"/>
+                <name value="message"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>음성으로 출력되는 메세지 내용</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="음성으로 출력되는 메세지 내용"/>
+            </property>
+            <property>
+                <componentID value="_InsWebApp_cm_udc_matrix_TTS"/>
+                <LineNo value="-1"/>
+                <name value="speechSpeed"/>
+                <propertyType value="string"/>
+                <bindparent value=""/>
+                <description>출력되는 음성의 속도&lt;br /&gt;(default: 1.0)</description>
+                <options value=""/>
+                <necessary value="Y"/>
+                <descSummary value="출력되는 음성의 속도"/>
+            </property>
+        </properties>
+        <events>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_TTS"/>
+                <LineNo value="-1"/>
+                <name value="startTTS"/>
+                <eventType value=""/>
+                <description>message를 음성으로 읽어준다</description>
+                <descSummary value="message를 음성으로 읽어준다"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+            <event>
+                <componentID value="_InsWebApp_cm_udc_matrix_TTS"/>
+                <LineNo value="-1"/>
+                <name value="stopTTS"/>
+                <eventType value=""/>
+                <description>실행중인 TTS 중지</description>
+                <descSummary value="실행중인 TTS 중지"/>
+                <params index="1">
+                    <param description="실행결과" index="0" name="result" type="Object"/>
+                </params>
+            </event>
+        </events>
+        <methods>
+            <method>
+                <samples index="0"/>
+                <componentID value="_InsWebApp_cm_udc_matrix_TTS"/>
+                <LineNo value="-1"/>
+                <name value="startTTS"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>start text to speech</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="start text to speech"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+            <method>
+                <samples index="0"/>
+                <componentID value="_InsWebApp_cm_udc_matrix_TTS"/>
+                <LineNo value="-1"/>
+                <name value="stopTTS"/>
+                <cdate/>
+                <version value=""/>
+                <author value=""/>
+                <description>stop text to speech</description>
+                <exception value=""/>
+                <skinAttr value=""/>
+                <hidden value="N"/>
+                <deprecated/>
+                <descSummary value="stop text to speech"/>
+                <params index="0"/>
+                <returns index="0"/>
+            </method>
+        </methods>
+        <children/>
+    </component>
+</WebSquare>
