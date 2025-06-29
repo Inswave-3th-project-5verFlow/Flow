@@ -1,0 +1,615 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
+	xmlns:xf="http://www.w3.org/2002/xforms">
+	<head>
+		<w2:type>COMPONENT</w2:type>
+		<w2:buildDate />
+		<w2:MSA />
+		<xf:model>
+			<w2:dataCollection baseNode="map">
+				<w2:dataMap baseNode="map" id="dmp_pjtVo" style="">
+					<w2:keyInfo>
+						<w2:key dataType="text" id="scPjtId" name="search_프로젝트ID"></w2:key>
+                        <w2:key dataType="text" id="scPjtName" name="search_프로젝트명"></w2:key>
+                        <w2:key dataType="text" id="scPjtUserId" name="search_관리자ID"></w2:key>
+                        <w2:key dataType="text" id="scPjtStatus" name="search_프로젝트상태"></w2:key>
+                       
+						<w2:key dataType="text" id="pageIndex" name="페이지번호" defaultValue="1"></w2:key>
+						<w2:key dataType="text" id="pageSize" name="페이지사이즈" defaultValue="10"></w2:key>
+						<w2:key dataType="text" id="totalPageCount" name="페이지건수" ></w2:key>
+					</w2:keyInfo>
+					<w2:data use="false"></w2:data>
+				</w2:dataMap>
+				<w2:dataList baseNode="list" id="dlt_pjtVoList" repeatNode="map" saveRemovedData="true" style="">
+					<w2:columnInfo>
+						<w2:column dataType="text" id="pjtId" name="프로젝트ID"></w2:column>
+                        <w2:column dataType="text" id="pjtName" name="프로젝트명"></w2:column>
+                        <w2:column dataType="text" id="pjtUserId" name="관리자ID"></w2:column>
+                        <w2:column dataType="text" id="pjtSt" name="시작예정일"></w2:column>
+                        <w2:column dataType="text" id="pjtEd" name="완료예정일"></w2:column>
+                        <w2:column dataType="text" id="pjtStatus" name="프로젝트상태"></w2:column>
+                        <w2:column dataType="text" id="pjtDetail" name="상세설명"></w2:column>
+                        <w2:column dataType="text" id="createdAt" name="등록일자"></w2:column>
+                        <w2:column dataType="text" id="updatedAt" name="수정일자"></w2:column>
+                        <w2:column dataType="text" id="pjtRst" name="실제시작일"></w2:column>
+                        <w2:column dataType="text" id="pjtRed" name="실제완료일"></w2:column>
+                       
+					</w2:columnInfo>
+				</w2:dataList>
+				<w2:dataMap baseNode="map" id="dmp_pjtVoDetail" style="">
+					<w2:keyInfo>
+						<w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
+                        <w2:key dataType="text" id="pjtName" name="프로젝트명"></w2:key>
+                        <w2:key dataType="text" id="pjtUserId" name="관리자ID"></w2:key>
+                        <w2:key dataType="text" id="pjtSt" name="시작예정일"></w2:key>
+                        <w2:key dataType="text" id="pjtEd" name="완료예정일"></w2:key>
+                        <w2:key dataType="text" id="pjtStatus" name="프로젝트상태"></w2:key>
+                        <w2:key dataType="text" id="pjtDetail" name="상세설명"></w2:key>
+                        <w2:key dataType="text" id="createdAt" name="등록일자"></w2:key>
+                        <w2:key dataType="text" id="updatedAt" name="수정일자"></w2:key>
+                        <w2:key dataType="text" id="pjtRst" name="실제시작일"></w2:key>
+                        <w2:key dataType="text" id="pjtRed" name="실제완료일"></w2:key>
+                       
+					</w2:keyInfo>
+				</w2:dataMap>
+			</w2:dataCollection>
+			<w2:workflowCollection></w2:workflowCollection>
+
+			<xf:submission id="sbm_selectPjtVoList" ref='data:json,{"id":"dmp_pjtVo","key":"pjtVo"}'
+				target='data:json,{"id":"dlt_pjtVoList","key":"elData.pjtVoList"}' action="/InsWebApp/PjtList.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
+				processMsg="프로젝트 기본 정보 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_pjtList_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+			<xf:submission id="sbm_deletePjtVo" ref='data:json,{"id":"dmp_pjtVoDetail","key":"pjtVo"}' target="" action="/InsWebApp/PjtDel.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg=""
+				ev:submit="" ev:submitdone="scwin.sbm_deletePjtVo_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+			<xf:submission id="sbm_updatePjtVo" ref='data:json,["dmp_pjtVoDetail",{"id":"dmp_pjtVoDetail","key":"pjtVo"}]' target="" action="/InsWebApp/PjtUpd.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg=""
+				ev:submit="" ev:submitdone="scwin.sbm_updatePjtVo_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+			<xf:submission id="sbm_insertPjtVo" ref='data:json,["dmp_pjtVoDetail",{"id":"dmp_pjtVoDetail","key":"pjtVo"}]' target="" action="/InsWebApp/PjtIns.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg=""
+				ev:submit="" ev:submitdone="scwin.sbm_insertPjtVo_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+			<xf:submission id="sbm_selectPjtVo" ref="" target="" action="/InsWebApp/PjtUpdView.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
+				processMsg="프로젝트 기본 정보를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectPjtVo_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+		</xf:model>
+		<w2:layoutInfo></w2:layoutInfo>
+		<w2:publicInfo method="" />
+		<script lazy="false" type="text/javascript"><![CDATA[
+	scwin.onpageload = function() {
+		// 프로젝트 기본 정보 readOnly false
+		
+		// 버튼 숨김
+		btn_save.show("");   // 저장 버튼 
+		btn_edit.hide();     // 수정 버튼 제거
+		btn_delete.hide();   // 삭제 버튼 제거
+		
+		/////////////////////////////////////////////
+		// 페이지 크기 설정 영역 / 웹관리자 화면 page 생성 시 주석 해제
+		/////////////////////////////////////////////
+		sel_pageSize.setValue("15");
+		
+		//search_box
+        var cptIbxName = $p.getComponentById("searchComp_1");
+        if(cptIbxName == undefined){
+			search_box.hide();
+        }
+		
+		// 프로젝트 기본 정보 조회
+		scwin.btn_search_onclick();
+	};
+
+	/************************** 이벤트 함수 *************************/
+	
+	/**
+	 * 조회 버튼 클릭 이벤트
+	 * @date
+	 * @memberOf
+	 * @param 
+	 * @returns
+	 * @author 
+	 * @example
+	 */		   
+	scwin.btn_search_onclick = function(e) {
+	
+		// PGAE번호 초기화
+		dmp_pjtVo.set("pageIndex","1");
+		pgl_pjtList.setSelectedIndex(1);
+
+		// 서버통신 - 프로젝트 기본 정보 조회
+		$c.sbm.execute($p, sbm_selectPjtVoList);
+	};
+	
+	scwin.sbm_pjtList_submitdone = function(e) {
+
+		// error 수신시
+		var elData = e.responseJSON.elData;
+		var elHeader  = e.responseJSON.elHeader;
+		if(elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+			$c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+			return false;
+		}
+
+		// 프로젝트 기본 정보 dataMap 초기화
+		dmp_pjtVoDetail.setEmptyValue();
+		
+		// 프로젝트 기본 정보 readOnly false
+		grp_pjtInfo.setReadOnly(false);
+		
+		// 버튼 숨김
+		btn_save.show("");   // 저장 버튼
+		btn_edit.hide();     // 수정 버튼 제거
+		btn_delete.hide();   // 삭제 버튼 제거		
+
+		// 총 레코드 수 업데이트
+        spn_listCnt.setLabel(elData.totalCount);
+        
+        // 데이터를 그리드에 셋팅
+        dlt_pjtVoList.setJSON(elData.pjtVoList);
+        
+        // 페이지 네비게이터 업데이트
+        var totalPageCount = Math.ceil(elData.totalCount / dmp_pjtVo.get("pageSize"));
+        pgl_pjtList.setCount(totalPageCount);
+        
+        spn_registerFlag.setValue("등록");
+
+		// 페이징 정보 업데이트
+        spn_totalPageCount.setValue(totalPageCount);
+        spn_pageIndex.setValue(dmp_pjtVo.get("pageIndex"));
+        pgl_pjtList.setSelectedIndex(dmp_pjtVo.get("pageIndex"));
+	};	
+
+	/**
+	 * 페이지 번호 클릭 이벤트
+	 * @date
+	 * @memberOf
+	 * @param 
+	 * @returns 
+	 * @author 
+	 * @example
+	 */
+	scwin.pgl_pjtList_onclick = function(idx) {
+	
+		// 페이지 번호 세팅
+		dmp_pjtVo.set("pageIndex", idx);
+		
+		/////////////////////////////////////////////
+		// 페이지 크기 설정 영역 / 웹관리자 화면 page 생성 시 주석 해제
+		/////////////////////////////////////////////
+		//dmp_pjtVo.set("pageSize", sel_pageSize.getValue());
+		 
+		// 서버통신 - 프로젝트 기본 정보 조회
+		$c.sbm.execute($p, sbm_selectPjtVoList);
+	};
+
+	// 프로젝트 기본 정보 clear
+	scwin.btn_reset_onclick = function(e) {
+	
+		// 프로젝트 기본 정보 dataMap 초기화
+		dmp_pjtVoDetail.setEmptyValue();
+		// 프로젝트 기본 정보 readOnly false
+		grp_pjtInfo.setReadOnly(false);
+
+		btn_save.show("");   // 저장 버튼 생성
+		btn_edit.hide();     // 수정 버튼 제거
+		btn_delete.hide();   // 삭제 버튼 제거
+		
+		spn_registerFlag.setValue("등록");
+	};
+
+	/**
+	 * 그리드 셀 클릭 이벤트
+	 * @date
+	 * @memberOf
+	 * @param 
+	 * @returns 
+	 * @author 
+	 * @example
+	 */
+	scwin.grd_list_oncellclick = function(row,col,colId) {
+
+		dmp_pjtVoDetail.setJSON(dlt_pjtVoList.getRowJSON(row));
+
+		btn_save.hide(); 		// 저장 버튼 제거
+		btn_edit.show("");      // 수정 버튼 생성
+		btn_delete.show("");    // 삭제 버튼 생성
+		
+		spn_registerFlag.setValue("수정");
+	};
+
+	/**
+	 * 저장 버튼 클릭 이벤트
+	 * @date
+	 * @memberOf
+	 * @param 
+	 * @returns
+	 * @author 
+	 * @example
+	 */	
+	scwin.btn_save_onclick = function(e) {
+		
+		// 유효성 체크
+		var valInfo = [
+			{ id: "pjtId", mandatory: true }
+           
+		];
+		
+		if ($c.data.validateGroup(grp_pjtInfo, valInfo) === true) {
+			var promise = $c.win.confirm("저장하시겠습니까?");
+			promise.then(function(result) {  
+				if (result){
+					$c.sbm.execute(sbm_insertPjtVo);
+				}
+			})
+		} 	
+	};
+
+	/**
+	 * 사원정보 등록 콜백
+	 * @date 
+	 * @memberOf
+	 * @param 
+	 * @returns 
+	 * @author 
+	 * @example
+	 */
+	scwin.sbm_insertPjtVo_submitdone = function(e) {
+		
+		// error 수신시
+		var elHeader  = e.responseJSON.elHeader;
+		if(elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+			$c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+			return false;
+		}else{
+			// 등록되었습니다. msg 출력
+			$c.win.alert("등록되었습니다.");
+		}
+		
+		// 재조회
+		scwin.btn_search_onclick();
+	};
+
+	/**
+	 * 수정 버튼 클릭 이벤트
+	 * @date
+	 * @memberOf
+	 * @param 
+	 * @returns 
+	 * @author 
+	 * @example
+	 */		
+	scwin.btn_edit_onclick = function(e) {
+		
+		// 유효성 체크
+		var valInfo = [
+			{ id: "pjtId", mandatory: true }
+           
+		];
+		
+		if ($c.data.validateGroup(grp_pjtInfo, valInfo) === true) {
+			var promise = $c.win.confirm("수정하시겠습니까?");
+			promise.then(function(result) {  
+				if (result){
+					$c.sbm.execute(sbm_updatePjtVo);
+				}
+			})
+		} 
+	};
+
+	/**
+	 * 사원정보 수정 콜백
+	 * @date 
+	 * @memberOf
+	 * @param 
+	 * @returns 
+	 * @author 
+	 * @example
+	 */
+	scwin.sbm_updatePjtVo_submitdone = function(e) {
+
+		// error 수신시
+		var elHeader  = e.responseJSON.elHeader;
+		if(elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+			$c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+			return false;
+		}else{
+			// 수정되었습니다. msg 출력
+			$c.win.alert("수정되었습니다.");
+		}
+		// 재조회
+		scwin.btn_search_onclick();
+	};
+
+	/**
+	 * 삭제 버튼 클릭 이벤트
+	 * @date
+	 * @memberOf
+	 * @param 
+	 * @returns 
+	 * @author 
+	 * @example
+	 */		
+	scwin.btn_delete_onclick = function(e) {
+		
+		// 유효성 체크
+		var valInfo = [
+			{ id: "pjtId", mandatory: true }
+           
+		];
+		
+		if ($c.data.validateGroup(grp_pjtInfo, valInfo) === true) {
+			var promise = $c.win.confirm("삭제하시겠습니까?");
+			promise.then(function(result) {  
+				if (result){
+					$c.sbm.execute(sbm_deletePjtVo);
+				}
+			})
+		}	
+	};
+
+	/**
+	 * 삭제 콜백
+	 * @date 
+	 * @memberOf
+	 * @param 
+	 * @returns 
+	 * @author 
+	 * @example
+	 */
+	scwin.sbm_deletePjtVo_submitdone = function(e) {
+	
+		// error 수신시
+		var elHeader  = e.responseJSON.elHeader;
+		if(elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+			$c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+			return false;
+		}else{
+			// 삭제되었습니다. msg 출력
+			$c.win.alert("삭제되었습니다.");
+		}
+		
+		// 재조회
+		scwin.btn_search_onclick();
+	};
+]]></script>
+	</head>
+	<body ev:onpageload="scwin.onpageload">
+		<xf:group class="sub_contents " id="" style="">
+			<xf:group class="pgtbox" id="" style="">
+				<w2:textbox class="pgt_tit" id="" label="프로젝트 등록/조회" style="" tagname="" />
+			</xf:group>
+			<xf:group class="schbox" id="search_box" style="">
+				<xf:group class="schbox_inner" id="" style="">
+					<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" id="" style="width:Infinity%;" tagname="table">
+						<w2:attributes>
+							<w2:summary />
+						</w2:attributes>
+						<xf:group tagname="colgroup">
+							<xf:group tagname="col" style="width:140px;" id="searchComp_1"></xf:group>
+							<xf:group tagname="col" style="" id="searchComp_2"></xf:group>
+							<xf:group tagname="col" style="width:140px;" id="searchComp_3"></xf:group>
+							<xf:group tagname="col" style="" id="searchComp_4"></xf:group>
+							<xf:group tagname="col" style="width:140px;" id="searchComp_5"></xf:group>
+							<xf:group tagname="col" style="" id="searchComp_6"></xf:group>
+							<xf:group tagname="col" style="width:140px;" id="searchComp_7"></xf:group>
+							<xf:group tagname="col" style="" id="searchComp_8"></xf:group>
+						</xf:group>
+						<xf:group tagname="tr" style="" id="" class="">
+							<xf:group tagname="th" style="" class="w2tb_th">
+								<w2:textbox localeRef="Pjt_SEARCH_00001" style="" id="" label="프로젝트ID" class=""></w2:textbox>
+							</xf:group>
+							<xf:group tagname="td" style="" id="" class="w2tb_td">
+								<xf:input ref="data:dmp_pjtVo.scPjtId" style="width:100%;" id="" placeholder="" class=""></xf:input>
+							</xf:group>
+							<xf:group tagname="th" style="" class="w2tb_th">
+								<w2:textbox localeRef="Pjt_SEARCH_00002" style="" id="" label="프로젝트명" class=""></w2:textbox>
+							</xf:group>
+							<xf:group tagname="td" style="" id="" class="w2tb_td">
+								<xf:input ref="data:dmp_pjtVo.scPjtName" style="width:100%;" id="" placeholder="" class=""></xf:input>
+							</xf:group>
+							<xf:group tagname="th" style="" class="w2tb_th">
+								<w2:textbox localeRef="Pjt_SEARCH_00003" style="" id="" label="관리자ID" class=""></w2:textbox>
+							</xf:group>
+							<xf:group tagname="td" style="" id="" class="w2tb_td">
+								<xf:input ref="data:dmp_pjtVo.scPjtUserId" style="width:100%;" id="" placeholder="" class=""></xf:input>
+							</xf:group>
+							<xf:group tagname="th" style="" class="w2tb_th">
+								<w2:textbox localeRef="Pjt_SEARCH_00004" style="" id="" label="프로젝트상태" class=""></w2:textbox>
+							</xf:group>
+							<xf:group tagname="td" style="" id="" class="w2tb_td">
+								<xf:input ref="data:dmp_pjtVo.scPjtStatus" style="width:100%;" id="" placeholder="" class=""></xf:input>
+							</xf:group>
+						</xf:group>
+					</xf:group>
+				</xf:group>
+				<xf:group class="btn_schbox" id="" style="">
+					<xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_search" style="" type="button" ev:onclick="scwin.btn_search_onclick" localeRef="COMMON_BUTTON_00001">
+						<xf:label><![CDATA[조회]]></xf:label>
+					</xf:trigger>
+				</xf:group>
+			</xf:group>
+			<xf:group class="titbox" id="" style="">
+				<xf:group class="count rt" id="">
+					<w2:span id="" label="총" localeRef="COMMON_LABEL_00002" style=""></w2:span>
+    				<w2:span class="num" id="spn_listCnt" label="0" ref="" style=""></w2:span>
+    				<w2:span id="" label="건" localeRef="COMMON_LABEL_00003" style=""></w2:span>
+    			</xf:group>
+			</xf:group>
+			<xf:group adaptiveThreshold="" class="gvwbox" id="" style="">
+				<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dlt_pjtVoList"
+					defaultCellHeight="26" focusMode="row" id="grd_list" scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;"
+					visibleRowNum="15" ev:oncellclick="scwin.grd_list_oncellclick" readOnly="true">
+					<w2:caption style="" id="caption2" value="this is a grid caption."></w2:caption>
+					<w2:header style="" id="header2">
+						<w2:row style="" id="row3">
+							<w2:column width="70" inputType="text" style="" id="column1" value="프로젝트ID" displayMode="label" localeRef="Pjt_COLNAME_00001"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="column2" value="프로젝트명" displayMode="label" localeRef="Pjt_COLNAME_00002"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="column3" value="관리자ID" displayMode="label" localeRef="Pjt_COLNAME_00003"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="column4" value="시작예정일" displayMode="label" localeRef="Pjt_COLNAME_00004"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="column5" value="완료예정일" displayMode="label" localeRef="Pjt_COLNAME_00005"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="column6" value="프로젝트상태" displayMode="label" localeRef="Pjt_COLNAME_00006"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="column7" value="상세설명" displayMode="label" localeRef="Pjt_COLNAME_00007"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="column8" value="등록일자" displayMode="label" localeRef="Pjt_COLNAME_00008"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="column9" value="수정일자" displayMode="label" localeRef="Pjt_COLNAME_00009"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="column10" value="실제시작일" displayMode="label" localeRef="Pjt_COLNAME_00010"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="column11" value="실제완료일" displayMode="label" localeRef="Pjt_COLNAME_00011"></w2:column>
+                           
+						</w2:row>
+					</w2:header>
+					<w2:gBody style="" id="gBody2">
+						<w2:row style="" id="row4">
+							<w2:column width="70" inputType="text" style="" id="pjtId" value="" displayMode="label"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="pjtName" value="" displayMode="label"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="pjtUserId" value="" displayMode="label"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="pjtSt" value="" displayMode="label"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="pjtEd" value="" displayMode="label"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="pjtStatus" value="" displayMode="label"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="pjtDetail" value="" displayMode="label"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="createdAt" value="" displayMode="label"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="updatedAt" value="" displayMode="label"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="pjtRst" value="" displayMode="label"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="pjtRed" value="" displayMode="label"></w2:column>
+                           
+						</w2:row>
+					</w2:gBody>
+				</w2:gridView>
+			</xf:group>
+			<xf:group class="pglbox" id="" style="">
+				<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_pjtList" pageSize="5" pagingType="0"
+					style="" ev:onclick="scwin.pgl_pjtList_onclick">
+				</w2:pageList>	
+				<xf:group class="pgl_count" id="" style="display: none;">
+    				<w2:span class="num" id="spn_pageIndex" label="0" ref="data:dma_pjtVo.pageIndex" style=""></w2:span>
+    				<w2:span id="span1" label="/" style=""></w2:span>
+    				<w2:span id="spn_totalPageCount" label="0" ref="data:dma_pjtVo.totalPageCount" style=""></w2:span>
+    				<w2:span id="span2" label="페이지" localeRef="COMMON_LABEL_00005" style=""></w2:span>
+    			</xf:group>		
+			</xf:group>
+			<xf:group class="titbox" id="" style="">
+                <xf:group id="" tagname="h3" style="">
+    				<w2:textbox class="" id="" label="프로젝트 기본 정보" localeRef="" style=""></w2:textbox>
+    				<w2:textbox class="" id="" label="(" style=""></w2:textbox>
+    				<w2:textbox class="" id="spn_registerFlag" label="등록" localeRef="COMMON_LABEL_00006" style=""></w2:textbox>
+    				<w2:textbox class="" id="" label=")" style=""></w2:textbox>
+    			</xf:group>
+
+				<xf:group class="rt" id="" style="">
+					<xf:trigger class="btn_cm refresh" id="btn_reset" style="" type="button" localeRef="COMMON_BUTTON_00002"
+	    					ev:onclick="scwin.btn_reset_onclick">
+	    					<xf:label><![CDATA[초기화]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="btn_cm save" id="btn_save" style="" type="button" localeRef="COMMON_BUTTON_00003" ev:onclick="scwin.btn_save_onclick">
+	    					<xf:label><![CDATA[저장]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="btn_cm save" id="btn_edit" style="" type="button" localeRef="COMMON_BUTTON_00003" ev:onclick="scwin.btn_edit_onclick">
+						<xf:label><![CDATA[저장]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="btn_cm delete" ev:onclick="scwin.btn_delete_onclick" id="btn_delete" localeRef="COMMON_BUTTON_00004"
+						style="" type="button">
+						<xf:label><![CDATA[삭제]]></xf:label>
+					</xf:trigger>
+				</xf:group>
+			</xf:group>
+			<xf:group class="tblbox" id="grp_pjtInfo" style="">
+				<xf:group adaptive="layout" adaptiveThreshold="600" class="w2tb tbl" id="" style="" tagname="table">
+					<w2:attributes>
+						<w2:summary />
+					</w2:attributes>
+					<xf:group tagname="colgroup">
+						<xf:group style="width:150px;" tagname="col" />
+						<xf:group style="" tagname="col" />
+						<xf:group style="width:150px;" tagname="col" />
+						<xf:group style="" tagname="col" />
+					</xf:group>
+					<xf:group style="" tagname="tr">
+						<xf:group class="w2tb_th" style="" tagname="th">
+                            <w2:textbox class="" id="" label="프로젝트ID" ref="" style="" userData2="" localeRef="Pjt_COLNAME_00001"/>
+                        </xf:group>
+                        <xf:group class="w2tb_td" style="" tagname="td">
+                            <xf:input class="" id="" placeholder="" style="width:100%;" ref="data:dmp_pjtVoDetail.pjtId"/>
+                        </xf:group>
+                        <xf:group class="w2tb_th" style="" tagname="th">
+                            <w2:textbox class="" id="" label="프로젝트명" ref="" style="" userData2="" localeRef="Pjt_COLNAME_00002"/>
+                        </xf:group>
+                        <xf:group class="w2tb_td" style="" tagname="td">
+                            <xf:input class="" id="" placeholder="" style="width:100%;" ref="data:dmp_pjtVoDetail.pjtName"/>
+                        </xf:group>
+                    </xf:group>
+                    <xf:group style="" tagname="tr">
+                        <xf:group class="w2tb_th" style="" tagname="th">
+                            <w2:textbox class="" id="" label="관리자ID" ref="" style="" userData2="" localeRef="Pjt_COLNAME_00003"/>
+                        </xf:group>
+                        <xf:group class="w2tb_td" style="" tagname="td">
+                            <xf:input class="" id="" placeholder="" style="width:100%;" ref="data:dmp_pjtVoDetail.pjtUserId"/>
+                        </xf:group>
+                        <xf:group class="w2tb_th" style="" tagname="th">
+                            <w2:textbox class="" id="" label="시작예정일" ref="" style="" userData2="" localeRef="Pjt_COLNAME_00004"/>
+                        </xf:group>
+                        <xf:group class="w2tb_td" style="" tagname="td">
+                            <xf:input class="" id="" placeholder="" style="width:100%;" ref="data:dmp_pjtVoDetail.pjtSt"/>
+                        </xf:group>
+                    </xf:group>
+                    <xf:group style="" tagname="tr">
+                        <xf:group class="w2tb_th" style="" tagname="th">
+                            <w2:textbox class="" id="" label="완료예정일" ref="" style="" userData2="" localeRef="Pjt_COLNAME_00005"/>
+                        </xf:group>
+                        <xf:group class="w2tb_td" style="" tagname="td">
+                            <xf:input class="" id="" placeholder="" style="width:100%;" ref="data:dmp_pjtVoDetail.pjtEd"/>
+                        </xf:group>
+                        <xf:group class="w2tb_th" style="" tagname="th">
+                            <w2:textbox class="" id="" label="프로젝트상태" ref="" style="" userData2="" localeRef="Pjt_COLNAME_00006"/>
+                        </xf:group>
+                        <xf:group class="w2tb_td" style="" tagname="td">
+                            <xf:input class="" id="" placeholder="" style="width:100%;" ref="data:dmp_pjtVoDetail.pjtStatus"/>
+                        </xf:group>
+                    </xf:group>
+                    <xf:group style="" tagname="tr">
+                        <xf:group class="w2tb_th" style="" tagname="th">
+                            <w2:textbox class="" id="" label="상세설명" ref="" style="" userData2="" localeRef="Pjt_COLNAME_00007"/>
+                        </xf:group>
+                        <xf:group class="w2tb_td" style="" tagname="td">
+                            <xf:input class="" id="" placeholder="" style="width:100%;" ref="data:dmp_pjtVoDetail.pjtDetail"/>
+                        </xf:group>
+                        <xf:group class="w2tb_th" style="" tagname="th">
+                            <w2:textbox class="" id="" label="등록일자" ref="" style="" userData2="" localeRef="Pjt_COLNAME_00008"/>
+                        </xf:group>
+                        <xf:group class="w2tb_td" style="" tagname="td">
+                            <xf:input class="" id="" placeholder="" style="width:100%;" ref="data:dmp_pjtVoDetail.createdAt"/>
+                        </xf:group>
+                    </xf:group>
+                    <xf:group style="" tagname="tr">
+                        <xf:group class="w2tb_th" style="" tagname="th">
+                            <w2:textbox class="" id="" label="수정일자" ref="" style="" userData2="" localeRef="Pjt_COLNAME_00009"/>
+                        </xf:group>
+                        <xf:group class="w2tb_td" style="" tagname="td">
+                            <xf:input class="" id="" placeholder="" style="width:100%;" ref="data:dmp_pjtVoDetail.updatedAt"/>
+                        </xf:group>
+                        <xf:group class="w2tb_th" style="" tagname="th">
+                            <w2:textbox class="" id="" label="실제시작일" ref="" style="" userData2="" localeRef="Pjt_COLNAME_00010"/>
+                        </xf:group>
+                        <xf:group class="w2tb_td" style="" tagname="td">
+                            <xf:input class="" id="" placeholder="" style="width:100%;" ref="data:dmp_pjtVoDetail.pjtRst"/>
+                        </xf:group>
+                    </xf:group>
+                    <xf:group style="" tagname="tr">
+                        <xf:group class="w2tb_th" style="" tagname="th">
+                            <w2:textbox class="" id="" label="실제완료일" ref="" style="" userData2="" localeRef="Pjt_COLNAME_00011"/>
+                        </xf:group>
+                        <xf:group class="w2tb_td" style="" tagname="td">
+                            <xf:input class="" id="" placeholder="" style="width:100%;" ref="data:dmp_pjtVoDetail.pjtRed"/>
+                        </xf:group>
+                        <xf:group class="w2tb_th" style="" tagname="th">
+                            <w2:textbox class="" id="" label="" ref="" style="" userData2="" />
+                        </xf:group>
+                        <xf:group class="w2tb_td" style="" tagname="td">
+                        </xf:group>
+					</xf:group>
+				</xf:group>
+			</xf:group>
+		</xf:group>
+	</body>
+</html>

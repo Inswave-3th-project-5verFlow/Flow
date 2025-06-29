@@ -49,6 +49,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>WebSquare Configure/client.config.xml</name>
+			<type>1</type>
+			<location>C:/InswaveToolSP1/workspace/InsWebApp/src/main/webapp/websquare/config.xml</location>
+		</link>
+		<link>
 			<name>WebSquare Configure/server.config.xml</name>
 			<type>1</type>
 			<locationURI>$%7BPROJECT_LOC%7D/.settings/websquare_home/config/websquare.xml</locationURI>
