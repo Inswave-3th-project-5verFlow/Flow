@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper      
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"      
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	@subject     : 프로젝트 기본 정보 관련 처리를 담당하는 Sql Mapper
+	@description : 프로젝트 기본 정보 관련 처리를 담당하는 Sql Mapper
+	@author      : 김성민
+	@since       : 2025/06/26
+	@modification
+	===========================================================
+	DATE              AUTHOR             DESC
+	===========================================================
+	2025/06/26              김성민             최초 생성
+ -->
+<mapper namespace="com.demo.proworks.pjt">
+    <insert id="insertPjt" parameterType="com.demo.proworks.pjt.vo.PjtVo">
+<!-- 프로젝트 기본 정보를 등록한다. -->	
+
+INSERT INTO PJT /* QueryID : com.demo.proworks.pjt.insertPjt */
+(
+    <if test="pjtName != null and pjtName != ''">           PJT_NAME       </if>
+    <if test="pjtUserId != null and pjtUserId != ''">     , PJT_USER_ID    </if>
+    <if test="pjtSt != null and pjtSt != ''">             , PJT_ST         </if>
+    <if test="pjtEd != null and pjtEd != ''">             , PJT_ED         </if>
+    <if test="pjtStatus != null and pjtStatus != ''">     , PJT_STATUS     </if>
+    <if test="pjtDetail != null and pjtDetail != ''">     , PJT_DETAIL     </if>
+    , CREATED_AT
+    , UPDATED_AT
+    <if test="pjtRst != null and pjtRst != ''">           , PJT_RST        </if>
+    <if test="pjtRed != null and pjtRed != ''">           , PJT_RED        </if>
+)
+VALUES
+(
+    <if test="pjtName != null and pjtName != ''">           #{pjtName}     </if>
+    <if test="pjtUserId != null and pjtUserId != ''">     , #{pjtUserId}   </if>
+    <if test="pjtSt != null and pjtSt != ''">             , #{pjtSt}       </if>
+    <if test="pjtEd != null and pjtEd != ''">             , #{pjtEd}       </if>
+    <if test="pjtStatus != null and pjtStatus != ''">     , #{pjtStatus}   </if>
+    <if test="pjtDetail != null and pjtDetail != ''">     , #{pjtDetail}   </if>
+    , now()
+    , null
+    <if test="pjtRst != null and pjtRst != ''">           , #{pjtRst}      </if>
+    <if test="pjtRed != null and pjtRed != ''">           , #{pjtRed}      </if>
+)
+
+</insert>	
+	
+    <update id="updatePjt" parameterType="com.demo.proworks.pjt.vo.PjtVo">
+<!-- 프로젝트 기본 정보를 갱신한다. -->
+
+UPDATE PJT /* QueryID : com.demo.proworks.pjt.updatePjt */
+SET
+    <if test="pjtName != null and pjtName != ''">        PJT_NAME     = #{pjtName},     </if>
+    <if test="pjtUserId != null and pjtUserId != ''">    PJT_USER_ID  = #{pjtUserId},  </if>
+    <if test="pjtSt != null and pjtSt != ''">            PJT_ST       = #{pjtSt},      </if>
+    <if test="pjtEd != null and pjtEd != ''">            PJT_ED       = #{pjtEd},      </if>
+    <if test="pjtStatus != null and pjtStatus != ''">    PJT_STATUS   = #{pjtStatus},  </if>
+    <if test="pjtDetail != null and pjtDetail != ''">    PJT_DETAIL   = #{pjtDetail},  </if>
+    <if test="createdAt != null and createdAt != ''">    CREATED_AT   = #{createdAt},  </if>
+    UPDATED_AT = now()
+    <if test="pjtRst != null and pjtRst != ''">        , PJT_RST     = #{pjtRst}      </if>
+    <if test="pjtRed != null and pjtRed != ''">        , PJT_RED     = #{pjtRed}      </if>
+WHERE
+    PJT_ID = #{pjtId}
+
+</update>
+	
+    <delete id="deletePjt" parameterType="com.demo.proworks.pjt.vo.PjtVo">
+    	<!-- 프로젝트 기본 정보를 삭제한다. -->
+    	
+        DELETE FROM PJT   /* QueryID : com.demo.proworks.pjt.deletePjt */ 
+        WHERE   
+                PJT_ID      = #{pjtId}             
+    </delete>
+	
+    <select id="selectPjt" parameterType="com.demo.proworks.pjt.vo.PjtVo" resultType="com.demo.proworks.pjt.vo.PjtVo">
+    	<!-- 프로젝트 기본 정보를 상세 조회한다. -->	
+        SELECT     /* QueryID : com.demo.proworks.pjt.selectPjt */
+            PJT_ID as pjtId, PJT_NAME as pjtName, PJT_USER_ID as pjtUserId, PJT_ST as pjtSt, PJT_ED as pjtEd, PJT_STATUS as pjtStatus, PJT_DETAIL as pjtDetail, CREATED_AT as createdAt, UPDATED_AT as updatedAt, PJT_RST as pjtRst, PJT_RED as pjtRed
+        FROM PJT 
+        WHERE 
+                PJT_ID      = #{pjtId}     			
+    </select>
+	
+    <select id="selectListPjt" parameterType="com.demo.proworks.pjt.vo.PjtVo" resultType="com.demo.proworks.pjt.vo.PjtVo">
+<!-- 프로젝트 기본 정보 목록을 조회한다. -->
+           SELECT    /* QueryID : com.demo.proworks.pjt.selectListPjt */
+               PJT_ID as pjtId, PJT_NAME as pjtName, PJT_USER_ID as pjtUserId, PJT_ST as pjtSt, PJT_ED as pjtEd, PJT_STATUS as pjtStatus, PJT_DETAIL as pjtDetail, CREATED_AT as createdAt, UPDATED_AT as updatedAt, PJT_RST as pjtRst, PJT_RED as pjtRed		       
+           FROM (
+               SELECT  S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
+               FROM (				
+                   SELECT 
+                       *  		                  
+                   FROM PJT
+                   WHERE  1=1    		
+                        <if test="scPjtId != null and scPjtId != ''">
+                             AND PJT_ID like '%${scPjtId}%'
+                        </if>
+                        <if test="scPjtName != null and scPjtName != ''">
+                             AND PJT_NAME like '%${scPjtName}%'
+                        </if>
+                        <if test="scPjtUserId != null and scPjtUserId != ''">
+                             AND PJT_USER_ID like '%${scPjtUserId}%'
+                        </if>
+                        <if test="scPjtStatus != null and scPjtStatus != ''">
+                             AND PJT_STATUS like '%${scPjtStatus}%'
+                        </if>	     																														
+               ) S, (SELECT @ROWNUM := 0) TMP
+           ) A
+            WHERE PAGE = #{pageIndex}
+            ORDER BY pjtId desc
+</select>
+	
+    <select id="selectListCountPjt" parameterType="com.demo.proworks.pjt.vo.PjtVo" resultType="long">
+    <!-- 프로젝트 기본 정보 목록의 카운트를 조회한다. -->
+    
+         SELECT    /* QueryID : com.demo.proworks.pjt.selectListCountPjt */
+             COUNT(*) totcnt  		                  
+         FROM PJT
+         WHERE  1=1    		
+            <if test="scPjtId != null and scPjtId != ''">
+                 AND PJT_ID like '%${scPjtId}%'
+            </if>
+            <if test="scPjtName != null and scPjtName != ''">
+                 AND PJT_NAME like '%${scPjtName}%'
+            </if>
+            <if test="scPjtUserId != null and scPjtUserId != ''">
+                 AND PJT_USER_ID like '%${scPjtUserId}%'
+            </if>
+            <if test="scPjtStatus != null and scPjtStatus != ''">
+                 AND PJT_STATUS like '%${scPjtStatus}%'
+            </if>
+    </select>
+
+</mapper>
