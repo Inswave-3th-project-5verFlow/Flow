@@ -72,4 +72,12 @@ public interface TaskService {
      */
 	public int deleteTask(TaskVo taskVo) throws Exception;
 	
+	 /**
+     * 업무상태가 대기중인 목록을 조회한다.
+     *
+     * @param  taskVo 업무정보 TaskVo
+     * @return 업무정보 목록 List<TaskVo>
+     * @throws Exception
+     */
+	public List<TaskVo> selectPendingListTask(TaskVo taskVo) throws Exception;
 }
