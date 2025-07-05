@@ -88,5 +88,16 @@ public class TaskDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractD
     public int deleteTask(TaskVo vo) throws ElException {
         return delete("com.demo.proworks.task.deleteTask", vo);
     }
+    
+    /**
+     * 업무상태가 대기중인 업무 목록을 조회한다.
+     *  
+     * @param  TaskVo 업무정보
+     * @return List<TaskVo> 업무정보
+     * @throws ElException
+     */
+    public List<TaskVo> selectPendingListTask(TaskVo vo) throws ElException {      	
+        return (List<TaskVo>)list("com.demo.proworks.task.selectPendingListTask", vo);
+    }
 
 }

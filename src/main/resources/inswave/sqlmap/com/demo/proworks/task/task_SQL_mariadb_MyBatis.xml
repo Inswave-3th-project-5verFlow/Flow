@@ -20,25 +20,23 @@
     		
         INSERT INTO TASK   /* QueryID : com.demo.proworks.task.insertTask */
         ( 
-            TASK_ID
-            <if test="taskName       != null"> , TASK_NAME        </if>
+            <if test="taskName       != null">  TASK_NAME        </if>
             <if test="taskOrder      != null"> , TASK_ORDER       </if>
             <if test="taskDescription!= null"> , TASK_DESCRIPTION </if>
             <if test="startDate      != null"> , START_DATE       </if>
             <if test="endDate        != null"> , END_DATE         </if>
             <if test="taskStatus     != null"> , TASK_STATUS      </if>
-            <if test="pitStgId      != null"> , PIT_STG_ID       </if>
+            <if test="stgId      	!= null"> , STG_ID       </if>
         )
         VALUES  
         ( 
-            #{taskId}
-            <if test="taskName       != null"> , #{taskName}        </if>
+            <if test="taskName       != null">  #{taskName}        </if>
             <if test="taskOrder      != null"> , #{taskOrder}       </if>
             <if test="taskDescription!= null"> , #{taskDescription} </if>
             <if test="startDate      != null"> , #{startDate}       </if>
             <if test="endDate        != null"> , #{endDate}         </if>
             <if test="taskStatus     != null"> , #{taskStatus}      </if>
-            <if test="pitStgId      != null"> , #{pitStgId}       </if> 
+            <if test="stgId      != null"> , #{stgId}       </if> 
         )          
     </insert>	
 	
@@ -54,7 +52,7 @@
             <if test="startDate      != null"> , START_DATE       = #{startDate}       </if>
             <if test="endDate        != null"> , END_DATE         = #{endDate}         </if>
             <if test="taskStatus     != null"> , TASK_STATUS      = #{taskStatus}      </if>
-            <if test="pitStgId      != null"> , PIT_STG_ID       = #{pitStgId}       </if>                 
+            <if test="stgId      != null"> , STG_ID       = #{stgId}       </if>                 
         WHERE   
                 TASK_ID          = #{taskId}         
     </update>
@@ -70,7 +68,7 @@
     <select id="selectTask" parameterType="com.demo.proworks.task.vo.TaskVo" resultType="com.demo.proworks.task.vo.TaskVo">
     	<!-- 업무정보를 상세 조회한다. -->	
         SELECT     /* QueryID : com.demo.proworks.task.selectTask */
-            TASK_ID as taskId, TASK_NAME as taskName, TASK_ORDER as taskOrder, TASK_DESCRIPTION as taskDescription, START_DATE as startDate, END_DATE as endDate, TASK_STATUS as taskStatus, PIT_STG_ID as pitStgId
+            TASK_ID as taskId, TASK_NAME as taskName, TASK_ORDER as taskOrder, TASK_DESCRIPTION as taskDescription, START_DATE as startDate, END_DATE as endDate, TASK_STATUS as taskStatus, STG_ID as stgId
         FROM TASK 
         WHERE 
                 TASK_ID          = #{taskId}         			
@@ -79,7 +77,7 @@
     <select id="selectListTask" parameterType="com.demo.proworks.task.vo.TaskVo" resultType="com.demo.proworks.task.vo.TaskVo">
     	<!-- 업무정보 목록을 조회한다. -->
            SELECT    /* QueryID : com.demo.proworks.task.selectListTask */
-               TASK_ID as taskId, TASK_NAME as taskName, TASK_ORDER as taskOrder, TASK_DESCRIPTION as taskDescription, START_DATE as startDate, END_DATE as endDate, TASK_STATUS as taskStatus, PIT_STG_ID as pitStgId		       
+               TASK_ID as taskId, TASK_NAME as taskName, TASK_ORDER as taskOrder, TASK_DESCRIPTION as taskDescription, START_DATE as startDate, END_DATE as endDate, TASK_STATUS as taskStatus, STG_ID as stgId		       
            FROM (
                SELECT  S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
                FROM (				
@@ -106,5 +104,9 @@
                  AND TASK_NAME like '%${scTaskName}%'
             </if>
     </select>
+    
+    
+    
+    
 
 </mapper>

@@ -6,40 +6,47 @@ import com.inswave.elfw.annotation.ElVoField;
 import com.fasterxml.jackson.annotation.JsonFilter;
 
 @JsonFilter("elExcludeFilter")
-@ElDto(FldYn = "", logicalName = "업무정보")
+@ElDto(FldYn = "", delimeterYn = "", logicalName = "업무정보")
 public class TaskVo extends com.demo.proworks.cmmn.ProworksCommVO {
     private static final long serialVersionUID = 1L;
 
-    @ElDtoField(logicalName = "task_id", physicalName = "taskId", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    public TaskVo(){
+    }
+
+    @ElDtoField(logicalName = "task_id", physicalName = "taskId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String taskId;
 
-    @ElDtoField(logicalName = "task_name", physicalName = "taskName", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "task_name", physicalName = "taskName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String taskName;
 
-    @ElDtoField(logicalName = "task_order", physicalName = "taskOrder", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "task_order", physicalName = "taskOrder", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String taskOrder;
 
-    @ElDtoField(logicalName = "task_description", physicalName = "taskDescription", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "task_description", physicalName = "taskDescription", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String taskDescription;
 
-    @ElDtoField(logicalName = "start_date", physicalName = "startDate", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "start_date", physicalName = "startDate", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String startDate;
 
-    @ElDtoField(logicalName = "end_date", physicalName = "endDate", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "end_date", physicalName = "endDate", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String endDate;
 
-    @ElDtoField(logicalName = "task_status", physicalName = "taskStatus", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "task_status", physicalName = "taskStatus", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String taskStatus;
 
-    @ElDtoField(logicalName = "pit_stg_id", physicalName = "pitStgId", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
-    private String pitStgId;
+    @ElDtoField(logicalName = "stg_id", physicalName = "stgId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String stgId;
 
-    @ElDtoField(logicalName = "search_task_name", physicalName = "scTaskName", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "search_task_name", physicalName = "scTaskName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String scTaskName;
+
+    @ElDtoField(logicalName = "rowStatus", physicalName = "rowStatus", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String rowStatus;
 
     @ElVoField(physicalName = "taskId")
     public String getTaskId(){
-        return taskId;
+        String ret = this.taskId;
+        return ret;
     }
 
     @ElVoField(physicalName = "taskId")
@@ -49,7 +56,8 @@ public class TaskVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "taskName")
     public String getTaskName(){
-        return taskName;
+        String ret = this.taskName;
+        return ret;
     }
 
     @ElVoField(physicalName = "taskName")
@@ -59,7 +67,8 @@ public class TaskVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "taskOrder")
     public String getTaskOrder(){
-        return taskOrder;
+        String ret = this.taskOrder;
+        return ret;
     }
 
     @ElVoField(physicalName = "taskOrder")
@@ -69,7 +78,8 @@ public class TaskVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "taskDescription")
     public String getTaskDescription(){
-        return taskDescription;
+        String ret = this.taskDescription;
+        return ret;
     }
 
     @ElVoField(physicalName = "taskDescription")
@@ -79,7 +89,8 @@ public class TaskVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "startDate")
     public String getStartDate(){
-        return startDate;
+        String ret = this.startDate;
+        return ret;
     }
 
     @ElVoField(physicalName = "startDate")
@@ -89,7 +100,8 @@ public class TaskVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "endDate")
     public String getEndDate(){
-        return endDate;
+        String ret = this.endDate;
+        return ret;
     }
 
     @ElVoField(physicalName = "endDate")
@@ -99,7 +111,8 @@ public class TaskVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "taskStatus")
     public String getTaskStatus(){
-        return taskStatus;
+        String ret = this.taskStatus;
+        return ret;
     }
 
     @ElVoField(physicalName = "taskStatus")
@@ -107,33 +120,70 @@ public class TaskVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.taskStatus = taskStatus;
     }
 
-    @ElVoField(physicalName = "pitStgId")
-    public String getPitStgId(){
-        return pitStgId;
+    @ElVoField(physicalName = "stgId")
+    public String getStgId(){
+        String ret = this.stgId;
+        return ret;
     }
 
-    @ElVoField(physicalName = "pitStgId")
-    public void setPitStgId(String pitStgId){
-        this.pitStgId = pitStgId;
+    @ElVoField(physicalName = "stgId")
+    public void setStgId(String stgId){
+        this.stgId = stgId;
     }
 
     @ElVoField(physicalName = "scTaskName")
     public String getScTaskName(){
-        return scTaskName;
+        String ret = this.scTaskName;
+        return ret;
     }
 
     @ElVoField(physicalName = "scTaskName")
-    public void setScTaskName(String scTaskName) {
+    public void setScTaskName(String scTaskName){
         this.scTaskName = scTaskName;
+    }
+
+    @ElVoField(physicalName = "rowStatus")
+    public String getRowStatus(){
+        String ret = this.rowStatus;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "rowStatus")
+    public void setRowStatus(String rowStatus){
+        this.rowStatus = rowStatus;
     }
 
     @Override
     public String toString() {
-        return "TaskVo [taskId=" + taskId + ",taskName=" + taskName + ",taskOrder=" + taskOrder + ",taskDescription=" + taskDescription + ",startDate=" + startDate + ",endDate=" + endDate + ",taskStatus=" + taskStatus + ",pitStgId=" + pitStgId + ",scTaskName=" + scTaskName + "]";
+        StringBuilder sb = new StringBuilder();
+        sb.append("TaskVo [");
+        sb.append("taskId").append("=").append(taskId).append(",");
+        sb.append("taskName").append("=").append(taskName).append(",");
+        sb.append("taskOrder").append("=").append(taskOrder).append(",");
+        sb.append("taskDescription").append("=").append(taskDescription).append(",");
+        sb.append("startDate").append("=").append(startDate).append(",");
+        sb.append("endDate").append("=").append(endDate).append(",");
+        sb.append("taskStatus").append("=").append(taskStatus).append(",");
+        sb.append("stgId").append("=").append(stgId).append(",");
+        sb.append("scTaskName").append("=").append(scTaskName).append(",");
+        sb.append("rowStatus").append("=").append(rowStatus);
+        sb.append("]");
+        return sb.toString();
+
     }
 
     public boolean isFixedLengthVo() {
         return false;
     }
+
+    @Override
+    public void _xStreamEnc() {
+    }
+
+
+    @Override
+    public void _xStreamDec() {
+    }
+
 
 }

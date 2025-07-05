@@ -63,7 +63,7 @@ scwin.treeView01_onlabelclick = function (value, node, index) {
             break;
 
         case "m2-1" :
-            pageFrame01.setSrc("tab/taskTab.xml");
+            pageFrame01.setSrc("tab/TaskTab.xml");
             break;
     };
 }

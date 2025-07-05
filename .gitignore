@@ -5,3 +5,6 @@ target/
 
 # WebPack output directory  
 src/main/webapp/_wpack_/
+
+.settings/meta/localStorage.dat
+.settings/submissionTest/

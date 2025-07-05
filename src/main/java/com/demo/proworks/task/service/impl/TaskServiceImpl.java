@@ -122,4 +122,22 @@ public class TaskServiceImpl implements TaskService {
 		return taskDAO.deleteTask(taskVo);
 	}
 	
+	
+	/**
+     * 업무상태가 대기중인 목록을 조회합니다.
+     *
+     * @process
+     * 1. 업무상태가 대기중인 목록을 조회한다.
+     * 2. 결과 List<TaskVo>을(를) 리턴한다.
+     * 
+     * @param  taskVo 업무정보 TaskVo
+     * @return 업무정보 목록 List<TaskVo>
+     * @throws Exception
+     */
+	public List<TaskVo> selectPendingListTask(TaskVo taskVo) throws Exception {
+		List<TaskVo> list = taskDAO.selectPendingListTask(taskVo);	
+	
+		return list;
+	}
+	
 }
