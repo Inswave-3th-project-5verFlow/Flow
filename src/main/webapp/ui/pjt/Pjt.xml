@@ -16,6 +16,8 @@
 						<w2:key dataType="text" id="pjtSt" name="시작일"></w2:key>
 						<w2:key dataType="text" id="pjtEt" name="완료일"></w2:key>
 
+						<w2:key dataType="text" name="유저ID" id="userId"></w2:key>
+						<w2:key dataType="text" name="그룹ID" id="grpId"></w2:key>
 					</w2:keyInfo>
 				</w2:dataMap>
 				<w2:dataList baseNode="list" repeatNode="map" id="dlt_pjtStatusList" saveRemovedData="true">
@@ -48,15 +50,38 @@
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
 		<w2:publicInfo method="" />
-		<script lazy="false" type="text/javascript"><![CDATA[
+		<script lazy="false" type="text/javascript"><![CDATA[// 전역 변수 초기화
+scwin.LOGIN_USER_ID = "";
+scwin.LOGIN_USER_NAME = "";
+scwin.GROUP_ID = "";
+
+/**
+ * @method
+ * @name scwin.onpageload
+ * @description 페이지가 로드될 때 사용자 정보를 설정하고 기본 값을 초기화한다.
+ * @example
+ * scwin.onpageload();
+ */
 scwin.onpageload = function () {
-    scwin.idx = "pmkim";
-    ipt_pjtAsi.setValue(scwin.idx);
+    scwin.LOGIN_USER_ID = "1";
+    scwin.LOGIN_USER_NAME = "김프로젝트";
+    scwin.GROUP_ID = "1";
+
+    dmp_pjtVoDetail.set("userId", scwin.LOGIN_USER_ID);
+    dmp_pjtVoDetail.set("grpId", scwin.GROUP_ID);
+    ipt_pjtAsi.setValue(scwin.LOGIN_USER_NAME);
 };
 
+/**
+ * @method
+ * @name scwin.btn_save_onclick
+ * @description 저장 버튼 클릭 시 필수 입력값을 확인하고 프로젝트 등록을 요청한다.
+ * @param {Event} e - 클릭 이벤트 객체
+ * @example
+ * <w2:trigger id="btn_save" onClick="scwin.btn_save_onclick" />
+ */
 scwin.btn_save_onclick = function (e) {
     if ($c.util.isEmpty(ipt_pjtName.getValue().trim())) {
-        console.log("빈문자열임");
         $c.win.alert("프로젝트명은 필수입니다.");
         return;
     }
@@ -65,21 +90,47 @@ scwin.btn_save_onclick = function (e) {
         $c.win.alert("상태는 필수입니다.");
         return;
     }
-    console.log("dd");
+
     $c.sbm.execute(sbm_insertPjtVo);
 };
 
+/**
+ * @method
+ * @name scwin.sbm_insertPjtVo_submitdone
+ * @description 프로젝트 등록 서브미션 완료 후 결과를 확인하고 알림을 출력한다.
+ * @param {Object} e - 서브미션 완료 이벤트 객체
+ * @example
+ * <w2:submission id="sbm_insertPjtVo" submitDone="scwin.sbm_insertPjtVo_submitdone" />
+ */
 scwin.sbm_insertPjtVo_submitdone = function (e) {
-    // error 수신시
     var elData = e.responseJSON.elData;
     var elHeader = e.responseJSON.elHeader;
-    if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+
+    if (elHeader == null || elHeader === "" || elHeader === "undefined" || elHeader.resSuc === false) {
         $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
         return false;
     }
 
     $c.win.alert("등록이 완료되었습니다.");
-};]]></script>
+};
+
+/**
+ * @method
+ * @name scwin.btn_refresh_onclick
+ * @description 새로고침 버튼 클릭 시 입력폼과 데이터맵을 초기화한다.
+ * @param {Event} e - 클릭 이벤트 객체
+ * @example
+ * <w2:trigger id="btn_refresh" onClick="scwin.btn_refresh_onclick" />
+ */
+scwin.btn_refresh_onclick = function (e) {
+    dmp_pjtVoDetail.setEmptyValue();
+    dmp_pjtVoDetail.set("userId", scwin.LOGIN_USER_ID);
+    dmp_pjtVoDetail.set("grpId", scwin.GROUP_ID);
+    ipt_pjtAsi.setValue(scwin.LOGIN_USER_NAME);
+    ipt_pjtSt.setValue("");
+    ipt_pjtEt.setValue("");
+};
+]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">
 		<xf:group class="sub_contents " id="" style="">
@@ -143,7 +194,7 @@ scwin.sbm_insertPjtVo_submitdone = function (e) {
 							<w2:attributes>
 								<w2:colspan>3</w2:colspan>
 							</w2:attributes>
-							<xf:input ref="data:dmp_pjtVoDetail.pjtName" style="width:100%;" id="ipt_pjtName"/>
+							<xf:input ref="data:dmp_pjtVoDetail.pjtName" style="width:100%;" id="ipt_pjtName" />
 						</xf:group>
 					</xf:group>
 
@@ -156,7 +207,7 @@ scwin.sbm_insertPjtVo_submitdone = function (e) {
 							<w2:attributes>
 								<w2:colspan>3</w2:colspan>
 							</w2:attributes>
-							<xf:input ref="data:dmp_pjtVoDetail.pjtAsi" style="width:100%;" id="ipt_pjtAsi" disabled="true"/>
+							<xf:input ref="data:dmp_pjtVoDetail.pjtAsi" style="width:100%;" id="ipt_pjtAsi" disabled="true" />
 						</xf:group>
 					</xf:group>
 
@@ -188,13 +239,15 @@ scwin.sbm_insertPjtVo_submitdone = function (e) {
 							<w2:textbox label="시작일" localeRef="Pjt_COLNAME_00008" />
 						</xf:group>
 						<xf:group class="w2tb_td" tagname="td">
-							<w2:inputCalendar id="ipt_pjtSt" style="width: 100%;height: 30px;" calendarValueType="yearMonthDate" ref="data:dlt_pjtVoList.pjtSt" setCurrentDate="true"></w2:inputCalendar>
+							<w2:inputCalendar id="ipt_pjtSt" style="width: 100%;height: 30px;" calendarValueType="yearMonthDate"
+								ref="data:dmp_pjtVoDetail.pjtSt"></w2:inputCalendar>
 						</xf:group>
 						<xf:group class="w2tb_th" tagname="th">
 							<w2:textbox label="완료일" localeRef="Pjt_COLNAME_00009" />
 						</xf:group>
 						<xf:group class="w2tb_td" tagname="td" style="">
-							<w2:inputCalendar id="ipt_pjtEt" style="width: 100%;height: 30px;" calendarValueType="yearMonthDate" ref="data:dlt_pjtVoList.pjtEt" setCurrentDate="true"></w2:inputCalendar>
+							<w2:inputCalendar id="ipt_pjtEt" style="width: 100%;height: 30px;" calendarValueType="yearMonthDate"
+								ref="data:dmp_pjtVoDetail.pjtEt"></w2:inputCalendar>
 						</xf:group>
 					</xf:group>
 
@@ -220,8 +273,8 @@ scwin.sbm_insertPjtVo_submitdone = function (e) {
 					<xf:trigger class="btn_cm pt" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
 						<xf:label><![CDATA[저장]]></xf:label>
 					</xf:trigger>
-					<xf:trigger class="btn_cm " id="" style="" type="button">
-						<xf:label><![CDATA[취소]]></xf:label>
+					<xf:trigger class="btn_cm " id="btn_refresh" style="" type="button" ev:onclick="scwin.btn_refresh_onclick">
+						<xf:label><![CDATA[초기화]]></xf:label>
 					</xf:trigger>
 				</xf:group>
 			</xf:group>

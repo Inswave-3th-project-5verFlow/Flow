@@ -1,8 +1,8 @@
-package com.demo.proworks.stg.service;
+package com.demo.proworks.pjt.service;
 
 import java.util.List;
 
-import com.demo.proworks.stg.vo.PjtVo;
+import com.demo.proworks.pjt.vo.PjtVo;
 
 /**  
  * @subject     : 프로젝트 정보 관련 처리를 담당하는 인터페이스

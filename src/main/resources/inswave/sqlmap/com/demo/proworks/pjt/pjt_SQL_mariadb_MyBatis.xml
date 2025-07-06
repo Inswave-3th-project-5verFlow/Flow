@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper      
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"      
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	@subject : 프로젝트 정보 관련 처리를 담당하는 Sql Mapper
+	@description : 프로젝트 정보 관련 처리를 담당하는 Sql Mapper
+	@author : 김성민
+	@since : 2025/07/05
+	@modification
+	===========================================================
+	DATE AUTHOR DESC
+	===========================================================
+	2025/07/05 김성민 최초 생성
+-->
+<mapper namespace="com.demo.proworks.pjt">
+	<insert id="insertPjt" parameterType="com.demo.proworks.pjt.vo.PjtVo" useGeneratedKeys="true" keyProperty="pjtId">
+		<!-- 프로젝트 정보를 등록한다. -->
+		INSERT INTO PJT /* QueryID : com.demo.proworks.pjt.insertPjt */ (
+		<if test="pjtName  != null"> PJT_NAME   </if>
+		<if test="pjtAsi   != null"> , PJT_ASI    </if>
+		<if test="pjtStatus!= null"> , PJT_STATUS </if>
+		<if test="pjtDetail!= null"> , PJT_DETAIL </if>
+		<if test="pjtSt    != null and pjtSt != '' "> , PJT_ST     </if>
+		<if test="pjtEt    != null and pjtEt != '' "> , PJT_ET     </if>
+		) VALUES (
+		<if test="pjtName  != null"> #{pjtName}   </if>
+		<if test="pjtAsi   != null"> , #{pjtAsi}    </if>
+		<if test="pjtStatus!= null"> , #{pjtStatus} </if>
+		<if test="pjtDetail!= null"> , #{pjtDetail} </if>
+		<if test="pjtSt    != null and pjtSt != '' "> , #{pjtSt}     </if>
+		<if test="pjtEt    != null and pjtEt != '' "> , #{pjtEt}     </if>
+		)
+	</insert>
+
+	<update id="updatePjt" parameterType="com.demo.proworks.pjt.vo.PjtVo">
+		<!-- 프로젝트 ID로 프로젝트 정보를 갱신한다. -->
+		UPDATE PJT /* QueryID : com.demo.proworks.pjt.updatePjt */ SET PJT_ID = #{pjtId}
+		<if test="pjtName  != null"> , PJT_NAME = #{pjtName}   </if>
+		<if test="pjtAsi   != null"> , PJT_ASI = #{pjtAsi}    </if>
+		<if test="pjtStatus!= null"> , PJT_STATUS = #{pjtStatus} </if>
+		<if test="pjtDetail!= null"> , PJT_DETAIL = #{pjtDetail} </if>
+		<if test="createdAt!= null"> , CREATED_AT = #{createdAt} </if>
+		<if test="updatedAt!= null"> , UPDATED_AT = #{updatedAt} </if>
+		<if test="pjtSt    != null"> , PJT_ST = #{pjtSt}     </if>
+		<if test="pjtEt    != null"> , PJT_ET = #{pjtEt}     </if>
+		WHERE PJT_ID = #{pjtId}
+	</update>
+
+	<delete id="deletePjt" parameterType="com.demo.proworks.pjt.vo.PjtVo">
+		<!-- 프로젝트 ID로 프로젝트 정보를 삭제한다. -->
+		DELETE FROM PJT /* QueryID : com.demo.proworks.pjt.deletePjt */ WHERE PJT_ID = #{pjtId}
+	</delete>
+
+	<select id="selectPjt" parameterType="com.demo.proworks.pjt.vo.PjtVo" resultType="com.demo.proworks.pjt.vo.PjtVo">
+		<!-- 프로젝트 ID로 프로젝트 정보를 상세 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.pjt.selectPjt */ PJT_ID as pjtId, PJT_NAME as pjtName, PJT_ASI as pjtAsi, PJT_STATUS as pjtStatus,
+		PJT_DETAIL as pjtDetail, CREATED_AT as createdAt, UPDATED_AT as updatedAt, PJT_ST as pjtSt, PJT_ET as pjtEt FROM PJT WHERE PJT_ID =
+		#{pjtId}
+	</select>
+	<select id="selectListPjt" parameterType="com.demo.proworks.pjt.vo.PjtVo" resultType="com.demo.proworks.pjt.vo.PjtVo">
+		<!-- 로그인한 사용자 ID로 프로젝트 정보 목록을 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.pjt.selectListPjt */ PJT_ID as pjtId, PJT_NAME as pjtName, PJT_ASI as pjtAsi, PJT_STATUS as
+		pjtStatus, PJT_DETAIL as pjtDetail, CREATED_AT as createdAt, UPDATED_AT as updatedAt, PJT_ST as pjtSt, PJT_ET as pjtEt FROM ( SELECT S.*,
+		CEIL((@ROWNUM := @ROWNUM + 1) / #{pageSize}) AS PAGE FROM ( SELECT p.* FROM PJT p JOIN PROJECT_USER_GROUP g ON p.PJT_ID = g.PJT_ID
+		WHERE
+		g.USER_ID = #{userId} ) S, (SELECT @ROWNUM := 0) TMP ) A WHERE PAGE = #{pageIndex}
+	</select>
+
+	<select id="selectListCountPjt" parameterType="com.demo.proworks.pjt.vo.PjtVo" resultType="long">
+		<!-- 로그인한 사용자의 ID로 프로젝트 목록을 카운트한다. -->
+		SELECT /* QueryID : com.demo.proworks.pjt.selectListCountPjt */ COUNT(*) totcnt FROM PJT p JOIN PROJECT_USER_GROUP g ON p.PJT_ID =
+		g.PJT_ID WHERE g.USER_ID = #{userId}
+	</select>
+	<insert id="insertPug" parameterType="com.demo.proworks.pjt.vo.PjtVo">
+		<!-- 프로젝트를 유저그룹에 등록한다. -->
+		INSERT INTO PROJECT_USER_GROUP /* QueryID : com.demo.proworks.pjt.insertPug */
+		(
+		<if test="grpId  != null"> GRP_ID   </if>
+		<if test="userId   != null"> , USER_ID   </if>
+		<if test="pjtId != null"> , PJT_ID </if>
+		) VALUES
+		(
+		<if test="grpId  != null"> #{grpId}   </if>
+		<if test="userId   != null"> , #{userId}   </if>
+		<if test="pjtId != null"> , #{pjtId} </if>
+		)
+	</insert>
+</mapper>
