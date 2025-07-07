@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/InsWebApp/css/pjt/PjtList.css" type="text/css"?>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
 	xmlns:xf="http://www.w3.org/2002/xforms">
-	<head>
+	<head meta_screenName="프로젝트 목록 페이지" meta_author="김성민">
 		<w2:type>COMPONENT</w2:type>
 		<w2:buildDate />
 		<w2:MSA />
@@ -57,7 +58,7 @@
  * scwin.onpageload();
  */
 scwin.onpageload = function () {
-    scwin.LOGIN_USER_ID = "1";
+    scwin.LOGIN_USER_ID = "2";
     dmp_pjtVo.set("userId", scwin.LOGIN_USER_ID);
     $c.sbm.execute(sbm_selectPjtVoList);
 };
@@ -85,7 +86,6 @@ scwin.sbm_pjtList_submitdone = function (e) {
 
     scwin.setProgressRate();
     scwin.setProgressStyle();
-    scwin.setStatusStyle();
 
     var totalPageCount = Math.ceil(elData.totalCount / dmp_pjtVo.get("pageSize"));
     pgl_pjtList.setCount(totalPageCount);
@@ -173,37 +173,22 @@ scwin.setProgressStyle = function () {
 
 /**
  * @method
- * @name scwin.setStatusStyle
- * @description 프로젝트 상태 컬럼(pjtStatus)에 원형 색상 표시 및 스타일을 동적으로 설정한다.
+ * @name scwin.statusFmt
+ * @description pjtStatus 컬럼에 <span> 태그로 상태를 감싸서 반환 (CSS class 기반 스타일 적용)
+ * @param {String} data - 셀의 실제 값 (ex. "진행중", "완료")
+ * @param {String} formattedData - 포맷된 값 (사용하지 않음)
+ * @param {Number} rowIndex - 행 인덱스
+ * @param {Number} colIndex - 열 인덱스
+ * @returns {String} HTML 문자열
  * @memberOf scwin
- * @date 2025.07.06
+ * @date 2025.07.07
  */
-scwin.setStatusStyle = function () {
-    const rowCount = dlt_pjtVoList.getRowCount();
-    const colIndex = grd_list.getColumnIndex("pjtStatus");
+scwin.statusFmt = function (data, formattedData, rowIndex, colIndex) {
+    if (!data) return "";
 
-    for (let i = 0; i < rowCount; i++) {
-        const status = dlt_pjtVoList.getCellData(i, "pjtStatus");
-        let ftColor = "";
-
-        if (status === "대기") ftColor = "#f44336";
-        else if (status === "진행중") ftColor = "#ffeb3b";
-        else if (status === "완료") ftColor = "#4caf50";
-
-        const styles = [
-            { type: "cell", rowIndex: i, colIndex, styleName: "color", styleValue: ftColor },
-            { type: "cell", rowIndex: i, colIndex, styleName: "width", styleValue: "16px" },
-            { type: "cell", rowIndex: i, colIndex, styleName: "height", styleValue: "16px" },
-            { type: "cell", rowIndex: i, colIndex, styleName: "line-height", styleValue: "16px" },
-            { type: "cell", rowIndex: i, colIndex, styleName: "text-align", styleValue: "center" }
-        ];
-
-        styles.forEach(style => grd_list.setStyleAll(style));
-
-        dlt_pjtVoList.setCellData(i, "pjtStatus", "●");
-    }
-};
-]]></script>
+    const statusClass = data.trim();
+    return `<span class="status-tag ${statusClass}">${statusClass}</span>`;
+};]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">
 		<xf:group class="sub_contents " id="" style="">
@@ -233,7 +218,7 @@ scwin.setStatusStyle = function () {
 							<w2:column width="100" inputType="text" style="" id="column3" value="프로젝트관리자" displayMode="label"
 								localeRef="Pjt_COLNAME_00003">
 							</w2:column>
-							<w2:column width="50" inputType="text" style="" id="column4" value="상태" displayMode="label" localeRef="Pjt_COLNAME_00004">
+							<w2:column width="100" inputType="text" style="" id="column4" value="상태" displayMode="label" localeRef="Pjt_COLNAME_00004">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column5" value="상세설명" displayMode="label" localeRef="Pjt_COLNAME_00005"
 								hidden="true">
@@ -256,7 +241,7 @@ scwin.setStatusStyle = function () {
 							<w2:column width="70" inputType="text" style="" id="pjtId" value="" displayMode="label"></w2:column>
 							<w2:column width="200" inputType="text" style="" id="pjtName" value="" displayMode="label"></w2:column>
 							<w2:column width="100" inputType="text" style="" id="pjtAsi" value="" displayMode="label"></w2:column>
-							<w2:column width="50" inputType="text" style="" id="pjtStatus" value="" displayMode="label"></w2:column>
+							<w2:column width="100" inputType="text" style="" id="pjtStatus" value="" displayMode="label" customFormatter="scwin.statusFmt"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="pjtDetail" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="createdAt" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="updatedAt" value="" displayMode="label"></w2:column>

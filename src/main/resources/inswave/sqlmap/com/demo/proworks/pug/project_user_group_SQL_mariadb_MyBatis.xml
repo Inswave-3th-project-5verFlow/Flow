@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper      
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"      
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	@subject : 프로젝트 유저 그룹 매핑 정보 관련 처리를 담당하는 Sql Mapper
+	@description : 프로젝트 유저 그룹 매핑 정보 관련 처리를 담당하는 Sql Mapper
+	@author : 김성민
+	@since : 2025/07/07
+	@modification
+	===========================================================
+	DATE AUTHOR DESC
+	===========================================================
+	2025/07/07 김성민 최초 생성
+-->
+<mapper namespace="com.demo.proworks.pug">
+	<insert id="insertPug" parameterType="com.demo.proworks.pug.vo.PugVo">
+<!-- 프로젝트 유저 그룹 매핑 정보를 등록한다. -->
+
+		INSERT INTO PROJECT_USER_GROUP /* QueryID : com.demo.proworks.pug.insertPug */
+		(
+		<if test="pjtId != null"> , PJT_ID  </if>
+		<if test="userId!= null"> , USER_ID </if>
+		<if test="grpId != null"> , GRP_ID  </if>
+		) VALUES (
+		<if test="pjtId != null"> , #{pjtId}  </if>
+		<if test="userId!= null"> , #{userId} </if>
+		<if test="grpId != null"> , #{grpId}  </if>
+		)
+</insert>
+
+	<update id="updatePug" parameterType="com.demo.proworks.pug.vo.PugVo">
+		<!-- 프로젝트 유저 그룹 매핑 정보를 갱신한다. -->
+
+		UPDATE PROJECT_USER_GROUP /* QueryID : com.demo.proworks.pug.updatePug */
+		SET
+		PUG_ID = #{pugId}
+		<if test="pjtId != null"> , PJT_ID = #{pjtId}  </if>
+		<if test="userId!= null"> , USER_ID = #{userId} </if>
+		<if test="grpId != null"> , GRP_ID = #{grpId}  </if>
+		WHERE PUG_ID = #{pugId}
+	</update>
+
+	<delete id="deletePug" parameterType="com.demo.proworks.pug.vo.PugVo">
+		<!-- 프로젝트 유저 그룹 매핑 정보를 삭제한다. -->
+
+		DELETE FROM PROJECT_USER_GROUP /* QueryID : com.demo.proworks.pug.deletePug */
+		WHERE
+		PUG_ID = #{pugId}
+	</delete>
+
+	<select id="selectPug" parameterType="com.demo.proworks.pug.vo.PugVo" resultType="com.demo.proworks.pug.vo.PugVo">
+		<!-- 프로젝트 유저 그룹 매핑 정보를 상세 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.pug.selectPug */
+		PUG_ID as pugId, PJT_ID as pjtId, USER_ID as userId, GRP_ID as grpId
+		FROM
+		PROJECT_USER_GROUP
+		WHERE
+		PUG_ID = #{pugId}
+	</select>
+
+	<select id="selectListPug" parameterType="com.demo.proworks.pug.vo.PugVo" resultType="com.demo.proworks.pug.vo.PugVo">
+		<!-- 프로젝트 유저 그룹 매핑 정보 목록을 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.pug.selectListPug */
+		PUG_ID AS pugId,
+		PJT_ID AS pjtId,
+		USER_ID AS userId,
+		NAME AS userName,
+		POSITION AS userPosition,
+		GRP_ID AS grpId,
+		GRP_NAME AS grpName
+		FROM (
+		SELECT
+		PUG.PUG_ID,
+		PUG.PJT_ID,
+		PUG.USER_ID,
+		PUG.GRP_ID,
+		U.NAME,
+		U.POSITION,
+		G.GRP_NAME,
+		CEIL((@ROWNUM := @ROWNUM + 1) / #{pageSize}) AS PAGE
+		FROM (SELECT @ROWNUM := 0) R,
+		PROJECT_USER_GROUP PUG
+		JOIN USERS U ON PUG.USER_ID = U.USER_ID
+		JOIN GROUPS G ON PUG.GRP_ID = G.GRP_ID
+		WHERE PUG.PJT_ID = #{pjtId}
+		<if test="scUserId != null and scUserId != ''">
+			AND U.USER_ID LIKE CONCAT('%', #{scUserId}, '%')
+		</if>
+		<if test="scUserName != null and scUserName != ''">
+			AND U.NAME LIKE CONCAT('%', #{scUserName}, '%')
+		</if>
+		<if test="scGrpName != null and scGrpName != ''">
+			AND G.GRP_NAME LIKE CONCAT('%', #{scGrpName}, '%')
+		</if>
+		<if test="scUserPosition != null and scUserPosition != ''">
+			AND U.POSITION LIKE CONCAT('%', #{scUserPosition}, '%')
+		</if>
+		ORDER BY PUG.PUG_ID DESC
+		) A
+		WHERE A.PAGE = #{pageIndex}
+	</select>
+
+	<select id="selectListCountPug" parameterType="com.demo.proworks.pug.vo.PugVo" resultType="long">
+<!-- 프로젝트 유저 그룹 매핑 정보 목록의 카운트를 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.pug.selectListCountPug */ 
+		COUNT(*) AS totcnt 
+		FROM PROJECT_USER_GROUP PUG 
+		JOIN USERS U ON PUG.USER_ID = U.USER_ID
+		JOIN GROUPS G ON PUG.GRP_ID = G.GRP_ID 
+		WHERE PUG.PJT_ID = #{pjtId}
+		<if test="scUserId != null and scUserId != ''">
+			AND PUG.USER_ID LIKE CONCAT('%', #{scUserId}, '%')
+		</if>
+		<if test="scUserName != null and scUserName != ''">
+			AND U.NAME LIKE CONCAT('%', #{scUserName}, '%')
+		</if>
+		<if test="scUserPosition != null and scUserPosition != ''">
+			AND U.POSITION LIKE CONCAT('%', #{scUserPosition}, '%')
+		</if>
+		<if test="scGrpName != null and scGrpName != ''">
+			AND G.GRP_NAME LIKE CONCAT('%', #{scGrpName}, '%')
+		</if>
+</select>
+
+	<select id="selectListGrp" parameterType="com.demo.proworks.pug.vo.PugVo" resultType="com.demo.proworks.pug.vo.PugVo">
+<!-- 메뉴 그룹 목록을 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.pug.selectListGrp */ 
+		grp_id AS grpId, 
+		grp_name AS grpName 
+		FROM groups;
+</select>
+</mapper>

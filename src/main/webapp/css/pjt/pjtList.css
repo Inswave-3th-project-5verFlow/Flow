@@ -1,1 +1,29 @@
 @charset "UTF-8";
+.status-tag {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+    text-align: center;
+    min-width: 50px;
+    border: 1px solid transparent;
+}
+
+.status-tag.진행중 {
+    background-color: #d0f0f8;
+    color: #0276b6;
+    border-color: #b2e4f4;
+}
+
+.status-tag.완료 {
+    background-color: #d4f1d7;
+    color: #237804;
+    border-color: #b7e4b8;
+}
+
+.status-tag.대기 {
+    background-color: #fff1b8;
+    color: #b68900;
+    border-color: #ffe58f;
+}
