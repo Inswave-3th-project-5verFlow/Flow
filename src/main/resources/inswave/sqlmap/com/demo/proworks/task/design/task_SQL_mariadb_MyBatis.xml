@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper      
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"      
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	@subject     : 설계 업무 정보 관련 처리를 담당하는 Sql Mapper
+	@description : 설계 업무 정보 관련 처리를 담당하는 Sql Mapper
+	@author      : 백승호
+	@since       : 2025/07/05
+	@modification
+	===========================================================
+	DATE              AUTHOR             DESC
+	===========================================================
+	2025/07/05              백승호             최초 생성
+ -->
+<mapper namespace="com.demo.proworks.task.design">
+    <insert id="insertDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo">
+   <!-- 설계 업무 정보를 등록한다. -->
+	INSERT INTO TASK /* QueryID : com.demo.proworks.task.design.insertDesign */
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+	    <if test="taskName != null"> TASK_NAME, </if>
+	    <if test="taskDes != null"> TASK_DES, </if>
+	    <if test="taskStatus != null"> TASK_STATUS, </if>
+	    <if test="isTest != null"> IS_TEST, </if>
+	    <if test="taskDepth != null"> TASK_DEPTH, </if>
+	    <if test="stgId != null"> STG_ID, </if>
+	    <if test="ptTaskId != null"> PT_TASK_ID, </if>
+	    <if test="taskSeq != null"> TASK_SEQ, </if>
+	    <!-- 날짜 필드는 빈 문자열도 제외 -->
+	    <if test="taskSt != null and taskSt != ''"> TASK_ST, </if>
+	    <if test="taskEt != null and taskEt != ''"> TASK_ET, </if>
+	    <if test="taskRst != null and taskRst != ''"> TASK_RST, </if>
+	    <if test="taskRet != null and taskRet != ''"> TASK_RET, </if>
+	    <if test="taskAsi != null"> TASK_ASI, </if>
+	    <if test="taskRate != null"> TASK_RATE, </if>
+	    <if test="pjtId != null"> PJT_ID, </if>
+	</trim>
+	VALUES
+	<trim prefix="(" suffix=")" suffixOverrides=",">
+	    <if test="taskName != null"> #{taskName}, </if>
+	    <if test="taskDes != null"> #{taskDes}, </if>
+	    <if test="taskStatus != null"> #{taskStatus}, </if>
+	    <if test="isTest != null"> #{isTest}, </if>
+	    <if test="taskDepth != null"> #{taskDepth}, </if>
+	    <if test="stgId != null"> #{stgId}, </if>
+	    <if test="ptTaskId != null"> #{ptTaskId}, </if>
+	    <if test="taskSeq != null"> #{taskSeq}, </if>
+	    <!-- 날짜 필드는 빈 문자열도 제외 -->
+	    <if test="taskSt != null and taskSt != ''"> #{taskSt}, </if>
+	    <if test="taskEt != null and taskEt != ''"> #{taskEt}, </if>
+	    <if test="taskRst != null and taskRst != ''"> #{taskRst}, </if>
+	    <if test="taskRet != null and taskRet != ''"> #{taskRet}, </if>
+	    <if test="taskAsi != null"> #{taskAsi}, </if>
+	    <if test="taskRate != null"> #{taskRate}, </if>
+	    <if test="pjtId != null"> #{pjtId}, </if>
+	</trim>
+</insert>
+	
+    <update id="updateDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo">
+    	<!-- 설계 업무 정보를 갱신한다. -->
+    	
+        UPDATE TASK    /* QueryID : com.demo.proworks.task.design.updateDesign */      
+      	  SET  
+                TASK_ID     = #{taskId}            	                       
+            <if test="taskName  != null"> , TASK_NAME   = #{taskName}   </if>
+            <if test="taskDes   != null"> , TASK_DES    = #{taskDes}    </if>
+            <if test="taskStatus!= null"> , TASK_STATUS = #{taskStatus} </if>
+            <if test="isTest    != null"> , IS_TEST     = #{isTest}     </if>
+            <if test="taskDepth != null"> , TASK_DEPTH  = #{taskDepth}  </if>
+            <if test="stgId     != null"> , STG_ID      = #{stgId}      </if>
+            <if test="ptTaskId != null"> , PT_TASK_ID  = #{ptTaskId}  </if>
+            <if test="taskSeq   != null"> , TASK_SEQ    = #{taskSeq}    </if>
+            <if test="taskSt    != null"> , TASK_ST     = #{taskSt}     </if>
+            <if test="taskEt    != null"> , TASK_ET     = #{taskEt}     </if>
+            <if test="taskRst   != null"> , TASK_RST    = #{taskRst}    </if>
+            <if test="taskRet   != null"> , TASK_RET    = #{taskRet}    </if>
+            <if test="taskAsi   != null"> , TASK_ASI    = #{taskAsi}    </if>
+            <if test="taskRate  != null"> , TASK_RATE   = #{taskRate}   </if>
+            <if test="pjtId     != null"> , PJT_ID      = #{pjtId}      </if>                 
+        WHERE   
+                TASK_ID     = #{taskId}    
+    </update>
+	
+    <delete id="deleteDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo">
+    	<!-- 설계 업무 정보를 삭제한다. -->
+    	
+        DELETE FROM TASK   /* QueryID : com.demo.proworks.task.design.deleteDesign */ 
+        WHERE   
+                TASK_ID     = #{taskId}            
+    </delete>
+	
+    <select id="selectDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
+    	<!-- 설계 업무 정보를 상세 조회한다. -->	
+        SELECT /* QueryID : com.demo.proworks.task.design.selectDesign */
+		    t.TASK_ID as taskId, 
+		    t.TASK_NAME as taskName, 
+		    t.TASK_DES as taskDes, 
+		    t.TASK_STATUS as taskStatus, 
+		    t.IS_TEST as isTest, 
+		    t.TASK_DEPTH as taskDepth, 
+		    t.STG_ID as stgId, 
+		    t.PT_TASK_ID as ptTaskId, 
+		    t.TASK_SEQ as taskSeq, 
+		    t.TASK_ST as taskSt, 
+		    t.TASK_ET as taskEt, 
+		    t.TASK_RST as taskRst, 
+		    t.TASK_RET as taskRet, 
+		    t.TASK_ASI as taskAsi, 
+		    t.TASK_RATE as taskRate, 
+		    t.PJT_ID as pjtId,
+	    	pt.TASK_NAME as ptTaskName,  -- 상위 업무명 추가
+	    	s.STG_NAME as stgName -- 단계명
+		FROM TASK t
+		LEFT JOIN TASK pt ON t.PT_TASK_ID = pt.TASK_ID  -- 상위 업무와 조인
+		LEFT JOIN STG s ON t.STG_ID = s.STG_ID -- 단계와 조인
+		WHERE t.TASK_ID = #{taskId}			
+    </select>
+	
+    <select id="selectListDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
+		<!-- 설계 업무 정보 목록을 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.task.design.selectListDesign */
+		taskId, taskName, taskDes, taskStatus, isTest, taskDepth, stgId, ptTaskId, taskSeq, taskSt, taskEt, taskRst, taskRet, taskAsi, taskRate, pjtId, ptTaskName, stgName
+		FROM (
+		    SELECT S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
+		    FROM (
+		        SELECT
+		            t.TASK_ID as taskId, 
+		            t.TASK_NAME as taskName, 
+		            t.TASK_DES as taskDes, 
+		            t.TASK_STATUS as taskStatus, 
+		            t.IS_TEST as isTest, 
+		            t.TASK_DEPTH as taskDepth, 
+		            t.STG_ID as stgId, 
+		            t.PT_TASK_ID as ptTaskId, 
+		            t.TASK_SEQ as taskSeq, 
+		            t.TASK_ST as taskSt, 
+		            t.TASK_ET as taskEt, 
+		            t.TASK_RST as taskRst, 
+		            t.TASK_RET as taskRet, 
+		            t.TASK_ASI as taskAsi, 
+		            t.TASK_RATE as taskRate, 
+		            t.PJT_ID as pjtId,
+		            pt.TASK_NAME as ptTaskName,
+		            s.STG_NAME as stgName
+		        FROM TASK t
+		        LEFT JOIN TASK pt ON t.PT_TASK_ID = pt.TASK_ID
+		        LEFT JOIN STG s ON t.STG_ID = s.STG_ID
+		        WHERE 1=1
+		        <if test="scTaskName != null and scTaskName != ''">
+		            AND t.TASK_NAME like '%${scTaskName}%'
+		        </if>
+		        <if test="scTaskStatus != null and scTaskStatus != ''">
+		            AND t.TASK_STATUS like '%${scTaskStatus}%'
+		        </if>
+		        <if test="scIsTest != null and scIsTest != ''">
+		            AND t.IS_TEST like '%${scIsTest}%'
+		        </if>
+		        <if test="scStgId != null and scStgId != ''">
+		            AND t.STG_ID like '%${scStgId}%'
+		        </if>
+		    ) S, (SELECT @ROWNUM := 0) TMP
+		) A
+		WHERE PAGE = #{pageIndex}
+</select>
+	
+    <select id="selectListCountDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="long">
+    <!-- 설계 업무 정보 목록의 카운트를 조회한다. -->
+    
+         SELECT    /* QueryID : com.demo.proworks.task.design.selectListCountDesign */
+             COUNT(*) totcnt  		                  
+         FROM TASK
+         WHERE  1=1    		
+            <if test="scTaskName != null and scTaskName != ''">
+                 AND TASK_NAME like '%${scTaskName}%'
+            </if>
+            <if test="scTaskStatus != null and scTaskStatus != ''">
+                 AND TASK_STATUS like '%${scTaskStatus}%'
+            </if>
+            <if test="scIsTest != null and scIsTest != ''">
+                 AND IS_TEST like '%${scIsTest}%'
+            </if>
+            <if test="scStgId != null and scStgId != ''">
+                 AND STG_ID like '%${scStgId}%'
+            </if>
+    </select>
+    
+    
+<select id="selectTreeListDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
+<!-- 트리 구조에 맞게 설계 업무 목록을 조회한다. -->
+WITH RECURSIVE task_tree AS (
+    -- 1단계: 최상위 업무들
+    SELECT
+        task_id,
+        task_name,
+        pt_task_id,
+        task_depth,
+        task_seq,
+        stg_id,
+        pjt_id,
+        CAST(LPAD(task_seq, 3, '0') AS VARCHAR(100)) as sort_path
+    FROM task t
+    WHERE pt_task_id = 0 and pjt_id = #{pjtId}
+
+    UNION ALL
+
+    -- 2-3단계: 하위 업무들 재귀 조회
+    SELECT
+        t.task_id,
+        t.task_name,
+        t.pt_task_id,
+        t.task_depth,
+        t.task_seq,
+        t.stg_id,
+        t.pjt_id,
+        CAST(CONCAT(tt.sort_path, '-', LPAD(t.task_seq, 3, '0')) AS VARCHAR(100)) as sort_path
+    FROM task t
+    INNER JOIN task_tree tt ON t.pt_task_id = tt.task_id
+    WHERE t.task_depth &lt;= 3
+)
+SELECT
+    task_id as taskId,
+    task_name as taskName,
+    pt_task_id as ptTaskId,
+    task_depth as taskDepth,
+    task_seq as taskSeq,
+    stg_id as stgId,
+    pjt_id as pjtId
+FROM task_tree
+WHERE pjt_id = #{pjtId}
+ORDER BY stg_id, sort_path
+</select>
+			
+
+</mapper>

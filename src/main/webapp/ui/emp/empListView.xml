@@ -134,6 +134,7 @@
 	 * @example
 	 */	
 	scwin.onpageload = function(e) {
+
 		scwin.SERVER_TIME = $c.date.getServerDateTime("yyyy-MM-dd hh:mm:ss");
 		spn_serverTime.setValue(scwin.SERVER_TIME);
 		
