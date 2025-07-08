@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper      
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"      
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	@subject     : 이슈리스크관리 관련 처리를 담당하는 Sql Mapper
+	@description : 이슈리스크관리 관련 처리를 담당하는 Sql Mapper
+	@author      : 우민지
+	@since       : 2025/07/07
+	@modification
+	===========================================================
+	DATE              AUTHOR             DESC
+	===========================================================
+	2025/07/07              우민지             최초 생성
+ -->
+<mapper namespace="com.demo.proworks.iss">
+    <insert id="insertIss" parameterType="com.demo.proworks.iss.vo.IssVo">
+    	<!-- 이슈리스크관리를 등록한다. -->	
+    		
+        INSERT INTO ISSUES_RISKS   /* QueryID : com.demo.proworks.iss.insertIss */
+        ( 
+            ID
+            <if test="pjtId       != null"> , PJT_ID        </if>
+            <if test="name         != null"> , NAME          </if>
+            <if test="userId      != null"> , USER_ID       </if>
+            <if test="dueDate     != null"> , DUE_DATE      </if>
+            <if test="status       != null"> , STATUS        </if>
+            <if test="priority     != null"> , PRIORITY      </if>
+            <if test="type         != null"> , TYPE          </if>
+            <if test="description  != null"> , DESCRIPTION   </if>
+            <if test="createdAt   != null"> , CREATED_AT    </if>
+            <if test="updatedAt   != null"> , UPDATED_AT    </if>
+            <if test="resolvedDate!= null"> , RESOLVED_DATE </if>
+            <if test="responsePlan!= null"> , RESPONSE_PLAN </if>
+            <if test="isDeleted   != null"> , IS_DELETED    </if>
+        )
+        VALUES  
+        ( 
+            #{id}
+            <if test="pjtId       != null"> , #{pjtId}        </if>
+            <if test="name         != null"> , #{name}          </if>
+            <if test="userId      != null"> , #{userId}       </if>
+            <if test="dueDate     != null"> , #{dueDate}      </if>
+            <if test="status       != null"> , #{status}        </if>
+            <if test="priority     != null"> , #{priority}      </if>
+            <if test="type         != null"> , #{type}          </if>
+            <if test="description  != null"> , #{description}   </if>
+            <if test="createdAt   != null"> , #{createdAt}    </if>
+            <if test="updatedAt   != null"> , #{updatedAt}    </if>
+            <if test="resolvedDate!= null"> , #{resolvedDate} </if>
+            <if test="responsePlan!= null"> , #{responsePlan} </if>
+            <if test="isDeleted   != null"> , #{isDeleted}    </if> 
+        )          
+    </insert>	
+	
+    <update id="updateIss" parameterType="com.demo.proworks.iss.vo.IssVo">
+    	<!-- 이슈리스크관리를 갱신한다. -->
+    	
+        UPDATE ISSUES_RISKS    /* QueryID : com.demo.proworks.iss.updateIss */      
+      	  SET  
+                ID            = #{id}                   	                       
+            <if test="pjtId       != null"> , PJT_ID        = #{pjtId}        </if>
+            <if test="name         != null"> , NAME          = #{name}          </if>
+            <if test="userId      != null"> , USER_ID       = #{userId}       </if>
+            <if test="dueDate     != null"> , DUE_DATE      = #{dueDate}      </if>
+            <if test="status       != null"> , STATUS        = #{status}        </if>
+            <if test="priority     != null"> , PRIORITY      = #{priority}      </if>
+            <if test="type         != null"> , TYPE          = #{type}          </if>
+            <if test="description  != null"> , DESCRIPTION   = #{description}   </if>
+            <if test="createdAt   != null"> , CREATED_AT    = #{createdAt}    </if>
+            <if test="updatedAt   != null"> , UPDATED_AT    = #{updatedAt}    </if>
+            <if test="resolvedDate!= null"> , RESOLVED_DATE = #{resolvedDate} </if>
+            <if test="responsePlan!= null"> , RESPONSE_PLAN = #{responsePlan} </if>
+            <if test="isDeleted   != null"> , IS_DELETED    = #{isDeleted}    </if>                 
+        WHERE   
+                ID            = #{id}           
+    </update>
+	
+    <delete id="deleteIss" parameterType="com.demo.proworks.iss.vo.IssVo">
+    	<!-- 이슈리스크관리를 삭제한다. -->
+    	
+        DELETE FROM ISSUES_RISKS   /* QueryID : com.demo.proworks.iss.deleteIss */ 
+        WHERE   
+                ID            = #{id}                   
+    </delete>
+	
+    <select id="selectIss" parameterType="com.demo.proworks.iss.vo.IssVo" resultType="com.demo.proworks.iss.vo.IssVo">
+    	<!-- 이슈리스크관리를 상세 조회한다. -->	
+        SELECT     /* QueryID : com.demo.proworks.iss.selectIss */
+            PJT_ID as pjtId, ID as id, NAME as name, USER_ID as userId, DUE_DATE as dueDate, STATUS as status, PRIORITY as priority, TYPE as type, DESCRIPTION as description, CREATED_AT as createdAt, UPDATED_AT as updatedAt, RESOLVED_DATE as resolvedDate, RESPONSE_PLAN as responsePlan, IS_DELETED as isDeleted
+        FROM ISSUES_RISKS 
+        WHERE 
+                ID            = #{id}           			
+    </select>
+	
+    <select id="selectListIss" parameterType="com.demo.proworks.iss.vo.IssVo" resultType="com.demo.proworks.iss.vo.IssVo">
+    	<!-- 이슈리스크관리 목록을 조회한다. -->
+           SELECT    /* QueryID : com.demo.proworks.iss.selectListIss */
+               PJT_ID as pjtId, ID as id, NAME as name, USER_ID as userId, DUE_DATE as dueDate, STATUS as status, PRIORITY as priority, TYPE as type, DESCRIPTION as description, CREATED_AT as createdAt, UPDATED_AT as updatedAt, RESOLVED_DATE as resolvedDate, RESPONSE_PLAN as responsePlan, IS_DELETED as isDeleted		       
+           FROM (
+               SELECT  S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
+               FROM (				
+                   SELECT 
+                       *  		                  
+                   FROM ISSUES_RISKS
+                   WHERE  1=1    		
+	     																														
+               ) S, (SELECT @ROWNUM := 0) TMP
+           ) A
+            WHERE PAGE = #{pageIndex}
+    </select>
+	
+    <select id="selectListCountIss" parameterType="com.demo.proworks.iss.vo.IssVo" resultType="long">
+    <!-- 이슈리스크관리 목록의 카운트를 조회한다. -->
+    
+         SELECT    /* QueryID : com.demo.proworks.iss.selectListCountIss */
+             COUNT(*) totcnt  		                  
+         FROM ISSUES_RISKS
+         WHERE  1=1    		
+
+    </select>
+
+</mapper>

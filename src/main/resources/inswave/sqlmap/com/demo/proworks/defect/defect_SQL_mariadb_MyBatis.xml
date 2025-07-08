@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper      
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"      
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	@subject     : 테스트결함관리 관련 처리를 담당하는 Sql Mapper
+	@description : 테스트결함관리 관련 처리를 담당하는 Sql Mapper
+	@author      : 우민지
+	@since       : 2025/07/07
+	@modification
+	===========================================================
+	DATE              AUTHOR             DESC
+	===========================================================
+	2025/07/07              우민지             최초 생성
+ -->
+<mapper namespace="com.demo.proworks.defect">
+    <insert id="insertDef" parameterType="com.demo.proworks.defect.vo.DefVo">
+    	<!-- 테스트결함관리를 등록한다. -->	
+    		
+        INSERT INTO DEFECT   /* QueryID : com.demo.proworks.defect.insertDef */
+        ( 
+            ID
+            <if test="testId     != null"> , TEST_ID      </if>
+            <if test="name        != null"> , NAME         </if>
+            <if test="description != null"> , DESCRIPTION  </if>
+            <if test="priority    != null"> , PRIORITY     </if>
+            <if test="status      != null"> , STATUS       </if>
+            <if test="createdAt  != null"> , CREATED_AT   </if>
+            <if test="assignee    != null"> , ASSIGNEE     </if>
+            <if test="fixDueDate!= null"> , FIX_DUE_DATE </if>
+            <if test="fixedDate  != null"> , FIXED_DATE   </if>
+            <if test="remarks     != null"> , REMARKS      </if>
+            <if test="isDeleted  != null"> , IS_DELETED   </if>
+        )
+        VALUES  
+        ( 
+            #{id}
+            <if test="testId     != null"> , #{testId}      </if>
+            <if test="name        != null"> , #{name}         </if>
+            <if test="description != null"> , #{description}  </if>
+            <if test="priority    != null"> , #{priority}     </if>
+            <if test="status      != null"> , #{status}       </if>
+            <if test="createdAt  != null"> , #{createdAt}   </if>
+            <if test="assignee    != null"> , #{assignee}     </if>
+            <if test="fixDueDate!= null"> , #{fixDueDate} </if>
+            <if test="fixedDate  != null"> , #{fixedDate}   </if>
+            <if test="remarks     != null"> , #{remarks}      </if>
+            <if test="isDeleted  != null"> , #{isDeleted}   </if> 
+        )          
+    </insert>	
+	
+    <update id="updateDef" parameterType="com.demo.proworks.defect.vo.DefVo">
+    	<!-- 테스트결함관리를 갱신한다. -->
+    	
+        UPDATE DEFECT    /* QueryID : com.demo.proworks.defect.updateDef */      
+      	  SET  
+                ID           = #{id}                  	                       
+            <if test="testId     != null"> , TEST_ID      = #{testId}      </if>
+            <if test="name        != null"> , NAME         = #{name}         </if>
+            <if test="description != null"> , DESCRIPTION  = #{description}  </if>
+            <if test="priority    != null"> , PRIORITY     = #{priority}     </if>
+            <if test="status      != null"> , STATUS       = #{status}       </if>
+            <if test="createdAt  != null"> , CREATED_AT   = #{createdAt}   </if>
+            <if test="assignee    != null"> , ASSIGNEE     = #{assignee}     </if>
+            <if test="fixDueDate!= null"> , FIX_DUE_DATE = #{fixDueDate} </if>
+            <if test="fixedDate  != null"> , FIXED_DATE   = #{fixedDate}   </if>
+            <if test="remarks     != null"> , REMARKS      = #{remarks}      </if>
+            <if test="isDeleted  != null"> , IS_DELETED   = #{isDeleted}   </if>                 
+        WHERE   
+                ID           = #{id}          
+    </update>
+	
+    <delete id="deleteDef" parameterType="com.demo.proworks.defect.vo.DefVo">
+    	<!-- 테스트결함관리를 삭제한다. -->
+    	
+        DELETE FROM DEFECT   /* QueryID : com.demo.proworks.defect.deleteDef */ 
+        WHERE   
+                ID           = #{id}                  
+    </delete>
+	
+    <select id="selectDef" parameterType="com.demo.proworks.defect.vo.DefVo" resultType="com.demo.proworks.defect.vo.DefVo">
+    	<!-- 테스트결함관리를 상세 조회한다. -->	
+         SELECT     /* QueryID : com.demo.proworks.defect.selectDef */
+        	D.ID as id, 
+	        D.TEST_ID as testId, 
+	        T.NAME as testName,  /* 테스트 이름 추가 */
+	        D.NAME as name, 
+	        D.DESCRIPTION as description, 
+	        D.PRIORITY as priority, 
+	        D.STATUS as status, 
+	        D.CREATED_AT as createdAt, 
+	        D.ASSIGNEE as assignee, 
+	        D.FIX_DUE_DATE as fixDueDate, 
+	        D.FIXED_DATE as fixedDate, 
+	        D.REMARKS as remarks, 
+	        D.IS_DELETED as isDeleted
+	    FROM DEFECT D
+	    LEFT JOIN TEST T ON D.TEST_ID = T.ID  /* 테스트 테이블과 조인 */
+	    WHERE 
+	        D.ID = #{id}   
+    </select>
+	
+    <select id="selectListDef" parameterType="com.demo.proworks.defect.vo.DefVo" resultType="com.demo.proworks.defect.vo.DefVo">
+    	<!-- 테스트결함관리 목록을 조회한다. -->
+           SELECT /* QueryID : com.demo.proworks.test.selectListTest */
+				ID as id,
+				TASK_ID as taskId,
+				TASK_NAME as taskName,
+				NAME as name,
+				CATEGORY as category,
+				SCENARIO as scenario,
+				INPUT_DATA as inputData,
+				EXPECTED_RESULT as expectedResult,
+				ACTUAL_RESULT as actualResult,
+				TEST_RESULT as testResult,
+				ASSIGNEE as assignee,
+				USER_NAME as userName, -- 추가된 부분
+				EXECUTION_DATE as executionDate,
+				DURATION as duration,
+				IS_DELETED as isDeleted,
+				CREATED_AT as createdAt,
+				UPDATED_AT as updatedAt
+				FROM (
+				    SELECT S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
+				    FROM (
+				        SELECT
+				            test.ID,
+				            test.TASK_ID,
+				            test.NAME,
+				            test.CATEGORY,
+				            test.SCENARIO,
+				            test.INPUT_DATA,
+				            test.EXPECTED_RESULT,
+				            test.ACTUAL_RESULT,
+				            test.TEST_RESULT,
+				            test.ASSIGNEE,
+				            test.EXECUTION_DATE,
+				            test.DURATION,
+				            test.IS_DELETED,
+				            test.CREATED_AT,
+				            test.UPDATED_AT,
+				            task.TASK_NAME as TASK_NAME,
+				            user.NAME as USER_NAME -- 추가된 부분
+				        FROM TEST test
+				        LEFT JOIN TASK task ON test.TASK_ID = task.ID
+				        LEFT JOIN USERS user ON test.ASSIGNEE = user.ID -- 추가된 조인
+				        WHERE 1=1
+				        -- 필요한 조건 추가 (예: AND test.IS_DELETED = 0)
+				    ) S, (SELECT @ROWNUM := 0) TMP
+				) A
+				WHERE PAGE = #{pageIndex}
+    </select>
+	
+    <select id="selectListCountDef" parameterType="com.demo.proworks.defect.vo.DefVo" resultType="long">
+    <!-- 테스트결함관리 목록의 카운트를 조회한다. -->
+    
+         SELECT    /* QueryID : com.demo.proworks.defect.selectListCountDef */
+             COUNT(*) totcnt  		                  
+         FROM DEFECT
+         WHERE  1=1    		
+
+    </select>
+
+</mapper>
