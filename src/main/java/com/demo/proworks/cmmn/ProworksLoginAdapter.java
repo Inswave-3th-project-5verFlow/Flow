@@ -4,15 +4,16 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+//import com.demo.proworks.emp.service.EmpService;
+//import com.demo.proworks.emp.vo.EmpVo;
+import com.demo.proworks.users.service.UsersService;
+import com.demo.proworks.users.vo.UsersVo;
 import com.inswave.elfw.exception.ElException;
 import com.inswave.elfw.log.AppLog;
 import com.inswave.elfw.login.LoginAdapter;
 import com.inswave.elfw.login.LoginException;
 import com.inswave.elfw.login.LoginInfo;
 import com.inswave.elfw.util.ElBeanUtils;
-
-import com.demo.proworks.emp.service.EmpService;
-import com.demo.proworks.emp.vo.EmpVo;
 
 /**
  * @subject		: ProworksLoginAdapter.java 
@@ -48,36 +49,36 @@ public class ProworksLoginAdapter extends LoginAdapter {
 	 */
 	@Override
 	public LoginInfo login(HttpServletRequest request, String id, Object... params) throws LoginException {
-
+	
 		// 로그인 체크를 수행  (샘플 예제)
-//		try{
-//			String pw = (String)params[0];
-//			EmpService empService = (EmpService)ElBeanUtils.getBean("empServiceImpl");
-//			EmpVo empVo = new EmpVo();
-//
-//			empVo.setEmpno(Integer.parseInt(id) );
-//			EmpVo resEmpVo = empService.selectEmp(empVo);
-//
-//			if( resEmpVo == null ) {
-//				throw new LoginException("EL.ERROR.LOGIN.0001");
-//			}
-//			
-//			String resPw = String.valueOf(resEmpVo.getMgr());
-//			if(pw == null || !pw.equals(resPw)){
-//				throw new LoginException("EL.ERROR.LOGIN.0002");
-//			}
-//		}catch(NumberFormatException e){
-//			AppLog.error("login Error1",e);
-//			throw new LoginException("EL.ERROR.LOGIN.0001");
-//		}catch(ElException e){
-//			AppLog.error("login Error2",e);
-//			throw e;		
-//		}catch(Exception e){
-//			AppLog.error("login Error3",e);
-//			throw new LoginException("EL.ERROR.LOGIN.0003");
-//		}
+		try{
+		    String pw = (String)params[0];
+		    UsersService usersService = (UsersService)ElBeanUtils.getBean("usersServiceImpl");
+		    UsersVo usersVo = new UsersVo();
+		    usersVo.setAccountId(id);
+		    usersVo.setAccountPwd(pw);
+		    
+		    UsersVo resUsersVo = usersService.selectUsers(usersVo);
+		    if(resUsersVo == null){
+		        throw new LoginException("EL.ERROR.LOGIN.0001");
+		    }
+		    
+		    String resPw = String.valueOf(resUsersVo.getAccountPwd());
+		    if(pw == null || !pw.equals(resPw)){
+		        throw new LoginException("EL.ERROR.LOGIN.0002");
+		    }
+		}catch(NumberFormatException e){
+		    AppLog.error("login Error1", e);
+		    throw new LoginException("EL.ERROR.LOGIN.0001");
+		}catch(ElException e){
+		    AppLog.error("login Error2", e);
+		    throw e;		
+		}catch(Exception e){
+		    AppLog.error("login Error3", e);
+		    throw new LoginException("EL.ERROR.LOGIN.0003");
+		}
 
-		
+
 		// 3. 로그인 성공 설정 
 		LoginInfo info = new LoginInfo();		
 		info.setSuc(true);

@@ -2,24 +2,24 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ev="http://www.w3.org/2001/xml-events"
     xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
-    <head>
+    <head meta_screenName="로그인 화면">
         <w2:type>COMPONENT</w2:type>
         <w2:buildDate/>
         <w2:MSA/>
         <xf:model>
         	<w2:dataCollection baseNode="map">
-        		<w2:dataMap baseNode="map" id="LoginVo">
+        		<w2:dataMap baseNode="map" id="dma_login">
         			<w2:keyInfo>
-        				<w2:key id="id" name="id" dataType="text"></w2:key>
-        				<w2:key id="pw" name="pw" dataType="text"></w2:key>
+        				<w2:key dataType="text" name="아이디" id="id"></w2:key>
+        				<w2:key dataType="text" name="패스워드" id="pw"></w2:key>
         			</w2:keyInfo>
         		</w2:dataMap>
         	</w2:dataCollection>
         	<w2:workflowCollection />
         	<xf:submission id="sbm_login" action="/InsWebApp/CmmLogin.pwkjson" method="post" mediatype="application/json"
-        		ref='data:json,{"id":"LoginVo","key":"loginVo"}' target="" encoding="UTF-8" instance="" replace="" errorHandler=""
-        		customHandler="" mode="asynchronous" processMsg="" ev:submit="" ev:submitdone="scwin.sbm_login_submitdone" ev:submiterror=""
-        		abortTrigger="">
+        		ref='data:json,{"id":"dma_login","key":"elData"}' target="" encoding="UTF-8" instance="" replace="" errorHandler=""
+        		customHandler="" mode="asynchronous" processMsg="로그인 처리중..." ev:submit="" ev:submitdone="scwin.sbm_login_submitdone"
+        		ev:submiterror="" abortTrigger="">
         	</xf:submission>
         </xf:model>
         <w2:layoutInfo/>
@@ -29,22 +29,46 @@ scwin.onpageload = function() {
 	
 };
 
-scwin.btn_login_onclick = function (e) {
-    $p.executeSubmission("sbm_login");
+// 아이디 입력
+scwin.id_input_onclick = function (e) {
+    id_input.setValue("");
 };
 
-scwin.sbm_login_submitdone = function (e) {
-     // error 수신시
-    var elHeader  = e.responseJSON.elHeader;
-    if(elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
-        return false;
-    }else{
-        $p.url("/InsWebApp/html/emp/empList.html");
-        // $c.win.moveUrl("/InsWebApp/html/emp/empList.html");
-        $c.win.alert("로그인에 성공했습니다.");
-    }
+// 패스워드 입력
+scwin.pw_input_onclick = function (e) {
+    pw_input.setValue("");
 };
+
+// 로그인 버튼 클릭시 로그인 처리
+scwin.btn_login_onclick = function (e) {
+    
+    $c.sbm.execute(sbm_login);
+};
+
+// 로그인 완료 처리 후
+scwin.sbm_login_submitdone = function (e) {
+    
+    var elHeader = e.responseJSON.elHeader; // 응답 전문 elHeader
+    var userHeader = e.responseJSON.userHeader;
+
+    if(userHeader != "" && userHeader != null && userHeader != "undefined") {
+        if(elHeader.resSuc == true) {
+           WebSquare.cookie.setCookie("usrId", userHeader.usrId);
+           WebSquare.cookie.setCookie("name", userHeader.name); 
+           WebSquare.cookie.setCookie("position", userHeader.position);
+           WebSquare.cookie.setCookie("pjtId", userHeader.pjtId);
+           WebSquare.cookie.setCookie("pjtName", userHeader.pjtName); 
+           WebSquare.cookie.setCookie("grpId", userHeader.grpId);
+
+           location.href = "/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/header.xml";
+        } else {
+            //exceptionAlert("로그인", elHeader.resCode, elHeader.resMsg);
+            alert(elHeader.resMsg);
+        }
+    }
+
+};
+
 ]]></script>
     </head>
     <body ev:onpageload="scwin.onpageload">
@@ -52,45 +76,30 @@ scwin.sbm_login_submitdone = function (e) {
     		style="">
     		<xf:group class="titbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_03 서브타이틀(h4)"
     			style="">
-    			<w2:textbox class="" id="" label="EL Demo 로그인" style="" tagname="h4"></w2:textbox>
+    			<w2:textbox class="" id="" label="로그인 화면" style="" tagname="h4"></w2:textbox>
     		</xf:group>
-    		<xf:group class="tblbox" id="" meta_snippetCategory="05_입출력테이블" meta_snippetKeyComponent="true" meta_snippetName="5_02 2단테이블"
+    		<w2:span id="" label="ID" meta_snippetCategory="10_입력폼" meta_snippetKeyComponent="true" meta_snippetName="10_16 출력텍스트"
     			style="">
-    			<xf:group adaptive="layout" adaptiveThreshold="768" class="w2tb tbl" id="" style="" tagname="table">
-    				<w2:attributes>
-    					<w2:summary></w2:summary>
-    				</w2:attributes>
-    				<xf:group tagname="colgroup">
-    					<xf:group style="width:150px;" tagname="col"></xf:group>
-    					<xf:group style="" tagname="col"></xf:group>
-    					<xf:group style="width:150px;" tagname="col"></xf:group>
-    					<xf:group style="" tagname="col"></xf:group>
-    				</xf:group>
-    				<xf:group style="background-color:#FFFFFF;" tagname="tr">
-    					<xf:group class="w2tb_th" style="" tagname="th">
-    						<w2:textbox class="" id="" label="아이디" ref="" style="" userData2=""></w2:textbox>
-    					</xf:group>
-    					<xf:group class="w2tb_td" style="" tagname="td">
-    						<xf:input class="" id="id" meta_snippetCategory="10_입력폼" meta_snippetKeyComponent="true"
-    							meta_snippetName="10_01 InputBox" placeholder="" style="width:150px;" ref="data:LoginVo.id">
-    						</xf:input>
-    					</xf:group>
-    					<xf:group class="w2tb_th " tagname="th">
-    						<w2:attributes></w2:attributes>
-    						<w2:textbox class="" id="" label="패스워드" ref="" style="" userData2=""></w2:textbox>
-    					</xf:group>
-    					<xf:group class="w2tb_td" tagname="td">
-    						<w2:attributes></w2:attributes>
-    						<xf:input class="" id="pw" meta_snippetCategory="10_입력폼" meta_snippetKeyComponent="true"
-    							meta_snippetName="10_01 InputBox" placeholder="" style="width:150px;" ref="data:LoginVo.pw">
-    						</xf:input>
-    					</xf:group>
-    					<xf:trigger class="btn_cm" id="btn_login" meta_snippetCategory="08_버튼" meta_snippetKeyComponent="true"
-    						meta_snippetName="8_01 기본버튼" style="" type="button" ev:onclick="scwin.btn_login_onclick">
-    						<xf:label><![CDATA[로그인]]></xf:label>
-    					</xf:trigger>
-    				</xf:group>
+    		</w2:span>
+    		<xf:input class="" id="id_input" meta_snippetCategory="10_입력폼" meta_snippetKeyComponent="true" meta_snippetName="10_01 InputBox"
+    			placeholder="" style="margin-left: 10px; margin-right: 50px;" ev:onclick="scwin.id_input_onclick" initValue="아이디를 입력하세요" ref="data:dma_login.id">
+    		</xf:input>
+    		<w2:span id="" label="PASSWORD" meta_snippetCategory="10_입력폼" meta_snippetKeyComponent="true" meta_snippetName="10_16 출력텍스트"
+    			style="margin-right: 10px;">
+    		</w2:span>
+    		<xf:input class="" id="pw_input" meta_snippetCategory="10_입력폼" meta_snippetKeyComponent="true"
+    			meta_snippetName="10_01 InputBox" placeholder="" style="margin-left: 10px; margin-right: 50px;" ev:onclick="scwin.pw_input_onclick" initValue="패스워드를 입력하세요" ref="data:dma_login.pw">
+    		</xf:input>
+    		<xf:group class="btnbox" id="" meta_snippetCategory="08_버튼" meta_snippetKeyComponent="true" meta_snippetName="8_04 전체제어버튼"
+    			style="">
+    			<xf:group class="rt" id="" style="">
+    				<xf:trigger class="btn_cm pt" id="btn_login" style="" type="button" ev:onclick="scwin.btn_login_onclick">
+    					<xf:label><![CDATA[로그인]]></xf:label>
+    				</xf:trigger>
+    				<w2:textbox class="bar_btndiv" id="" label="" style=""></w2:textbox>
+
     			</xf:group>
+    			
     		</xf:group>
     	</xf:group>
     </body>
