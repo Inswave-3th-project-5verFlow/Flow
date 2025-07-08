@@ -126,3 +126,16 @@ test-results/
 coverage/
 
 # 개발자 개인 파일들
+
+# ======================
+# InWebApp 프로젝트 추가 제외 파일들
+# ======================
+
+# InWebApp 개발 환경 폴더들
+WebSquare Configure/
+app_resource/
+install/
+matrix_mobile_home/
+
+# 웹팩 빌드 결과물
+src/main/webapp/_wpack_/
