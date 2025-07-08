@@ -35,18 +35,16 @@
 	</insert>
 
 	<update id="updatePjt" parameterType="com.demo.proworks.pjt.vo.PjtVo">
-		<!-- 프로젝트 ID로 프로젝트 정보를 갱신한다. -->
-		UPDATE PJT /* QueryID : com.demo.proworks.pjt.updatePjt */ SET PJT_ID = #{pjtId}
-		<if test="pjtName  != null"> , PJT_NAME = #{pjtName}   </if>
-		<if test="pjtAsi   != null"> , PJT_ASI = #{pjtAsi}    </if>
+<!-- 프로젝트 ID로 프로젝트 정보를 갱신한다. -->
+		UPDATE PJT /* QueryID : com.demo.proworks.pjt.updatePjt */ SET
+		<if test="pjtName  != null"> PJT_NAME = #{pjtName}   </if>
 		<if test="pjtStatus!= null"> , PJT_STATUS = #{pjtStatus} </if>
 		<if test="pjtDetail!= null"> , PJT_DETAIL = #{pjtDetail} </if>
-		<if test="createdAt!= null"> , CREATED_AT = #{createdAt} </if>
-		<if test="updatedAt!= null"> , UPDATED_AT = #{updatedAt} </if>
-		<if test="pjtSt    != null"> , PJT_ST = #{pjtSt}     </if>
-		<if test="pjtEt    != null"> , PJT_ET = #{pjtEt}     </if>
+		, UPDATED_AT = NOW()
+		<if test="pjtSt    != null and pjtSt != ''"> , PJT_ST = #{pjtSt}     </if>
+		<if test="pjtEt    != null and pjtEt != ''"> , PJT_ET = #{pjtEt}     </if>
 		WHERE PJT_ID = #{pjtId}
-	</update>
+</update>
 
 	<delete id="deletePjt" parameterType="com.demo.proworks.pjt.vo.PjtVo">
 		<!-- 프로젝트 ID로 프로젝트 정보를 삭제한다. -->
