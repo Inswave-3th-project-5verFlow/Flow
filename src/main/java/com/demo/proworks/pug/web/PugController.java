@@ -11,7 +11,8 @@ import com.demo.proworks.cmmn.ProworksUserHeader;
 import com.demo.proworks.pug.service.PugService;
 import com.demo.proworks.pug.vo.PugVo;
 import com.demo.proworks.pug.vo.PugListVo;
-
+import com.demo.proworks.pug.vo.PugUserListVo;
+import com.demo.proworks.pug.vo.PugUserVo;
 import com.inswave.elfw.annotation.ElDescription;
 import com.inswave.elfw.annotation.ElService;
 import com.inswave.elfw.annotation.ElValidator;
@@ -146,7 +147,7 @@ public class PugController {
 
 		for (int i = 0; i < cnt; i++) {
 			PugVo pugVo = pugListVo.getPugVoList().get(i);
-			String rowStatus = pugVo.getRowStatus(); 
+			String rowStatus = pugVo.getRowStatus();
 
 			switch (rowStatus) {
 			case "C":
@@ -163,6 +164,35 @@ public class PugController {
 				break;
 			}
 		}
+	}
+
+	/**
+	 * 사용자 정보를 조건에 따라 페이징 처리하여 목록을 조회한다.
+	 *
+	 * @param pugUserVo 사용자 정보 검색 조건 및 페이징 정보
+	 * @return 사용자 정보 목록 및 페이징 정보
+	 * @throws Exception
+	 */
+	@ElService(key = "PugUserList")
+	@RequestMapping(value = "PugUserList")
+	@ElDescription(sub = "사용자 정보 목록 조회", desc = "검색 조건 및 페이징 정보를 기반으로 사용자 목록을 조회한다.")
+	public PugUserListVo selectListPugUser(PugUserVo pugUserVo) throws Exception {
+
+		// 사용자 목록 조회
+		List<PugUserVo> userList = pugService.selectListPugUser(pugUserVo);
+		System.out.println(userList.size());
+		// 사용자 목록 전체 건수 조회
+		long totCnt = pugService.selectListCountPugUser(pugUserVo);
+		System.out.println("================");
+		System.out.println(totCnt);
+		// 결과 객체 구성
+		PugUserListVo retUserList = new PugUserListVo();
+		retUserList.setPugUserVoList(userList);
+		retUserList.setTotalCount(totCnt);
+		retUserList.setPageSize(pugUserVo.getPageSize());
+		retUserList.setPageIndex(pugUserVo.getPageIndex());
+
+		return retUserList;
 	}
 
 }

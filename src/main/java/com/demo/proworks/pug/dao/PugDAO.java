@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import com.inswave.elfw.exception.ElException;
+import com.demo.proworks.pug.vo.PugUserVo;
 import com.demo.proworks.pug.vo.PugVo;
 import com.demo.proworks.pug.dao.PugDAO;
 
@@ -97,6 +98,28 @@ public class PugDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
 	 */
 	public List<PugVo> selectListGrp(PugVo vo) throws ElException {
 		return (List<PugVo>) list("com.demo.proworks.pug.selectListGrp", vo);
+	}
+
+	/**
+	 * 유저 목록을 조회한다.
+	 * 
+	 * @param PugUserVo 사용자 정보
+	 * @return 번호
+	 * @throws ElException
+	 */
+	public List<PugUserVo> selectListPugUser(PugUserVo vo) throws ElException {
+		return (List<PugUserVo>) list("com.demo.proworks.pug.selectListPugUser", vo);
+	}
+
+	/**
+	 * 전체 유저 목록의 카운트를 조회한다.
+	 * 
+	 * @param PugUserVo 사용자 정보
+	 * @return 유저 목록의 전체 카운트
+	 * @throws ElException
+	 */
+	public long selectListCountPugUser(PugUserVo vo) throws ElException {
+		return (Long) selectByPk("com.demo.proworks.pug.selectListCountPugUser", vo);
 	}
 
 }

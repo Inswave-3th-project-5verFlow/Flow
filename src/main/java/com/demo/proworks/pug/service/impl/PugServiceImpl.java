@@ -8,6 +8,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import com.demo.proworks.pug.service.PugService;
+import com.demo.proworks.pug.vo.PugUserVo;
 import com.demo.proworks.pug.vo.PugVo;
 import com.demo.proworks.pug.dao.PugDAO;
 
@@ -125,5 +126,29 @@ public class PugServiceImpl implements PugService {
 	public List<PugVo> selectListGrp(PugVo pugVo) throws Exception {		
 		return pugDAO.selectListGrp(pugVo);
 	}
+	
+	
+	/**
+	 * 전체 유저 목록의 카운트를 조회한다.
+	 * 
+	 * @param pugUserVo 유저 검색 조건이 담긴 VO
+	 * @return 유저 목록 전체 개수
+	 * @throws Exception
+	 */
+	public long selectListCountPugUser(PugUserVo pugUserVo) throws Exception {
+		return (Long) pugDAO.selectListCountPugUser(pugUserVo);
+	}
+
+	/**
+	 * 유저 목록을 페이징 처리하여 조회한다.
+	 * 
+	 * @param pugUserVo 유저 검색 조건 및 페이징 정보가 담긴 VO
+	 * @return 유저 목록 List<PugUserVo>
+	 * @throws Exception
+	 */
+	public List<PugUserVo> selectListPugUser(PugUserVo pugUserVo) throws Exception {
+		return pugDAO.selectListPugUser(pugUserVo);
+	}
+
 
 }

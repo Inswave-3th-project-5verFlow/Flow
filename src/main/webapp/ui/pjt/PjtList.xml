@@ -92,6 +92,10 @@ scwin.sbm_pjtList_submitdone = function (e) {
     spn_totalPageCount.setValue(totalPageCount);
     spn_pageIndex.setValue(dmp_pjtVo.get("pageIndex"));
     pgl_pjtList.setSelectedIndex(dmp_pjtVo.get("pageIndex"));
+
+    let num = Number(dmp_pjtVo.get("pageIndex"));
+    num = (num - 1) * 10;
+    grd_list.setStartRowNumber(num);
 };
 
 /**

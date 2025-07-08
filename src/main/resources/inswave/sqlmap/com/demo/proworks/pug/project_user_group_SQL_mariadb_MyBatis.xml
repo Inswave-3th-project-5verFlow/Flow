@@ -17,14 +17,12 @@
 <mapper namespace="com.demo.proworks.pug">
 	<insert id="insertPug" parameterType="com.demo.proworks.pug.vo.PugVo">
 <!-- 프로젝트 유저 그룹 매핑 정보를 등록한다. -->
-
-		INSERT INTO PROJECT_USER_GROUP /* QueryID : com.demo.proworks.pug.insertPug */
-		(
-		<if test="pjtId != null"> , PJT_ID  </if>
+		INSERT INTO PROJECT_USER_GROUP /* QueryID : com.demo.proworks.pug.insertPug */ (
+		<if test="pjtId != null"> PJT_ID  </if>
 		<if test="userId!= null"> , USER_ID </if>
 		<if test="grpId != null"> , GRP_ID  </if>
 		) VALUES (
-		<if test="pjtId != null"> , #{pjtId}  </if>
+		<if test="pjtId != null"> #{pjtId}  </if>
 		<if test="userId!= null"> , #{userId} </if>
 		<if test="grpId != null"> , #{grpId}  </if>
 		)
@@ -67,7 +65,8 @@
 		PJT_ID AS pjtId,
 		USER_ID AS userId,
 		NAME AS userName,
-		POSITION AS userPosition,
+		POSITION AS
+		userPosition,
 		GRP_ID AS grpId,
 		GRP_NAME AS grpName
 		FROM (
@@ -82,7 +81,8 @@
 		CEIL((@ROWNUM := @ROWNUM + 1) / #{pageSize}) AS PAGE
 		FROM (SELECT @ROWNUM := 0) R,
 		PROJECT_USER_GROUP PUG
-		JOIN USERS U ON PUG.USER_ID = U.USER_ID
+		JOIN USERS U ON PUG.USER_ID =
+		U.USER_ID
 		JOIN GROUPS G ON PUG.GRP_ID = G.GRP_ID
 		WHERE PUG.PJT_ID = #{pjtId}
 		<if test="scUserId != null and scUserId != ''">
@@ -103,12 +103,13 @@
 	</select>
 
 	<select id="selectListCountPug" parameterType="com.demo.proworks.pug.vo.PugVo" resultType="long">
-<!-- 프로젝트 유저 그룹 매핑 정보 목록의 카운트를 조회한다. -->
-		SELECT /* QueryID : com.demo.proworks.pug.selectListCountPug */ 
-		COUNT(*) AS totcnt 
-		FROM PROJECT_USER_GROUP PUG 
-		JOIN USERS U ON PUG.USER_ID = U.USER_ID
-		JOIN GROUPS G ON PUG.GRP_ID = G.GRP_ID 
+		<!-- 프로젝트 유저 그룹 매핑 정보 목록의 카운트를 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.pug.selectListCountPug */
+		COUNT(*) AS totcnt
+		FROM PROJECT_USER_GROUP PUG
+		JOIN USERS U ON PUG.USER_ID =
+		U.USER_ID
+		JOIN GROUPS G ON PUG.GRP_ID = G.GRP_ID
 		WHERE PUG.PJT_ID = #{pjtId}
 		<if test="scUserId != null and scUserId != ''">
 			AND PUG.USER_ID LIKE CONCAT('%', #{scUserId}, '%')
@@ -122,13 +123,58 @@
 		<if test="scGrpName != null and scGrpName != ''">
 			AND G.GRP_NAME LIKE CONCAT('%', #{scGrpName}, '%')
 		</if>
-</select>
+	</select>
 
 	<select id="selectListGrp" parameterType="com.demo.proworks.pug.vo.PugVo" resultType="com.demo.proworks.pug.vo.PugVo">
-<!-- 메뉴 그룹 목록을 조회한다. -->
-		SELECT /* QueryID : com.demo.proworks.pug.selectListGrp */ 
-		grp_id AS grpId, 
-		grp_name AS grpName 
+		<!-- 메뉴 그룹 목록을 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.pug.selectListGrp */
+		grp_id AS grpId,
+		grp_name AS grpName
 		FROM groups;
-</select>
+	</select>
+
+	<select id="selectListPugUser" parameterType="com.demo.proworks.pug.vo.PugUserVo" resultType="com.demo.proworks.pug.vo.PugUserVo">
+		<!-- 유저 정보 목록을 페이징 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.pug.selectListPugUser */
+		USER_ID AS userId,
+		NAME AS name,
+		EMAIL AS email,
+		PHONE AS phone,
+		POSITION AS
+		position
+		FROM (
+		SELECT
+		U.USER_ID,
+		U.NAME,
+		U.EMAIL,
+		U.PHONE,
+		U.POSITION,
+		CEIL((@ROWNUM := @ROWNUM + 1) / #{pageSize}) AS PAGE
+		FROM (SELECT @ROWNUM
+		:= 0) R, USERS U
+		WHERE 1 = 1
+		<if test="scUserId != null and scUserId != ''">
+			AND U.USER_ID LIKE CONCAT('%', #{scUserId}, '%')
+		</if>
+		<if test="scUserName != null and scUserName != ''">
+			AND U.NAME LIKE CONCAT('%', #{scUserName}, '%')
+		</if>
+		ORDER BY U.USER_ID DESC
+		) A
+		WHERE A.PAGE = #{pageIndex}
+	</select>
+
+	<select id="selectListCountPugUser" parameterType="com.demo.proworks.pug.vo.PugUserVo" resultType="long">
+		<!-- 유저 정보 목록의 카운트를 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.pug.selectListCountPugUser */
+		COUNT(*) AS totcnt
+		FROM USERS U
+		WHERE 1 = 1
+		<if test="scUserId != null and scUserId != ''">
+			AND U.USER_ID LIKE CONCAT('%', #{scUserId}, '%')
+		</if>
+		<if test="scUserName != null and scUserName != ''">
+			AND U.NAME LIKE CONCAT('%', #{scUserName}, '%')
+		</if>
+	</select>
 </mapper>

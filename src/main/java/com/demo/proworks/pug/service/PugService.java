@@ -2,6 +2,7 @@ package com.demo.proworks.pug.service;
 
 import java.util.List;
 
+import com.demo.proworks.pug.vo.PugUserVo;
 import com.demo.proworks.pug.vo.PugVo;
 
 /**
@@ -79,4 +80,23 @@ public interface PugService {
 	 * @throws Exception
 	 */
 	public List<PugVo> selectListGrp(PugVo pugVo) throws Exception;
+
+	/**
+	 * 유저 목록을 페이징 처리하여 조회한다.
+	 * 
+	 * @param pugUserVo 유저 정보 PugUserVo
+	 * @return 유저 목록 List<PugUserVo>
+	 * @throws Exception
+	 */
+	public List<PugUserVo> selectListPugUser(PugUserVo pugUserVo) throws Exception;
+
+	/**
+	 * 전체 유저 목록의 카운트를 조회한다.
+	 * 
+	 * @param pugUserVo 유저 정보 PugUserVo
+	 * @return 유저 목록 전체 카운트
+	 * @throws Exception
+	 */
+	public long selectListCountPugUser(PugUserVo pugUserVo) throws Exception;
+
 }

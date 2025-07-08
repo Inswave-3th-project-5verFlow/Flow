@@ -74,8 +74,6 @@ scwin.onpageload = function () {
     scwin.btn_search_onclick();
 };
 
-/************************** 이벤트 함수 *************************/
-
 /**
  * 조회 버튼 클릭 이벤트
  * @date
@@ -148,6 +146,7 @@ scwin.pgl_pugList_onclick = function (idx) {
 
 
 scwin.sbm_selectGrpVoList_submitdone = function (e) {
+
     // error 수신시
     var elData = e.responseJSON.elData;
     var elHeader = e.responseJSON.elHeader;
@@ -160,11 +159,13 @@ scwin.sbm_selectGrpVoList_submitdone = function (e) {
 };
 
 scwin.btn_delete_onclick = function (e) {
+
     let chkArrIdx = grd_list.getCheckedIndex("chk")
     dlt_pugVoList.deleteRows(chkArrIdx);
 };
 
 scwin.btn_save_onclick = function (e) {
+
     // 다건 신규입력, 수정, 삭제 한꺼번에 처리
     let reqObj = {
         "elData": { "pugVoList": dlt_pugVoList.getModifiedJSON() }
@@ -173,6 +174,7 @@ scwin.btn_save_onclick = function (e) {
 };
 
 scwin.sbm_savePugVoList_submitdone = function (e) {
+
     // error 수신시
     var elHeader = e.responseJSON.elHeader;
     if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
@@ -188,6 +190,7 @@ scwin.sbm_savePugVoList_submitdone = function (e) {
 };
 
 scwin.dlt_pugVoList_oncelldatachange = function (info) {
+
     if (info.colID === "grpName" && info.newValue) {
         let matched = $c.data.getMatchedJSON(dlt_grpVoList, {
             columnId: "grpName",
@@ -202,7 +205,60 @@ scwin.dlt_pugVoList_oncelldatachange = function (info) {
         }
     }
 };
-]]></script>
+
+scwin.btn_new_onclick = function (e) {
+
+    // 팝업 화면에 데이터를 전달 (dataObject를 통해 전달 가능)
+    var popupData = {
+        "type": "json",
+        "name": "params",  // 데이터를 가져오기 위한 파라미터 이름으로 팝업 화면에서 $p.getParameter("params")로 추출할 수 있음
+        "data": {
+            "pjtId": scwin.PJT_ID
+        } // 실제 전달할 데이터
+    };
+
+    // 화면 크기 가져오기
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    // 팝업 크기 설정
+    const popupWidth = 800; // 팝업 너비
+    const popupHeight = 800; // 팝업 높이
+
+    // 팝업 위치 계산 (화면 중앙)
+    const popupLeft = (screenWidth - popupWidth) / 2 + "px";
+    const popupTop = (screenHeight - popupHeight) / 2 + "px";
+
+    // 팝업 생성 옵션 지정
+    const options = {
+        id: "pjt_detail",
+        type: "wframePopup",
+        width: popupWidth + "px",
+        height: popupHeight + "px",
+        top: popupTop,
+        left: popupLeft,
+        popupName: "인력관리 상세 팝업",
+        modal: true,
+        closeAction: "scwin.popup_closeAction", // [선택] 팝업의 닫기 버튼을 클릭했을 때 실행할 함수명
+        dataObject: popupData
+    };
+
+    // 팝업 생성
+    $p.openPopup("/InsWebApp/ui/pug/PugDetail.xml", options);
+
+};
+
+// 팝업 생성 옵션의 closeAction 함수 정의 예시
+scwin.popup_closeAction = function (argRuntimeID, argJsnInfo) {
+    // argRuntimeID : 팝업의 실행 시점 아이디
+    // argJsnInfo : 팝업의 부가 정보를 담은 JSON 객체
+    // argJsnInfo.isCloseButtonClick : [true, false] 팝업의 닫기 버튼을 클릭해서 호출되었는지의 여부
+
+    // 팝업 객체 접근 - 콜백 사용
+    var popObj = $p.getPopupWindow(argRuntimeID);
+    scwin.btn_search_onclick();
+    return true; //팝업 닫기 (반환 값이 true인 경우만 팝업이 닫힘)
+};]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">
 		<xf:group class="sub_contents " id="" style="">
@@ -279,7 +335,7 @@ scwin.dlt_pugVoList_oncelldatachange = function (info) {
 			<xf:group class="titbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_02 서브타이틀(h3)"
 				style="">
 				<xf:group class="rt" id="" style="">
-					<xf:trigger class="btn_cm row_add" id="btn_new" style="" type="button">
+					<xf:trigger class="btn_cm row_add" id="btn_new" style="" type="button" ev:onclick="scwin.btn_new_onclick">
 						<xf:label><![CDATA[등록]]></xf:label>
 					</xf:trigger>
 					<xf:trigger class="btn_cm  row_del" id="btn_delete" style="" type="button" ev:onclick="scwin.btn_delete_onclick">
