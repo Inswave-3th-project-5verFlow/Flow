@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper      
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"      
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	@subject     : 그룹정보 관련 처리를 담당하는 Sql Mapper
+	@description : 그룹정보 관련 처리를 담당하는 Sql Mapper
+	@author      : Inswave
+	@since       : 2025/07/05
+	@modification
+	===========================================================
+	DATE              AUTHOR             DESC
+	===========================================================
+	2025/07/05              Inswave             최초 생성
+ -->
+<mapper namespace="com.demo.proworks.groups">
+    <insert id="insertGroups" parameterType="com.demo.proworks.groups.vo.GroupsVo">
+    	<!-- 그룹정보를 등록한다. -->	
+    		
+        INSERT INTO GROUPS   /* QueryID : com.demo.proworks.groups.insertGroups */
+        ( 
+            GRP_ID
+            <if test="grpName   != null"> , GRP_NAME    </if>
+            <if test="description!= null"> , DESCRIPTION </if>
+        )
+        VALUES  
+        ( 
+            #{grpId}
+            <if test="grpName   != null"> , #{grpName}    </if>
+            <if test="description!= null"> , #{description} </if> 
+        )          
+    </insert>	
+	
+    <update id="updateGroups" parameterType="com.demo.proworks.groups.vo.GroupsVo">
+    	<!-- 그룹정보를 갱신한다. -->
+    	
+        UPDATE GROUPS    /* QueryID : com.demo.proworks.groups.updateGroups */      
+      	  SET  
+                GRP_ID      = #{grpId}             	                       
+            <if test="grpName   != null"> , GRP_NAME    = #{grpName}    </if>
+            <if test="description!= null"> , DESCRIPTION = #{description} </if>                 
+        WHERE   
+                GRP_ID      = #{grpId}     
+    </update>
+	
+    <delete id="deleteGroups" parameterType="com.demo.proworks.groups.vo.GroupsVo">
+    	<!-- 그룹정보를 삭제한다. -->
+    	
+        DELETE FROM GROUPS   /* QueryID : com.demo.proworks.groups.deleteGroups */ 
+        WHERE   
+                GRP_ID      = #{grpId}             
+    </delete>
+	
+    <select id="selectGroups" parameterType="com.demo.proworks.groups.vo.GroupsVo" resultType="com.demo.proworks.groups.vo.GroupsVo">
+    	<!-- 그룹정보를 상세 조회한다. -->	
+        SELECT     /* QueryID : com.demo.proworks.groups.selectGroups */
+            GRP_ID as grpId, GRP_NAME as grpName, DESCRIPTION as description
+        FROM GROUPS 
+        WHERE 
+                GRP_ID      = #{grpId}     			
+    </select>
+	
+    <select id="selectListGroups" parameterType="com.demo.proworks.groups.vo.GroupsVo" resultType="com.demo.proworks.groups.vo.GroupsVo">
+    	<!-- 그룹정보 목록을 조회한다. -->
+           SELECT    /* QueryID : com.demo.proworks.groups.selectListGroups */
+               GRP_ID as grpId, GRP_NAME as grpName, DESCRIPTION as description		       
+           FROM (
+               SELECT  S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
+               FROM (				
+                   SELECT 
+                       *  		                  
+                   FROM GROUPS
+                   WHERE  1=1    		
+	     																														
+               ) S, (SELECT @ROWNUM := 0) TMP
+           ) A
+            WHERE PAGE = #{pageIndex}
+    </select>
+	
+    <select id="selectListCountGroups" parameterType="com.demo.proworks.groups.vo.GroupsVo" resultType="long">
+    <!-- 그룹정보 목록의 카운트를 조회한다. -->
+    
+         SELECT    /* QueryID : com.demo.proworks.groups.selectListCountGroups */
+             COUNT(*) totcnt  		                  
+         FROM GROUPS
+         WHERE  1=1    		
+
+    </select>
+
+</mapper>

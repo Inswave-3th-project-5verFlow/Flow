@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
+	xmlns:xf="http://www.w3.org/2002/xforms">
+	<head meta_screenName="프로젝트 등록 페이지" meta_author="김성민">
+		<w2:type>COMPONENT</w2:type>
+		<w2:buildDate />
+		<w2:MSA />
+		<xf:model>
+			<w2:dataCollection baseNode="map">
+				<w2:dataMap baseNode="map" id="dmp_pjtVoDetail" style="">
+					<w2:keyInfo>
+						<w2:key dataType="text" id="pjtName" name="프로젝트명"></w2:key>
+						<w2:key dataType="text" id="pjtAsi" name="프로젝트관리자"></w2:key>
+						<w2:key dataType="text" id="pjtStatus" name="프로젝트상태" defaultValue="대기"></w2:key>
+						<w2:key dataType="text" id="pjtDetail" name="상세설명"></w2:key>
+						<w2:key dataType="text" id="pjtSt" name="시작일"></w2:key>
+						<w2:key dataType="text" id="pjtEt" name="완료일"></w2:key>
+
+						<w2:key dataType="text" name="유저ID" id="userId"></w2:key>
+						<w2:key dataType="text" name="그룹ID" id="grpId"></w2:key>
+						<w2:key dataType="text" name="프로젝트ID" id="pjtId"></w2:key>
+					</w2:keyInfo>
+				</w2:dataMap>
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_pjtStatusList" saveRemovedData="true">
+					<w2:columnInfo>
+						<w2:column dataType="text" name="라벨" id="label"></w2:column>
+						<w2:column dataType="text" name="상태" id="pjtStatus"></w2:column>
+					</w2:columnInfo>
+					<w2:data use="true">
+						<w2:row>
+							<label><![CDATA[대기]]></label>
+							<pjtStatus><![CDATA[대기]]></pjtStatus>
+						</w2:row>
+						<w2:row>
+							<label><![CDATA[진행중]]></label>
+							<pjtStatus><![CDATA[진행중]]></pjtStatus>
+						</w2:row>
+						<w2:row>
+							<label><![CDATA[완료]]></label>
+							<pjtStatus><![CDATA[완료]]></pjtStatus>
+						</w2:row>
+					</w2:data>
+				</w2:dataList>
+			</w2:dataCollection>
+			<w2:workflowCollection></w2:workflowCollection>
+			<xf:submission id="sbm_updatePjtVo" action="/InsWebApp/PjtUpd.pwkjson" method="post" mediatype="application/json" ref=""
+				target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit=""
+				ev:submitdone="scwin.sbm_updatePjtVo_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+			<xf:submission id="sbm_selectPjtVo" action="/InsWebApp/PjtUpdView.pwkjson" method="post" mediatype="application/json" ref=""
+				target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit=""
+				ev:submitdone="scwin.sbm_selectPjtVo_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+		</xf:model>
+		<w2:layoutInfo></w2:layoutInfo>
+		<w2:publicInfo method="" />
+		<script lazy="false" type="text/javascript"><![CDATA[// 전역 변수 초기화
+scwin.LOGIN_USER_ID = "";
+scwin.LOGIN_USER_NAME = "";
+scwin.GROUP_ID = "";
+scwin.PJT_ID = "";
+
+/**
+ * @method
+ * @name scwin.onpageload
+ * @description 페이지가 로드될 때 사용자 정보를 설정하고 기본 프로젝트 정보를 조회한다.
+ * @example
+ * scwin.onpageload();
+ */
+scwin.onpageload = function () {
+    scwin.LOGIN_USER_ID = "1";
+    scwin.LOGIN_USER_NAME = "김프로젝트";
+    scwin.GROUP_ID = "1";
+    scwin.PJT_ID = "25";
+
+    // 기존 프로젝트 정보 조회 서브미션 호출
+    $c.sbm.execute(sbm_selectPjtVo, {
+        "elData": { "pjtId": scwin.PJT_ID }
+    });
+};
+
+/**
+ * @method
+ * @name scwin.btn_save_onclick
+ * @description 저장 버튼 클릭 시 필수 입력값을 확인하고 프로젝트 수정을 요청한다.
+ * @param {Event} e - 클릭 이벤트 객체
+ * @example
+ * <w2:trigger id="btn_save" onClick="scwin.btn_save_onclick" />
+ */
+scwin.btn_save_onclick = function (e) {
+    if ($c.util.isEmpty(ipt_pjtName.getValue().trim())) {
+        $c.win.alert("프로젝트명은 필수입니다.");
+        return;
+    }
+
+    if ($c.util.isEmpty(ipt_pjtStatus.getValue().trim())) {
+        $c.win.alert("상태는 필수입니다.");
+        return;
+    }
+
+    // 프로젝트 수정 요청 서브미션 실행
+    $c.sbm.execute(sbm_updatePjtVo, {
+        "elData": dmp_pjtVoDetail.getJSON()
+    });
+};
+
+/**
+ * @method
+ * @name scwin.sbm_updatePjtVo_submitdone
+ * @description 프로젝트 수정 서브미션 완료 후 결과에 따라 알림을 출력하고, 수정된 데이터를 재조회한다.
+ * @param {Object} e - 서브미션 완료 이벤트 객체
+ * @example
+ * <w2:submission id="sbm_updatePjtVo" submitDone="scwin.sbm_updatePjtVo_submitdone" />
+ */
+scwin.sbm_updatePjtVo_submitdone = function (e) {
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+
+    if (elHeader == null || elHeader === "" || elHeader === "undefined" || elHeader.resSuc === false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    }
+
+    $c.win.alert("수정이 완료되었습니다.");
+
+    // 수정된 프로젝트 정보 재조회
+    $c.sbm.execute(sbm_selectPjtVo, {
+        "elData": { "pjtId": scwin.PJT_ID }
+    });
+};
+
+/**
+ * @method
+ * @name scwin.btn_refresh_onclick
+ * @description 새로고침 버튼 클릭 시 입력 항목을 초기화하고, 프로젝트 상세정보를 다시 조회한다.
+ * @param {Event} e - 클릭 이벤트 객체
+ * @example
+ * <w2:trigger id="btn_refresh" onClick="scwin.btn_refresh_onclick" />
+ */
+scwin.btn_refresh_onclick = function (e) {
+    ipt_pjtSt.setValue("");
+    ipt_pjtEt.setValue("");
+
+    // 프로젝트 상세정보 재조회
+    $c.sbm.execute(sbm_selectPjtVo, {
+        "elData": { "pjtId": scwin.PJT_ID }
+    });
+};
+
+/**
+ * @method
+ * @name scwin.sbm_selectPjtVo_submitdone
+ * @description 프로젝트 상세조회 서브미션 완료 후 결과를 데이터맵에 반영한다.
+ * @param {Object} e - 서브미션 완료 이벤트 객체
+ * @example
+ * <w2:submission id="sbm_selectPjtVo" submitDone="scwin.sbm_selectPjtVo_submitdone" />
+ */
+scwin.sbm_selectPjtVo_submitdone = function (e) {
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+
+    if (elHeader == null || elHeader === "" || elHeader === "undefined" || elHeader.resSuc === false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    }
+
+    // 조회된 프로젝트 정보를 데이터맵에 바인딩
+    dmp_pjtVoDetail.setJSON(elData);
+};
+]]></script>
+	</head>
+	<body ev:onpageload="scwin.onpageload">
+		<xf:group class="sub_contents " id="" style="">
+			<xf:group meta_snippetCategory="02_타이틀" meta_snippetName="2_01 페이지타이틀" meta_snippetKeyComponent="true" style="" id=""
+				class="pgtbox">
+				<w2:textbox tagname="" style="" id="" label="프로젝트 상세" class="pgt_tit"></w2:textbox>
+				<xf:group style="" id="" class="breadcrumb">
+					<xf:group tagname="ul" style="" id="">
+						<xf:group tagname="li" style="" id="" class="home">
+							<w2:anchor outerDiv="false" style="" id="">
+								<xf:label><![CDATA[Home]]></xf:label>
+							</w2:anchor>
+						</xf:group>
+						<xf:group tagname="li" style="" id="">
+							<w2:anchor outerDiv="false" style="" id="">
+								<xf:label><![CDATA[1Depth Menu]]></xf:label>
+							</w2:anchor>
+						</xf:group>
+						<xf:group tagname="li" style="" id="">
+							<w2:anchor outerDiv="false" style="" id="">
+								<xf:label><![CDATA[2Depth Menu]]></xf:label>
+							</w2:anchor>
+						</xf:group>
+						<xf:group tagname="li" style="" id="">
+							<w2:span style="" id="" label="3Depth Menu"></w2:span>
+						</xf:group>
+					</xf:group>
+				</xf:group>
+				<xf:trigger style="" id="" type="button" class="btn_fav">
+					<xf:label></xf:label>
+				</xf:trigger>
+			</xf:group>
+			<xf:group class="tblbox" id="grp_pjtInfo" style="">
+				<xf:group adaptive="layout" adaptiveThreshold="600" class="w2tb tbl" tagname="table">
+					<xf:group tagname="colgroup">
+						<xf:group style="width:150px;" tagname="col" />
+						<xf:group style="" tagname="col" />
+						<xf:group style="width:150px;" tagname="col" />
+						<xf:group style="" tagname="col" />
+					</xf:group>
+
+					<!-- 프로젝트 ID -->
+					<xf:group tagname="tr">
+						<xf:group class="w2tb_th" tagname="th" style=";display:none;">
+							<w2:textbox label="프로젝트ID" localeRef="Pjt_COLNAME_00001" />
+						</xf:group>
+						<xf:group class="w2tb_td" tagname="td" style=";display:none;">
+							<w2:attributes>
+								<w2:colspan>3</w2:colspan>
+							</w2:attributes>
+							<xf:input ref="data:dmp_pjtVoDetail.pjtId" style="width:100%;" />
+						</xf:group>
+					</xf:group>
+
+					<!-- 프로젝트명 -->
+					<xf:group tagname="tr">
+						<xf:group class="w2tb_th" tagname="th">
+							<w2:textbox label="프로젝트명" />
+						</xf:group>
+						<xf:group class="w2tb_td" tagname="td" style="">
+							<w2:attributes>
+								<w2:colspan>3</w2:colspan>
+							</w2:attributes>
+							<xf:input ref="data:dmp_pjtVoDetail.pjtName" style="width:100%;" id="ipt_pjtName" />
+						</xf:group>
+					</xf:group>
+
+					<!-- 관리자 -->
+					<xf:group tagname="tr">
+						<xf:group class="w2tb_th" tagname="th">
+							<w2:textbox label="관리자" localeRef="Pjt_COLNAME_00003" />
+						</xf:group>
+						<xf:group class="w2tb_td" tagname="td">
+							<w2:attributes>
+								<w2:colspan>3</w2:colspan>
+							</w2:attributes>
+							<xf:input ref="data:dmp_pjtVoDetail.pjtAsi" style="width:100%;" id="ipt_pjtAsi" disabled="true" />
+						</xf:group>
+					</xf:group>
+
+					<!-- 프로젝트 상태 -->
+					<xf:group tagname="tr">
+						<xf:group class="w2tb_th" tagname="th">
+							<w2:textbox label="프로젝트상태" localeRef="Pjt_COLNAME_00004" />
+						</xf:group>
+						<xf:group class="w2tb_td" tagname="td">
+							<w2:attributes>
+								<w2:colspan>3</w2:colspan>
+							</w2:attributes>
+							<xf:select1 id="ipt_pjtStatus" chooseOption="" style="width: 100%;height: 30px;" submenuSize="auto" allOption=""
+								disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" ref="data:dmp_pjtVoDetail.pjtStatus"
+								chooseOptionLabel="$blank">
+								<xf:choices>
+									<xf:itemset nodeset="data:dlt_pjtStatusList">
+										<xf:label ref="label"></xf:label>
+										<xf:value ref="pjtStatus"></xf:value>
+									</xf:itemset>
+								</xf:choices>
+							</xf:select1>
+						</xf:group>
+					</xf:group>
+
+					<!-- 시작일 / 완료일 -->
+					<xf:group tagname="tr">
+						<xf:group class="w2tb_th" tagname="th">
+							<w2:textbox label="시작일" localeRef="Pjt_COLNAME_00008" />
+						</xf:group>
+						<xf:group class="w2tb_td" tagname="td">
+							<w2:inputCalendar id="ipt_pjtSt" style="width: 100%;height: 30px;" calendarValueType="yearMonthDate"
+								ref="data:dmp_pjtVoDetail.pjtSt"></w2:inputCalendar>
+						</xf:group>
+						<xf:group class="w2tb_th" tagname="th">
+							<w2:textbox label="완료일" localeRef="Pjt_COLNAME_00009" />
+						</xf:group>
+						<xf:group class="w2tb_td" tagname="td" style="">
+							<w2:inputCalendar id="ipt_pjtEt" style="width: 100%;height: 30px;" calendarValueType="yearMonthDate"
+								ref="data:dmp_pjtVoDetail.pjtEt"></w2:inputCalendar>
+						</xf:group>
+					</xf:group>
+
+					<!-- 상세설명 -->
+					<xf:group tagname="tr">
+						<xf:group class="w2tb_th" tagname="th">
+							<w2:textbox label="상세설명" localeRef="Pjt_COLNAME_00005" />
+						</xf:group>
+						<xf:group class="w2tb_td" tagname="td">
+							<w2:attributes>
+								<w2:colspan>3</w2:colspan>
+							</w2:attributes>
+							<xf:textarea ref="data:dmp_pjtVoDetail.pjtDetail" style="width:100%; height:100px;" />
+						</xf:group>
+					</xf:group>
+				</xf:group>
+
+			</xf:group>
+			<xf:group class="btnbox" id="" meta_snippetCategory="08_버튼" meta_snippetKeyComponent="true" meta_snippetName="8_04 전체제어버튼"
+				style="">
+				<xf:group class="rt" id="" style="">
+					<w2:textbox class="bar_btndiv" id="" label="" style=""></w2:textbox>
+					<xf:trigger class="btn_cm pt" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
+						<xf:label><![CDATA[저장]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="btn_cm " id="btn_refresh" style="" type="button" ev:onclick="scwin.btn_refresh_onclick">
+						<xf:label><![CDATA[초기화]]></xf:label>
+					</xf:trigger>
+				</xf:group>
+			</xf:group>
+		</xf:group>
+	</body>
+</html>
