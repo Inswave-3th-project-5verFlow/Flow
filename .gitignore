@@ -1,11 +1,128 @@
+# ======================
+# InWebApp Project .gitignore
+# ======================
 
-### Custom Ignores for inswebapp ###
-# Maven target directory
+# 임시 파일들
+*.tmp
+*.temp
+*~
+*.swp
+*.swo
+
+# 로그 파일들
+*.log
+logs/
+log/
+
+# 컴파일된 파일들
+*.class
+*.jar
+*.war
+*.ear
 target/
+build/
+out/
 
-# WebPack output directory  
-src/main/webapp/_wpack_/
-
-.settings/**
+# IDE 설정 파일들 (Eclipse STS 포함)
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+.springBeans
+.metadata/
+.settings/
+.project
 .classpath
 .factorypath
+.apt_generated/
+.apt_generated_test/
+.cache-main
+.scala_dependencies
+.worksheet
+bin/
+.recommenders/
+.sonarlint/
+RemoteSystemsTempFiles/
+
+# OS 관련 파일들
+# === macOS ===
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+.fseventsd
+.TemporaryItems
+.DocumentRevisions-V100
+.PKInstallSandboxManager
+
+# === Windows ===
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msm
+*.msp
+*.lnk
+
+# === Linux ===
+*~
+.directory
+.Trash-*
+.nfs*
+
+# Node.js 관련 (만약 프론트엔드가 있다면)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# 환경 설정 파일들
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+config.properties
+application-local.properties
+
+# 백업 파일들
+*.bak
+*.backup
+*.orig
+
+# 압축 파일들
+*.zip
+*.tar.gz
+*.rar
+
+# 데이터베이스 파일들
+*.db
+*.sqlite
+*.sqlite3
+
+# 캐시 파일들
+*.cache
+.cache/
+
+# 테스트 관련
+test-output/
+test-results/
+coverage/
+
+# 개발자 개인 파일들
