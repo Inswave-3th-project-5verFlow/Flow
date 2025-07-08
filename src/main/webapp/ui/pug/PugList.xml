@@ -1,0 +1,445 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
+	xmlns:xf="http://www.w3.org/2002/xforms">
+	<head>
+		<w2:type>COMPONENT</w2:type>
+		<w2:buildDate />
+		<w2:MSA />
+		<xf:model>
+			<w2:dataCollection baseNode="map">
+				<w2:dataMap baseNode="map" id="dmp_pugVo" style="">
+					<w2:keyInfo>
+
+						<w2:key dataType="text" name="프로젝트ID" id="pjtId"></w2:key>
+						<w2:key dataType="text" id="pageIndex" name="페이지_번호" defaultValue="1"></w2:key>
+						<w2:key dataType="text" id="pageSize" name="페이지_건수" defaultValue="10"></w2:key>
+						<w2:key dataType="text" name="search_사용자이름" id="scUserName"></w2:key>
+						<w2:key dataType="text" name="search_메뉴그룹" id="scGrpName"></w2:key>
+						<w2:key dataType="text" name="search_사용자ID" id="scUserId"></w2:key>
+						<w2:key dataType="text" name="search_사용자직책" id="scUserPosition"></w2:key>
+						<w2:key dataType="text" name="페이지건수" id="totalPageCount"></w2:key>
+					</w2:keyInfo>
+					<w2:data use="false"></w2:data>
+				</w2:dataMap>
+				<w2:dataList baseNode="list" id="dlt_pugVoList" repeatNode="map" saveRemovedData="true" style="" ev:oncelldatachange="scwin.dlt_pugVoList_oncelldatachange">
+					<w2:columnInfo>
+						<w2:column dataType="text" id="pugId" name="pug_id"></w2:column>
+						<w2:column dataType="text" id="pjtId" name="프로젝트ID"></w2:column>
+						<w2:column dataType="text" id="userId" name="사용자ID"></w2:column>
+						<w2:column dataType="text" id="grpId" name="그룹ID"></w2:column>
+
+						<w2:column dataType="text" name="사용자이름" id="userName"></w2:column>
+						<w2:column dataType="text" name="사용자직책" id="userPosition"></w2:column>
+						<w2:column dataType="text" name="그룹명" id="grpName"></w2:column>
+						<w2:column dataType="text" name="체크여부" id="chk" ignoreStatus="true"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
+				<w2:dataMap baseNode="map" id="dmp_pugVoDetail" style="">
+					<w2:keyInfo>
+
+					</w2:keyInfo>
+				</w2:dataMap>
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_grpVoList" saveRemovedData="true">
+					<w2:columnInfo>
+						<w2:column dataType="text" name="그룹ID" id="grpId"></w2:column>
+						<w2:column dataType="text" name="그룹명" id="grpName"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
+			</w2:dataCollection>
+			<w2:workflowCollection></w2:workflowCollection>
+
+			<xf:submission id="sbm_selectPugVoList" ref='data:json,{"id":"dmp_pugVo","key":"elData"}' target=''
+				action="/InsWebApp/PugList.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler=""
+				customHandler="" mode="asynchronous" processMsg="프로젝트 유저 그룹 매핑 정보 리스트를 조회 중입니다." ev:submit=""
+				ev:submitdone="scwin.sbm_pugList_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+			<xf:submission id="sbm_selectGrpVoList" action="/InsWebApp/PugGrpList.pwkjson" method="post" mediatype="application/json"
+				ref='data:json,{"id":"dmp_pugVo","key":"elData"}' target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler=""
+				mode="asynchronous" processMsg="" ev:submit="" ev:submitdone="scwin.sbm_selectGrpVoList_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+			<xf:submission id="sbm_savePugVoList" action="/InsWebApp/PugSave.pwkjson" method="post" mediatype="application/json" ref=""
+				target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit=""
+				ev:submitdone="scwin.sbm_savePugVoList_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+		</xf:model>
+		<w2:layoutInfo></w2:layoutInfo>
+		<w2:publicInfo method="" />
+		<script lazy="false" type="text/javascript"><![CDATA[// 전역 변수 초기화
+scwin.LOGIN_USER_ID = "";
+scwin.PJT_ID = "";
+
+/**
+ * @method
+ * @name scwin.onpageload
+ * @description 페이지 로드 시 기본 로그인 사용자 정보와 프로젝트 ID를 설정하고 초기 조회를 수행한다.
+ * @example
+ * scwin.onpageload();
+ */
+scwin.onpageload = function () {
+    scwin.LOGIN_USER_ID = "1";
+    scwin.PJT_ID = "1";
+
+    // 검색 조건 초기화
+    dmp_pugVo.set("pjtId", scwin.PJT_ID);
+
+    // 초기 데이터 조회
+    scwin.btn_search_onclick();
+};
+
+/**
+ * @method
+ * @name scwin.btn_search_onclick
+ * @description 조회 버튼 클릭 시 페이지 번호 초기화 후 유저 그룹 및 프로젝트 유저 그룹 목록을 조회한다.
+ * @param {Event} e - 클릭 이벤트 객체
+ * @example
+ * <w2:trigger id="btn_search" onClick="scwin.btn_search_onclick" />
+ */
+scwin.btn_search_onclick = function (e) {
+    dmp_pugVo.set("pageIndex", "1");
+    pgl_pugList.setSelectedIndex(1);
+
+    $c.sbm.execute(sbm_selectGrpVoList);  // 메뉴 그룹 조회
+    $c.sbm.execute(sbm_selectPugVoList);  // 유저 그룹 매핑 목록 조회
+};
+
+/**
+ * @method
+ * @name scwin.sbm_pugList_submitdone
+ * @description 프로젝트 유저 그룹 목록 조회 완료 후 결과를 그리드에 반영하고 페이지 정보를 갱신한다.
+ * @param {Object} e - 서브미션 완료 이벤트 객체
+ * @example
+ * <w2:submission id="sbm_selectPugVoList" submitDone="scwin.sbm_pugList_submitdone" />
+ */
+scwin.sbm_pugList_submitdone = function (e) {
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+
+    if (elHeader == null || elHeader === "" || elHeader === "undefiend" || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    }
+
+    spn_listCnt.setLabel(elData.totalCount);
+    dlt_pugVoList.setJSON(elData.pugVoList);
+
+    var totalPageCount = Math.ceil(elData.totalCount / dmp_pugVo.get("pageSize"));
+    pgl_pugList.setCount(totalPageCount);
+    spn_totalPageCount.setValue(totalPageCount);
+    spn_pageIndex.setValue(dmp_pugVo.get("pageIndex"));
+    pgl_pugList.setSelectedIndex(dmp_pugVo.get("pageIndex"));
+
+    let num = Number(dmp_pugVo.get("pageIndex"));
+    num = (num - 1) * 10;
+    grd_list.setStartRowNumber(num);
+};
+
+/**
+ * @method
+ * @name scwin.pgl_pugList_onclick
+ * @description 페이지 네비게이터 클릭 시 선택한 페이지 번호로 데이터를 재조회한다.
+ * @param {Number} idx - 선택된 페이지 번호
+ * @example
+ * <w2:pagingNavigator id="pgl_pugList" onClick="scwin.pgl_pugList_onclick" />
+ */
+scwin.pgl_pugList_onclick = function (idx) {
+    dmp_pugVo.set("pageIndex", idx);
+    $c.sbm.execute($p, sbm_selectPugVoList);
+};
+
+/**
+ * @method
+ * @name scwin.sbm_selectGrpVoList_submitdone
+ * @description 그룹 목록 조회 완료 후 결과를 데이터리스트에 반영한다.
+ * @param {Object} e - 서브미션 완료 이벤트 객체
+ * @example
+ * <w2:submission id="sbm_selectGrpVoList" submitDone="scwin.sbm_selectGrpVoList_submitdone" />
+ */
+scwin.sbm_selectGrpVoList_submitdone = function (e) {
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+
+    if (elHeader == null || elHeader === "" || elHeader === "undefiend" || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    }
+
+    dlt_grpVoList.setJSON(elData.pugVoList);
+};
+
+/**
+ * @method
+ * @name scwin.btn_delete_onclick
+ * @description 삭제 버튼 클릭 시 체크된 행을 데이터리스트에서 제거한다.
+ * @param {Event} e - 클릭 이벤트 객체
+ * @example
+ * <w2:trigger id="btn_delete" onClick="scwin.btn_delete_onclick" />
+ */
+scwin.btn_delete_onclick = function (e) {
+    let chkArrIdx = grd_list.getCheckedIndex("chk");
+    dlt_pugVoList.deleteRows(chkArrIdx);
+};
+
+/**
+ * @method
+ * @name scwin.btn_save_onclick
+ * @description 저장 버튼 클릭 시 변경된 데이터(입력/수정/삭제)를 서버로 전송한다.
+ * @param {Event} e - 클릭 이벤트 객체
+ * @example
+ * <w2:trigger id="btn_save" onClick="scwin.btn_save_onclick" />
+ */
+scwin.btn_save_onclick = function (e) {
+    let reqObj = {
+        "elData": { "pugVoList": dlt_pugVoList.getModifiedJSON() }
+    };
+    $c.sbm.execute(sbm_savePugVoList, reqObj);
+};
+
+/**
+ * @method
+ * @name scwin.sbm_savePugVoList_submitdone
+ * @description 저장 완료 후 결과 메시지를 출력하고 목록을 재조회한다.
+ * @param {Object} e - 서브미션 완료 이벤트 객체
+ * @example
+ * <w2:submission id="sbm_savePugVoList" submitDone="scwin.sbm_savePugVoList_submitdone" />
+ */
+scwin.sbm_savePugVoList_submitdone = function (e) {
+    var elHeader = e.responseJSON.elHeader;
+
+    if (elHeader == null || elHeader === "" || elHeader === "undefiend" || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    }
+
+    $c.win.alert("통합 수정되었습니다.");
+    scwin.btn_search_onclick();
+};
+
+/**
+ * @method
+ * @name scwin.dlt_pugVoList_oncelldatachange
+ * @description 그리드 셀 데이터 변경 시 입력한 그룹명이 유효할 경우 자동으로 grpId를 매핑한다.
+ * @param {Object} info - 변경된 셀 정보 객체
+ * @example
+ * <w2:dataList id="dlt_pugVoList" onCellDataChange="scwin.dlt_pugVoList_oncelldatachange" />
+ */
+scwin.dlt_pugVoList_oncelldatachange = function (info) {
+    if (info.colID === "grpName" && info.newValue) {
+        let matched = $c.data.getMatchedJSON(dlt_grpVoList, {
+            columnId: "grpName",
+            operator: "==",
+            value: info.newValue
+        });
+
+        if (matched.length > 0) {
+            dlt_pugVoList.setCellData(info.rowIndex, "grpId", matched[0].grpId);
+        }
+    }
+};
+
+/**
+ * @method
+ * @name scwin.btn_new_onclick
+ * @description 신규 등록 버튼 클릭 시 팝업을 띄워 사용자 그룹을 추가한다.
+ * @param {Event} e - 클릭 이벤트 객체
+ * @example
+ * <w2:trigger id="btn_new" onClick="scwin.btn_new_onclick" />
+ */
+scwin.btn_new_onclick = function (e) {
+    var popupData = {
+        "type": "json",
+        "name": "params",
+        "data": {
+            "pjtId": scwin.PJT_ID
+        }
+    };
+
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const popupWidth = 800;
+    const popupHeight = 800;
+    const popupLeft = (screenWidth - popupWidth) / 2 + "px";
+    const popupTop = (screenHeight - popupHeight) / 2 + "px";
+
+    const options = {
+        id: "pjt_detail",
+        type: "wframePopup",
+        width: popupWidth + "px",
+        height: popupHeight + "px",
+        top: popupTop,
+        left: popupLeft,
+        popupName: "인력관리 상세 팝업",
+        modal: true,
+        closeAction: "scwin.popup_closeAction",
+        dataObject: popupData
+    };
+
+    $p.openPopup("/InsWebApp/ui/pug/PugDetail.xml", options);
+};
+
+/**
+ * @method
+ * @name scwin.popup_closeAction
+ * @description 팝업 닫기 시 재조회 처리
+ * @param {String} argRuntimeID - 팝업의 실행 ID
+ * @param {Object} argJsnInfo - 팝업 닫힘 시 전달된 정보
+ * @returns {Boolean} 팝업 닫기 여부
+ */
+scwin.popup_closeAction = function (argRuntimeID, argJsnInfo) {
+    var popObj = $p.getPopupWindow(argRuntimeID);
+    scwin.btn_search_onclick();
+    return true;
+};
+]]></script>
+	</head>
+	<body ev:onpageload="scwin.onpageload">
+		<xf:group class="sub_contents " id="" style="">
+			<xf:group class="pgtbox" id="" style="">
+				<w2:textbox class="pgt_tit" id="" label="인력 관리" style="" tagname="" />
+			</xf:group>
+			<xf:group class="schbox" id="search_box" style="">
+				<xf:group class="schbox_inner" id="" style="">
+					<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" id="" style="width:Infinity%;" tagname="table">
+						<w2:attributes>
+							<w2:summary />
+						</w2:attributes>
+						<xf:group tagname="colgroup">
+							<xf:group tagname="col" style="width:100px;" id="searchComp_1"></xf:group>
+							<xf:group tagname="col" style="" id="searchComp_2"></xf:group>
+							<xf:group tagname="col" style="width:100px;" id="searchComp_3"></xf:group>
+							<xf:group tagname="col" style="" id="searchComp_4"></xf:group>
+							<xf:group tagname="col" style="width:100px;" id="searchComp_5"></xf:group>
+							<xf:group tagname="col" style="" id="searchComp_6"></xf:group>
+							<xf:group tagname="col" style="width:100px;" id="searchComp_7"></xf:group>
+							<xf:group tagname="col" style="" id="searchComp_8"></xf:group>
+						</xf:group>
+						<xf:group tagname="tr" style="" id="" class="">
+							<xf:group tagname="th" style="" class="w2tb_th">
+								<w2:textbox class="" id="" label="사용자ID" localeRef="Pug_SEARCH_00002" style=""></w2:textbox>
+							</xf:group>
+							<xf:group tagname="td" style="" id="" class="w2tb_td">
+								<xf:input ref="data:dmp_pugVo.scUserId" style="width:100px;" id="" placeholder="" class=""></xf:input>
+							</xf:group>
+							<xf:group tagname="th" style="" class="w2tb_th">
+								<w2:textbox localeRef="Pug_SEARCH_00002" style="" id="" label="이름" class=""></w2:textbox>
+							</xf:group>
+							<xf:group tagname="td" style="" id="" class="w2tb_td">
+								<xf:input ref="data:dmp_pugVo.scUserName" style="width:100px;" id="" placeholder="" class=""></xf:input>
+							</xf:group>
+							<xf:group tagname="th" style="" class="w2tb_th">
+								<w2:textbox localeRef="Pug_SEARCH_00003" style="" id="" label="메뉴 그룹" class=""></w2:textbox>
+							</xf:group>
+							<xf:group tagname="td" style="" id="" class="w2tb_td">
+								<xf:select1 id="" chooseOption="true" style="width: 148px;height: 30px;" submenuSize="auto" allOption="" disabled="false"
+									direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" chooseOptionLabel="$blank"
+									ref="data:dmp_pugVo.scGrpName">
+									<xf:choices>
+										<xf:itemset nodeset="data:dlt_grpVoList">
+											<xf:label ref="grpName"></xf:label>
+											<xf:value ref="grpName"></xf:value>
+										</xf:itemset>
+									</xf:choices>
+								</xf:select1>
+							</xf:group>
+							<xf:group tagname="th" style="" class="w2tb_th">
+								<w2:textbox localeRef="Pug_SEARCH_00004" style="" id="" label="직책" class=""></w2:textbox>
+							</xf:group>
+							<xf:group tagname="td" style="" id="" class="w2tb_td">
+								<xf:input ref="data:dmp_pugVo.scUserPosition" style="width:100px;" id="" placeholder="" class=""></xf:input>
+							</xf:group>
+						</xf:group>
+					</xf:group>
+				</xf:group>
+				<xf:group class="btn_schbox" id="" style="">
+					<xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_search" style="" type="button"
+						ev:onclick="scwin.btn_search_onclick" localeRef="COMMON_BUTTON_00001">
+						<xf:label><![CDATA[조회]]></xf:label>
+					</xf:trigger>
+				</xf:group>
+			</xf:group>
+			<xf:group class="titbox" id="" style="">
+				<xf:group class="count rt" id="">
+					<w2:span id="" label="총" localeRef="COMMON_LABEL_00002" style=""></w2:span>
+					<w2:span class="num" id="spn_listCnt" label="0" ref="" style=""></w2:span>
+					<w2:span id="" label="건" localeRef="COMMON_LABEL_00003" style=""></w2:span>
+				</xf:group>
+			</xf:group>
+			<xf:group class="titbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_02 서브타이틀(h3)"
+				style="">
+				<xf:group class="rt" id="" style="">
+					<xf:trigger class="btn_cm row_add" id="btn_new" style="" type="button" ev:onclick="scwin.btn_new_onclick">
+						<xf:label><![CDATA[등록]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="btn_cm  row_del" id="btn_delete" style="" type="button" ev:onclick="scwin.btn_delete_onclick">
+						<xf:label><![CDATA[삭제]]></xf:label>
+					</xf:trigger>
+
+					<xf:trigger class="btn_cm save" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
+						<xf:label><![CDATA[저장]]></xf:label>
+					</xf:trigger>
+				</xf:group>
+				
+			</xf:group>
+			<xf:group adaptiveThreshold="" class="gvwbox" id="" style="">
+				<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dlt_pugVoList"
+					defaultCellHeight="26" focusMode="row" id="grd_list" scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;"
+					visibleRowNum="10" ev:oncellclick="scwin.grd_list_oncellclick" readOnly="true" rowStatusVisible="true" rowNumVisible="true"
+					rowStatusHeaderValue="상태" rowNumHeaderValue="순번" keyMoveEditMode="true" editModeEvent="onclick" rowNumWidth="20" rowStatusWidth="20">
+					<w2:caption style="" id="caption2" value="this is a grid caption."></w2:caption>
+					<w2:header style="" id="header2">
+						<w2:row style="" id="row3">
+							<w2:column width="20" inputType="checkbox" style="" id="column11" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column1" value="pug_id" displayMode="label"
+								localeRef="Pug_COLNAME_00001" hidden="true">
+							</w2:column>
+							<w2:column width="70" inputType="text" style="" id="column2" value="프로젝트ID" displayMode="label"
+								localeRef="Pug_COLNAME_00002" hidden="true">
+							</w2:column>
+							<w2:column width="70" inputType="text" style="" id="column3" value="사용자ID" displayMode="label"
+								localeRef="Pug_COLNAME_00003" hidden="false">
+							</w2:column>
+							<w2:column width="70" inputType="text" style="" id="column4" value="그룹ID" displayMode="label" localeRef="Pug_COLNAME_00004"
+								hidden="true">
+							</w2:column>
+
+							<w2:column width="70" inputType="text" style="" id="column5" value="이름" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column9" value="그룹명" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column7" value="직책" displayMode="label"></w2:column>
+						</w2:row>
+					</w2:header>
+					<w2:gBody style="" id="gBody2">
+						<w2:row style="" id="row4">
+							<w2:column width="20" inputType="checkbox" style="" id="chk" value="" displayMode="label" readOnly="false"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="pugId" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="pjtId" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="userId" value="" displayMode="label" readOnly="true" editModeEvent="onclick"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="grpId" value="" displayMode="label"></w2:column>
+
+							<w2:column width="70" inputType="text" style="" id="userName" value="" displayMode="label" readOnly="true"></w2:column>
+							<w2:column width="70" inputType="select" style="" id="grpName" value="" displayMode="label" allOption=""
+								chooseOption="true" chooseOptionLabel="$blank" ref="" editModeEvent="onclick" readOnly="false">
+								<w2:choices>
+									<w2:itemset nodeset="data:dlt_grpVoList">
+										<w2:label ref="grpName"></w2:label>
+										<w2:value ref="grpName"></w2:value>
+									</w2:itemset>
+								</w2:choices>
+							</w2:column>
+							<w2:column width="70" inputType="text" style="" id="userPosition" value="" displayMode="label" readOnly="true"></w2:column>
+						</w2:row>
+					</w2:gBody>
+				</w2:gridView>
+			</xf:group>
+			<xf:group class="pglbox" id="" style="">
+				<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_pugList" pageSize="5" pagingType="0" style=""
+					ev:onclick="scwin.pgl_pugList_onclick">
+				</w2:pageList>
+				<xf:group class="pgl_count" id="" style="display: none;">
+					<w2:span class="num" id="spn_pageIndex" label="0" ref="data:dma_pugVo.pageIndex" style=""></w2:span>
+					<w2:span id="span1" label="/" style=""></w2:span>
+					<w2:span id="spn_totalPageCount" label="0" ref="data:dma_pugVo.totalPageCount" style=""></w2:span>
+					<w2:span id="span2" label="페이지" localeRef="COMMON_LABEL_00005" style=""></w2:span>
+				</xf:group>
+			</xf:group>
+		</xf:group>
+	</body>
+</html>
