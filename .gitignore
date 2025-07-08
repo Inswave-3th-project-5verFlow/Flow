@@ -139,3 +139,4 @@ matrix_mobile_home/
 
 # 웹팩 빌드 결과물
 src/main/webapp/_wpack_/
+src/main/webapp/websquare/_websquare_/
