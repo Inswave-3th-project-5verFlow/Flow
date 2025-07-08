@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper      
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"      
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	@subject     : 산출물관리 관련 처리를 담당하는 Sql Mapper
+	@description : 산출물관리 관련 처리를 담당하는 Sql Mapper
+	@author      : 우민지
+	@since       : 2025/07/07
+	@modification
+	===========================================================
+	DATE              AUTHOR             DESC
+	===========================================================
+	2025/07/07              우민지             최초 생성
+ -->
+<mapper namespace="com.demo.proworks.out">
+    <insert id="insertOut" parameterType="com.demo.proworks.out.vo.OutVo">
+    	<!-- 산출물관리를 등록한다. -->	
+    		
+        INSERT INTO OUTPUT   /* QueryID : com.demo.proworks.out.insertOut */
+        ( 
+            ID
+            <if test="pjtId          != null"> , PJT_ID           </if>
+            <if test="name            != null"> , NAME             </if>
+            <if test="createdAt      != null"> , CREATED_AT       </if>
+            <if test="updatedAt      != null"> , UPDATED_AT       </if>
+            <if test="approvalStatus != null"> , APPROVAL_STATUS  </if>
+            <if test="approvalDate   != null"> , APPROVAL_DATE    </if>
+            <if test="approvalComment!= null"> , APPROVAL_COMMENT </if>
+            <if test="outputType     != null"> , OUTPUT_TYPE      </if>
+            <if test="isDeleted      != null"> , IS_DELETED       </if>
+        )
+        VALUES  
+        ( 
+            #{id}
+            <if test="pjtId          != null"> , #{pjtId}           </if>
+            <if test="name            != null"> , #{name}             </if>
+            <if test="createdAt      != null"> , #{createdAt}       </if>
+            <if test="updatedAt      != null"> , #{updatedAt}       </if>
+            <if test="approvalStatus != null"> , #{approvalStatus}  </if>
+            <if test="approvalDate   != null"> , #{approvalDate}    </if>
+            <if test="approvalComment!= null"> , #{approvalComment} </if>
+            <if test="outputType     != null"> , #{outputType}      </if>
+            <if test="isDeleted      != null"> , #{isDeleted}       </if> 
+        )          
+    </insert>	
+	
+    <update id="updateOut" parameterType="com.demo.proworks.out.vo.OutVo">
+    	<!-- 산출물관리를 갱신한다. -->
+    	
+        UPDATE OUTPUT    /* QueryID : com.demo.proworks.out.updateOut */      
+      	  SET  
+                ID               = #{id}                      	                       
+            <if test="pjtId          != null"> , PJT_ID           = #{pjtId}           </if>
+            <if test="name            != null"> , NAME             = #{name}             </if>
+            <if test="createdAt      != null"> , CREATED_AT       = #{createdAt}       </if>
+            <if test="updatedAt      != null"> , UPDATED_AT       = #{updatedAt}       </if>
+            <if test="approvalStatus != null"> , APPROVAL_STATUS  = #{approvalStatus}  </if>
+            <if test="approvalDate   != null"> , APPROVAL_DATE    = #{approvalDate}    </if>
+            <if test="approvalComment!= null"> , APPROVAL_COMMENT = #{approvalComment} </if>
+            <if test="outputType     != null"> , OUTPUT_TYPE      = #{outputType}      </if>
+            <if test="isDeleted      != null"> , IS_DELETED       = #{isDeleted}       </if>                 
+        WHERE   
+                ID               = #{id}              
+    </update>
+	
+    <delete id="deleteOut" parameterType="com.demo.proworks.out.vo.OutVo">
+    	<!-- 산출물관리를 삭제한다. -->
+    	
+        DELETE FROM OUTPUT   /* QueryID : com.demo.proworks.out.deleteOut */ 
+        WHERE   
+                ID               = #{id}                      
+    </delete>
+	
+    <select id="selectOut" parameterType="com.demo.proworks.out.vo.OutVo" resultType="com.demo.proworks.out.vo.OutVo">
+    	<!-- 산출물관리를 상세 조회한다. -->	
+        SELECT     /* QueryID : com.demo.proworks.out.selectOut */
+            ID as id, PJT_ID as pjtId, NAME as name, CREATED_AT as createdAt, UPDATED_AT as updatedAt, APPROVAL_STATUS as approvalStatus, APPROVAL_DATE as approvalDate, APPROVAL_COMMENT as approvalComment, OUTPUT_TYPE as outputType, IS_DELETED as isDeleted
+        FROM OUTPUT 
+        WHERE 
+                ID               = #{id}              			
+    </select>
+	
+    <select id="selectListOut" parameterType="com.demo.proworks.out.vo.OutVo" resultType="com.demo.proworks.out.vo.OutVo">
+    	<!-- 산출물관리 목록을 조회한다. -->
+           SELECT    /* QueryID : com.demo.proworks.out.selectListOut */
+               ID as id, PJT_ID as pjtId, NAME as name, CREATED_AT as createdAt, UPDATED_AT as updatedAt, APPROVAL_STATUS as approvalStatus, APPROVAL_DATE as approvalDate, APPROVAL_COMMENT as approvalComment, OUTPUT_TYPE as outputType, IS_DELETED as isDeleted		       
+           FROM (
+               SELECT  S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
+               FROM (				
+                   SELECT 
+                       *  		                  
+                   FROM OUTPUT
+                   WHERE  1=1    		
+	     																														
+               ) S, (SELECT @ROWNUM := 0) TMP
+           ) A
+            WHERE PAGE = #{pageIndex}
+    </select>
+	
+    <select id="selectListCountOut" parameterType="com.demo.proworks.out.vo.OutVo" resultType="long">
+    <!-- 산출물관리 목록의 카운트를 조회한다. -->
+    
+         SELECT    /* QueryID : com.demo.proworks.out.selectListCountOut */
+             COUNT(*) totcnt  		                  
+         FROM OUTPUT
+         WHERE  1=1    		
+
+    </select>
+
+</mapper>
