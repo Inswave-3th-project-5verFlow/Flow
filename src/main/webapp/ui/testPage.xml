@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head meta_screenName="테스트 페이지">
+        <w2:type>COMPONENT</w2:type>
+        <w2:buildDate/>
+        <w2:MSA/>
+        <xf:model>
+            <w2:dataCollection baseNode="map"/>
+            <w2:workflowCollection/>
+        </xf:model>
+        <w2:layoutInfo/>
+        <w2:publicInfo method=""/>
+        <script lazy="false" type="text/javascript"><![CDATA[
+scwin.onpageload = function() {
+    console.log("테스트 페이지가 로드되었습니다.");
+};
+]]></script>
+    </head>
+    <body ev:onpageload="scwin.onpageload">
+        <xf:group class="sub_contents" style="padding: 20px;">
+            <xf:group class="titbox" style="margin-bottom: 20px;">
+                <w2:textbox style="font-size: 24px; font-weight: bold; color: #2c3e50;" 
+                           label="✅ 테스트 페이지" tagname="h2"></w2:textbox>
+            </xf:group>
+            
+            <xf:group class="tblbox" style="margin-bottom: 20px;">
+                <xf:group class="w2tb tbl" tagname="table" style="border: 1px solid #ddd;">
+                    <xf:group tagname="colgroup">
+                        <xf:group style="width:150px;" tagname="col"></xf:group>
+                        <xf:group style="" tagname="col"></xf:group>
+                    </xf:group>
+                    <xf:group tagname="tr">
+                        <xf:group class="w2tb_th" tagname="th" style="background-color: #f8f9fa; padding: 10px;">
+                            <w2:textbox label="페이지 상태"></w2:textbox>
+                        </xf:group>
+                        <xf:group class="w2tb_td" tagname="td" style="padding: 10px;">
+                            <w2:textbox label="정상 로드됨" style="color: #28a745; font-weight: bold;"></w2:textbox>
+                        </xf:group>
+                    </xf:group>
+                    <xf:group tagname="tr">
+                        <xf:group class="w2tb_th" tagname="th" style="background-color: #f8f9fa; padding: 10px;">
+                            <w2:textbox label="로드 시간"></w2:textbox>
+                        </xf:group>
+                        <xf:group class="w2tb_td" tagname="td" style="padding: 10px;">
+                            <xf:span id="loadTime" style="color: #6c757d;"></xf:span>
+                        </xf:group>
+                    </xf:group>
+                </xf:group>
+            </xf:group>
+            
+            <xf:group style="background-color: #e3f2fd; padding: 15px; border-radius: 5px;">
+                <w2:textbox label="이 페이지는 WebSquare 탭 컨트롤 테스트를 위한 페이지입니다." 
+                           style="color: #1976d2; margin-bottom: 10px;"></w2:textbox>
+                <w2:textbox label="탭이 정상적으로 생성되고 페이지가 로드되었다면 탭 컨트롤 API가 올바르게 작동하고 있는 것입니다." 
+                           style="color: #424242;"></w2:textbox>
+            </xf:group>
+        </xf:group>
+        
+        <script type="text/javascript">
+            // 페이지 로드 시간 표시
+            loadTime.setValue(new Date().toLocaleString());
+        </script>
+    </body>
+</html>
