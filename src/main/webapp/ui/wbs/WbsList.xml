@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
+	xmlns:xf="http://www.w3.org/2002/xforms">
+	<head>
+		<w2:type>COMPONENT</w2:type>
+		<w2:buildDate />
+		<w2:MSA />
+		<xf:model>
+			<w2:dataCollection baseNode="map">
+				<w2:dataMap baseNode="map" id="dmp_wbsVo" style="">
+					<w2:keyInfo>
+						<w2:key dataType="text" id="scTaskId" name="search_업무ID"></w2:key>
+						<w2:key dataType="text" id="scTaskName" name="search_업무명"></w2:key>
+						<w2:key dataType="text" id="scTaskStatus" name="search_업무상태"></w2:key>
+						<w2:key dataType="text" id="scStgId" name="search_단계ID"></w2:key>
+						<w2:key dataType="text" id="scTaskAsi" name="search_업무담당자"></w2:key>
+						<w2:key dataType="text" id="scTaskRate" name="search_진척률"></w2:key>
+
+						<w2:key dataType="text" id="pageIndex" name="페이지_번호" defaultValue="1"></w2:key>
+						<w2:key dataType="text" id="pageSize" name="페이지_건수" defaultValue="10"></w2:key>
+						<w2:key dataType="text" name="프로젝트ID" id="pjtId"></w2:key>
+					</w2:keyInfo>
+					<w2:data use="false"></w2:data>
+				</w2:dataMap>
+				<w2:dataList baseNode="list" id="dlt_wbsVoList" repeatNode="map" saveRemovedData="true" style="">
+					<w2:columnInfo>
+						<w2:column dataType="text" id="taskId" name="업무ID"></w2:column>
+						<w2:column dataType="text" id="taskName" name="업무명"></w2:column>
+						<w2:column dataType="text" id="taskDes" name="업무상세"></w2:column>
+						<w2:column dataType="text" id="taskStatus" name="업무상태"></w2:column>
+						<w2:column dataType="text" id="isTest" name="테스트여부"></w2:column>
+						<w2:column dataType="text" id="taskDepth" name="뎁스"></w2:column>
+						<w2:column dataType="text" id="stgId" name="단계ID"></w2:column>
+						<w2:column dataType="text" id="ptTaskId" name="상위업무ID"></w2:column>
+						<w2:column dataType="text" id="taskSeq" name="순서"></w2:column>
+						<w2:column dataType="text" id="taskSt" name="시작예정일"></w2:column>
+						<w2:column dataType="text" id="taskEt" name="완료예정일"></w2:column>
+						<w2:column dataType="text" id="taskRst" name="실제시작일"></w2:column>
+						<w2:column dataType="text" id="taskRet" name="실제완료일"></w2:column>
+						<w2:column dataType="text" id="taskAsi" name="업무담당자"></w2:column>
+						<w2:column dataType="text" id="taskRate" name="진척률"></w2:column>
+						<w2:column dataType="text" id="pjtId" name="프로젝트ID"></w2:column>
+
+					</w2:columnInfo>
+				</w2:dataList>
+				<w2:dataMap baseNode="map" id="dmp_wbsVoDetail" style="">
+					<w2:keyInfo>
+
+					</w2:keyInfo>
+				</w2:dataMap>
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_wbsStatusList" saveRemovedData="true">
+					<w2:columnInfo>
+						<w2:column dataType="text" name="업무상태" id="taskStatus"></w2:column>
+					</w2:columnInfo>
+					<w2:data use="true">
+						<w2:row>
+							<taskStatus><![CDATA[진행중]]></taskStatus>
+						</w2:row>
+						<w2:row>
+							<taskStatus><![CDATA[대기]]></taskStatus>
+						</w2:row>
+						<w2:row>
+							<taskStatus><![CDATA[완료]]></taskStatus>
+						</w2:row>
+					</w2:data>
+				</w2:dataList>
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_wbsStgList" saveRemovedData="true">
+					<w2:columnInfo>
+						<w2:column dataType="text" name="단계ID" id="stgId"></w2:column>
+						<w2:column dataType="text" name="단계명" id="stgName"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
+			</w2:dataCollection>
+			<w2:workflowCollection></w2:workflowCollection>
+
+			<xf:submission id="sbm_selectWbsVoList" ref='data:json,{"id":"dmp_wbsVo","key":"wbsVo"}'
+				target='data:json,{"id":"dlt_wbsVoList","key":"elData.wbsVoList"}' action="/InsWebApp/WbsList.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
+				processMsg="WBS 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_wbsList_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+			<xf:submission id="sbm_selectWbsStgVoList" action="/InsWebApp/WbsStgList.pwkjson" method="post" mediatype="application/json"
+				ref="" target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit=""
+				ev:submitdone="scwin.sbm_selectWbsStgVoList_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+		</xf:model>
+		<w2:layoutInfo></w2:layoutInfo>
+		<w2:publicInfo method="" />
+		<script lazy="false" type="text/javascript"><![CDATA[// 전역 변수 초기화
+scwin.LOGIN_USER_ID = "";
+scwin.PJT_ID = "";
+
+/**
+ * @method
+ * @name scwin.onpageload
+ * @description
+ * @example
+ * scwin.onpageload();
+ */
+scwin.onpageload = function () {
+    scwin.LOGIN_USER_ID = "1";
+    scwin.PJT_ID = "1";
+
+    // 검색 조건 초기화
+    dmp_wbsVo.set("pjtId", scwin.PJT_ID);
+
+    // 단계 목록 조회 서브미션 호출
+    $c.sbm.execute(sbm_selectWbsStgVoList, {
+        elData: {}
+    });
+
+    // WBS 조회
+    scwin.btn_search_onclick();
+};
+
+/**
+ * 조회 버튼 클릭 이벤트
+ * @date
+ * @memberOf
+ * @param 
+ * @returns
+ * @author 
+ * @example
+ */
+scwin.btn_search_onclick = function (e) {
+
+    // PGAE번호 초기화
+    dmp_wbsVo.set("pageIndex", "1");
+    pgl_wbsList.setSelectedIndex(1);
+
+    // 서버통신 - WBS 조회
+    $c.sbm.execute($p, sbm_selectWbsVoList);
+};
+
+scwin.sbm_wbsList_submitdone = function (e) {
+
+    // error 수신시
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+    if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    }
+
+    // WBS dataMap 초기화
+    dmp_wbsVoDetail.setEmptyValue();
+
+    // 총 레코드 수 업데이트
+    spn_listCnt.setLabel(elData.totalCount);
+
+    // 데이터를 그리드에 셋팅
+    dlt_wbsVoList.setJSON(elData.wbsVoList);
+
+    // 페이지 네비게이터 업데이트
+    var totalPageCount = Math.ceil(elData.totalCount / dmp_wbsVo.get("pageSize"));
+    pgl_wbsList.setCount(totalPageCount);
+
+    // 페이징 정보 업데이트
+    spn_totalPageCount.setValue(totalPageCount);
+    spn_pageIndex.setValue(dmp_wbsVo.get("pageIndex"));
+    pgl_wbsList.setSelectedIndex(dmp_wbsVo.get("pageIndex"));
+};
+
+/**
+ * 페이지 번호 클릭 이벤트
+ * @date
+ * @memberOf
+ * @param 
+ * @returns 
+ * @author 
+ * @example
+ */
+scwin.pgl_wbsList_onclick = function (idx) {
+
+    // 페이지 번호 세팅
+    dmp_wbsVo.set("pageIndex", idx);
+    // 서버통신 - 사원목록 조회
+    $c.sbm.execute($p, sbm_selectWbsVoList);
+};
+
+
+scwin.sbm_selectWbsStgVoList_submitdone = function (e) {
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+    if (elHeader == null || elHeader === "" || elHeader === "undefiend" || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    }
+    // 단계 컬렉션 셋팅
+    dlt_wbsStgList.setJSON(elData.wbsStgVoList);
+
+};
+]]></script>
+	</head>
+	<body ev:onpageload="scwin.onpageload">
+		<xf:group class="sub_contents " id="" style="">
+			<xf:group class="pgtbox" id="" style="">
+				<w2:textbox class="pgt_tit" id="" label="WBS" style="" tagname="" />
+			</xf:group>
+			<xf:group class="schbox" id="search_box" style="">
+				<xf:group class="schbox_inner" id="" style="">
+					<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" id="" style="width:Infinity%;" tagname="table">
+						<w2:attributes>
+							<w2:summary />
+						</w2:attributes>
+
+						<!-- colgroup: 6열 (3쌍) 정의 -->
+						<xf:group tagname="colgroup">
+							<xf:group tagname="col" style="width:100px;" id="searchComp_1" />
+							<xf:group tagname="col" style="width:200px;" id="searchComp_2" />
+							<xf:group tagname="col" style="width:100px;" id="searchComp_3" />
+							<xf:group tagname="col" style="width:200px;" id="searchComp_4" />
+							<xf:group tagname="col" style="width:100px;" id="searchComp_5" />
+							<xf:group tagname="col" style="width:200px;" id="searchComp_6" />
+						</xf:group>
+
+						<!-- 첫 번째 행 -->
+						<xf:group tagname="tr">
+							<xf:group tagname="th" class="w2tb_th">
+								<w2:textbox localeRef="Wbs_SEARCH_00001" label="업무ID" />
+							</xf:group>
+							<xf:group tagname="td" class="w2tb_td">
+								<xf:input ref="data:dmp_wbsVo.scTaskId" style="width:100%;" />
+							</xf:group>
+
+							<xf:group tagname="th" class="w2tb_th">
+								<w2:textbox localeRef="Wbs_SEARCH_00002" label="업무명" />
+							</xf:group>
+							<xf:group tagname="td" class="w2tb_td">
+								<xf:input ref="data:dmp_wbsVo.scTaskName" style="width:100%;" />
+							</xf:group>
+
+							<xf:group tagname="th" class="w2tb_th">
+								<w2:textbox localeRef="Wbs_SEARCH_00003" label="업무상태" />
+							</xf:group>
+							<xf:group tagname="td" class="w2tb_td">
+								<xf:select1 id="" chooseOption="true" style="width: 100%;height: 30px;" submenuSize="auto" allOption=""
+									disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" ref="data:dmp_wbsVo.scTaskStatus" chooseOptionLabel="$blank">
+									<xf:choices>
+										<xf:itemset nodeset="data:dlt_wbsStatusList">
+											<xf:label ref="taskStatus"></xf:label>
+											<xf:value ref="taskStatus"></xf:value>
+										</xf:itemset>
+									</xf:choices>
+								</xf:select1>
+							</xf:group>
+						</xf:group>
+
+						<!-- 두 번째 행 -->
+						<xf:group tagname="tr">
+							<xf:group tagname="th" class="w2tb_th">
+								<w2:textbox localeRef="Wbs_SEARCH_00004" label="단계ID" />
+							</xf:group>
+							<xf:group tagname="td" class="w2tb_td">
+								<xf:select1 id="" chooseOption="true" style="width: 100%;height: 30px;" submenuSize="auto" allOption=""
+									disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" ref="data:dmp_wbsVo.scStgId" chooseOptionLabel="$blank">
+									<xf:choices>
+										<xf:itemset nodeset="data:dlt_wbsStgList">
+											<xf:label ref="stgName"></xf:label>
+											<xf:value ref="stgId"></xf:value>
+										</xf:itemset>
+									</xf:choices>
+								</xf:select1>
+							</xf:group>
+
+							<xf:group tagname="th" class="w2tb_th">
+								<w2:textbox localeRef="Wbs_SEARCH_00005" label="업무담당자" />
+							</xf:group>
+							<xf:group tagname="td" class="w2tb_td">
+								<xf:input ref="data:dmp_wbsVo.scTaskAsi" style="width:100%;" />
+							</xf:group>
+
+							<xf:group tagname="th" class="w2tb_th">
+								<w2:textbox localeRef="Wbs_SEARCH_00006" label="진척률" />
+							</xf:group>
+							<xf:group tagname="td" class="w2tb_td">
+								<xf:input ref="data:dmp_wbsVo.scTaskRate" style="width:100%;" />
+							</xf:group>
+						</xf:group>
+					</xf:group>
+
+				</xf:group>
+				<xf:group class="btn_schbox" id="" style="">
+					<xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_search" style="" type="button"
+						ev:onclick="scwin.btn_search_onclick" localeRef="COMMON_BUTTON_00001">
+						<xf:label><![CDATA[조회]]></xf:label>
+					</xf:trigger>
+				</xf:group>
+			</xf:group>
+			<xf:group class="titbox" id="" style="">
+				<xf:group class="count" id="">
+					<w2:span id="" label="총" localeRef="COMMON_LABEL_00002" style=""></w2:span>
+					<w2:span class="num" id="spn_listCnt" label="0" ref="" style=""></w2:span>
+					<w2:span id="" label="건" localeRef="COMMON_LABEL_00003" style=""></w2:span>
+				</xf:group>
+			</xf:group>
+			<xf:group adaptiveThreshold="" class="gvwbox" id="" style="">
+				<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dlt_wbsVoList"
+					defaultCellHeight="26" focusMode="row" id="grd_list" scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;"
+					visibleRowNum="10" ev:oncellclick="scwin.grd_list_oncellclick" readOnly="true">
+					<w2:caption style="" id="caption2" value="this is a grid caption."></w2:caption>
+					<w2:header style="" id="header2">
+						<w2:row style="" id="row3">
+							<w2:column width="70" inputType="text" style="" id="column1" value="업무ID" displayMode="label" localeRef="Wbs_COLNAME_00001"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column2" value="업무명" displayMode="label" localeRef="Wbs_COLNAME_00002"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column3" value="업무상세" displayMode="label" localeRef="Wbs_COLNAME_00003"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column4" value="업무상태" displayMode="label" localeRef="Wbs_COLNAME_00004"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column5" value="테스트여부" displayMode="label"
+								localeRef="Wbs_COLNAME_00005"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column6" value="뎁스" displayMode="label" localeRef="Wbs_COLNAME_00006"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column7" value="단계ID" displayMode="label" localeRef="Wbs_COLNAME_00007"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column8" value="상위업무ID" displayMode="label"
+								localeRef="Wbs_COLNAME_00008"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column9" value="순서" displayMode="label" localeRef="Wbs_COLNAME_00009"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column10" value="시작예정일" displayMode="label"
+								localeRef="Wbs_COLNAME_00010"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column11" value="완료예정일" displayMode="label"
+								localeRef="Wbs_COLNAME_00011"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column12" value="실제시작일" displayMode="label"
+								localeRef="Wbs_COLNAME_00012"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column13" value="실제완료일" displayMode="label"
+								localeRef="Wbs_COLNAME_00013"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column14" value="업무담당자" displayMode="label"
+								localeRef="Wbs_COLNAME_00014"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column15" value="진척률" displayMode="label" localeRef="Wbs_COLNAME_00015"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column16" value="프로젝트ID" displayMode="label"
+								localeRef="Wbs_COLNAME_00016"></w2:column>
+
+						</w2:row>
+					</w2:header>
+					<w2:gBody style="" id="gBody2">
+						<w2:row style="" id="row4">
+							<w2:column width="70" inputType="text" style="" id="taskId" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="taskName" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="taskDes" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="taskStatus" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="isTest" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="taskDepth" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="stgId" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="ptTaskId" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="taskSeq" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="taskSt" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="taskEt" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="taskRst" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="taskRet" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="taskAsi" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="taskRate" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="pjtId" value="" displayMode="label"></w2:column>
+
+						</w2:row>
+					</w2:gBody>
+				</w2:gridView>
+			</xf:group>
+			<xf:group class="pglbox" id="" style="">
+				<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_wbsList" pageSize="5" pagingType="0" style=""
+					ev:onclick="scwin.pgl_wbsList_onclick">
+				</w2:pageList>
+				<xf:group class="pgl_count" id="" style="display: none;">
+					<w2:span class="num" id="spn_pageIndex" label="0" ref="data:dma_wbsVo.pageIndex" style=""></w2:span>
+					<w2:span id="span1" label="/" style=""></w2:span>
+					<w2:span id="spn_totalPageCount" label="0" ref="data:dma_wbsVo.totalPageCount" style=""></w2:span>
+					<w2:span id="span2" label="페이지" localeRef="COMMON_LABEL_00005" style=""></w2:span>
+				</xf:group>
+			</xf:group>
+		</xf:group>
+	</body>
+</html>
