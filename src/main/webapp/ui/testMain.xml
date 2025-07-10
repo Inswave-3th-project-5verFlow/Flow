@@ -1,0 +1,562 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * ====================================================================
+ * 프로젝트 관리 시스템 - 메인 화면 (웹스퀘어 표준 방식)
+ * ====================================================================
+ * 파일명        : testMain.xml
+ * 화면명        : 프로젝트 관리 시스템 메인화면
+ * 설명          : 헤더/사이드바/탭 영역의 기본 레이아웃 틀
+ * ====================================================================
+ */
+-->
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" 
+    xmlns:xf="http://www.w3.org/2002/xforms">
+    
+    <head meta_screenName="프로젝트 관리 시스템 메인화면">
+        <w2:type>MAIN</w2:type>
+        <w2:buildDate/>
+        <w2:MSA/>
+        
+        <!-- =============================================== -->
+        <!-- 데이터 모델 정의 영역                            -->
+        <!-- =============================================== -->
+        <xf:model>
+            <w2:dataCollection baseNode="map">
+                <!-- 메뉴 데이터 컬렉션 -->
+                <w2:dataList baseNode="list" repeatNode="map" id="menuDataList">
+                    <w2:columnInfo>
+                        <w2:column id="menuId" name="메뉴ID" dataType="text"></w2:column>
+                        <w2:column id="menuName" name="메뉴명" dataType="text"></w2:column>
+                        <w2:column id="menuUrl" name="메뉴URL" dataType="text"></w2:column>
+                        <w2:column id="parentId" name="상위메뉴ID" dataType="text"></w2:column>
+                        <w2:column id="depth" name="레벨" dataType="text"></w2:column>
+                    </w2:columnInfo>
+                    <w2:data use="true">
+                    	<w2:row>
+                    		<menuId><![CDATA[1]]></menuId>
+                    		<menuName><![CDATA[프로젝트 관리]]></menuName>
+                    		<menuUrl><![CDATA[]]></menuUrl>
+                    		<parentId><![CDATA[]]></parentId>
+                    		<depth><![CDATA[1]]></depth>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[2]]></menuId>
+                    		<menuName><![CDATA[프로젝트 상세정보]]></menuName>
+                    		<menuUrl><![CDATA[pjt/PjtDetail.xml]]></menuUrl>
+                    		<parentId><![CDATA[1]]></parentId>
+                    		<depth><![CDATA[2]]></depth>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[3]]></menuId>
+                    		<menuName><![CDATA[인력 관리]]></menuName>
+                    		<menuUrl><![CDATA[pug/PugList.xml]]></menuUrl>
+                    		<parentId><![CDATA[1]]></parentId>
+                    		<depth><![CDATA[2]]></depth>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[4]]></menuId>
+                    		<menuName><![CDATA[일정 관리]]></menuName>
+                    		<menuUrl><![CDATA[]]></menuUrl>
+                    		<parentId><![CDATA[]]></parentId>
+                    		<depth><![CDATA[1]]></depth>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[5]]></menuId>
+                    		<menuName><![CDATA[WBS]]></menuName>
+                    		<parentId><![CDATA[4]]></parentId>
+                    		<depth><![CDATA[2]]></depth>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[6]]></menuId>
+                    		<menuName><![CDATA[간트 차트]]></menuName>
+                    		<parentId><![CDATA[4]]></parentId>
+                    		<depth><![CDATA[2]]></depth>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[7]]></menuId>
+                    		<menuName><![CDATA[업무 관리]]></menuName>
+                    		<depth><![CDATA[1]]></depth>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[8]]></menuId>
+                    		<menuName><![CDATA[설계 업무]]></menuName>
+                    		<parentId><![CDATA[7]]></parentId>
+                    		<depth><![CDATA[2]]></depth>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[9]]></menuId>
+                    		<menuName><![CDATA[개발 업무]]></menuName>
+                    		<parentId><![CDATA[7]]></parentId>
+                    		<depth><![CDATA[2]]></depth>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[10]]></menuId>
+                    		<menuName><![CDATA[칸반 보드]]></menuName>
+                    		<parentId><![CDATA[7]]></parentId>
+                    		<depth><![CDATA[2]]></depth>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[11]]></menuId>
+                    		<menuName><![CDATA[테스트 관리]]></menuName>
+                    		<depth><![CDATA[1]]></depth>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[12]]></menuId>
+                    		<menuName><![CDATA[테스트 내역]]></menuName>
+                    		<parentId><![CDATA[11]]></parentId>
+                    		<depth><![CDATA[2]]></depth>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[13]]></menuId>
+                    		<menuName><![CDATA[테스트 결함]]></menuName>
+                    		<parentId><![CDATA[11]]></parentId>
+                    		<depth><![CDATA[2]]></depth>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[14]]></menuId>
+                    		<menuName><![CDATA[이슈/리스크 관리]]></menuName>
+                    		<depth><![CDATA[1]]></depth>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[15]]></menuId>
+                    		<menuName><![CDATA[산출물 관리]]></menuName>
+                    		<depth><![CDATA[1]]></depth>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[16]]></menuId>
+                    		<menuName><![CDATA[(메뉴표시x)프로젝트 등록]]></menuName>
+                    		<depth><![CDATA[1]]></depth>
+                    		<menuUrl><![CDATA[pjt/Pjt.xml]]></menuUrl>
+                    	</w2:row>
+                    	<w2:row>
+                    		<depth><![CDATA[1]]></depth>
+                    		<menuId><![CDATA[17]]></menuId>
+                    		<menuName><![CDATA[(메뉴표시x)프로젝트 목록]]></menuName>
+                    		<menuUrl><![CDATA[pjt/PjtList.xml]]></menuUrl>
+                    	</w2:row>
+                    	<w2:row>
+                    		<menuId><![CDATA[18]]></menuId>
+                    		<menuName><![CDATA[테스트페이지]]></menuName>
+                    		<menuUrl><![CDATA[testPage.xml]]></menuUrl>
+                    		<depth><![CDATA[1]]></depth>
+                    	</w2:row>
+                    </w2:data>
+                </w2:dataList>
+                
+                <!-- 사용자 정보 데이터맵 -->
+                <w2:dataMap baseNode="map" id="dmp_userInfo">
+                    <w2:keyInfo>
+                        <w2:key dataType="text" name="userId" id="userId"></w2:key>
+                        <w2:key dataType="text" name="userName" id="userName"></w2:key>
+                        <w2:key dataType="text" name="userRole" id="userRole"></w2:key>
+                        <w2:key dataType="text" name="userDept" id="userDept"></w2:key>
+                        <w2:key dataType="text" name="profileImage" id="profileImage"></w2:key>
+                    </w2:keyInfo>
+                </w2:dataMap>
+                
+                <!-- 시스템 정보 데이터맵 -->
+                <w2:dataMap baseNode="map" id="dmp_systemInfo">
+                    <w2:keyInfo>
+                        <w2:key dataType="text" name="systemName" id="systemName"></w2:key>
+                        <w2:key dataType="text" name="selectedProjectId" id="selectedProjectId"></w2:key>
+                        <w2:key dataType="text" name="selectedProjectName" id="selectedProjectName"></w2:key>
+                    </w2:keyInfo>
+                </w2:dataMap>
+                
+                <!-- 프로젝트 목록 데이터리스트 -->
+                <w2:dataList baseNode="list" repeatNode="map" id="dlt_projects">
+                    <w2:columnInfo>
+                        <w2:column id="projectId" name="프로젝트ID" dataType="text"></w2:column>
+                        <w2:column id="projectName" name="프로젝트명" dataType="text"></w2:column>
+                        <w2:column id="status" name="상태" dataType="text"></w2:column>
+                    </w2:columnInfo>
+                    <w2:data use="true">
+                        <w2:row>
+                            <projectId><![CDATA[PJ001]]></projectId>
+                            <projectName><![CDATA[ERP 시스템 개발]]></projectName>
+                            <status><![CDATA[진행중]]></status>
+                        </w2:row>
+                        <w2:row>
+                            <projectId><![CDATA[PJ002]]></projectId>
+                            <projectName><![CDATA[모바일 앱 개발]]></projectName>
+                            <status><![CDATA[완료]]></status>
+                        </w2:row>
+                        <w2:row>
+                            <projectId><![CDATA[PJ003]]></projectId>
+                            <projectName><![CDATA[데이터 분석 플랫폼]]></projectName>
+                            <status><![CDATA[계획]]></status>
+                        </w2:row>
+                    </w2:data>
+                </w2:dataList>
+            </w2:dataCollection>
+        </xf:model>
+        
+        <!-- =============================================== -->
+        <!-- 기본 JavaScript                               -->
+        <!-- =============================================== -->
+        <script type="text/javascript"><![CDATA[
+/**
+ * 페이지 로드 이벤트
+ */
+scwin.onpageload = function () {
+    // 사용자 정보 초기화
+    dmp_userInfo.set("userId", "admin");
+    dmp_userInfo.set("userName", "관리자");
+    dmp_userInfo.set("userRole", "시스템 관리자");
+    dmp_userInfo.set("userDept", "IT개발팀");
+    dmp_userInfo.set("profileImage", "������"); // 임시 이모지 프로필
+
+    // 시스템 정보 초기화
+    dmp_systemInfo.set("systemName", "프로젝트 관리 시스템");
+    dmp_systemInfo.set("selectedProjectId", "PJ001");
+    dmp_systemInfo.set("selectedProjectName", "ERP 시스템 개발");
+
+    // 프로젝트 셀렉트박스 초기화
+    scwin.initProjectSelectBox();
+
+    // 웹스퀘어 Generator를 사용한 동적 메뉴 생성
+    scwin.createMenuWithGenerator();
+};
+
+/**
+ * 프로젝트 셀렉트박스 초기화
+ */
+scwin.initProjectSelectBox = function () {
+    // 프로젝트 목록 데이터를 셀렉트박스에 바인딩
+    var projects = dlt_projects.getAllJSON();
+
+    // 셀렉트박스 옵션 설정 (실제 구현 시 사용)
+    // sel_projects.setJSON(projects);
+
+    // 초기 선택값 설정
+    var selectedProjectId = dmp_systemInfo.get("selectedProjectId");
+    // sel_projects.setValue(selectedProjectId);
+};
+
+/**
+ * 사이드바 토글 버튼 클릭
+ */
+scwin.btn_sidebarToggle_onclick = function () {
+    console.log("사이드바 토글 클릭");
+    // TODO: 사이드바 show/hide 구현
+};
+
+/**
+ * 프로젝트 셀렉트박스 변경 이벤트
+ */
+scwin.sel_projects_onchange = function () {
+    console.log("프로젝트 선택 변경");
+    // TODO: 선택된 프로젝트 정보 업데이트
+};
+
+/**
+ * 프로필 이미지 영역 클릭 이벤트
+ */
+scwin.grp_profile_onclick = function () {
+    console.log("프로필 영역 클릭");
+    // TODO: 프로필 메뉴 표시
+};
+
+/**
+ * 웹스퀘어 Generator를 사용한 메뉴 생성 함수
+ */
+scwin.createMenuWithGenerator = function () {
+    var genObj = gen_menu;
+    genObj.removeAll(); // 기존 메뉴 제거
+
+    var menuListLength = menuDataList.getRowCount();
+
+    // 메뉴 데이터를 그룹화 (1뎁스 기준)
+    var menuGroups = {};
+
+    // 1뎁스와 2뎁스 메뉴를 분리하여 그룹화
+    for (var i = 0; i < menuListLength; i++) {
+        var menuData = menuDataList.getRowJSON(i);
+        var parentId = menuData.parentId || 'root';
+
+        if (parentId === 'root' || parentId === '') {
+            // 1뎁스 메뉴인 경우
+            if (!menuGroups[menuData.menuId]) {
+                menuGroups[menuData.menuId] = {
+                    menu: menuData,
+                    children: []
+                };
+            }
+        } else {
+            // 2뎁스 메뉴인 경우
+            if (!menuGroups[parentId]) {
+                menuGroups[parentId] = {
+                    menu: null,
+                    children: []
+                };
+            }
+            menuGroups[parentId].children.push(menuData);
+        }
+    }
+
+    // 그룹화된 메뉴 데이터로 실제 메뉴 DOM 생성
+    for (var groupId in menuGroups) {
+        var group = menuGroups[groupId];
+        if (group.menu) {
+            // 1뎁스 메뉴 생성
+            var idx = genObj.insertChild();
+            var menuObj = genObj.getChild(idx, "anc_menu");
+
+            // 1뎁스 메뉴 설정
+            menuObj.setValue(group.menu.menuName);
+            menuObj.setUserData("menuId", group.menu.menuId);
+            menuObj.setUserData("menuUrl", group.menu.menuUrl);
+            menuObj.setUserData("hasChildren", group.children.length > 0 ? "Y" : "N");
+
+            // 2뎁스 메뉴가 있는 경우 하위 메뉴 생성
+            if (group.children.length > 0) {
+                var subGenObj = genObj.getChild(idx, "gen_subMenu");
+                for (var j = 0; j < group.children.length; j++) {
+                    var childMenu = group.children[j];
+                    var subIdx = subGenObj.insertChild();
+                    var subMenuObj = subGenObj.getChild(subIdx, "anc_subMenu");
+
+                    // 2뎁스 메뉴 설정
+                    subMenuObj.setValue(childMenu.menuName);
+                    subMenuObj.setUserData("menuId", childMenu.menuId);
+                    subMenuObj.setUserData("menuUrl", childMenu.menuUrl);
+                    subMenuObj.setUserData("parentId", childMenu.parentId);
+                }
+            }
+        }
+    }
+};
+
+/**
+ * 1뎁스 메뉴 클릭 이벤트 핸들러
+ */
+scwin.menu_onclick = function () {
+    var hasChildren = this.getUserData("hasChildren");
+    var menuUrl = this.getUserData("menuUrl");
+
+    if (hasChildren === "Y") {
+        // 하위 메뉴 토글
+        scwin.toggleSubMenu(this);
+    } else if (menuUrl && menuUrl.trim() !== "") {
+        // 단일 페이지 메뉴인 경우 탭으로 열기
+        var menuName = this.getValue();
+        scwin.openTab(menuUrl, menuName);
+    }
+};
+
+/**
+ * 2뎁스 메뉴 클릭 이벤트 핸들러
+ */
+scwin.submenu_onclick = function () {
+    var menuUrl = this.getUserData("menuUrl");
+    var menuName = this.getValue();
+
+    if (menuUrl && menuUrl.trim() !== "") {
+        scwin.openTab(menuUrl, menuName);
+    }
+};
+
+/**
+ * 하위 메뉴 토글 함수
+ */
+scwin.toggleSubMenu = function (menuObj) {
+    var gen = menuObj.getGenerator();
+    var idx = menuObj.getGeneratedIndex();
+    var subNavObj = gen.getChild(idx, 'gen_subMenu');
+
+    // 다른 모든 하위 메뉴 닫기 (아코디언 효과)
+    for (var i = 0; i < gen.getLength(); i++) {
+        if (i !== idx) {
+            var otherSubNav = gen.getChild(i, 'gen_subMenu');
+            otherSubNav.hide();
+        }
+    }
+
+    // 현재 메뉴의 하위 메뉴 토글
+    if (subNavObj.getStyle('display') === 'none' || !subNavObj.getStyle('display')) {
+        subNavObj.show();
+    } else {
+        subNavObj.hide();
+    }
+};
+
+/**
+ * 탭 열기 함수
+ */
+scwin.openTab = function (url, title) {
+    var tabId = "tab_" + new Date().getTime();
+
+    try {
+        // 중복 탭 확인
+        var tabInfo = tac_content.getTabInfo();
+        for (var i = 0; i < tabInfo.length; i++) {
+            if (tabInfo[i] && tabInfo[i].src === url) {
+                // 기존 탭으로 이동
+                tac_content.setSelectedTabIndex(i);
+                return;
+            }
+        }
+
+        // 새 탭 생성
+        tac_content.addTab(tabId, {
+            "label": title,
+            "closable": "true"
+        }, {
+            "src": url,
+            "frameMode": "wframe"
+        });
+
+        tac_content.setSelectedTabIndex(tabId);
+
+    } catch (e) {
+        console.error("탭 생성 실패:", e);
+        $c.win.alert("페이지를 로드할 수 없습니다: " + title);
+    }
+};
+
+/**
+ * 로그아웃 버튼 클릭
+ */
+scwin.btn_logout_onclick = function () {
+    var promise = $c.win.confirm("로그아웃 하시겠습니까?");
+    promise.then(function (isYes) {
+        if (isYes) {
+            $p.url("ui/login.xml");
+        }
+    });
+};
+
+]]></script>
+    </head>
+    
+    <!-- =============================================== -->
+    <!-- HTML Body 영역                                -->
+    <!-- =============================================== -->
+    <body ev:onpageload="scwin.onpageload">
+        
+        <!-- ===== 헤더 영역 ===== -->
+        <xf:group id="grp_header" style="height: 80px; border: 2px solid #000; background-color: #f0f0f0; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center;">
+            
+            <!-- 좌측 영역: 사이드바 토글 + 로고 + 프로젝트 선택 -->
+            <xf:group id="grp_headerLeft" style="display: flex; align-items: center; gap: 20px;">
+                
+                <!-- 사이드바 토글 버튼 -->
+                <xf:trigger id="btn_sidebarToggle" style="width: 40px; height: 40px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;" ev:onclick="scwin.btn_sidebarToggle_onclick">
+                    <xf:label>☰</xf:label>
+                </xf:trigger>
+                
+                <!-- 로고 영역 -->
+                <xf:group id="grp_logo" style="display: flex; align-items: center; gap: 10px;">
+                    <xf:group id="grp_logoIcon" style="width: 40px; height: 40px; background-color: #007bff; color: white; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">
+                        <w2:textbox id="txt_logoIcon" style="border: none; background: transparent; color: inherit; text-align: center;" readOnly="true">
+                            <xf:label>P</xf:label>
+                        </w2:textbox>
+                    </xf:group>
+                    <w2:textbox id="txt_systemName" style="font-size: 18px; font-weight: bold; color: #333; border: none; background: transparent;" readOnly="true">
+                        <xf:label bind="dmp_systemInfo.systemName"></xf:label>
+                    </w2:textbox>
+                </xf:group>
+                
+                <!-- 프로젝트 선택 셀렉트박스 -->
+                <xf:group id="grp_projectSelect" style="display: flex; align-items: center; gap: 10px;">
+                    <w2:textbox id="txt_projectLabel" style="font-size: 14px; color: #666; border: none; background: transparent;" readOnly="true">
+                        <xf:label>프로젝트:</xf:label>
+                    </w2:textbox>
+                    <xf:select1 id="sel_projects" style="width: 200px; height: 32px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;" ev:onchange="scwin.sel_projects_onchange" appearance="minimal">
+                        <xf:itemset nodeset="data:dlt_projects">
+                            <xf:label ref="projectName"></xf:label>
+                            <xf:value ref="projectId"></xf:value>
+                        </xf:itemset>
+                    </xf:select1>
+                </xf:group>
+                
+            </xf:group>
+            
+            <!-- 우측 영역: 사용자 정보 + 로그인/로그아웃 -->
+            <xf:group id="grp_headerRight" style="display: flex; align-items: center; gap: 15px;">
+                
+                <!-- 사용자 정보 영역 -->
+                <xf:group id="grp_userInfo" style="display: flex; align-items: center; gap: 12px;">
+                    
+                    <!-- 프로필 이미지 영역 -->
+                    <xf:group id="grp_profile" style="width: 40px; height: 40px; background-color: #e9ecef; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 2px solid #dee2e6;" ev:onclick="scwin.grp_profile_onclick">
+                        <w2:textbox id="txt_profileImage" style="font-size: 20px; border: none; background: transparent; text-align: center;" readOnly="true">
+                            <xf:label bind="dmp_userInfo.profileImage"></xf:label>
+                        </w2:textbox>
+                    </xf:group>
+                    
+                    <!-- 사용자 텍스트 정보 -->
+                    <xf:group id="grp_userText" style="display: flex; flex-direction: column; align-items: flex-start;">
+                        <w2:textbox id="txt_userName" style="font-size: 14px; font-weight: 600; color: #333; border: none; background: transparent;" readOnly="true">
+                            <xf:label bind="dmp_userInfo.userName"></xf:label>
+                        </w2:textbox>
+                        <w2:textbox id="txt_userRole" style="font-size: 12px; color: #666; border: none; background: transparent;" readOnly="true">
+                            <xf:label bind="dmp_userInfo.userRole"></xf:label>
+                        </w2:textbox>
+                    </xf:group>
+                    
+                </xf:group>
+                
+                <!-- 로그인/로그아웃 버튼 -->
+                <xf:trigger id="btn_logout" style="padding: 8px 16px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 13px;" ev:onclick="scwin.btn_logout_onclick">
+                    <xf:label>로그아웃</xf:label>
+                </xf:trigger>
+                
+            </xf:group>
+            
+        </xf:group>
+        
+        <!-- ===== 메인 컨텐츠 영역 ===== -->
+        <xf:group id="grp_main" style="height: calc(100vh - 80px); display: flex;">
+            
+            <!-- ===== 사이드바 영역 ===== -->
+            <xf:group id="grp_menu" style="width: 250px; border: 2px solid #000; background-color: #f8f8f8; padding: 15px;">
+                <w2:textbox id="txt_menuTitle" style="font-weight: bold; font-size: 16px; margin-bottom: 15px; border: none; background: transparent;" readOnly="true">
+                    <xf:label>메뉴</xf:label>
+                </w2:textbox>
+                
+                <!-- 웹스퀘어 Generator를 사용한 동적 메뉴 생성 -->
+                <w2:generator tagname="div" id="gen_menu" style="height: calc(100% - 50px); overflow-y: auto;">
+                    <!-- 1뎁스 메뉴 템플릿 -->
+                    <xf:group style="margin-bottom: 5px;">
+                        <w2:anchor id="anc_menu" 
+                                  style="display: block; padding: 8px 12px; background-color: #e9ecef; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #495057; cursor: pointer;" 
+                                  ev:onclick="scwin.menu_onclick">
+                            <xf:label></xf:label>
+                        </w2:anchor>
+                        
+                        <!-- 2뎁스 메뉴 Generator -->
+                        <w2:generator tagname="div" id="gen_subMenu" style="display: none; margin-top: 5px; margin-left: 15px;">
+                            <xf:group style="margin-bottom: 3px;">
+                                <w2:anchor id="anc_subMenu" 
+                                          style="display: block; padding: 6px 10px; background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 3px; text-decoration: none; color: #6c757d; cursor: pointer; font-size: 13px;" 
+                                          ev:onclick="scwin.submenu_onclick">
+                                    <xf:label></xf:label>
+                                </w2:anchor>
+                            </xf:group>
+                        </w2:generator>
+                    </xf:group>
+                </w2:generator>
+            </xf:group>
+            
+            <!-- ===== 컨텐츠 영역 ===== -->
+            <xf:group id="grp_content" style="flex: 1; border: 2px solid #000; background-color: #fff; padding: 15px;">
+                <w2:textbox id="txt_contentTitle" style="font-weight: bold; font-size: 16px; margin-bottom: 15px; border: none; background: transparent;" readOnly="true">
+                    <xf:label>컨텐츠 영역</xf:label>
+                </w2:textbox>
+                
+                <!-- 탭 컨트롤 -->
+                <w2:tabControl id="tac_content" 
+                    style="height: calc(100% - 50px); border: 1px solid #ccc;"
+                    useTabScroll="true" 
+                    closable="true">
+                </w2:tabControl>
+            </xf:group>
+            
+        </xf:group>
+        
+    </body>
+</html>
