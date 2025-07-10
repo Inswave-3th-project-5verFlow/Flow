@@ -20,7 +20,6 @@
     		
         INSERT INTO TEST   /* QueryID : com.demo.proworks.test.insertTest */
         ( 
-            ID
             <if test="taskId        != null"> , TASK_ID         </if>
             <if test="name           != null"> , NAME            </if>
             <if test="category       != null"> , CATEGORY        </if>
@@ -38,7 +37,6 @@
         )
         VALUES  
         ( 
-            #{id}
             <if test="taskId        != null"> , #{taskId}         </if>
             <if test="name           != null"> , #{name}            </if>
             <if test="category       != null"> , #{category}        </if>

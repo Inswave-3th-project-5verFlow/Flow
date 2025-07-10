@@ -20,7 +20,7 @@
     		
         INSERT INTO ISSUES_RISKS   /* QueryID : com.demo.proworks.iss.insertIss */
         ( 
-            <if test="pjtId       != null"> , PJT_ID        </if>
+            <if test="pjtId       != null"> PJT_ID        </if>
             <if test="name         != null"> , NAME          </if>
             <if test="userId      != null"> , USER_ID       </if>
             <if test="dueDate     != null"> , DUE_DATE      </if>
@@ -28,25 +28,24 @@
             <if test="priority     != null"> , PRIORITY      </if>
             <if test="description  != null"> , DESCRIPTION   </if>
             <if test="createdAt   != null"> , CREATED_AT    </if>
-            <if test="updatedAt   != null"> , UPDATED_AT    </if>
             <if test="resolvedDate!= null"> , RESOLVED_DATE </if>
             <if test="responsePlan!= null"> , RESPONSE_PLAN </if>
             <if test="isDeleted   != null"> , IS_DELETED    </if>
         )
         VALUES  
         ( 
-            <if test="pjtId       != null"> , #{pjtId}        </if>
+            <if test="pjtId       != null">  #{pjtId}        </if>
             <if test="name         != null"> , #{name}          </if>
             <if test="userId      != null"> , #{userId}       </if>
             <if test="dueDate     != null"> , #{dueDate}      </if>
             <if test="status       != null"> , #{status}        </if>
             <if test="priority     != null"> , #{priority}      </if>
             <if test="description  != null"> , #{description}   </if>
-            <if test="createdAt   != null"> , #{createdAt}    </if>
-            <if test="updatedAt   != null"> , #{updatedAt}    </if>
+            <!-- <if test="createdAt   != null"> , #{createdAt}    </if> -->
+            , NOW()
             <if test="resolvedDate!= null"> , #{resolvedDate} </if>
             <if test="responsePlan!= null"> , #{responsePlan} </if>
-            <if test="isDeleted   != null"> , #{isDeleted}    </if> 
+ 			,0 
         )          
     </insert>	
 	
@@ -55,8 +54,7 @@
     	
         UPDATE ISSUES_RISKS    /* QueryID : com.demo.proworks.iss.updateIss */      
       	  SET  
-                ID            = #{id}                   	                       
-            <if test="pjtId       != null"> , PJT_ID        = #{pjtId}        </if>
+            <if test="pjtId       != null">  PJT_ID        = #{pjtId}        </if>
             <if test="name         != null"> , NAME          = #{name}          </if>
             <if test="userId      != null"> , USER_ID       = #{userId}       </if>
             <if test="dueDate     != null"> , DUE_DATE      = #{dueDate}      </if>
@@ -91,19 +89,34 @@
 	
     <select id="selectListIss" parameterType="com.demo.proworks.iss.vo.IssVo" resultType="com.demo.proworks.iss.vo.IssVo">
     	<!-- 이슈리스크관리 목록을 조회한다. -->
-           SELECT    /* QueryID : com.demo.proworks.iss.selectListIss */
-               PJT_ID as pjtId, ID as id, NAME as name, USER_ID as userId, DUE_DATE as dueDate, STATUS as status, PRIORITY as priority, DESCRIPTION as description, CREATED_AT as createdAt, UPDATED_AT as updatedAt, RESOLVED_DATE as resolvedDate, RESPONSE_PLAN as responsePlan, IS_DELETED as isDeleted		       
-           FROM (
-               SELECT  S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
-               FROM (				
-                   SELECT 
-                       *  		                  
-                   FROM ISSUES_RISKS
-                   WHERE  1=1    		
-	     																														
-               ) S, (SELECT @ROWNUM := 0) TMP
-           ) A
-            WHERE PAGE = #{pageIndex}
+           SELECT /* QueryID : com.demo.proworks.iss.selectListIss */
+				PJT_ID as pjtId, PJT_NAME as pjtName, ID as id, NAME as name, USER_ID as userId, USER_NAME as userName, DUE_DATE as dueDate, STATUS as status, PRIORITY as priority, DESCRIPTION as description, CREATED_AT as createdAt, UPDATED_AT as updatedAt, RESOLVED_DATE as resolvedDate, RESPONSE_PLAN as responsePlan, IS_DELETED as isDeleted
+			FROM (
+				SELECT S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
+				FROM (
+					SELECT
+						ir.ID,
+						ir.PJT_ID,
+						ir.NAME,
+						ir.USER_ID,
+						ir.DUE_DATE,
+						ir.STATUS,
+						ir.PRIORITY,
+						ir.DESCRIPTION,
+						ir.CREATED_AT,
+						ir.UPDATED_AT,
+						ir.RESOLVED_DATE,
+						ir.RESPONSE_PLAN,
+						ir.IS_DELETED,
+						pjt.PJT_NAME as PJT_NAME,
+						u.NAME as USER_NAME
+					FROM ISSUES_RISKS ir
+					LEFT JOIN PJT pjt ON ir.PJT_ID = pjt.PJT_ID
+					LEFT JOIN USERS u ON ir.USER_ID = u.USER_ID
+					WHERE 1=1
+					) S, (SELECT @ROWNUM := 0) TMP
+						) A
+			WHERE PAGE = #{pageIndex}
     </select>
 	
     <select id="selectListCountIss" parameterType="com.demo.proworks.iss.vo.IssVo" resultType="long">
