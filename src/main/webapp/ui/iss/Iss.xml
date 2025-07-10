@@ -23,9 +23,8 @@
                         <w2:column dataType="text" id="name" name="이슈/리스크명"></w2:column>
                         <w2:column dataType="text" id="userId" name="작성자 사용자 ID"></w2:column>
                         <w2:column dataType="text" id="dueDate" name="완료 예정일"></w2:column>
-                        <w2:column dataType="text" id="status" name="상태 (해결 전, 해결 중, 해결 후)"></w2:column>
-                        <w2:column dataType="text" id="priority" name="우선순위 (높음, 중간, 낮음)"></w2:column>
-                        <w2:column dataType="text" id="type" name="타입 (이슈, 리스크, 테스트)"></w2:column>
+                        <w2:column dataType="text" id="status" name="상태"></w2:column>
+                        <w2:column dataType="text" id="priority" name="우선순위"></w2:column>
                         <w2:column dataType="text" id="description" name="상세 내용"></w2:column>
                         <w2:column dataType="text" id="createdAt" name="등록일시"></w2:column>
                         <w2:column dataType="text" id="updatedAt" name="수정일시"></w2:column>
@@ -42,9 +41,8 @@
                         <w2:key dataType="text" id="name" name="이슈/리스크명"></w2:key>
                         <w2:key dataType="text" id="userId" name="작성자 사용자 ID"></w2:key>
                         <w2:key dataType="text" id="dueDate" name="완료 예정일"></w2:key>
-                        <w2:key dataType="text" id="status" name="상태 (해결 전, 해결 중, 해결 후)"></w2:key>
-                        <w2:key dataType="text" id="priority" name="우선순위 (높음, 중간, 낮음)"></w2:key>
-                        <w2:key dataType="text" id="type" name="타입 (이슈, 리스크, 테스트)"></w2:key>
+                        <w2:key dataType="text" id="status" name="상태"></w2:key>
+                        <w2:key dataType="text" id="priority" name="우선순위"></w2:key>
                         <w2:key dataType="text" id="description" name="상세 내용"></w2:key>
                         <w2:key dataType="text" id="createdAt" name="등록일시"></w2:key>
                         <w2:key dataType="text" id="updatedAt" name="수정일시"></w2:key>
@@ -61,9 +59,8 @@
                         <w2:column dataType="text" id="name" name="이슈/리스크명"></w2:column>
                         <w2:column dataType="text" id="userId" name="작성자 사용자 ID"></w2:column>
                         <w2:column dataType="text" id="dueDate" name="완료 예정일"></w2:column>
-                        <w2:column dataType="text" id="status" name="상태 (해결 전, 해결 중, 해결 후)"></w2:column>
-                        <w2:column dataType="text" id="priority" name="우선순위 (높음, 중간, 낮음)"></w2:column>
-                        <w2:column dataType="text" id="type" name="타입 (이슈, 리스크, 테스트)"></w2:column>
+                        <w2:column dataType="text" id="status" name="상태"></w2:column>
+                        <w2:column dataType="text" id="priority" name="우선순위"></w2:column>
                         <w2:column dataType="text" id="description" name="상세 내용"></w2:column>
                         <w2:column dataType="text" id="createdAt" name="등록일시"></w2:column>
                         <w2:column dataType="text" id="updatedAt" name="수정일시"></w2:column>
@@ -80,9 +77,8 @@
                         <w2:column dataType="text" id="name" name="이슈/리스크명"></w2:column>
                         <w2:column dataType="text" id="userId" name="작성자 사용자 ID"></w2:column>
                         <w2:column dataType="text" id="dueDate" name="완료 예정일"></w2:column>
-                        <w2:column dataType="text" id="status" name="상태 (해결 전, 해결 중, 해결 후)"></w2:column>
-                        <w2:column dataType="text" id="priority" name="우선순위 (높음, 중간, 낮음)"></w2:column>
-                        <w2:column dataType="text" id="type" name="타입 (이슈, 리스크, 테스트)"></w2:column>
+                        <w2:column dataType="text" id="status" name="상태"></w2:column>
+                        <w2:column dataType="text" id="priority" name="우선순위"></w2:column>
                         <w2:column dataType="text" id="description" name="상세 내용"></w2:column>
                         <w2:column dataType="text" id="createdAt" name="등록일시"></w2:column>
                         <w2:column dataType="text" id="updatedAt" name="수정일시"></w2:column>
@@ -99,9 +95,8 @@
                         <w2:column dataType="text" id="name" name="이슈/리스크명"></w2:column>
                         <w2:column dataType="text" id="userId" name="작성자 사용자 ID"></w2:column>
                         <w2:column dataType="text" id="dueDate" name="완료 예정일"></w2:column>
-                        <w2:column dataType="text" id="status" name="상태 (해결 전, 해결 중, 해결 후)"></w2:column>
-                        <w2:column dataType="text" id="priority" name="우선순위 (높음, 중간, 낮음)"></w2:column>
-                        <w2:column dataType="text" id="type" name="타입 (이슈, 리스크, 테스트)"></w2:column>
+                        <w2:column dataType="text" id="status" name="상태"></w2:column>
+                        <w2:column dataType="text" id="priority" name="우선순위"></w2:column>
                         <w2:column dataType="text" id="description" name="상세 내용"></w2:column>
                         <w2:column dataType="text" id="createdAt" name="등록일시"></w2:column>
                         <w2:column dataType="text" id="updatedAt" name="수정일시"></w2:column>
@@ -636,166 +631,293 @@ scwin.complete_grd_oncelldblclick = function (rowIndex, columnIndex, columnId) {
 					<w2:span id="span2" label="페이지" localeRef="COMMON_LABEL_00005" style=""></w2:span>
 				</xf:group>
 			</xf:group>
-			<xf:group class="pop_contents" id="pop_overlay" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true"
-				meta_snippetName="0_02 팝업페이지시작"
-				style="position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: rgba(0,0,0,0.5);z-index: 1000;display: none;">
-				<xf:group class="pop_contents" id="group1" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true"
-					meta_snippetName="0_02 팝업페이지시작"
-					style="background-color : white; position: relative;  top: 50%;  left: 50%;  transform: translate(-50%, -50%);  background: white;  padding: 20px;  border-radius: 8px;  max-width: 50%;  border : 1px solid grey;">
-					<xf:group class="titbox" id="" style="">
-						<xf:group id="" style="" tagname="h3">
-							<w2:textbox class="" id="" label="이슈리스크관리" localeRef="" style=""></w2:textbox>
-							<w2:textbox class="" id="" label="(" style=""></w2:textbox>
-							<w2:textbox class="" id="textbox1" label="등록" localeRef="COMMON_LABEL_00006" style=""></w2:textbox>
-							<w2:textbox class="" id="" label=")" style=""></w2:textbox>
-						</xf:group>
-						<xf:group class="rt" id="" style="">
-							<xf:trigger class="btn_cm refresh" ev:onclick="scwin.btn_reset_onclick" id="trigger1"
-								localeRef="COMMON_BUTTON_00002" style="" type="button">
-								<xf:label><![CDATA[초기화]]></xf:label>
-							</xf:trigger>
-							<xf:trigger class="btn_cm save" ev:onclick="scwin.btn_save_onclick" id="trigger2"
-								localeRef="COMMON_BUTTON_00003" style="" type="button">
-								<xf:label><![CDATA[저장]]></xf:label>
-							</xf:trigger>
-							<xf:trigger class="btn_cm save" ev:onclick="scwin.btn_edit_onclick" id="trigger3"
-								localeRef="COMMON_BUTTON_00003" style="" type="button">
-								<xf:label><![CDATA[저장]]></xf:label>
-							</xf:trigger>
-							<xf:trigger class="btn_cm delete" ev:onclick="scwin.btn_delete_onclick" id="trigger4"
-								localeRef="COMMON_BUTTON_00004" style="" type="button">
-								<xf:label><![CDATA[삭제]]></xf:label>
-							</xf:trigger>
-							<xf:trigger anchorWithGroupClass="" class="btn_cm delete icon" id="detail_esc_btn" meta_snippetCategory="08_버튼"
-								meta_snippetKeyComponent="true" meta_snippetName="8_03 아이콘삭제버튼" style="" type="button" ev:onclick="scwin.detail_esc_btn_onclick">
-								<xf:label><![CDATA[Delete]]></xf:label>
-							</xf:trigger>
-						</xf:group>
-					</xf:group>
-					<xf:group adaptive="layout" adaptiveThreshold="600" class="w2tb tbl" id="" style="" tagname="table">
-						<w2:attributes>
-							<w2:summary></w2:summary>
-						</w2:attributes>
-						<xf:group tagname="colgroup">
-							<xf:group style="width:150px;" tagname="col"></xf:group>
-							<xf:group style="" tagname="col"></xf:group>
-							<xf:group style="width:150px;" tagname="col"></xf:group>
-							<xf:group style="" tagname="col"></xf:group>
-						</xf:group>
-						<xf:group style="" tagname="tr">
-							<xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox class="" id="" label="프로젝트 ID" localeRef="Iss_COLNAME_00001" ref="" style="" userData2=""></w2:textbox>
-							</xf:group>
-							<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:input class="" id="" placeholder="" ref="data:dmp_issVoDetail.pjtId" style="width:100%;"></xf:input>
-							</xf:group>
-							<xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox class="" id="" label="이슈/리스크 고유 ID" localeRef="Iss_COLNAME_00002" ref="" style=""
-									userData2="">
-								</w2:textbox>
-							</xf:group>
-							<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:input class="" id="" placeholder="" ref="data:dmp_issVoDetail.id" style="width:100%;"></xf:input>
-							</xf:group>
-						</xf:group>
-						<xf:group style="" tagname="tr">
-							<xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox class="" id="" label="이슈/리스크명" localeRef="Iss_COLNAME_00003" ref="" style="" userData2=""></w2:textbox>
-							</xf:group>
-							<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:input class="" id="" placeholder="" ref="data:dmp_issVoDetail.name" style="width:100%;"></xf:input>
-							</xf:group>
-							<xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox class="" id="" label="작성자 사용자 ID" localeRef="Iss_COLNAME_00004" ref="" style="" userData2=""></w2:textbox>
-							</xf:group>
-							<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:input class="" id="" placeholder="" ref="data:dmp_issVoDetail.userId" style="width:100%;"></xf:input>
-							</xf:group>
-						</xf:group>
-						<xf:group style="" tagname="tr">
-							<xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox class="" id="" label="완료 예정일" localeRef="Iss_COLNAME_00005" ref="" style="" userData2=""></w2:textbox>
-							</xf:group>
-							<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:input class="" id="" placeholder="" ref="data:dmp_issVoDetail.dueDate" style="width:100%;"></xf:input>
-							</xf:group>
-							<xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox class="" id="" label="상태 (해결 전, 해결 중, 해결 후)" localeRef="Iss_COLNAME_00006" ref="" style=""
-									userData2="">
-								</w2:textbox>
-							</xf:group>
-							<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:input class="" id="" placeholder="" ref="data:dmp_issVoDetail.status" style="width:100%;"></xf:input>
-							</xf:group>
-						</xf:group>
-						<xf:group style="" tagname="tr">
-							<xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox class="" id="" label="우선순위 (높음, 중간, 낮음)" localeRef="Iss_COLNAME_00007" ref="" style=""
-									userData2="">
-								</w2:textbox>
-							</xf:group>
-							<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:input class="" id="" placeholder="" ref="data:dmp_issVoDetail.priority" style="width:100%;"></xf:input>
-							</xf:group>
-							<xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox class="" id="" label="타입 (이슈, 리스크, 테스트)" localeRef="Iss_COLNAME_00008" ref="" style=""
-									userData2="">
-								</w2:textbox>
-							</xf:group>
-							<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:input class="" id="" placeholder="" ref="data:dmp_issVoDetail.type" style="width:100%;"></xf:input>
-							</xf:group>
-						</xf:group>
-						<xf:group style="" tagname="tr">
-							<xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox class="" id="" label="상세 내용" localeRef="Iss_COLNAME_00009" ref="" style="" userData2=""></w2:textbox>
-							</xf:group>
-							<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:input class="" id="" placeholder="" ref="data:dmp_issVoDetail.description" style="width:100%;"></xf:input>
-							</xf:group>
-							<xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox class="" id="" label="등록일시" localeRef="Iss_COLNAME_00010" ref="" style="" userData2=""></w2:textbox>
-							</xf:group>
-							<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:input class="" id="" placeholder="" ref="data:dmp_issVoDetail.createdAt" style="width:100%;"></xf:input>
-							</xf:group>
-						</xf:group>
-						<xf:group style="" tagname="tr">
-							<xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox class="" id="" label="수정일시" localeRef="Iss_COLNAME_00011" ref="" style="" userData2=""></w2:textbox>
-							</xf:group>
-							<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:input class="" id="" placeholder="" ref="data:dmp_issVoDetail.updatedAt" style="width:100%;"></xf:input>
-							</xf:group>
-							<xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox class="" id="" label="resolved_date" localeRef="Iss_COLNAME_00012" ref="" style=""
-									userData2="">
-								</w2:textbox>
-							</xf:group>
-							<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:input class="" id="" placeholder="" ref="data:dmp_issVoDetail.resolvedDate" style="width:100%;"></xf:input>
-							</xf:group>
-						</xf:group>
-						<xf:group style="" tagname="tr">
-							<xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox class="" id="" label="response_plan" localeRef="Iss_COLNAME_00013" ref="" style=""
-									userData2="">
-								</w2:textbox>
-							</xf:group>
-							<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:input class="" id="" placeholder="" ref="data:dmp_issVoDetail.responsePlan" style="width:100%;"></xf:input>
-							</xf:group>
-							<xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox class="" id="" label="is_deleted" localeRef="Iss_COLNAME_00014" ref="" style="" userData2=""></w2:textbox>
-							</xf:group>
-							<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:input class="" id="" placeholder="" ref="data:dmp_issVoDetail.isDeleted" style="width:100%;"></xf:input>
-							</xf:group>
-						</xf:group>
-						<xf:group style="" tagname="tr"></xf:group>
-					</xf:group>
-				</xf:group>
-			</xf:group>
+			<xf:group class="pop_contents" id="pop_overlay" 
+                style="position: fixed;top: 0;left: 0;width: 100%;height: 100%;background: rgba(0,0,0,0.5);z-index: 1000;display:none;">
+                <xf:group class="pop_contents" id="group1" 
+                    style="background-color: white; position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+                        background: white; padding: 20px; border-radius: 8px; max-width: 800px; width: 90%; border: 1px solid grey;">
+                    
+                    <!-- 팝업 제목 및 버튼 영역 -->
+                    <xf:group class="titbox" id="" style="margin-bottom: 20px;">
+                        <xf:group id="" style="" tagname="h3">
+                            <w2:span class="" id="spn_popupTitle" label="이슈리스크관리" style="font-size: 18px; font-weight: bold;"></w2:span>
+                        </xf:group>
+                        <xf:group class="rt" id="" style="float: right;">
+                            <xf:trigger class="btn_cm refresh" ev:onclick="scwin.btn_reset_onclick" id="btn_popup_reset"
+                                style="margin-right: 5px;" type="button">
+                                <xf:label><![CDATA[초기화]]></xf:label>
+                            </xf:trigger>
+                            <xf:trigger class="btn_cm save" ev:onclick="scwin.btn_popup_save_onclick" id="btn_popup_save"
+                                style="margin-right: 5px; display: none;" type="button">
+                                <xf:label><![CDATA[저장]]></xf:label>
+                            </xf:trigger>
+                            <xf:trigger class="btn_cm edit" ev:onclick="scwin.btn_popup_edit_onclick" id="btn_popup_edit"
+                                style="margin-right: 5px; display: none;" type="button">
+                                <xf:label><![CDATA[수정]]></xf:label>
+                            </xf:trigger>
+                            <xf:trigger class="btn_cm delete" ev:onclick="scwin.btn_popup_delete_onclick" id="btn_popup_delete"
+                                style="margin-right: 5px; display: none;" type="button">
+                                <xf:label><![CDATA[삭제]]></xf:label>
+                            </xf:trigger>
+                            <xf:trigger class="btn_cm" id="detail_esc_btn" style="" type="button" 
+                                ev:onclick="scwin.detail_esc_btn_onclick">
+                                <xf:label><![CDATA[닫기]]></xf:label>
+                            </xf:trigger>
+                        </xf:group>
+                        <div style="clear: both;"></div>
+                    </xf:group>
+                    
+                    <!-- 기본 정보 영역 -->
+                    <xf:group class="form-section" id="grp_popupForm" style="margin-bottom: 20px;">
+                        <xf:group adaptive="layout" adaptiveThreshold="600" class="w2tb tbl" style="margin-bottom: 15px;" tagname="table">
+                            <w2:attributes>
+                                <w2:summary></w2:summary>
+                            </w2:attributes>
+                            <xf:group tagname="colgroup">
+                                <xf:group style="width:120px;" tagname="col"></xf:group>
+                                <xf:group style="width:200px;" tagname="col"></xf:group>
+                                <xf:group style="width:120px;" tagname="col"></xf:group>
+                                <xf:group style="" tagname="col"></xf:group>
+                            </xf:group>
+                            
+                            <!-- 첫 번째 행: 프로젝트명, 이슈/리스크 ID -->
+                            <xf:group style="" tagname="tr">
+                                <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                    <w2:textbox class="" label="프로젝트명" style=""></w2:textbox>
+                                    <span style="color: red;">*</span>
+                                </xf:group>
+                                <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                    <xf:select1 id="sel_projectName" chooseOption="선택하세요" 
+                                        style="width: 100%; height: 25px;" submenuSize="auto" 
+                                        ref="data:dmp_issVoDetail.pjtId">
+                                        <xf:choices>
+                                            <xf:itemset nodeset="data:dlt_projectList">
+                                                <xf:label ref="pjtName"></xf:label>
+                                                <xf:value ref="pjtId"></xf:value>
+                                            </xf:itemset>
+                                        </xf:choices>
+                                    </xf:select1>
+                                </xf:group>
+                                <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                    <w2:textbox class="" label="이슈/리스크 ID" style=""></w2:textbox>
+                                    <span style="color: red;">*</span>
+                                </xf:group>
+                                <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                    <xf:input class="" id="inp_issueId" placeholder="ID를 입력하세요" 
+                                        ref="data:dmp_issVoDetail.id" style="width: 100%; height: 25px;"></xf:input>
+                                </xf:group>
+                            </xf:group>
+                            
+                            <!-- 두 번째 행: 이슈/리스크명, 작성자 -->
+                            <xf:group style="" tagname="tr">
+                                <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                    <w2:textbox class="" label="이슈/리스크명" style=""></w2:textbox>
+                                    <span style="color: red;">*</span>
+                                </xf:group>
+                                <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                    <xf:input class="" placeholder="이슈/리스크명을 입력하세요" 
+                                        ref="data:dmp_issVoDetail.name" style="width: 100%; height: 25px;"></xf:input>
+                                </xf:group>
+                                <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                    <w2:textbox class="" label="작성자" style=""></w2:textbox>
+                                </xf:group>
+                                <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                    <xf:input class="" placeholder="작성자 ID" 
+                                        ref="data:dmp_issVoDetail.userId" style="width: 100%; height: 25px;"></xf:input>
+                                </xf:group>
+                            </xf:group>
+                            
+                            <!-- 세 번째 행: 우선순위, 상태 -->
+                            <xf:group style="" tagname="tr">
+                                <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                    <w2:textbox class="" label="우선순위" style=""></w2:textbox>
+                                </xf:group>
+                                <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                    <xf:select1 id="sel_priority" chooseOption="선택하세요" 
+                                        style="width: 100%; height: 25px;" ref="data:dmp_issVoDetail.priority">
+                                        <xf:choices>
+                                            <xf:item>
+                                                <xf:label>높음</xf:label>
+                                                <xf:value>HIGH</xf:value>
+                                            </xf:item>
+                                            <xf:item>
+                                                <xf:label>중간</xf:label>
+                                                <xf:value>MEDIUM</xf:value>
+                                            </xf:item>
+                                            <xf:item>
+                                                <xf:label>낮음</xf:label>
+                                                <xf:value>LOW</xf:value>
+                                            </xf:item>
+                                        </xf:choices>
+                                    </xf:select1>
+                                </xf:group>
+                                <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                    <w2:textbox class="" label="상태" style=""></w2:textbox>
+                                </xf:group>
+                                <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                    <xf:select1 id="sel_status" chooseOption="선택하세요" 
+                                        style="width: 100%; height: 25px;" ref="data:dmp_issVoDetail.status">
+                                        <xf:choices>
+                                            <xf:item>
+                                                <xf:label>대기</xf:label>
+                                                <xf:value>PEN</xf:value>
+                                            </xf:item>
+                                            <xf:item>
+                                                <xf:label>진행중</xf:label>
+                                                <xf:value>IPR</xf:value>
+                                            </xf:item>
+                                            <xf:item>
+                                                <xf:label>완료</xf:label>
+                                                <xf:value>COM</xf:value>
+                                            </xf:item>
+                                        </xf:choices>
+                                    </xf:select1>
+                                </xf:group>
+                            </xf:group>
+                            
+                            <!-- 네 번째 행: 타입, 완료예정일 -->
+                            <xf:group style="" tagname="tr">
+                                <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                    <w2:textbox class="" label="타입" style=""></w2:textbox>
+                                </xf:group>
+                                <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                    <xf:select1 id="sel_type" chooseOption="선택하세요" 
+                                        style="width: 100%; height: 25px;" ref="data:dmp_issVoDetail.type">
+                                        <xf:choices>
+                                            <xf:item>
+                                                <xf:label>이슈</xf:label>
+                                                <xf:value>ISSUE</xf:value>
+                                            </xf:item>
+                                            <xf:item>
+                                                <xf:label>리스크</xf:label>
+                                                <xf:value>RISK</xf:value>
+                                            </xf:item>
+                                            <xf:item>
+                                                <xf:label>테스트</xf:label>
+                                                <xf:value>TEST</xf:value>
+                                            </xf:item>
+                                        </xf:choices>
+                                    </xf:select1>
+                                </xf:group>
+                                <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                    <w2:textbox class="" label="완료예정일" style=""></w2:textbox>
+                                </xf:group>
+                                <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                    <w2:inputCalendar id="cal_dueDate" style="width: 100%; height: 25px;" 
+                                        calendarValueType="yearMonthDate" ref="data:dmp_issVoDetail.dueDate"></w2:inputCalendar>
+                                </xf:group>
+                            </xf:group>
+                            
+                            <!-- 다섯 번째 행: 등록일시, 수정일시 -->
+                            <xf:group style="" tagname="tr">
+                                <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                    <w2:textbox class="" label="등록일시" style=""></w2:textbox>
+                                </xf:group>
+                                <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                    <w2:inputCalendar id="cal_createdAt" style="width: 100%; height: 25px;" 
+                                        calendarValueType="yearMonthDate" ref="data:dmp_issVoDetail.createdAt"></w2:inputCalendar>
+                                </xf:group>
+                                <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                    <w2:textbox class="" label="해결일" style=""></w2:textbox>
+                                </xf:group>
+                                <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                    <w2:inputCalendar id="cal_resolvedDate" style="width: 100%; height: 25px;" 
+                                        calendarValueType="yearMonthDate" ref="data:dmp_issVoDetail.resolvedDate"></w2:inputCalendar>
+                                </xf:group>
+                            </xf:group>
+                        </xf:group>
+                        
+                        <!-- 상세설명 영역 (전체 너비) -->
+                        <xf:group class="detail-section" style="margin-bottom: 15px;">
+                            <xf:group adaptive="layout" class="w2tb tbl" style="" tagname="table">
+                                <xf:group tagname="colgroup">
+                                    <xf:group style="width:120px;" tagname="col"></xf:group>
+                                    <xf:group style="" tagname="col"></xf:group>
+                                </xf:group>
+                                <xf:group style="" tagname="tr">
+                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold; vertical-align: top;" tagname="th">
+                                        <w2:textbox class="" label="상세설명" style=""></w2:textbox>
+                                    </xf:group>
+                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                        <xf:textarea class="" id="txt_description" placeholder="상세 내용을 입력하세요" 
+                                            ref="data:dmp_issVoDetail.description" 
+                                            style="width: 100%; height: 80px; resize: vertical; font-family: inherit;"></xf:textarea>
+                                    </xf:group>
+                                </xf:group>
+                            </xf:group>
+                        </xf:group>
+                        
+                        <!-- 대응방안 영역 (전체 너비) -->
+                        <xf:group class="response-section" style="margin-bottom: 20px;">
+                            <xf:group adaptive="layout" class="w2tb tbl" style="" tagname="table">
+                                <xf:group tagname="colgroup">
+                                    <xf:group style="width:120px;" tagname="col"></xf:group>
+                                    <xf:group style="" tagname="col"></xf:group>
+                                </xf:group>
+                                <xf:group style="" tagname="tr">
+                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold; vertical-align: top;" tagname="th">
+                                        <w2:textbox class="" label="대응방안" style=""></w2:textbox>
+                                    </xf:group>
+                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                        <xf:textarea class="" id="txt_responsePlan" placeholder="대응방안을 입력하세요" 
+                                            ref="data:dmp_issVoDetail.responsePlan" 
+                                            style="width: 100%; height: 80px; resize: vertical; font-family: inherit;"></xf:textarea>
+                                    </xf:group>
+                                </xf:group>
+                            </xf:group>
+                        </xf:group>
+                    </xf:group>
+                    
+                    <!-- 파일 업로드 영역 -->
+                    <xf:group class="file-section" style="border-top: 1px solid #ddd; padding-top: 15px;">
+                        <xf:group class="titbox" id="" style="margin-bottom: 10px;">
+                            <w2:textbox label="첨부파일" style="font-weight: bold; margin-bottom: 10px;" tagname="h4"></w2:textbox>
+                            <xf:group class="" id="" style="margin-bottom: 10px;">
+                                <xf:group class="" id="" style="position: relative; display: inline-block;">
+                                    <xf:trigger class="btn_cm" ev:onclick="" id="ui_SelectFile" style="width:80px;" type="button">
+                                        <xf:label>파일 선택</xf:label>
+                                    </xf:trigger>
+                                    <w2:multiupload action="" ev:ondone="scwin.mpd_html5Type_ondone" filter="" id="mpd_html5Type" 
+                                        maxcount="" maxsize="" mode="html5_transparent" selectCallback="scwin.multiUploadSelectDone" 
+                                        style="position: absolute;left: 0px;top:0px;width:80px;height: 26px;cursor: pointer;z-index: 999;" 
+                                        uploadButton="" wmode="false"></w2:multiupload>
+                                </xf:group>
+                                <xf:trigger class="btn_cm" ev:onclick="scwin.btn_saveMultiupload_onclick" id="btn_saveMultiupload" 
+                                    style="margin-left: 5px;" type="button">
+                                    <xf:label><![CDATA[전송]]></xf:label>
+                                </xf:trigger>
+                                <xf:trigger class="btn_cm" ev:onclick="scwin.btn_InitMultiupload_onclick" id="btn_InitMultiupload" 
+                                    style="margin-left: 5px;" type="button">
+                                    <xf:label><![CDATA[초기화]]></xf:label>
+                                </xf:trigger>
+                            </xf:group>
+                        </xf:group>
+                        
+                        <xf:group class="gvwbox" id="">
+                            <w2:gridView autoFit="lastColumn" class="gvw" dataList="dlt_Upload" id="grd_fileList"
+                                noResultMessage="선택된 파일이 없습니다." rowNumVisible="true" rowNumWidth="36" 
+                                style="height: 120px; border: 1px solid #ddd;" visibleRowNum="4">
+                                <w2:header id="header1" style="">
+                                    <w2:row id="row1" style="">
+                                        <w2:column displayMode="label" id="column3" inputType="text" 
+                                            style="height:25px; background-color: #f8f9fa;" value="파일명" width="300"></w2:column>
+                                        <w2:column displayMode="label" id="column1" inputType="text" 
+                                            style="height:25px; background-color: #f8f9fa;" value="사이즈(byte)" width="100"></w2:column>
+                                    </w2:row>
+                                </w2:header>
+                                <w2:gBody id="gBody1" style="">
+                                    <w2:row id="row2" style="">
+                                        <w2:column displayMode="label" id="name" inputType="text" 
+                                            style="height:25px; padding: 5px;" textAlign="left" width="300"></w2:column>
+                                        <w2:column dataType="number" displayFormat="#,###" displayMode="label" id="size" 
+                                            inputType="text" style="height:25px; padding: 5px;" textAlign="right" width="100"></w2:column>
+                                    </w2:row>
+                                </w2:gBody>
+                            </w2:gridView>
+                        </xf:group>
+                    </xf:group>
+                </xf:group>
+            </xf:group>
 			<xf:group class="tblbox" id="grp_issInfo" style=""></xf:group>
 			<xf:group id=""></xf:group>
 			<xf:group class="titbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_03 서브타이틀(h4)"
@@ -812,7 +934,8 @@ scwin.complete_grd_oncelldblclick = function (rowIndex, columnIndex, columnId) {
 			<xf:group adaptiveThreshold="" class="gvwbox" id="" style="">
 				<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dlt_waitingList"
 					defaultCellHeight="26" ev:oncellclick="scwin.grd_list_oncellclick" focusMode="row" id="waiting_grd" readOnly="true"
-					scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;" visibleRowNum="10" ev:oncelldblclick="scwin.waiting_grd_oncelldblclick">
+					scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;" visibleRowNum="10"
+					ev:oncelldblclick="scwin.waiting_grd_oncelldblclick">
 					<w2:caption id="caption15" style="" value="this is a grid caption."></w2:caption>
 					<w2:header id="header2" style="">
 						<w2:row id="row3" style="">
@@ -893,7 +1016,8 @@ scwin.complete_grd_oncelldblclick = function (rowIndex, columnIndex, columnId) {
 			<xf:group adaptiveThreshold="" class="gvwbox" id="" style="">
 				<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dlt_processingList"
 					defaultCellHeight="26" ev:oncellclick="scwin.grd_list_oncellclick" focusMode="row" id="processing_grd" readOnly="true"
-					scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;" visibleRowNum="10" ev:oncelldblclick="scwin.processing_grd_oncelldblclick">
+					scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;" visibleRowNum="10"
+					ev:oncelldblclick="scwin.processing_grd_oncelldblclick">
 					<w2:caption id="caption17" style="" value="this is a grid caption."></w2:caption>
 					<w2:header id="header2" style="">
 						<w2:row id="row3" style="">
@@ -963,7 +1087,8 @@ scwin.complete_grd_oncelldblclick = function (rowIndex, columnIndex, columnId) {
 			<xf:group adaptiveThreshold="" class="gvwbox" id="" style="">
 				<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dlt_completedList"
 					defaultCellHeight="26" ev:oncellclick="scwin.grd_list_oncellclick" focusMode="row" id="complete_grd" readOnly="true"
-					scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;" visibleRowNum="10" ev:oncelldblclick="scwin.complete_grd_oncelldblclick">
+					scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;" visibleRowNum="10"
+					ev:oncelldblclick="scwin.complete_grd_oncelldblclick">
 					<w2:caption id="caption18" style="" value="this is a grid caption."></w2:caption>
 					<w2:header id="header2" style="">
 						<w2:row id="row3" style="">
@@ -1031,5 +1156,6 @@ scwin.complete_grd_oncelldblclick = function (rowIndex, columnIndex, columnId) {
 				</xf:group>
 			</xf:group>
 		</xf:group>
+        
 	</body>
 </html>

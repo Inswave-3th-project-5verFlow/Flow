@@ -6,55 +6,59 @@ import com.inswave.elfw.annotation.ElVoField;
 import com.fasterxml.jackson.annotation.JsonFilter;
 
 @JsonFilter("elExcludeFilter")
-@ElDto(FldYn = "", logicalName = "이슈리스크관리")
+@ElDto(FldYn = "", delimeterYn = "", logicalName = "이슈리스크관리")
 public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
     private static final long serialVersionUID = 1L;
 
-    @ElDtoField(logicalName = "프로젝트 ID", physicalName = "pjtId", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    public IssVo(){
+    }
+
+    @ElDtoField(logicalName = "프로젝트 ID", physicalName = "pjtId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String pjtId;
 
-    @ElDtoField(logicalName = "이슈/리스크 고유 ID", physicalName = "id", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "이슈/리스크 고유 ID", physicalName = "id", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String id;
 
-    @ElDtoField(logicalName = "이슈/리스크명", physicalName = "name", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "이슈/리스크명", physicalName = "name", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String name;
 
-    @ElDtoField(logicalName = "작성자 사용자 ID", physicalName = "userId", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "작성자 사용자 ID", physicalName = "userId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String userId;
 
-    @ElDtoField(logicalName = "완료 예정일", physicalName = "dueDate", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "완료 예정일", physicalName = "dueDate", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String dueDate;
 
-    @ElDtoField(logicalName = "상태 (해결 전, 해결 중, 해결 후)", physicalName = "status", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "상태", physicalName = "status", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String status;
 
-    @ElDtoField(logicalName = "우선순위 (높음, 중간, 낮음)", physicalName = "priority", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "우선순위", physicalName = "priority", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String priority;
 
-    @ElDtoField(logicalName = "타입 (이슈, 리스크, 테스트)", physicalName = "type", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
-    private String type;
-
-    @ElDtoField(logicalName = "상세 내용", physicalName = "description", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "상세 내용", physicalName = "description", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String description;
 
-    @ElDtoField(logicalName = "등록일시", physicalName = "createdAt", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "등록일시", physicalName = "createdAt", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String createdAt;
 
-    @ElDtoField(logicalName = "수정일시", physicalName = "updatedAt", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "수정일시", physicalName = "updatedAt", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String updatedAt;
 
-    @ElDtoField(logicalName = "resolved_date", physicalName = "resolvedDate", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "resolved_date", physicalName = "resolvedDate", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String resolvedDate;
 
-    @ElDtoField(logicalName = "response_plan", physicalName = "responsePlan", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "response_plan", physicalName = "responsePlan", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String responsePlan;
 
-    @ElDtoField(logicalName = "is_deleted", physicalName = "isDeleted", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "is_deleted", physicalName = "isDeleted", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String isDeleted;
+
+    @ElDtoField(logicalName = "프로젝트명", physicalName = "pjtName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String pjtName;
 
     @ElVoField(physicalName = "pjtId")
     public String getPjtId(){
-        return pjtId;
+        String ret = this.pjtId;
+        return ret;
     }
 
     @ElVoField(physicalName = "pjtId")
@@ -64,7 +68,8 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "id")
     public String getId(){
-        return id;
+        String ret = this.id;
+        return ret;
     }
 
     @ElVoField(physicalName = "id")
@@ -74,7 +79,8 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "name")
     public String getName(){
-        return name;
+        String ret = this.name;
+        return ret;
     }
 
     @ElVoField(physicalName = "name")
@@ -84,7 +90,8 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "userId")
     public String getUserId(){
-        return userId;
+        String ret = this.userId;
+        return ret;
     }
 
     @ElVoField(physicalName = "userId")
@@ -94,7 +101,8 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "dueDate")
     public String getDueDate(){
-        return dueDate;
+        String ret = this.dueDate;
+        return ret;
     }
 
     @ElVoField(physicalName = "dueDate")
@@ -104,7 +112,8 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "status")
     public String getStatus(){
-        return status;
+        String ret = this.status;
+        return ret;
     }
 
     @ElVoField(physicalName = "status")
@@ -114,7 +123,8 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "priority")
     public String getPriority(){
-        return priority;
+        String ret = this.priority;
+        return ret;
     }
 
     @ElVoField(physicalName = "priority")
@@ -122,19 +132,10 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.priority = priority;
     }
 
-    @ElVoField(physicalName = "type")
-    public String getType(){
-        return type;
-    }
-
-    @ElVoField(physicalName = "type")
-    public void setType(String type){
-        this.type = type;
-    }
-
     @ElVoField(physicalName = "description")
     public String getDescription(){
-        return description;
+        String ret = this.description;
+        return ret;
     }
 
     @ElVoField(physicalName = "description")
@@ -144,7 +145,8 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "createdAt")
     public String getCreatedAt(){
-        return createdAt;
+        String ret = this.createdAt;
+        return ret;
     }
 
     @ElVoField(physicalName = "createdAt")
@@ -154,7 +156,8 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "updatedAt")
     public String getUpdatedAt(){
-        return updatedAt;
+        String ret = this.updatedAt;
+        return ret;
     }
 
     @ElVoField(physicalName = "updatedAt")
@@ -164,7 +167,8 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "resolvedDate")
     public String getResolvedDate(){
-        return resolvedDate;
+        String ret = this.resolvedDate;
+        return ret;
     }
 
     @ElVoField(physicalName = "resolvedDate")
@@ -174,7 +178,8 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "responsePlan")
     public String getResponsePlan(){
-        return responsePlan;
+        String ret = this.responsePlan;
+        return ret;
     }
 
     @ElVoField(physicalName = "responsePlan")
@@ -184,7 +189,8 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "isDeleted")
     public String getIsDeleted(){
-        return isDeleted;
+        String ret = this.isDeleted;
+        return ret;
     }
 
     @ElVoField(physicalName = "isDeleted")
@@ -192,13 +198,52 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.isDeleted = isDeleted;
     }
 
+    @ElVoField(physicalName = "pjtName")
+    public String getPjtName(){
+        String ret = this.pjtName;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "pjtName")
+    public void setPjtName(String pjtName){
+        this.pjtName = pjtName;
+    }
+
     @Override
     public String toString() {
-        return "IssVo [pjtId=" + pjtId + ",id=" + id + ",name=" + name + ",userId=" + userId + ",dueDate=" + dueDate + ",status=" + status + ",priority=" + priority + ",type=" + type + ",description=" + description + ",createdAt=" + createdAt + ",updatedAt=" + updatedAt + ",resolvedDate=" + resolvedDate + ",responsePlan=" + responsePlan + ",isDeleted=" + isDeleted + "]";
+        StringBuilder sb = new StringBuilder();
+        sb.append("IssVo [");
+        sb.append("pjtId").append("=").append(pjtId).append(",");
+        sb.append("id").append("=").append(id).append(",");
+        sb.append("name").append("=").append(name).append(",");
+        sb.append("userId").append("=").append(userId).append(",");
+        sb.append("dueDate").append("=").append(dueDate).append(",");
+        sb.append("status").append("=").append(status).append(",");
+        sb.append("priority").append("=").append(priority).append(",");
+        sb.append("description").append("=").append(description).append(",");
+        sb.append("createdAt").append("=").append(createdAt).append(",");
+        sb.append("updatedAt").append("=").append(updatedAt).append(",");
+        sb.append("resolvedDate").append("=").append(resolvedDate).append(",");
+        sb.append("responsePlan").append("=").append(responsePlan).append(",");
+        sb.append("isDeleted").append("=").append(isDeleted).append(",");
+        sb.append("pjtName").append("=").append(pjtName);
+        sb.append("]");
+        return sb.toString();
+
     }
 
     public boolean isFixedLengthVo() {
         return false;
     }
+
+    @Override
+    public void _xStreamEnc() {
+    }
+
+
+    @Override
+    public void _xStreamDec() {
+    }
+
 
 }
