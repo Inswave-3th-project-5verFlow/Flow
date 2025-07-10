@@ -27,6 +27,15 @@ public interface DesignService {
 	public List<DesignVo> selectListDesign(DesignVo designVo) throws Exception;
 
 	/**
+	 * 개발 업무 정보 페이징 처리하여 목록을 조회한다.
+	 *
+	 * @param designVo 설계 업무 정보 DesignVo
+	 * @return 개발 업무 정보 목록 List<DesignVo>
+	 * @throws Exception
+	 */
+	public List<DesignVo> selectListDevelop(DesignVo designVo) throws Exception;
+
+	/**
 	 * 조회한 설계 업무 정보 전체 카운트
 	 * 
 	 * @param designVo 설계 업무 정보 DesignVo
@@ -34,6 +43,15 @@ public interface DesignService {
 	 * @throws Exception
 	 */
 	public long selectListCountDesign(DesignVo designVo) throws Exception;
+	
+	/**
+	 * 조회한 개발 업무 정보 전체 카운트
+	 * 
+	 * @param designVo 설계 업무 정보 DesignVo
+	 * @return 설계 업무 정보 목록 전체 카운트
+	 * @throws Exception
+	 */
+	public long selectListCountDevelop(DesignVo designVo) throws Exception;
 
 	/**
 	 * 설계 업무 정보를 상세 조회한다.
@@ -72,7 +90,7 @@ public interface DesignService {
 	public int deleteDesign(DesignVo designVo) throws Exception;
 
 	/**
-	 * 트리 구조로 업무를 조회한다
+	 * 트리 구조로 설계 업무를 조회한다
 	 *
 	 * @param designVo 설계 업무 정보 DesignVo
 	 * @return 설계 업무 정보 목록 List<DesignVo>
@@ -80,4 +98,12 @@ public interface DesignService {
 	 */
 	public List<DesignVo> selectTreeListDesign(DesignVo designVo) throws Exception;
 
+	/**
+	 * 트리 구조로 개발 업무를 조회한다
+	 *
+	 * @param designVo 설계 업무 정보 DesignVo
+	 * @return 설계 업무 정보 목록 List<DesignVo>
+	 * @throws Exception
+	 */
+	public List<DesignVo> selectTreeListDevelop(DesignVo designVo) throws Exception;
 }
