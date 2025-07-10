@@ -85,12 +85,14 @@
                     		<menuName><![CDATA[설계 업무]]></menuName>
                     		<parentId><![CDATA[7]]></parentId>
                     		<depth><![CDATA[2]]></depth>
+                    		<menuUrl><![CDATA[task/design/DesignList.xml]]></menuUrl>
                     	</w2:row>
                     	<w2:row>
                     		<menuId><![CDATA[9]]></menuId>
                     		<menuName><![CDATA[개발 업무]]></menuName>
                     		<parentId><![CDATA[7]]></parentId>
                     		<depth><![CDATA[2]]></depth>
+                    		<menuUrl><![CDATA[task/develop/DevelopList.xml]]></menuUrl>
                     	</w2:row>
                     	<w2:row>
                     		<menuId><![CDATA[10]]></menuId>
@@ -108,22 +110,26 @@
                     		<menuName><![CDATA[테스트 내역]]></menuName>
                     		<parentId><![CDATA[11]]></parentId>
                     		<depth><![CDATA[2]]></depth>
+                    		<menuUrl><![CDATA[test/Test.xml]]></menuUrl>
                     	</w2:row>
                     	<w2:row>
                     		<menuId><![CDATA[13]]></menuId>
                     		<menuName><![CDATA[테스트 결함]]></menuName>
                     		<parentId><![CDATA[11]]></parentId>
                     		<depth><![CDATA[2]]></depth>
+                    		<menuUrl><![CDATA[def/Def.xml]]></menuUrl>
                     	</w2:row>
                     	<w2:row>
                     		<menuId><![CDATA[14]]></menuId>
                     		<menuName><![CDATA[이슈/리스크 관리]]></menuName>
                     		<depth><![CDATA[1]]></depth>
+                    		<menuUrl><![CDATA[iss/Iss.xml]]></menuUrl>
                     	</w2:row>
                     	<w2:row>
                     		<menuId><![CDATA[15]]></menuId>
                     		<menuName><![CDATA[산출물 관리]]></menuName>
                     		<depth><![CDATA[1]]></depth>
+                    		<menuUrl><![CDATA[out/Out.xml]]></menuUrl>
                     	</w2:row>
                     	<w2:row>
                     		<menuId><![CDATA[16]]></menuId>
