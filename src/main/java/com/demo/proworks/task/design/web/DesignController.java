@@ -50,9 +50,36 @@ public class DesignController {
 		long totCnt = designService.selectListCountDesign(designVo);
 
 		DesignListVo retDesignList = new DesignListVo();
-		
+
 		System.out.println(designList);
-		
+
+		retDesignList.setDesignVoList(designList);
+		retDesignList.setTotalCount(totCnt);
+		retDesignList.setPageSize(designVo.getPageSize());
+		retDesignList.setPageIndex(designVo.getPageIndex());
+
+		return retDesignList;
+	}
+
+	/**
+	 * 개발 업무 정보 목록을 조회합니다.
+	 *
+	 * @param designVo 설계 업무 정보
+	 * @return 목록조회 결과
+	 * @throws Exception
+	 */
+	@ElService(key = "DEVELOP001List")
+	@RequestMapping(value = "DEVELOP001List")
+	@ElDescription(sub = "개발 업무 정보 목록조회", desc = "페이징을 처리하여 개발 업무 정보 목록 조회를 한다.")
+	public DesignListVo selectListDevelop(DesignVo designVo) throws Exception {
+
+		List<DesignVo> designList = designService.selectListDevelop(designVo);
+		long totCnt = designService.selectListCountDevelop(designVo);
+
+		DesignListVo retDesignList = new DesignListVo();
+
+		System.out.println(designList);
+
 		retDesignList.setDesignVoList(designList);
 		retDesignList.setTotalCount(totCnt);
 		retDesignList.setPageSize(designVo.getPageSize());
@@ -73,9 +100,9 @@ public class DesignController {
 	@ElDescription(sub = "설계 업무 정보 갱신 폼을 위한 조회", desc = "설계 업무 정보 갱신 폼을 위한 조회를 한다.")
 	public DesignVo selectDesign(DesignVo designVo) throws Exception {
 		DesignVo selectDesignVo = designService.selectDesign(designVo);
-		
+
 		System.out.println(selectDesignVo);
-		
+
 		return selectDesignVo;
 	}
 
@@ -146,7 +173,7 @@ public class DesignController {
 	}
 
 	/**
-	 * 트리 구조로 보여주기 위해서 필요한 업무 컬럼들을 조회한다.
+	 * 트리 구조로 보여주기 위해서 필요한 설계 업무 depth별로 정렬된 상태로 조회한다.
 	 *
 	 * @param designVo 설계 업무 정보
 	 * @return 목록조회 결과
@@ -154,15 +181,40 @@ public class DesignController {
 	 */
 	@ElService(key = "DESIGN001Tree")
 	@RequestMapping(value = "DESIGN001Tree")
-	@ElDescription(sub = "트리 구조로 보여주기 위해 필요한 업무 컬럼들을 조회", desc = "트리 구조로 보여주기 위해 필요한 업무 컬럼들을 조회한다.")
-	public DesignListVo selectTreeeListDesign(DesignVo designVo) throws Exception {
+	@ElDescription(sub = "트리 구조로 설계 업무를 조회", desc = "트리 구조로 설계 업무를 조회한다.")
+	public DesignListVo selectTreeListDesign(DesignVo designVo) throws Exception {
 		System.out.println("DESIGN001Tree 컨트롤러");
 
 		designVo.setPageSize(9999);
 		designVo.setPageUnit(9999);
 		System.out.println("조회 전 Param: " + designVo);
 		List<DesignVo> designList = designService.selectTreeListDesign(designVo);
-		System.out.println("조회 결과 개수: " + designList.size()); 
+		System.out.println("조회 결과 개수: " + designList.size());
+		System.out.println(designList);
+		DesignListVo retDesignList = new DesignListVo();
+		retDesignList.setDesignVoList(designList);
+		System.out.println(retDesignList);
+		return retDesignList;
+	}
+
+	/**
+	 * 트리 구조로 보여주기 위해서 필요한 개발 업무 depth별로 정렬된 상태로 조회한다.
+	 *
+	 * @param designVo 설계 업무 정보
+	 * @return 목록조회 결과
+	 * @throws Exception
+	 */
+	@ElService(key = "DEVELOP001Tree")
+	@RequestMapping(value = "DEVELOP001Tree")
+	@ElDescription(sub = "트리 구조로 설계 업무를 조회", desc = "트리 구조로 설계 업무를 조회한다.")
+	public DesignListVo selectTreeListDevelop(DesignVo designVo) throws Exception {
+		System.out.println("DESIGN001Tree 컨트롤러");
+
+		designVo.setPageSize(9999);
+		designVo.setPageUnit(9999);
+		System.out.println("조회 전 Param: " + designVo);
+		List<DesignVo> designList = designService.selectTreeListDevelop(designVo);
+		System.out.println("조회 결과 개수: " + designList.size());
 		System.out.println(designList);
 		DesignListVo retDesignList = new DesignListVo();
 		retDesignList.setDesignVoList(designList);

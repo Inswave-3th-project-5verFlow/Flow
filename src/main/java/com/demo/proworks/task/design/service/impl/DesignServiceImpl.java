@@ -45,6 +45,22 @@ public class DesignServiceImpl implements DesignService {
 
 		return list;
 	}
+	
+
+	/**
+	 * 개발 업무 정보 목록을 조회합니다.
+	 *
+	 * @process 1. 설계 업무 정보 페이징 처리하여 목록을 조회한다. 2. 결과 List<DesignVo>을(를) 리턴한다.
+	 * 
+	 * @param designVo 설계 업무 정보 DesignVo
+	 * @return 설계 업무 정보 목록 List<DesignVo>
+	 * @throws Exception
+	 */
+	public List<DesignVo> selectListDevelop(DesignVo designVo) throws Exception {
+		List<DesignVo> list = designDAO.selectListDevelop(designVo);
+
+		return list;
+	}
 
 	/**
 	 * 조회한 설계 업무 정보 전체 카운트
@@ -57,6 +73,19 @@ public class DesignServiceImpl implements DesignService {
 	 */
 	public long selectListCountDesign(DesignVo designVo) throws Exception {
 		return designDAO.selectListCountDesign(designVo);
+	}
+	
+	/**
+	 * 조회한 설계 업무 정보 전체 카운트
+	 *
+	 * @process 1. 설계 업무 정보 조회하여 전체 카운트를 리턴한다.
+	 * 
+	 * @param designVo 설계 업무 정보 DesignVo
+	 * @return 설계 업무 정보 목록 전체 카운트
+	 * @throws Exception
+	 */
+	public long selectListCountDevelop(DesignVo designVo) throws Exception {
+		return designDAO.selectListCountDevelop(designVo);
 	}
 
 	/**
@@ -114,7 +143,7 @@ public class DesignServiceImpl implements DesignService {
 	}
 
 	/**
-	 * 트리 구조에 맞게 업무 목록을 조회한다.
+	 * 트리 구조에 맞게 설계 업무 목록을 조회한다.
 	 *
 	 * @process 1. 설계 업무 정보 페이징 처리하여 목록을 조회한다. 2. 결과 List<DesignVo>을(를) 리턴한다.
 	 * 
@@ -124,6 +153,21 @@ public class DesignServiceImpl implements DesignService {
 	 */
 	public List<DesignVo> selectTreeListDesign(DesignVo designVo) throws Exception {
 		List<DesignVo> list = designDAO.selectTreeListDesign(designVo);
+
+		return list;
+	}
+
+	/**
+	 * 트리 구조에 맞게 개발 업무 목록을 조회한다.
+	 *
+	 * @process 1. 개발 업무 정보 페이징 처리하여 목록을 조회한다. 2. 결과 List<DesignVo>을(를) 리턴한다.
+	 * 
+	 * @param designVo 설계 업무 정보 DesignVo
+	 * @return 설계 업무 정보 목록 List<DesignVo>
+	 * @throws Exception
+	 */
+	public List<DesignVo> selectTreeListDevelop(DesignVo designVo) throws Exception {
+		List<DesignVo> list = designDAO.selectTreeListDevelop(designVo);
 
 		return list;
 	}

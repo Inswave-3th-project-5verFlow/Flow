@@ -117,7 +117,7 @@
 		WHERE t.TASK_ID = #{taskId}			
     </select>
 	
-    <select id="selectListDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
+<select id="selectListDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
 		<!-- 설계 업무 정보 목록을 조회한다. -->
 		SELECT /* QueryID : com.demo.proworks.task.design.selectListDesign */
 		taskId, taskName, taskDes, taskStatus, isTest, taskDepth, stgId, ptTaskId, taskSeq, taskSt, taskEt, taskRst, taskRet, taskAsi, taskRate, pjtId, ptTaskName, stgName
@@ -146,7 +146,55 @@
 		        FROM TASK t
 		        LEFT JOIN TASK pt ON t.PT_TASK_ID = pt.TASK_ID
 		        LEFT JOIN STG s ON t.STG_ID = s.STG_ID
-		        WHERE 1=1
+		        WHERE t.STG_ID BETWEEN 1 AND 5  AND t.PJT_ID = #{pjtId}
+		        <if test="scTaskName != null and scTaskName != ''">
+		            AND t.TASK_NAME like '%${scTaskName}%'
+		        </if>
+		        <if test="scTaskStatus != null and scTaskStatus != ''">
+		            AND t.TASK_STATUS like '%${scTaskStatus}%'
+		        </if>
+		        <if test="scIsTest != null and scIsTest != ''">
+		            AND t.IS_TEST like '%${scIsTest}%'
+		        </if>
+		        <if test="scStgId != null and scStgId != ''">
+		            AND t.STG_ID like '%${scStgId}%'
+		        </if>
+		    ) S, (SELECT @ROWNUM := 0) TMP
+		) A
+		WHERE PAGE = #{pageIndex}
+</select>
+
+
+<select id="selectListDevelop" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
+		<!-- 개발 업무 정보 목록을 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.task.design.selectListDesign */
+		taskId, taskName, taskDes, taskStatus, isTest, taskDepth, stgId, ptTaskId, taskSeq, taskSt, taskEt, taskRst, taskRet, taskAsi, taskRate, pjtId, ptTaskName, stgName
+		FROM (
+		    SELECT S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
+		    FROM (
+		        SELECT
+		            t.TASK_ID as taskId, 
+		            t.TASK_NAME as taskName, 
+		            t.TASK_DES as taskDes, 
+		            t.TASK_STATUS as taskStatus, 
+		            t.IS_TEST as isTest, 
+		            t.TASK_DEPTH as taskDepth, 
+		            t.STG_ID as stgId, 
+		            t.PT_TASK_ID as ptTaskId, 
+		            t.TASK_SEQ as taskSeq, 
+		            t.TASK_ST as taskSt, 
+		            t.TASK_ET as taskEt, 
+		            t.TASK_RST as taskRst, 
+		            t.TASK_RET as taskRet, 
+		            t.TASK_ASI as taskAsi, 
+		            t.TASK_RATE as taskRate, 
+		            t.PJT_ID as pjtId,
+		            pt.TASK_NAME as ptTaskName,
+		            s.STG_NAME as stgName
+		        FROM TASK t
+		        LEFT JOIN TASK pt ON t.PT_TASK_ID = pt.TASK_ID
+		        LEFT JOIN STG s ON t.STG_ID = s.STG_ID
+		        WHERE t.STG_ID = 6 AND t.PJT_ID = #{pjtId}
 		        <if test="scTaskName != null and scTaskName != ''">
 		            AND t.TASK_NAME like '%${scTaskName}%'
 		        </if>
@@ -170,7 +218,28 @@
          SELECT    /* QueryID : com.demo.proworks.task.design.selectListCountDesign */
              COUNT(*) totcnt  		                  
          FROM TASK
-         WHERE  1=1    		
+         WHERE  stg_id between 1 and 5 AND PJT_ID = #{pjtId}   		
+            <if test="scTaskName != null and scTaskName != ''">
+                 AND TASK_NAME like '%${scTaskName}%'
+            </if>
+            <if test="scTaskStatus != null and scTaskStatus != ''">
+                 AND TASK_STATUS like '%${scTaskStatus}%'
+            </if>
+            <if test="scIsTest != null and scIsTest != ''">
+                 AND IS_TEST like '%${scIsTest}%'
+            </if>
+            <if test="scStgId != null and scStgId != ''">
+                 AND STG_ID like '%${scStgId}%'
+            </if>
+    </select>
+    
+    <select id="selectListCountDevelop" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="long">
+    <!-- 설계 업무 정보 목록의 카운트를 조회한다. -->
+    
+         SELECT    /* QueryID : com.demo.proworks.task.design.selectListCountDesign */
+             COUNT(*) totcnt  		                  
+         FROM TASK
+         WHERE  stg_id = 6  AND PJT_ID = #{pjtId}	
             <if test="scTaskName != null and scTaskName != ''">
                  AND TASK_NAME like '%${scTaskName}%'
             </if>
@@ -186,49 +255,102 @@
     </select>
     
     
+    
+    
 <select id="selectTreeListDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
 <!-- 트리 구조에 맞게 설계 업무 목록을 조회한다. -->
 WITH RECURSIVE task_tree AS (
-    -- 1단계: 최상위 업무들
-    SELECT
-        task_id,
-        task_name,
-        pt_task_id,
-        task_depth,
-        task_seq,
-        stg_id,
-        pjt_id,
-        CAST(LPAD(task_seq, 3, '0') AS VARCHAR(100)) as sort_path
-    FROM task t
-    WHERE pt_task_id = 0 and pjt_id = #{pjtId}
-
-    UNION ALL
-
-    -- 2-3단계: 하위 업무들 재귀 조회
-    SELECT
-        t.task_id,
-        t.task_name,
-        t.pt_task_id,
-        t.task_depth,
-        t.task_seq,
-        t.stg_id,
-        t.pjt_id,
-        CAST(CONCAT(tt.sort_path, '-', LPAD(t.task_seq, 3, '0')) AS VARCHAR(100)) as sort_path
-    FROM task t
-    INNER JOIN task_tree tt ON t.pt_task_id = tt.task_id
-    WHERE t.task_depth &lt;= 3
+        -- 1단계: 최상위 업무들 (pt_task_id = 0)
+        SELECT
+            task_id,
+            task_name,
+            pt_task_id,
+            task_depth,
+            task_seq,
+            stg_id,
+            pjt_id,
+            CAST(LPAD(task_seq, 3, '0') AS VARCHAR(100)) as sort_path
+        FROM task 
+        WHERE pt_task_id = 0 
+              AND pjt_id = #{pjtId}
+              AND stg_id BETWEEN 1 AND 5
+        
+        UNION ALL
+        
+        -- 2-3단계: 하위 업무들 재귀 조회
+        SELECT
+            t.task_id,
+            t.task_name,
+            t.pt_task_id,
+            t.task_depth,
+            t.task_seq,
+            t.stg_id,
+            t.pjt_id,
+            CAST(CONCAT(tt.sort_path, '-', LPAD(t.task_seq, 3, '0')) AS VARCHAR(100)) as sort_path
+        FROM task t
+        INNER JOIN task_tree tt ON t.pt_task_id = tt.task_id
+        WHERE t.task_depth &lt;=5 
+          	  AND t.pjt_id = #{pjtId}
+          	  AND t.stg_id BETWEEN 1 AND 5
 )
-SELECT
-    task_id as taskId,
-    task_name as taskName,
-    pt_task_id as ptTaskId,
-    task_depth as taskDepth,
-    task_seq as taskSeq,
-    stg_id as stgId,
-    pjt_id as pjtId
-FROM task_tree
-WHERE pjt_id = #{pjtId}
-ORDER BY stg_id, sort_path
+    SELECT
+        task_id as taskId,
+        task_name as taskName,
+        pt_task_id as ptTaskId,
+        task_depth as taskDepth,
+        task_seq as taskSeq,
+        stg_id as stgId,
+        pjt_id as pjtId
+    FROM task_tree
+    ORDER BY stg_id, sort_path
+</select>
+
+<select id="selectTreeListDevelop" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
+<!-- 트리 구조에 맞게 설계 업무 목록을 조회한다. -->
+WITH RECURSIVE task_tree AS (
+        -- 1단계: 최상위 업무들 (pt_task_id = 0)
+        SELECT
+            task_id,
+            task_name,
+            pt_task_id,
+            task_depth,
+            task_seq,
+            stg_id,
+            pjt_id,
+            CAST(LPAD(task_seq, 3, '0') AS VARCHAR(100)) as sort_path
+        FROM task 
+        WHERE pt_task_id = 0 
+          AND pjt_id = #{pjtId}
+          AND stg_id = 6
+        
+        UNION ALL
+        
+        -- 2-3단계: 하위 업무들 재귀 조회
+        SELECT
+            t.task_id,
+            t.task_name,
+            t.pt_task_id,
+            t.task_depth,
+            t.task_seq,
+            t.stg_id,
+            t.pjt_id,
+            CAST(CONCAT(tt.sort_path, '-', LPAD(t.task_seq, 3, '0')) AS VARCHAR(100)) as sort_path
+        FROM task t
+        INNER JOIN task_tree tt ON t.pt_task_id = tt.task_id
+        WHERE t.task_depth &lt;=5 
+          AND t.pjt_id = #{pjtId}
+          AND t.stg_id = 6
+)
+    SELECT
+        task_id as taskId,
+        task_name as taskName,
+        pt_task_id as ptTaskId,
+        task_depth as taskDepth,
+        task_seq as taskSeq,
+        stg_id as stgId,
+        pjt_id as pjtId
+    FROM task_tree
+    ORDER BY stg_id, sort_path
 </select>
 			
 

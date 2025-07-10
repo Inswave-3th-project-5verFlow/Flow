@@ -45,6 +45,17 @@ public class DesignDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstrac
 	}
 
 	/**
+	 * 페이징을 처리하여 개발 업무 정보 목록조회를 한다.
+	 * 
+	 * @param DesignVo 설계 업무 정보
+	 * @return List<DesignVo> 설계 업무 정보
+	 * @throws ElException
+	 */
+	public List<DesignVo> selectListDevelop(DesignVo vo) throws ElException {
+		return (List<DesignVo>) list("com.demo.proworks.task.design.selectListDevelop", vo);
+	}
+
+	/**
 	 * 설계 업무 정보 목록 조회의 전체 카운트를 조회한다.
 	 * 
 	 * @param DesignVo 설계 업무 정보
@@ -53,6 +64,17 @@ public class DesignDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstrac
 	 */
 	public long selectListCountDesign(DesignVo vo) throws ElException {
 		return (Long) selectByPk("com.demo.proworks.task.design.selectListCountDesign", vo);
+	}
+	
+	/**
+	 * 개발 업무 정보 목록 조회의 전체 카운트를 조회한다.
+	 * 
+	 * @param DesignVo 설계 업무 정보
+	 * @return 설계 업무 정보 조회의 전체 카운트
+	 * @throws ElException
+	 */
+	public long selectListCountDevelop(DesignVo vo) throws ElException {
+		return (Long) selectByPk("com.demo.proworks.task.design.selectListCountDevelop", vo);
 	}
 
 	/**
@@ -89,7 +111,7 @@ public class DesignDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstrac
 	}
 
 	/**
-	 * 트리 구조에 맞게 업무 목록을 조회한다.
+	 * 트리 구조에 맞게 설계 업무 목록을 조회한다.
 	 * 
 	 * @param DesignVo 설계 업무 정보
 	 * @return List<DesignVo> 설계 업무 정보
@@ -97,6 +119,17 @@ public class DesignDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstrac
 	 */
 	public List<DesignVo> selectTreeListDesign(DesignVo vo) throws ElException {
 		return (List<DesignVo>) list("com.demo.proworks.task.design.selectTreeListDesign", vo);
+	}
+	
+	/**
+	 * 트리 구조에 맞게 개발 업무 목록을 조회한다.
+	 * 
+	 * @param DesignVo 설계 업무 정보
+	 * @return List<DesignVo> 설계 업무 정보
+	 * @throws ElException
+	 */
+	public List<DesignVo> selectTreeListDevelop(DesignVo vo) throws ElException {
+		return (List<DesignVo>) list("com.demo.proworks.task.design.selectTreeListDevelop", vo);
 	}
 
 }
