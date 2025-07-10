@@ -101,7 +101,7 @@
 	</select>
 
 
-	<select id="selectListWbs" parameterType="com.demo.proworks.wbs.vo.WbsListVo" resultType="com.demo.proworks.wbs.vo.WbsListVo">
+	<select id="selectListWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
 		<!-- WBS 목록을 계층형 정렬로 조회한다. -->
 		/* QueryID : com.demo.proworks.wbs.selectListWbs */
 		WITH RECURSIVE task_hierarchy AS (

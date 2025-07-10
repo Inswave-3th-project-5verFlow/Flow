@@ -1,0 +1,460 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:type>COMPONENT</w2:type>
+        <w2:buildDate/>
+        <w2:MSA/>
+        <xf:model>
+        	<w2:dataCollection baseNode="map">
+        		<!-- 업무 상세 정보 -->
+        		<w2:dataMap baseNode="map" id="dmp_taskDetail">
+        			<w2:keyInfo>
+        				<w2:key dataType="text" id="taskId" name="업무ID"></w2:key>
+        				<w2:key dataType="text" id="taskName" name="업무명"></w2:key>
+        				<w2:key dataType="text" id="taskDes" name="업무상세"></w2:key>
+        				<w2:key dataType="text" id="taskStatus" name="업무상태" defaultValue="대기"></w2:key>
+        				<w2:key dataType="text" id="isTest" name="테스트여부" defaultValue="N"></w2:key>
+        				<w2:key dataType="text" id="taskDepth" name="뎁스"></w2:key>
+        				<w2:key dataType="text" id="stgId" name="단계ID"></w2:key>
+        				<w2:key dataType="text" id="ptTaskId" name="상위업무ID"></w2:key>
+        				<w2:key dataType="text" id="ptTaskName" name="상위업무명"></w2:key>
+        				<w2:key dataType="text" id="taskSeq" name="순서" defaultValue="0"></w2:key>
+        				<w2:key dataType="text" id="taskSt" name="시작예정일"></w2:key>
+        				<w2:key dataType="text" id="taskEt" name="완료예정일"></w2:key>
+        				<w2:key dataType="text" id="taskRst" name="실제시작일"></w2:key>
+        				<w2:key dataType="text" id="taskRet" name="실제완료일"></w2:key>
+        				<w2:key dataType="text" id="taskAsi" name="업무담당자"></w2:key>
+        				<w2:key dataType="text" id="taskRate" name="진척률"></w2:key>
+        				<w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
+        			</w2:keyInfo>
+        		</w2:dataMap>
+
+        		<!-- 업무상태 목록 -->
+        		<w2:dataList baseNode="list" repeatNode="map" id="dlt_taskStatus" saveRemovedData="true">
+        			<w2:columnInfo>
+        				<w2:column dataType="text" name="라벨 및 값" id="status" defaultValue="대기"></w2:column>
+        			</w2:columnInfo>
+        			<w2:data use="true">
+        				<w2:row>
+        					<status><![CDATA[대기]]></status>
+        				</w2:row>
+        				<w2:row>
+        					<status><![CDATA[진행중]]></status>
+        				</w2:row>
+        				<w2:row>
+        					<status><![CDATA[완료]]></status>
+        				</w2:row>
+        			</w2:data>
+        		</w2:dataList>
+
+        		<!-- 테스트여부 목록 -->
+        		<w2:dataList baseNode="list" repeatNode="map" id="dlt_isTest" saveRemovedData="true">
+        			<w2:columnInfo>
+        				<w2:column dataType="text" name="name1" id="label"></w2:column>
+        				<w2:column dataType="text" name="name2" id="value"></w2:column>
+        			</w2:columnInfo>
+        			<w2:data use="true">
+        				<w2:row>
+        					<label><![CDATA[Y]]></label>
+        					<value><![CDATA[1]]></value>
+        				</w2:row>
+        				<w2:row>
+        					<label><![CDATA[N]]></label>
+        					<value><![CDATA[0]]></value>
+        				</w2:row>
+        			</w2:data>
+        		</w2:dataList>
+
+        		<!-- 단계ID 목록 -->
+        		<w2:dataList baseNode="list" repeatNode="map" id="dlt_stgId" saveRemovedData="true">
+        			<w2:columnInfo>
+        				<w2:column dataType="text" name="단계명" id="label"></w2:column>
+        				<w2:column dataType="text" name="stgId" id="value"></w2:column>
+        			</w2:columnInfo>
+        			<w2:data use="true">
+        				<w2:row>
+        					<label><![CDATA[리서치]]></label>
+        					<value><![CDATA[1]]></value>
+        				</w2:row>
+        				<w2:row>
+        					<value><![CDATA[2]]></value>
+        					<label><![CDATA[분석]]></label>
+        				</w2:row>
+        				<w2:row>
+        					<value><![CDATA[3]]></value>
+        					<label><![CDATA[기획]]></label>
+        				</w2:row>
+        				<w2:row>
+        					<value><![CDATA[4]]></value>
+        					<label><![CDATA[디자인]]></label>
+        				</w2:row>
+        				<w2:row>
+        					<value><![CDATA[5]]></value>
+        					<label><![CDATA[퍼블리싱]]></label>
+        				</w2:row>
+        			</w2:data>
+        		</w2:dataList>
+        	</w2:dataCollection>
+
+        	<w2:workflowCollection />
+
+        	<!-- 단건 등록용 submission -->
+        	<xf:submission id="sbm_insertTaskDetail" action="/InsWebApp/DESIGN001Ins.pwkjson" method="post" mediatype="application/json"
+        		ref='data:json,{"id":"dmp_taskDetail","key":"designVo"}' target='' encoding="UTF-8" instance="" replace="" errorHandler=""
+        		customHandler="" mode="asynchronous" processMsg="업무 정보를 등록 중입니다." ev:submit="" ev:submitdone="scwin.sbm_saveTaskDetail_submitdone"
+        		ev:submiterror="" abortTrigger="">
+        	</xf:submission>
+
+        	<!-- 단건 수정용 submission -->
+        	<xf:submission id="sbm_updateTaskDetail" action="/InsWebApp/DESIGN001Upd.pwkjson" method="post" mediatype="application/json"
+        		ref='data:json,{"id":"dmp_taskDetail","key":"designVo"}' target='' encoding="UTF-8" instance="" replace="" errorHandler=""
+        		customHandler="" mode="asynchronous" processMsg="업무 정보를 수정 중입니다." ev:submit="" ev:submitdone="scwin.sbm_saveTaskDetail_submitdone"
+        		ev:submiterror="" abortTrigger="">
+        	</xf:submission>
+        	<xf:submission id="sbm_deleteTaskDetail" action="/InsWebApp/DESIGN001Del.pwkjson" method="post" mediatype="application/json"
+        		ref='data:json,{"id":"dmp_taskDetail","key":"designVo"}' target="" encoding="UTF-8" instance="" replace="" errorHandler=""
+        		customHandler="" mode="asynchronous" processMsg="" ev:submit="" ev:submitdone="scwin.sbm_deleteTaskDetail_submitdone" ev:submiterror="" abortTrigger="">
+        	</xf:submission>
+        </xf:model>
+
+        <w2:layoutInfo/>
+        <w2:publicInfo method=""/>
+        
+        <script lazy="false" type="text/javascript"><![CDATA[
+scwin.onpageload = function () {
+
+    const popupData = $p.getParameter("params");
+    const popupType = popupData.popupType;
+    scwin.PJT_ID = popupData.pjtId;
+    if (popupType !== undefined && popupType === "detail") { // 상세 보기 팝업
+        // 받아온 데이터로 값 세팅해야함
+        console.log("상세 보기 팝업으로 로드");
+        // dmp_taskDetail.setJSON(popUpdata);
+    }
+    else if (popupType !== undefined && popupType === "new") { // 신규 생성 팝업
+        console.log("신규 생성 팝업으로 로드");
+        tbx_title.setValue("신규 업무 생성 팝업");
+        dmp_taskDetail.set("pjtId", scwin.PJT_ID);
+    }
+};
+
+scwin.btn_ptTaskName_onclick = function (e) {
+    var currentTaskData = dmp_taskDetail.getJSON();
+
+    var taskData = {
+        currentTaskId: currentTaskData.taskId,
+        currentTaskName: currentTaskData.taskName,
+        currentStgId: currentTaskData.stgId
+    };
+
+    var jsnPopupData = {
+        "type": "json",
+        "name": "taskData",
+        "data": taskData
+    };
+
+    var options = {
+        id: "task_tree_popup_detail",
+        type: "wframePopup",
+        width: "600px",
+        height: "650px",
+        top: "30px",
+        left: "300px",
+        popupName: "상위 업무 선택",
+        modal: true,
+        closeAction: "scwin.taskTreePopup_closeAction",
+        dataObject: jsnPopupData
+    };
+
+    $p.openPopup("/InsWebApp/ui/task/design/DesignTaskTree.xml", options);
+};
+
+scwin.receiveTaskData = function (returnData) {
+    if (returnData && returnData.selectedTask) {
+        var selectedTask = returnData.selectedTask;
+
+        dmp_taskDetail.set("ptTaskId", selectedTask.taskId);
+        dmp_taskDetail.set("ptTaskName", selectedTask.taskName);
+        dmp_taskDetail.set("stgId", selectedTask.stgId);
+        dmp_taskDetail.set("taskDepth", parseInt(selectedTask.taskDepth) + 1);
+
+        $c.win.alert("선택된 상위업무: " + selectedTask.taskName);
+    }
+};
+
+scwin.taskTreePopup_closeAction = function () {
+    return true;
+};
+
+// 저장 버튼
+scwin.btn_save_onclick = function (e) {
+    var taskData = dmp_taskDetail.getJSON();
+
+    if (!taskData.taskName || taskData.taskName.trim() === "") {
+        $c.win.alert("업무명을 입력해주세요.");
+        return;
+    }
+
+    // taskId 존재 여부에 따른 분기 처리
+    if (!taskData.taskId || taskData.taskId === "" || taskData.taskId === "0") {
+        // 신규 등록 (INSERT)
+        $c.sbm.execute($p, sbm_insertTaskDetail);
+    } else {
+        // 기존 수정 (UPDATE)  
+        $c.sbm.execute($p, sbm_updateTaskDetail);
+    }
+};
+
+scwin.sbm_saveTaskDetail_submitdone = function (e) {
+    var elHeader = e.responseJSON.elHeader;
+
+    if (elHeader == null || elHeader == "" || elHeader == "undefined" || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    }
+
+    var taskData = dmp_taskDetail.getJSON();
+    var isNewTask = !taskData.taskId || taskData.taskId === "" || taskData.taskId === "0";
+
+    if (isNewTask) {
+        $c.win.alert("업무가 등록되었습니다.");
+    } else {
+        $c.win.alert("업무 정보가 수정되었습니다.");
+    }
+
+    // 부모 페이지 재조회 요청
+    $p.parent().scwin.btn_search_onclick();
+
+    // 팝업 닫기
+    $p.closePopup();
+};
+
+// 삭제 버튼
+scwin.btn_delete_onclick = function (e) {
+    // 유효성 체크
+    var valInfo = [
+        { id: "taskId", mandatory: true }
+
+    ];
+
+    if ($c.data.validateGroup(grp_taskInfo, valInfo) === true) {
+        var promise = $c.win.confirm("삭제하시겠습니까?");
+        promise.then(function (result) {
+            if (result) {
+                $c.sbm.execute(sbm_deleteTaskDetail);
+            }
+        })
+    }
+};
+
+scwin.sbm_deleteTaskDetail_submitdone = function (e) {
+    // error 수신시
+    var elHeader = e.responseJSON.elHeader;
+    if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    } else {
+        // 삭제되었습니다. msg 출력
+        $c.win.alert("삭제되었습니다.");
+    }
+    // 부모 페이지 재조회 요청
+    $p.parent().scwin.btn_search_onclick();
+
+    $p.closePopup();
+};
+
+scwin.btn_cancel_onclick = function (e) {
+    $p.closePopup();
+};
+
+
+
+]]></script>
+    </head>
+    
+    <body ev:onpageload="scwin.onpageload">
+    	<xf:group class="pop_contents" id="" style="width:700px;">
+    		
+    		<!-- 팝업 헤더 -->
+    		<xf:group class="pop_header" style="padding:15px; border-bottom:1px solid #ddd; background-color:#f8f9fa;">
+    			<w2:textbox class="pop_title" id="tbx_title" label="제목" style="font-size:18px; font-weight:bold;" />
+    		</xf:group>
+    		
+    		<!-- 팝업 내용 -->
+    		<xf:group class="pop_body" style="padding:20px; max-height:600px; overflow-y:auto;">
+
+    			<!-- 기본 정보 섹션 -->
+    			<xf:group class="section" style="margin-bottom:20px;" id="grp_taskInfo">
+    				<w2:textbox class="section_title" label="기본 정보"
+    					style="font-size:16px; font-weight:bold; margin-bottom:10px; color:#333;" />
+
+    				<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" style="width:100%;" tagname="table">
+    					<w2:attributes>
+    						<w2:summary />
+    					</w2:attributes>
+    					<xf:group tagname="colgroup">
+    						<xf:group style="width:120px;" tagname="col" />
+    						<xf:group style="width:200px;" tagname="col" />
+    						<xf:group style="width:120px;" tagname="col" />
+    						<xf:group style="" tagname="col" />
+    					</xf:group>
+
+    					<!-- 1행: 업무명, 업무상태 -->
+    					<xf:group tagname="tr">
+    						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
+    							<w2:textbox label="업무명" style="color:#333;" />
+    						</xf:group>
+    						<xf:group class="w2tb_td" tagname="td">
+    							<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskName" />
+    						</xf:group>
+    						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
+    							<w2:textbox label="업무상태" style="color:#333;" />
+    						</xf:group>
+    						<xf:group class="w2tb_td" tagname="td">
+    							<xf:select1 style="width:180px;" ref="data:dmp_taskDetail.taskStatus" appearance="minimal" allOption=""
+    								chooseOption="true" chooseOptionLabel="$blank">
+    								<xf:choices>
+    									<xf:itemset nodeset="data:dlt_taskStatus">
+    										<xf:label ref="status"></xf:label>
+    										<xf:value ref="status"></xf:value>
+    									</xf:itemset>
+    								</xf:choices>
+    							</xf:select1>
+    						</xf:group>
+    					</xf:group>
+
+    					<!-- 2행: 단계, 테스트여부 -->
+    					<xf:group tagname="tr">
+    						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
+    							<w2:textbox label="단계" style="color:#333;" />
+    						</xf:group>
+    						<xf:group class="w2tb_td" tagname="td">
+    							<xf:select1 style="width:180px;" ref="data:dmp_taskDetail.stgId" appearance="minimal" allOption=""
+    								chooseOption="true" chooseOptionLabel="$blank">
+    								<xf:choices>
+    									<xf:itemset nodeset="data:dlt_stgId">
+    										<xf:label ref="label"></xf:label>
+    										<xf:value ref="value"></xf:value>
+    									</xf:itemset>
+    								</xf:choices>
+    							</xf:select1>
+    						</xf:group>
+    						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
+    							<w2:textbox label="테스트여부" style="color:#333;" />
+    						</xf:group>
+    						<xf:group class="w2tb_td" tagname="td">
+    							<xf:select1 style="width:180px;" ref="data:dmp_taskDetail.isTest" appearance="minimal" allOption=""
+    								chooseOption="true" chooseOptionLabel="$blank">
+    								<xf:choices>
+    									<xf:itemset nodeset="data:dlt_isTest">
+    										<xf:label ref="label"></xf:label>
+    										<xf:value ref="value"></xf:value>
+    									</xf:itemset>
+    								</xf:choices>
+    							</xf:select1>
+    						</xf:group>
+    					</xf:group>
+
+    					<!-- 3행: 상위업무명, 순서 -->
+    					<xf:group tagname="tr">
+    						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
+    							<w2:textbox label="상위업무명" style="color:#333;" />
+    						</xf:group>
+    						<xf:group class="w2tb_td" tagname="td">
+    							<w2:attributes>
+    								<w2:colspan>3</w2:colspan>
+    							</w2:attributes>
+    							<xf:group style="display:flex; align-items:center;">
+    								<xf:input style="width:180px;" ref="data:dmp_taskDetail.ptTaskName" readOnly="true" />
+    								<xf:trigger class="btn_cm" id="btn_ptTaskName" style="margin-left:5px; padding:2px 8px;" type="button"
+    									ev:onclick="scwin.btn_ptTaskName_onclick">
+    									<xf:label>선택</xf:label>
+    								</xf:trigger>
+    							</xf:group>
+    						</xf:group>
+
+    					</xf:group>
+
+    					<!-- 4행: 업무담당자, 진척률 -->
+    					<xf:group tagname="tr">
+    						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
+    							<w2:textbox label="업무담당자" style="color:#333;" />
+    						</xf:group>
+    						<xf:group class="w2tb_td" tagname="td">
+    							<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskAsi" />
+    						</xf:group>
+    						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
+    							<w2:textbox label="진척률(%)" style="color:#333;" />
+    						</xf:group>
+    						<xf:group class="w2tb_td" tagname="td">
+    							<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskRate" />
+    						</xf:group>
+    					</xf:group>
+    				</xf:group>
+    			</xf:group>
+
+    			<!-- 일정 정보 섹션 -->
+    			<xf:group class="section" style="margin-bottom:20px;">
+    				<w2:textbox class="section_title" label="일정 정보"
+    					style="font-size:16px; font-weight:bold; margin-bottom:10px; color:#333;" />
+
+    				<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" style="width:100%;" tagname="table">
+    					<w2:attributes>
+    						<w2:summary />
+    					</w2:attributes>
+    					<xf:group tagname="colgroup">
+    						<xf:group style="width:120px;" tagname="col" />
+    						<xf:group style="width:200px;" tagname="col" />
+    						<xf:group style="width:120px;" tagname="col" />
+    						<xf:group style="" tagname="col" />
+    					</xf:group>
+
+    					<!-- 1행: 시작예정일, 완료예정일 -->
+    					<xf:group tagname="tr">
+    						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
+    							<w2:textbox label="시작예정일" style="color:#333;" />
+    						</xf:group>
+    						<xf:group class="w2tb_td" tagname="td">
+    							<w2:inputCalendar id="" style="width: 150px;height: 23px;" calendarValueType="yearMonthDate"
+    								ref="data:dmp_taskDetail.taskSt">
+    							</w2:inputCalendar>
+    						</xf:group>
+    						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
+    							<w2:textbox label="완료예정일" style="color:#333;" />
+    						</xf:group>
+    						<xf:group class="w2tb_td" tagname="td">
+    							<w2:inputCalendar id="" style="width: 150px;height: 23px;" calendarValueType="yearMonthDate"
+    								ref="data:dmp_taskDetail.taskEt">
+    							</w2:inputCalendar>
+    						</xf:group>
+    					</xf:group>
+    				</xf:group>
+    			</xf:group>
+
+    			<!-- 상세 설명 섹션 -->
+    			<xf:group class="section" style="margin-bottom:20px;">
+    			</xf:group>
+    			<xf:group class="btnbox" id="" meta_snippetCategory="08_버튼" meta_snippetKeyComponent="true" meta_snippetName="8_04 전체제어버튼"
+    				style="">
+    				<xf:group class="rt" id="" style="">
+    					<w2:textbox class="bar_btndiv" id="" label="" style=""></w2:textbox>
+    					<xf:trigger class="btn_cm pt" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
+    						<xf:label><![CDATA[저장]]></xf:label>
+    					</xf:trigger>
+
+    					<xf:trigger class="btn_cm pt" id="btn_delete" style=";color:;background-color:#FF0000;" type="button" ev:onclick="scwin.btn_delete_onclick">
+    						<xf:label><![CDATA[삭제]]></xf:label>
+    					</xf:trigger>
+    					<xf:trigger class="btn_cm " id="btn_cancel" style="" type="button" ev:onclick="scwin.btn_cancel_onclick">
+    						<xf:label><![CDATA[취소]]></xf:label>
+    					</xf:trigger>
+    				</xf:group>
+    			</xf:group>
+    		</xf:group>
+
+    		<!-- 팝업 버튼 영역 -->
+    	</xf:group>
+    </body>
+</html>

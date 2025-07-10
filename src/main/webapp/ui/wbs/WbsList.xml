@@ -17,7 +17,7 @@
 						<w2:key dataType="text" id="scTaskRate" name="search_진척률"></w2:key>
 
 						<w2:key dataType="text" id="pageIndex" name="페이지_번호" defaultValue="1"></w2:key>
-						<w2:key dataType="text" id="pageSize" name="페이지_건수" defaultValue="50"></w2:key>
+						<w2:key dataType="text" id="pageSize" name="페이지_건수" defaultValue="99"></w2:key>
 						<w2:key dataType="text" name="프로젝트ID" id="pjtId"></w2:key>
 					</w2:keyInfo>
 					<w2:data use="false"></w2:data>
@@ -170,16 +170,16 @@ scwin.sbm_wbsList_submitdone = function (e) {
     spn_listCnt.setLabel(elData.totalCount);
 
     // // 데이터에 단계명 추가 및 그룹핑을 위한 단계 순서 필드 추가
-    // var wbsDataWithStgName = elData.wbsVoList.map(function(item) {
-    //     // 단계ID로 단계명 조회하여 추가
-    //     item.stgName = scwin.getStgNameByStgId(item.stgId);
-    //     // 그룹핑을 위한 단계정보 필드 (순서를 위해 stgId 사용, 표시를 위해 stgName 사용)
-    //     item.stgForGrouping = item.stgId + '|' + item.stgName; // 'STG001|분석단계' 같은 형태
-    //     return item;
-    // });
-    
-    // dlt_wbsVoList.setJSON(wbsDataWithStgName);
-    dlt_wbsVoList.setJSON(elData.wbsVoList);
+    var wbsDataWithStgName = elData.wbsVoList.map(function (item) {
+        // 단계ID로 단계명 조회하여 추가
+        item.stgName = scwin.getStgNameByStgId(item.stgId);
+        // 그룹핑을 위한 단계정보 필드 (순서를 위해 stgId 사용, 표시를 위해 stgName 사용)
+        item.stgForGrouping = item.stgId + '|' + item.stgName; // 'STG001|분석단계' 같은 형태
+        return item;
+    });
+
+    dlt_wbsVoList.setJSON(wbsDataWithStgName);
+    // dlt_wbsVoList.setJSON(elData.wbsVoList);
 
     // 페이지 네비게이터 업데이트
     var totalPageCount = Math.ceil(elData.totalCount / dmp_wbsVo.get("pageSize"));
@@ -190,12 +190,10 @@ scwin.sbm_wbsList_submitdone = function (e) {
     spn_pageIndex.setValue(dmp_wbsVo.get("pageIndex"));
     pgl_wbsList.setSelectedIndex(dmp_wbsVo.get("pageIndex"));
 
+    // 순번 업데이트
     let num = Number(dmp_wbsVo.get("pageIndex"));
     num = (num - 1) * 10;
     grd_list.setStartRowNumber(num);
-
-    // 단계별 그룹핑 함수 호출
-    // scwin.initGroupBy();
 
 };
 
@@ -213,7 +211,7 @@ scwin.initGroupBy = function () {
                 // 단계별 그룹 헤더 - 단계명으로 표시
                 expression: 'toggle() + depthStr() + " (" + count() + " 건) "',
                 align: "left",
-                colSpan: "18"            
+                colSpan: "18"
             }
         ],
         hideFooter: true
@@ -249,7 +247,71 @@ scwin.getStgNameByStgId = function (value) {
     */
     var _stgName = dlt_wbsStgList.getMatchedColumnData("stgId", value, "stgName");
     return _stgName[0];
-}]]></script>
+}
+
+// 그룹바이
+scwin.btn_groupby_onclick = function (e) {
+    // 단계별 그룹핑 함수 호출
+    scwin.initGroupBy();
+};
+
+// 그룹바이 초기화
+scwin.btn_clearGroupby_onclick = function (e) {
+    grd_list.clearGroupby();
+};
+
+// 등록 버튼
+scwin.btn_new_onclick = function (e) {
+    var popupData = {
+        "type": "json",
+        "name": "params",
+        "data": {
+            "pjtId": scwin.PJT_ID,
+            "popupType" : "new"
+        }
+    };
+
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const popupWidth = 800;
+    const popupHeight = 800;
+    const popupLeft = (screenWidth - popupWidth) / 2 + "px";
+    const popupTop = (screenHeight - popupHeight) / 2 + "px";
+
+    const options = {
+        id: "wbs_new",
+        type: "wframePopup",
+        width: popupWidth + "px",
+        height: popupHeight + "px",
+        top: popupTop,
+        left: popupLeft,
+        popupName: "업무 생성",
+        modal: true,
+        closeAction: "scwin.popup_closeAction",
+        dataObject: popupData
+    };
+
+    $p.openPopup("/InsWebApp/ui/wbs/WbsDetail.xml", options);
+};
+
+scwin.grd_list_oncellclick = function (rowIndex, columnIndex, columnId) {
+
+};
+
+/**
+ * @method
+ * @name scwin.popup_closeAction
+ * @description 팝업 닫기 시 재조회 처리
+ * @param {String} argRuntimeID - 팝업의 실행 ID
+ * @param {Object} argJsnInfo - 팝업 닫힘 시 전달된 정보
+ * @returns {Boolean} 팝업 닫기 여부
+ */
+scwin.popup_closeAction = function (argRuntimeID, argJsnInfo) {
+    var popObj = $p.getPopupWindow(argRuntimeID);
+    scwin.btn_search_onclick();
+    return true;
+};
+]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">
 		<xf:group class="sub_contents " id="" style="">
@@ -294,7 +356,8 @@ scwin.getStgNameByStgId = function (value) {
 							</xf:group>
 							<xf:group tagname="td" class="w2tb_td">
 								<xf:select1 id="" chooseOption="true" style="width: 100%;height: 30px;" submenuSize="auto" allOption=""
-									disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" ref="data:dmp_wbsVo.scTaskStatus" chooseOptionLabel="$blank">
+									disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" ref="data:dmp_wbsVo.scTaskStatus"
+									chooseOptionLabel="$blank">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_wbsStatusList">
 											<xf:label ref="taskStatus"></xf:label>
@@ -312,7 +375,8 @@ scwin.getStgNameByStgId = function (value) {
 							</xf:group>
 							<xf:group tagname="td" class="w2tb_td">
 								<xf:select1 id="" chooseOption="true" style="width: 100%;height: 30px;" submenuSize="auto" allOption=""
-									disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" ref="data:dmp_wbsVo.scStgId" chooseOptionLabel="$blank">
+									disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" ref="data:dmp_wbsVo.scStgId"
+									chooseOptionLabel="$blank">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_wbsStgList">
 											<xf:label ref="stgName"></xf:label>
@@ -353,22 +417,52 @@ scwin.getStgNameByStgId = function (value) {
 					<w2:span id="" label="건" localeRef="COMMON_LABEL_00003" style=""></w2:span>
 				</xf:group>
 			</xf:group>
+			<xf:group class="titbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_02 서브타이틀(h3)"
+				style="">
+				<xf:group class="rt" id="" style="">
+					<xf:trigger class="btn_cm" id="btn_groupby" style="" type="button" ev:onclick="scwin.btn_groupby_onclick">
+						<xf:label><![CDATA[단계별(그룹)]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="btn_cm" id="btn_clearGroupby" style="" type="button" ev:onclick="scwin.btn_clearGroupby_onclick">
+						<xf:label><![CDATA[그룹 초기화]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="btn_cm row_add" id="btn_new" style="" type="button" ev:onclick="scwin.btn_new_onclick">
+						<xf:label><![CDATA[등록]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="btn_cm row_del" id="btn_delete" style="" type="button">
+						<xf:label><![CDATA[삭제]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="btn_cm  save" id="btn_save" style="" type="button">
+						<xf:label><![CDATA[저장]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="btn_cm  upload" id="" style="" type="button">
+						<xf:label><![CDATA[업로드]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="btn_cm download" id="" style="" type="button">
+						<xf:label><![CDATA[다운로드]]></xf:label>
+					</xf:trigger>
+
+
+				</xf:group>
+			</xf:group>
 			<xf:group adaptiveThreshold="" class="gvwbox" id="" style="">
 				<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dlt_wbsVoList"
 					defaultCellHeight="26" focusMode="row" id="grd_list" scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;"
-					visibleRowNum="50" ev:oncellclick="scwin.grd_list_oncellclick" readOnly="false" rowNumHeaderValue="순번" rowNumVisible="true"
+					visibleRowNum="20" ev:oncellclick="scwin.grd_list_oncellclick" readOnly="false" rowNumHeaderValue="순번" rowNumVisible="true"
 					rowNumWidth="20" rowStatusHeaderValue="상태" rowStatusVisible="true" rowStatusWidth="20" useFilterList="true" groupbyZone="true">
 					<w2:caption style="" id="caption2" value="this is a grid caption."></w2:caption>
 					<w2:header style="" id="header2">
-					<w2:row style="" id="row3">
-					<w2:column width="70" localeRef="Wbs_COLNAME_00007" inputType="text" style="" id="column7" value="단계ID" displayMode="label" useFilter="true" sortable="true" hideCustomFilter="true" hidden="false">
-					</w2:column>
-					<w2:column width="70" inputType="text" style="" id="column18" value="단계명" displayMode="label" useFilter="true" sortable="true" hideCustomFilter="true">
-					</w2:column>
-					<w2:column width="70" inputType="checkbox" style="" id="column17" value="" displayMode="label"></w2:column>
-					<w2:column width="70" inputType="text" style="" id="column1" value="업무ID" displayMode="label"
-                                    localeRef="Wbs_COLNAME_00001">
-                                </w2:column>
+						<w2:row style="" id="row3">
+							<w2:column width="70" localeRef="Wbs_COLNAME_00007" inputType="text" style="" id="column7" value="단계ID"
+								displayMode="label" useFilter="true" sortable="true" hideCustomFilter="true" hidden="false">
+							</w2:column>
+							<w2:column width="70" inputType="text" style="" id="column18" value="단계명" displayMode="label" useFilter="true"
+								sortable="true" hideCustomFilter="true">
+							</w2:column>
+							<w2:column width="70" inputType="checkbox" style="" id="column17" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column1" value="업무ID" displayMode="label"
+								localeRef="Wbs_COLNAME_00001">
+							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column2" value="업무명" displayMode="label"
 								localeRef="Wbs_COLNAME_00002">
 							</w2:column>
@@ -388,7 +482,7 @@ scwin.getStgNameByStgId = function (value) {
 								localeRef="Wbs_COLNAME_00008">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column9" value="순서" displayMode="label"
-								localeRef="Wbs_COLNAME_00009">
+								localeRef="Wbs_COLNAME_00009" hidden="true">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column10" value="시작예정일" displayMode="label"
 								localeRef="Wbs_COLNAME_00010" hidden="false">
@@ -415,12 +509,18 @@ scwin.getStgNameByStgId = function (value) {
 						</w2:row>
 					</w2:header>
 					<w2:gBody style="" id="gBody2">
-					<w2:row style="" id="row4">
-					<w2:column width="70" inputType="text" style="" id="stgId" showDepth="0" value="" depthColumn="taskDepth" displayMode="label" hideCustomFilter="true" useFilter="true" embeddedInput="text" hidden="false"></w2:column>
-					<w2:column width="70" inputType="text" style="" id="stgName" value="" displayMode="label" hideCustomFilter="true" useFilter="true" embeddedInput="text"></w2:column>
-					<w2:column width="70" inputType="checkbox" style="" id="chk" value="" displayMode="label"></w2:column>
-                            <w2:column width="70" inputType="text" style="" id="taskId" value="" displayMode="label" embeddedInput="text"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="taskName" value="" displayMode="label" embeddedInput="text"></w2:column>
+						<w2:row style="" id="row4">
+							<w2:column width="70" inputType="text" style="" id="stgId" showDepth="0" value="" depthColumn="taskDepth"
+								displayMode="label" hideCustomFilter="true" useFilter="true" embeddedInput="text" hidden="false">
+							</w2:column>
+							<w2:column width="70" inputType="text" style="" id="stgName" value="" displayMode="label"
+								hideCustomFilter="true" useFilter="true" embeddedInput="text">
+							</w2:column>
+							<w2:column width="70" inputType="checkbox" style="" id="chk" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="taskId" value="" displayMode="label" embeddedInput="text"></w2:column>
+							<w2:column width="70" inputType="drilldown" style="" id="taskName" value="" displayMode="label"
+								embeddedInput="text" depthColumn="taskDepth" depthType="line">
+							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="taskDes" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="taskStatus" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="isTest" value="" displayMode="label"></w2:column>

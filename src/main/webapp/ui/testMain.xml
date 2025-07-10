@@ -68,6 +68,7 @@
                     		<menuName><![CDATA[WBS]]></menuName>
                     		<parentId><![CDATA[4]]></parentId>
                     		<depth><![CDATA[2]]></depth>
+                    		<menuUrl><![CDATA[wbs/WbsList.xml]]></menuUrl>
                     	</w2:row>
                     	<w2:row>
                     		<menuId><![CDATA[6]]></menuId>
