@@ -221,7 +221,7 @@ scwin.openDetailPopup = function (rowIndex) {
         dataObject: jsnPopupData
     };
 
-    $p.openPopup("DevelopPopup.xml", options);
+    $p.openPopup("/InsWebApp/ui/task/develop/DevelopPopup.xml", options);
 };
 
 scwin.openParentTaskPopup = function (rowIndex) {
@@ -253,7 +253,7 @@ scwin.openParentTaskPopup = function (rowIndex) {
         dataObject: jsnPopupData
     };
 
-    $p.openPopup("DevelopTaskTree.xml", options);
+    $p.openPopup("/InsWebApp/ui/task/develop/DevelopTaskTree.xml", options);
 };
 
 // TaskTree.xml (상위 업무 선택을 위한 업무 트리) 팝업에서 받아온 데이터
@@ -378,70 +378,66 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 							<w2:summary />
 						</w2:attributes>
 						<xf:group tagname="colgroup">
-							<xf:group id="searchComp_1" style="width:100px;" tagname="col" />
-                            <xf:group id="searchComp_2" style="" tagname="col" />
-                            <xf:group id="searchComp_3" style="width:100px;" tagname="col" />
-                            <xf:group id="searchComp_4" style="" tagname="col" />
-                            <xf:group id="searchComp_5" style="width:100px;" tagname="col" />
-                            <xf:group id="searchComp_6" style="" tagname="col" />
-                            <xf:group id="searchComp_7" style="width:100px;" tagname="col" />
-                            <xf:group id="searchComp_8" style="" tagname="col" />
-                           
+							<xf:group tagname="col" style="width:100px;" id="searchComp_1"></xf:group>
+							<xf:group tagname="col" style="" id="searchComp_2"></xf:group>
+							<xf:group tagname="col" style="width:100px;" id="searchComp_3"></xf:group>
+							<xf:group tagname="col" style="" id="searchComp_4"></xf:group>
+							<xf:group tagname="col" style="width:100px;" id="searchComp_5"></xf:group>
+							<xf:group tagname="col" style="" id="searchComp_6"></xf:group>
+							<xf:group tagname="col" style="width:100px;" id="searchComp_7"></xf:group>
+							<xf:group tagname="col" style="" id="searchComp_8"></xf:group>
 						</xf:group>
-						<xf:group class="" id="" style="" tagname="tr">
-							<xf:group class="" id="" style="" tagname="tr">
-								<xf:group class="w2tb_th" style="" tagname="th">
-                                <w2:textbox class="" id="" label="업무명" style="" localeRef="Design_SEARCH_00001" />
-                            </xf:group>
-                            <xf:group class="w2tb_td" id="" style="" tagname="td">
-                                <xf:input class="" id="" placeholder="" style="width:200px;" ref="data:dmp_designVo.scTaskName"></xf:input>
-                            </xf:group>
-                            <xf:group class="w2tb_th" style="" tagname="th">
-                                <w2:textbox class="" id="" label="업무상태" style="" localeRef="Design_SEARCH_00002" />
-                            </xf:group>
-                            <xf:group class="w2tb_td" id="" style="" tagname="td">
-                            	<xf:select1 id="" chooseOption="true" style="width: 148px;height: 21px;" submenuSize="auto" allOption=""
-                            		disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled"
-                            		ref="data:dmp_designVo.scTaskStatus" chooseOptionLabel="">
-                            		<xf:choices>
-                            			<xf:itemset nodeset="data:dlt_taskStatus">
-                            				<xf:label ref="status"></xf:label>
-                            				<xf:value ref="status"></xf:value>
-                            			</xf:itemset>
-                            		</xf:choices>
-                            	</xf:select1>
-                            </xf:group>
-                            <xf:group class="w2tb_th" style="" tagname="th">
-                                <w2:textbox class="" id="" label="테스트여부" style="" localeRef="Design_SEARCH_00003" />
-                            </xf:group>
-                            <xf:group class="w2tb_td" id="" style="" tagname="td">
-                            	<xf:select1 id="" chooseOption="true" style="width: 148px;height: 21px;" submenuSize="auto" allOption=""
-                            		disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled"
-                            		ref="data:dmp_designVo.scIsTest" chooseOptionLabel="">
-                            		<xf:choices>
-                            			<xf:itemset nodeset="data:dlt_isTest">
-                            				<xf:label ref="label"></xf:label>
-                            				<xf:value ref="value"></xf:value>
-                            			</xf:itemset>
-                            		</xf:choices>
-                            	</xf:select1>
-                            </xf:group>
-                            <xf:group class="w2tb_th" style="" tagname="th">
-                                <w2:textbox class="" id="" label="단계" style="" localeRef="Design_SEARCH_00004" />
-                            </xf:group>
-                            <xf:group class="w2tb_td" id="" style="" tagname="td">
-                            	<xf:select1 allOption="" appearance="minimal" chooseOption="" chooseOptionLabel="" direction="auto"
-                            		disabled="false" disabledClass="w2selectbox_disabled" id="" ref="data:dmp_designVo.scStgId"
-                            		style="width: 148px;height: 21px;" submenuSize="auto">
-                            		<xf:choices>
-                            			<xf:itemset nodeset="data:dlt_stgId">
-                            				<xf:label ref="label"></xf:label>
-                            				<xf:value ref="value"></xf:value>
-                            			</xf:itemset>
-                            		</xf:choices>
-                            	</xf:select1>
-                            </xf:group>
-
+						<xf:group tagname="tr" style="" id="" class="">
+							<xf:group tagname="th" style="" class="w2tb_th">
+								<w2:textbox localeRef="Design_SEARCH_00001" style="" id="" label="업무명" class=""></w2:textbox>
+							</xf:group>
+							<xf:group tagname="td" style="" id="" class="w2tb_td">
+								<xf:input ref="data:dmp_designVo.scTaskName" style="width:100%;" id="" placeholder="" class=""></xf:input>
+							</xf:group>
+							<xf:group tagname="th" style="" class="w2tb_th">
+								<w2:textbox localeRef="Design_SEARCH_00002" style="" id="" label="업무상태" class=""></w2:textbox>
+							</xf:group>
+							<xf:group tagname="td" style="" id="" class="w2tb_td">
+								<xf:select1 submenuSize="auto" ref="data:dmp_designVo.scTaskStatus" chooseOptionLabel=""
+									appearance="minimal" disabledClass="w2selectbox_disabled" chooseOption="true" style="width: 148px;height: 21px;" disabled="false"
+									id="" allOption="" direction="auto">
+									<xf:choices>
+										<xf:itemset nodeset="data:dlt_taskStatus">
+											<xf:label ref="status"></xf:label>
+											<xf:value ref="status"></xf:value>
+										</xf:itemset>
+									</xf:choices>
+								</xf:select1>
+							</xf:group>
+							<xf:group tagname="th" style="" class="w2tb_th">
+								<w2:textbox localeRef="Design_SEARCH_00003" style="" id="" label="테스트여부" class=""></w2:textbox>
+							</xf:group>
+							<xf:group tagname="td" style="" id="" class="w2tb_td">
+								<xf:select1 submenuSize="auto" ref="data:dmp_designVo.scIsTest" chooseOptionLabel="" appearance="minimal"
+									disabledClass="w2selectbox_disabled" chooseOption="true" style="width: 148px;height: 21px;" disabled="false" id="" allOption=""
+									direction="auto">
+									<xf:choices>
+										<xf:itemset nodeset="data:dlt_isTest">
+											<xf:label ref="label"></xf:label>
+											<xf:value ref="value"></xf:value>
+										</xf:itemset>
+									</xf:choices>
+								</xf:select1>
+							</xf:group>
+							<xf:group tagname="th" style="" class="w2tb_th">
+								<w2:textbox localeRef="Design_SEARCH_00004" style="" id="" label="단계" class=""></w2:textbox>
+							</xf:group>
+							<xf:group tagname="td" style="" id="" class="w2tb_td">
+								<xf:select1 chooseOptionLabel="" ref="data:dmp_designVo.scStgId" submenuSize="auto" appearance="minimal"
+									disabledClass="w2selectbox_disabled" chooseOption="" disabled="false" style="width: 148px;height: 21px;" allOption="" id=""
+									direction="auto">
+									<xf:choices>
+										<xf:itemset nodeset="data:dlt_stgId">
+											<xf:label ref="label"></xf:label>
+											<xf:value ref="value"></xf:value>
+										</xf:itemset>
+									</xf:choices>
+								</xf:select1>
 							</xf:group>
 						</xf:group>
 					</xf:group>

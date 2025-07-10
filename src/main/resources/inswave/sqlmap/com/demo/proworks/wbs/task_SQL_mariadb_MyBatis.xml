@@ -4,167 +4,254 @@
     "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!--
-	@subject     : WBS 관련 처리를 담당하는 Sql Mapper
+	@subject : WBS 관련 처리를 담당하는 Sql Mapper
 	@description : WBS 관련 처리를 담당하는 Sql Mapper
-	@author      : 김성민
-	@since       : 2025/07/09
+	@author : 김성민
+	@since : 2025/07/09
 	@modification
 	===========================================================
-	DATE              AUTHOR             DESC
+	DATE AUTHOR DESC
 	===========================================================
-	2025/07/09              김성민             최초 생성
- -->
+	2025/07/09 김성민 최초 생성
+-->
 <mapper namespace="com.demo.proworks.wbs">
-    <insert id="insertWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo">
-    	<!-- WBS를 등록한다. -->	
-    		
-        INSERT INTO TASK   /* QueryID : com.demo.proworks.wbs.insertWbs */
-        ( 
-            TASK_ID
-            <if test="taskName  != null"> , TASK_NAME   </if>
-            <if test="taskDes   != null"> , TASK_DES    </if>
-            <if test="taskStatus!= null"> , TASK_STATUS </if>
-            <if test="isTest    != null"> , IS_TEST     </if>
-            <if test="taskDepth != null"> , TASK_DEPTH  </if>
-            <if test="stgId     != null"> , STG_ID      </if>
-            <if test="ptTaskId != null"> , PT_TASK_ID  </if>
-            <if test="taskSeq   != null"> , TASK_SEQ    </if>
-            <if test="taskSt    != null"> , TASK_ST     </if>
-            <if test="taskEt    != null"> , TASK_ET     </if>
-            <if test="taskRst   != null"> , TASK_RST    </if>
-            <if test="taskRet   != null"> , TASK_RET    </if>
-            <if test="taskAsi   != null"> , TASK_ASI    </if>
-            <if test="taskRate  != null"> , TASK_RATE   </if>
-            <if test="pjtId     != null"> , PJT_ID      </if>
-        )
-        VALUES  
-        ( 
-            #{taskId}
-            <if test="taskName  != null"> , #{taskName}   </if>
-            <if test="taskDes   != null"> , #{taskDes}    </if>
-            <if test="taskStatus!= null"> , #{taskStatus} </if>
-            <if test="isTest    != null"> , #{isTest}     </if>
-            <if test="taskDepth != null"> , #{taskDepth}  </if>
-            <if test="stgId     != null"> , #{stgId}      </if>
-            <if test="ptTaskId != null"> , #{ptTaskId}  </if>
-            <if test="taskSeq   != null"> , #{taskSeq}    </if>
-            <if test="taskSt    != null"> , #{taskSt}     </if>
-            <if test="taskEt    != null"> , #{taskEt}     </if>
-            <if test="taskRst   != null"> , #{taskRst}    </if>
-            <if test="taskRet   != null"> , #{taskRet}    </if>
-            <if test="taskAsi   != null"> , #{taskAsi}    </if>
-            <if test="taskRate  != null"> , #{taskRate}   </if>
-            <if test="pjtId     != null"> , #{pjtId}      </if> 
-        )          
-    </insert>	
-	
-    <update id="updateWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo">
-    	<!-- WBS를 갱신한다. -->
-    	
-        UPDATE TASK    /* QueryID : com.demo.proworks.wbs.updateWbs */      
-      	  SET  
-                TASK_ID     = #{taskId}            	                       
-            <if test="taskName  != null"> , TASK_NAME   = #{taskName}   </if>
-            <if test="taskDes   != null"> , TASK_DES    = #{taskDes}    </if>
-            <if test="taskStatus!= null"> , TASK_STATUS = #{taskStatus} </if>
-            <if test="isTest    != null"> , IS_TEST     = #{isTest}     </if>
-            <if test="taskDepth != null"> , TASK_DEPTH  = #{taskDepth}  </if>
-            <if test="stgId     != null"> , STG_ID      = #{stgId}      </if>
-            <if test="ptTaskId != null"> , PT_TASK_ID  = #{ptTaskId}  </if>
-            <if test="taskSeq   != null"> , TASK_SEQ    = #{taskSeq}    </if>
-            <if test="taskSt    != null"> , TASK_ST     = #{taskSt}     </if>
-            <if test="taskEt    != null"> , TASK_ET     = #{taskEt}     </if>
-            <if test="taskRst   != null"> , TASK_RST    = #{taskRst}    </if>
-            <if test="taskRet   != null"> , TASK_RET    = #{taskRet}    </if>
-            <if test="taskAsi   != null"> , TASK_ASI    = #{taskAsi}    </if>
-            <if test="taskRate  != null"> , TASK_RATE   = #{taskRate}   </if>
-            <if test="pjtId     != null"> , PJT_ID      = #{pjtId}      </if>                 
-        WHERE   
-                TASK_ID     = #{taskId}    
-    </update>
-	
-    <delete id="deleteWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo">
-    	<!-- WBS를 삭제한다. -->
-    	
-        DELETE FROM TASK   /* QueryID : com.demo.proworks.wbs.deleteWbs */ 
-        WHERE   
-                TASK_ID     = #{taskId}            
-    </delete>
-	
-    <select id="selectWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
-    	<!-- WBS를 상세 조회한다. -->	
-        SELECT     /* QueryID : com.demo.proworks.wbs.selectWbs */
-            TASK_ID as taskId, TASK_NAME as taskName, TASK_DES as taskDes, TASK_STATUS as taskStatus, IS_TEST as isTest, TASK_DEPTH as taskDepth, STG_ID as stgId, PT_TASK_ID as ptTaskId, TASK_SEQ as taskSeq, TASK_ST as taskSt, TASK_ET as taskEt, TASK_RST as taskRst, TASK_RET as taskRet, TASK_ASI as taskAsi, TASK_RATE as taskRate, PJT_ID as pjtId
-        FROM TASK 
-        WHERE 
-                TASK_ID     = #{taskId}    			
-    </select>
-	
-    <select id="selectListWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
-<!-- WBS 목록을 조회한다. -->
-           SELECT    /* QueryID : com.demo.proworks.wbs.selectListWbs */
-               TASK_ID as taskId, TASK_NAME as taskName, TASK_DES as taskDes, TASK_STATUS as taskStatus, IS_TEST as isTest, TASK_DEPTH as taskDepth, STG_ID as stgId, PT_TASK_ID as ptTaskId, TASK_SEQ as taskSeq, TASK_ST as taskSt, TASK_ET as taskEt, TASK_RST as taskRst, TASK_RET as taskRet, TASK_ASI as taskAsi, TASK_RATE as taskRate, PJT_ID as pjtId		       
-           FROM (
-               SELECT  S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
-               FROM (				
-                   SELECT 
-                       *  		                  
-                   FROM TASK
-                   WHERE PJT_ID = #{pjtId}    		
-                        <if test="scTaskId != null and scTaskId != ''">
-                             AND TASK_ID like '%${scTaskId}%'
-                        </if>
-                        <if test="scTaskName != null and scTaskName != ''">
-                             AND TASK_NAME like '%${scTaskName}%'
-                        </if>
-                        <if test="scTaskStatus != null and scTaskStatus != ''">
-                             AND TASK_STATUS like '%${scTaskStatus}%'
-                        </if>
-                        <if test="scStgId != null and scStgId != ''">
-                             AND STG_ID like '%${scStgId}%'
-                        </if>
-                        <if test="scTaskAsi != null and scTaskAsi != ''">
-                             AND TASK_ASI like '%${scTaskAsi}%'
-                        </if>
-                        <if test="scTaskRate != null and scTaskRate != ''">
-                             AND TASK_RATE like '%${scTaskRate}%'
-                        </if>	     																														
-               ) S, (SELECT @ROWNUM := 0) TMP
-           ) A
-            WHERE PAGE = #{pageIndex}
-</select>
-	
-    <select id="selectListCountWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="long">
-<!-- WBS 목록의 카운트를 조회한다. -->
-    
-         SELECT    /* QueryID : com.demo.proworks.wbs.selectListCountWbs */
-             COUNT(*) totcnt  		                  
-         FROM TASK
-         WHERE  PJT_ID = #{pjtId}    		
-            <if test="scTaskId != null and scTaskId != ''">
-                 AND TASK_ID like '%${scTaskId}%'
-            </if>
-            <if test="scTaskName != null and scTaskName != ''">
-                 AND TASK_NAME like '%${scTaskName}%'
-            </if>
-            <if test="scTaskStatus != null and scTaskStatus != ''">
-                 AND TASK_STATUS like '%${scTaskStatus}%'
-            </if>
-            <if test="scStgId != null and scStgId != ''">
-                 AND STG_ID like '%${scStgId}%'
-            </if>
-            <if test="scTaskAsi != null and scTaskAsi != ''">
-                 AND TASK_ASI like '%${scTaskAsi}%'
-            </if>
-            <if test="scTaskRate != null and scTaskRate != ''">
-                 AND TASK_RATE like '%${scTaskRate}%'
-            </if>
-</select>
+	<insert id="insertWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo">
+		<!-- WBS를 등록한다. -->
 
-<select id="selectListStg" parameterType="com.demo.proworks.wbs.vo.WbsStgVo" resultType="com.demo.proworks.wbs.vo.WbsStgVo">
-<!-- 단계 목록의 조회한다. -->
-SELECT /* QueryID : com.demo.proworks.wbs.selectListStg */
-STG_ID as stgID, STG_NAME as stgNAME
-FROM STG
-</select>
+		INSERT INTO TASK /* QueryID : com.demo.proworks.wbs.insertWbs */
+		(
+		TASK_ID
+		<if test="taskName  != null"> , TASK_NAME   </if>
+		<if test="taskDes   != null"> , TASK_DES    </if>
+		<if test="taskStatus!= null"> , TASK_STATUS </if>
+		<if test="isTest    != null"> , IS_TEST     </if>
+		<if test="taskDepth != null"> , TASK_DEPTH  </if>
+		<if test="stgId     != null"> , STG_ID      </if>
+		<if test="ptTaskId != null"> , PT_TASK_ID  </if>
+		<if test="taskSeq   != null"> , TASK_SEQ    </if>
+		<if test="taskSt    != null"> , TASK_ST     </if>
+		<if test="taskEt    != null"> , TASK_ET     </if>
+		<if test="taskRst   != null"> , TASK_RST    </if>
+		<if test="taskRet   != null"> , TASK_RET    </if>
+		<if test="taskAsi   != null"> , TASK_ASI    </if>
+		<if test="taskRate  != null"> , TASK_RATE   </if>
+		<if test="pjtId     != null"> , PJT_ID      </if>
+		) VALUES ( #{taskId}
+		<if test="taskName  != null"> , #{taskName}   </if>
+		<if test="taskDes   != null"> , #{taskDes}    </if>
+		<if test="taskStatus!= null"> , #{taskStatus} </if>
+		<if test="isTest    != null"> , #{isTest}     </if>
+		<if test="taskDepth != null"> , #{taskDepth}  </if>
+		<if test="stgId     != null"> , #{stgId}      </if>
+		<if test="ptTaskId != null"> , #{ptTaskId}  </if>
+		<if test="taskSeq   != null"> , #{taskSeq}    </if>
+		<if test="taskSt    != null"> , #{taskSt}     </if>
+		<if test="taskEt    != null"> , #{taskEt}     </if>
+		<if test="taskRst   != null"> , #{taskRst}    </if>
+		<if test="taskRet   != null"> , #{taskRet}    </if>
+		<if test="taskAsi   != null"> , #{taskAsi}    </if>
+		<if test="taskRate  != null"> , #{taskRate}   </if>
+		<if test="pjtId     != null"> , #{pjtId}      </if>
+		)
+	</insert>
+
+	<update id="updateWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo">
+		<!-- WBS를 갱신한다. -->
+
+		UPDATE TASK /* QueryID : com.demo.proworks.wbs.updateWbs */
+		SET
+		TASK_ID = #{taskId}
+		<if test="taskName  != null"> , TASK_NAME = #{taskName}   </if>
+		<if test="taskDes   != null"> , TASK_DES = #{taskDes}    </if>
+		<if test="taskStatus!= null"> , TASK_STATUS = #{taskStatus} </if>
+		<if test="isTest    != null"> , IS_TEST = #{isTest}     </if>
+		<if test="taskDepth != null"> , TASK_DEPTH = #{taskDepth}  </if>
+		<if test="stgId     != null"> , STG_ID = #{stgId}      </if>
+		<if test="ptTaskId != null"> , PT_TASK_ID = #{ptTaskId}  </if>
+		<if test="taskSeq   != null"> , TASK_SEQ = #{taskSeq}    </if>
+		<if test="taskSt    != null"> , TASK_ST = #{taskSt}     </if>
+		<if test="taskEt    != null"> , TASK_ET = #{taskEt}     </if>
+		<if test="taskRst   != null"> , TASK_RST = #{taskRst}    </if>
+		<if test="taskRet   != null"> , TASK_RET = #{taskRet}    </if>
+		<if test="taskAsi   != null"> , TASK_ASI = #{taskAsi}    </if>
+		<if test="taskRate  != null"> , TASK_RATE = #{taskRate}   </if>
+		<if test="pjtId     != null"> , PJT_ID = #{pjtId}      </if>
+		WHERE TASK_ID = #{taskId}
+	</update>
+
+	<delete id="deleteWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo">
+		<!-- WBS를 삭제한다. -->
+
+		DELETE FROM TASK /* QueryID : com.demo.proworks.wbs.deleteWbs */
+		WHERE
+		TASK_ID = #{taskId}
+	</delete>
+
+	<select id="selectWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
+		<!-- WBS를 상세 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.wbs.selectWbs */
+		TASK_ID as taskId, TASK_NAME as taskName, TASK_DES as taskDes, TASK_STATUS as
+		taskStatus, IS_TEST as isTest, TASK_DEPTH as taskDepth, STG_ID as
+		stgId, PT_TASK_ID as ptTaskId, TASK_SEQ as taskSeq, TASK_ST as taskSt,
+		TASK_ET as taskEt, TASK_RST as taskRst, TASK_RET as taskRet,
+		TASK_ASI as taskAsi, TASK_RATE as taskRate, PJT_ID as pjtId
+		FROM TASK
+		WHERE
+		TASK_ID = #{taskId}
+	</select>
+
+
+	<select id="selectListWbs" parameterType="com.demo.proworks.wbs.vo.WbsListVo" resultType="com.demo.proworks.wbs.vo.WbsListVo">
+		<!-- WBS 목록을 계층형 정렬로 조회한다. -->
+		/* QueryID : com.demo.proworks.wbs.selectListWbs */
+		WITH RECURSIVE task_hierarchy AS (
+		SELECT
+		task_id, task_name, task_des, task_status,
+		is_test,
+		task_depth, stg_id, pt_task_id, task_seq,
+		task_st, task_et, task_rst, task_ret, task_asi, task_rate, pjt_id,
+		CAST(LPAD(task_id, 10,
+		'0') AS CHAR(1000)) AS sort_path
+		FROM task
+		WHERE pjt_id = #{pjtId} AND pt_task_id = 0
+		<if test="scTaskId != null and scTaskId != ''">
+			AND task_id like CONCAT('%', #{scTaskId}, '%')
+		</if>
+		<if test="scTaskName != null and scTaskName != ''">
+			AND task_name like CONCAT('%', #{scTaskName}, '%')
+		</if>
+		<if test="scTaskStatus != null and scTaskStatus != ''">
+			AND task_status like CONCAT('%', #{scTaskStatus}, '%')
+		</if>
+		<if test="scStgId != null and scStgId != ''">
+			AND stg_id like CONCAT('%', #{scStgId}, '%')
+		</if>
+		<if test="scTaskAsi != null and scTaskAsi != ''">
+			AND task_asi like CONCAT('%', #{scTaskAsi}, '%')
+		</if>
+		<if test="scTaskRate != null and scTaskRate != ''">
+			AND task_rate like CONCAT('%', #{scTaskRate}, '%')
+		</if>
+
+		UNION ALL
+
+		SELECT
+		t.task_id, t.task_name, t.task_des, t.task_status, t.is_test,
+		t.task_depth, t.stg_id, t.pt_task_id, t.task_seq,
+		t.task_st,
+		t.task_et, t.task_rst, t.task_ret, t.task_asi, t.task_rate, t.pjt_id,
+		CONCAT(th.sort_path, '-', LPAD(t.task_id, 10, '0')) AS sort_path
+		FROM
+		task t
+		INNER JOIN task_hierarchy th ON t.pt_task_id = th.task_id
+		WHERE t.pjt_id = #{pjtId}
+		<if test="scTaskId != null and scTaskId != ''">
+			AND t.task_id like CONCAT('%', #{scTaskId}, '%')
+		</if>
+		<if test="scTaskName != null and scTaskName != ''">
+			AND t.task_name like CONCAT('%', #{scTaskName}, '%')
+		</if>
+		<if test="scTaskStatus != null and scTaskStatus != ''">
+			AND t.task_status like CONCAT('%', #{scTaskStatus}, '%')
+		</if>
+		<if test="scStgId != null and scStgId != ''">
+			AND t.stg_id like CONCAT('%', #{scStgId}, '%')
+		</if>
+		<if test="scTaskAsi != null and scTaskAsi != ''">
+			AND t.task_asi like CONCAT('%', #{scTaskAsi}, '%')
+		</if>
+		<if test="scTaskRate != null and scTaskRate != ''">
+			AND t.task_rate like CONCAT('%', #{scTaskRate}, '%')
+		</if>
+		),
+		ranked_tasks AS (
+		SELECT *,
+		ROW_NUMBER() OVER (ORDER BY sort_path) as rn
+		FROM task_hierarchy
+		)
+		SELECT
+		task_id as taskId, task_name as
+		taskName, task_des as taskDes,
+		task_status as taskStatus, is_test as isTest, task_depth as taskDepth,
+		stg_id as stgId, pt_task_id as
+		ptTaskId, task_seq as taskSeq,
+		task_st as taskSt, task_et as taskEt, task_rst as taskRst,
+		task_ret as taskRet, task_asi as taskAsi,
+		task_rate as taskRate,
+		pjt_id as pjtId
+		FROM ranked_tasks
+		WHERE rn BETWEEN ((#{pageIndex} - 1) * #{pageSize} + 1) AND (#{pageIndex} *
+		#{pageSize})
+		ORDER BY sort_path
+	</select>
+
+
+	<select id="selectListCountWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="long">
+		<!-- WBS 목록의 카운트를 조회한다 (계층형 구조 적용) -->
+		/* QueryID : com.demo.proworks.wbs.selectListCountWbs */
+		WITH RECURSIVE task_hierarchy AS (
+		SELECT
+		task_id, task_name, task_des, task_status,
+		is_test,
+		task_depth, stg_id, pt_task_id, task_seq,
+		task_st, task_et, task_rst, task_ret, task_asi, task_rate, pjt_id
+		FROM task
+		WHERE pjt_id =
+		#{pjtId} AND pt_task_id = 0
+		<if test="scTaskId != null and scTaskId != ''">
+			AND task_id like CONCAT('%', #{scTaskId}, '%')
+		</if>
+		<if test="scTaskName != null and scTaskName != ''">
+			AND task_name like CONCAT('%', #{scTaskName}, '%')
+		</if>
+		<if test="scTaskStatus != null and scTaskStatus != ''">
+			AND task_status like CONCAT('%', #{scTaskStatus}, '%')
+		</if>
+		<if test="scStgId != null and scStgId != ''">
+			AND stg_id like CONCAT('%', #{scStgId}, '%')
+		</if>
+		<if test="scTaskAsi != null and scTaskAsi != ''">
+			AND task_asi like CONCAT('%', #{scTaskAsi}, '%')
+		</if>
+		<if test="scTaskRate != null and scTaskRate != ''">
+			AND task_rate like CONCAT('%', #{scTaskRate}, '%')
+		</if>
+
+		UNION ALL
+
+		SELECT
+		t.task_id, t.task_name, t.task_des, t.task_status, t.is_test,
+		t.task_depth, t.stg_id, t.pt_task_id, t.task_seq,
+		t.task_st,
+		t.task_et, t.task_rst, t.task_ret, t.task_asi, t.task_rate, t.pjt_id
+		FROM task t
+		INNER JOIN task_hierarchy th ON t.pt_task_id = th.task_id
+		WHERE t.pjt_id = #{pjtId}
+		<if test="scTaskId != null and scTaskId != ''">
+			AND t.task_id like CONCAT('%', #{scTaskId}, '%')
+		</if>
+		<if test="scTaskName != null and scTaskName != ''">
+			AND t.task_name like CONCAT('%', #{scTaskName}, '%')
+		</if>
+		<if test="scTaskStatus != null and scTaskStatus != ''">
+			AND t.task_status like CONCAT('%', #{scTaskStatus}, '%')
+		</if>
+		<if test="scStgId != null and scStgId != ''">
+			AND t.stg_id like CONCAT('%', #{scStgId}, '%')
+		</if>
+		<if test="scTaskAsi != null and scTaskAsi != ''">
+			AND t.task_asi like CONCAT('%', #{scTaskAsi}, '%')
+		</if>
+		<if test="scTaskRate != null and scTaskRate != ''">
+			AND t.task_rate like CONCAT('%', #{scTaskRate}, '%')
+		</if>
+		)
+		SELECT COUNT(*) as totcnt
+		FROM task_hierarchy
+	</select>
+
+	<select id="selectListStg" parameterType="com.demo.proworks.wbs.vo.WbsStgVo" resultType="com.demo.proworks.wbs.vo.WbsStgVo">
+		<!-- 단계 목록의 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.wbs.selectListStg */ STG_ID as stgID, STG_NAME as stgNAME FROM STG
+	</select>
 </mapper>
