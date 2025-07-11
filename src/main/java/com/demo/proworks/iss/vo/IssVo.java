@@ -43,17 +43,20 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElDtoField(logicalName = "수정일시", physicalName = "updatedAt", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String updatedAt;
 
-    @ElDtoField(logicalName = "resolved_date", physicalName = "resolvedDate", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    @ElDtoField(logicalName = "해결일", physicalName = "resolvedDate", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String resolvedDate;
 
-    @ElDtoField(logicalName = "response_plan", physicalName = "responsePlan", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    @ElDtoField(logicalName = "대응방안", physicalName = "responsePlan", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String responsePlan;
 
-    @ElDtoField(logicalName = "is_deleted", physicalName = "isDeleted", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    @ElDtoField(logicalName = "삭제여부", physicalName = "isDeleted", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String isDeleted;
 
     @ElDtoField(logicalName = "프로젝트명", physicalName = "pjtName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String pjtName;
+
+    @ElDtoField(logicalName = "작성자명", physicalName = "userName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String userName;
 
     @ElVoField(physicalName = "pjtId")
     public String getPjtId(){
@@ -209,6 +212,17 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.pjtName = pjtName;
     }
 
+    @ElVoField(physicalName = "userName")
+    public String getUserName(){
+        String ret = this.userName;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "userName")
+    public void setUserName(String userName){
+        this.userName = userName;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -226,7 +240,8 @@ public class IssVo extends com.demo.proworks.cmmn.ProworksCommVO {
         sb.append("resolvedDate").append("=").append(resolvedDate).append(",");
         sb.append("responsePlan").append("=").append(responsePlan).append(",");
         sb.append("isDeleted").append("=").append(isDeleted).append(",");
-        sb.append("pjtName").append("=").append(pjtName);
+        sb.append("pjtName").append("=").append(pjtName).append(",");
+        sb.append("userName").append("=").append(userName);
         sb.append("]");
         return sb.toString();
 

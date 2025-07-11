@@ -6,43 +6,47 @@ import com.inswave.elfw.annotation.ElVoField;
 import com.fasterxml.jackson.annotation.JsonFilter;
 
 @JsonFilter("elExcludeFilter")
-@ElDto(FldYn = "", logicalName = "산출물관리")
+@ElDto(FldYn = "", delimeterYn = "", logicalName = "산출물관리")
 public class OutVo extends com.demo.proworks.cmmn.ProworksCommVO {
     private static final long serialVersionUID = 1L;
 
-    @ElDtoField(logicalName = "산출물 고유 ID", physicalName = "id", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    public OutVo(){
+    }
+
+    @ElDtoField(logicalName = "산출물 고유 ID", physicalName = "id", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String id;
 
-    @ElDtoField(logicalName = "프로젝트 ID", physicalName = "pjtId", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "프로젝트 ID", physicalName = "pjtId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String pjtId;
 
-    @ElDtoField(logicalName = "산출물명", physicalName = "name", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "산출물명", physicalName = "name", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String name;
 
-    @ElDtoField(logicalName = "등록일시", physicalName = "createdAt", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "등록일시", physicalName = "createdAt", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String createdAt;
 
-    @ElDtoField(logicalName = "수정일시", physicalName = "updatedAt", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "수정일시", physicalName = "updatedAt", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String updatedAt;
 
-    @ElDtoField(logicalName = "승인 상태 (대기/승인/반려)", physicalName = "approvalStatus", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "승인 상태", physicalName = "approvalStatus", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String approvalStatus;
 
-    @ElDtoField(logicalName = "승인일시", physicalName = "approvalDate", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "승인일시", physicalName = "approvalDate", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String approvalDate;
 
-    @ElDtoField(logicalName = "승인/반려 의견", physicalName = "approvalComment", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "승인/반려 의견", physicalName = "approvalComment", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String approvalComment;
 
-    @ElDtoField(logicalName = "산출물 유형", physicalName = "outputType", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "산출물 유형", physicalName = "outputType", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String outputType;
 
-    @ElDtoField(logicalName = "삭제 여부", physicalName = "isDeleted", type = "String", typeKind = "", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
+    @ElDtoField(logicalName = "삭제 여부", physicalName = "isDeleted", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String isDeleted;
 
     @ElVoField(physicalName = "id")
     public String getId(){
-        return id;
+        String ret = this.id;
+        return ret;
     }
 
     @ElVoField(physicalName = "id")
@@ -52,7 +56,8 @@ public class OutVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "pjtId")
     public String getPjtId(){
-        return pjtId;
+        String ret = this.pjtId;
+        return ret;
     }
 
     @ElVoField(physicalName = "pjtId")
@@ -62,7 +67,8 @@ public class OutVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "name")
     public String getName(){
-        return name;
+        String ret = this.name;
+        return ret;
     }
 
     @ElVoField(physicalName = "name")
@@ -72,7 +78,8 @@ public class OutVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "createdAt")
     public String getCreatedAt(){
-        return createdAt;
+        String ret = this.createdAt;
+        return ret;
     }
 
     @ElVoField(physicalName = "createdAt")
@@ -82,7 +89,8 @@ public class OutVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "updatedAt")
     public String getUpdatedAt(){
-        return updatedAt;
+        String ret = this.updatedAt;
+        return ret;
     }
 
     @ElVoField(physicalName = "updatedAt")
@@ -92,7 +100,8 @@ public class OutVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "approvalStatus")
     public String getApprovalStatus(){
-        return approvalStatus;
+        String ret = this.approvalStatus;
+        return ret;
     }
 
     @ElVoField(physicalName = "approvalStatus")
@@ -102,7 +111,8 @@ public class OutVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "approvalDate")
     public String getApprovalDate(){
-        return approvalDate;
+        String ret = this.approvalDate;
+        return ret;
     }
 
     @ElVoField(physicalName = "approvalDate")
@@ -112,7 +122,8 @@ public class OutVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "approvalComment")
     public String getApprovalComment(){
-        return approvalComment;
+        String ret = this.approvalComment;
+        return ret;
     }
 
     @ElVoField(physicalName = "approvalComment")
@@ -122,7 +133,8 @@ public class OutVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "outputType")
     public String getOutputType(){
-        return outputType;
+        String ret = this.outputType;
+        return ret;
     }
 
     @ElVoField(physicalName = "outputType")
@@ -132,7 +144,8 @@ public class OutVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElVoField(physicalName = "isDeleted")
     public String getIsDeleted(){
-        return isDeleted;
+        String ret = this.isDeleted;
+        return ret;
     }
 
     @ElVoField(physicalName = "isDeleted")
@@ -142,11 +155,35 @@ public class OutVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @Override
     public String toString() {
-        return "OutVo [id=" + id + ",pjtId=" + pjtId + ",name=" + name + ",createdAt=" + createdAt + ",updatedAt=" + updatedAt + ",approvalStatus=" + approvalStatus + ",approvalDate=" + approvalDate + ",approvalComment=" + approvalComment + ",outputType=" + outputType + ",isDeleted=" + isDeleted + "]";
+        StringBuilder sb = new StringBuilder();
+        sb.append("OutVo [");
+        sb.append("id").append("=").append(id).append(",");
+        sb.append("pjtId").append("=").append(pjtId).append(",");
+        sb.append("name").append("=").append(name).append(",");
+        sb.append("createdAt").append("=").append(createdAt).append(",");
+        sb.append("updatedAt").append("=").append(updatedAt).append(",");
+        sb.append("approvalStatus").append("=").append(approvalStatus).append(",");
+        sb.append("approvalDate").append("=").append(approvalDate).append(",");
+        sb.append("approvalComment").append("=").append(approvalComment).append(",");
+        sb.append("outputType").append("=").append(outputType).append(",");
+        sb.append("isDeleted").append("=").append(isDeleted);
+        sb.append("]");
+        return sb.toString();
+
     }
 
     public boolean isFixedLengthVo() {
         return false;
     }
+
+    @Override
+    public void _xStreamEnc() {
+    }
+
+
+    @Override
+    public void _xStreamDec() {
+    }
+
 
 }

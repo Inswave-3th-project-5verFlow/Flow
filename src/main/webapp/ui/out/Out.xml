@@ -231,6 +231,8 @@
 			{ id: "id", mandatory: true }
            
 		];
+
+        console.log("id", valInfo)
 		
 		if ($c.data.validateGroup(grp_outInfo, valInfo) === true) {
 			var promise = $c.win.confirm("저장하시겠습니까?");

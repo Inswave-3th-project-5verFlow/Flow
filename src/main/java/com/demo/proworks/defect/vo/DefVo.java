@@ -25,10 +25,10 @@ public class DefVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElDtoField(logicalName = "결함 상세 설명", physicalName = "description", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String description;
 
-    @ElDtoField(logicalName = "우선순위 (Critical/High/Medium/Low)", physicalName = "priority", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    @ElDtoField(logicalName = "우선순위", physicalName = "priority", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String priority;
 
-    @ElDtoField(logicalName = "상태 (신규/진행중/수정완료/재오픈/종료)", physicalName = "status", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    @ElDtoField(logicalName = "상태", physicalName = "status", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String status;
 
     @ElDtoField(logicalName = "등록일시", physicalName = "createdAt", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
@@ -54,6 +54,9 @@ public class DefVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElDtoField(logicalName = "사용자명", physicalName = "userName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String userName;
+
+    @ElDtoField(logicalName = "최종수정일시", physicalName = "updatedAt", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String updatedAt;
 
     @ElVoField(physicalName = "id")
     public String getId(){
@@ -209,6 +212,17 @@ public class DefVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.userName = userName;
     }
 
+    @ElVoField(physicalName = "updatedAt")
+    public String getUpdatedAt(){
+        String ret = this.updatedAt;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "updatedAt")
+    public void setUpdatedAt(String updatedAt){
+        this.updatedAt = updatedAt;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -226,7 +240,8 @@ public class DefVo extends com.demo.proworks.cmmn.ProworksCommVO {
         sb.append("remarks").append("=").append(remarks).append(",");
         sb.append("isDeleted").append("=").append(isDeleted).append(",");
         sb.append("testName").append("=").append(testName).append(",");
-        sb.append("userName").append("=").append(userName);
+        sb.append("userName").append("=").append(userName).append(",");
+        sb.append("updatedAt").append("=").append(updatedAt);
         sb.append("]");
         return sb.toString();
 

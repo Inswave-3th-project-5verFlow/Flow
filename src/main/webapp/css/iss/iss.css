@@ -1,0 +1,524 @@
+@charset "UTF-8";
+/*
+ * WebSquare UI Custom Styles - Enhanced Version
+ * Author: Your Name/Company
+ * Date: 2025-07-10
+ * Description: Clean, modern, and enhanced design for WebSquare pages with subtle depth and vibrancy.
+ */
+
+/* ==================== Base & Layout ==================== */
+body {
+    font-family: 'Segoe UI', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #333;
+    background-color: #eef2f7; /* 배경색을 더 밝고 시원한 톤으로 변경 */
+    margin: 0;
+    padding: 0;
+}
+
+.sub_contents {
+    padding: 25px; /* 패딩 증가로 여유 공간 확보 */
+    background-color: #ffffff;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* 그림자를 더 깊게, 부드럽게 */
+    border-radius: 12px; /* 모서리를 더 둥글게 */
+    margin: 25px; /* 마진 증가 */
+    border: 1px solid #dbe2ed; /* 연한 테두리 */
+}
+
+.pgtbox {
+    margin-bottom: 25px; /* 간격 증가 */
+    border-bottom: 1px solid #e5e9ef; /* 연한 구분선 */
+    padding-bottom: 18px; /* 패딩 증가 */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pgt_tit {
+    font-size: 26px; /* 폰트 사이즈 증가 */
+    font-weight: 700; /* 더 굵게 */
+    color: #2c3e50;
+    margin: 0;
+    position: relative; /* 밑줄 애니메이션을 위해 */
+}
+
+/* 제목 밑줄 효과 */
+.pgt_tit::after {
+    content: '';
+    display: block;
+    width: 60px; /* 밑줄 길이 */
+    height: 3px;
+    background-color: #4CAF50; /* 강조색으로 변경 (초록색) */
+    position: absolute;
+    bottom: -10px; /* 제목과의 간격 */
+    left: 0;
+    border-radius: 2px;
+}
+
+
+/* ==================== Search Box ==================== */
+.schbox {
+    background-color: #f6f9fc; /* 검색 영역 배경색을 미묘하게 변경 */
+    padding: 20px 25px; /* 패딩 증가 */
+    border-radius: 10px; /* 모서리를 더 둥글게 */
+    margin-bottom: 30px; /* 간격 증가 */
+    border: 1px solid #e0e6ed;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 20px; /* 내부 요소 간 간격 증가 */
+}
+
+.schbox_inner {
+    flex-grow: 1;
+}
+
+.schbox .w2tb.tbl {
+    width: 100%;
+    border-collapse: separate; /* 셀 보더 둥글게 표현을 위해 */
+    border-spacing: 0 8px; /* 행 간격 추가 */
+}
+
+.schbox .w2tb_th,
+.schbox .w2tb_td {
+    padding: 10px 0; /* 내부 패딩 조절 */
+    vertical-align: middle;
+    border: none;
+}
+
+.schbox .w2tb_th {
+    width: 120px; /* 검색 조건 레이블 너비 증가 */
+    text-align: left;
+    font-weight: 500;
+    color: #555;
+    white-space: nowrap;
+}
+
+.schbox .w2tb_td xf\:input,
+.schbox .w2tb_td xf\:select1,
+.schbox .w2tb_td w2\:inputCalendar {
+    width: 100%;
+    padding: 8px 12px; /* 패딩 증가 */
+    border: 1px solid #cdd5df; /* 보더 색상 미묘하게 변경 */
+    border-radius: 6px; /* 더 둥글게 */
+    font-size: 14px; /* 폰트 사이즈 증가 */
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: #ffffff; /* 입력 필드 배경색 */
+}
+
+.schbox .w2tb_td xf\:input:focus,
+.schbox .w2tb_td xf\:select1:focus,
+.schbox .w2tb_td w2\:inputCalendar:focus {
+    border-color: #5cb3fd; /* 포커스 색상 변경 (활기 있는 파란색) */
+    box-shadow: 0 0 0 0.3rem rgba(92, 179, 253, 0.3); /* 그림자 효과 강화 */
+    outline: none;
+}
+
+/* ==================== Common Buttons ==================== */
+.btn_cm {
+    padding: 10px 20px; /* 패딩 증가 */
+    font-size: 14px; /* 폰트 사이즈 증가 */
+    min-width: 80px; /* 최소 너비 증가 */
+    height: 38px; /* 높이 조정 */
+    border-radius: 6px; /* 더 둥글게 */
+    cursor: pointer;
+    font-family: 'Malgun Gothic', sans-serif;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15); /* 그림자 강화 */
+    transition: all 0.3s ease; /* 전환 효과 부드럽게 */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-weight: 500; /* 글씨 굵기 */
+}
+
+.btn_cm:hover {
+    transform: translateY(-2px); /* 호버 시 살짝 떠오르는 효과 */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* 호버 시 그림자 강화 */
+}
+
+/* Search button */
+.btn_cm.sch {
+    background-color: #007bff;
+    color: white;
+    border: none; /* 보더 제거 */
+}
+
+.btn_cm.sch:hover {
+    background-color: #0069d9;
+}
+
+/* Register button (메인 화면의 "등록" 버튼) */
+.btn_schbox #reg_btn {
+    background-color: #4CAF50; /* 더 활기 있는 초록색 */
+    color: white;
+    border: none;
+    margin-left: 15px; /* 간격 증가 */
+}
+.btn_schbox #reg_btn:hover {
+    background-color: #449d48;
+}
+
+/* 팝업 외부의 "등록" 버튼 (두 번째 "등록" 버튼) */
+#btn_register {
+    background: #4CAF50; /* 더 활기 있는 초록색 */
+    border: none;
+    color: white;
+    padding: 12px 25px; /* 패딩 증가 */
+    font-size: 15px; /* 폰트 사이즈 증가 */
+    border-radius: 8px; /* 더 둥글게 */
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15); /* 그림자 강화 */
+}
+
+#btn_register:hover {
+    background: #449d48;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 12px rgba(0, 0, 0, 0.2);
+}
+
+
+/* Save button (팝업 내 저장 버튼) */
+.btn_cm.save, #btn_save { /* #btn_save ID는 HTML상에 팝업 안에 있으므로 추가 */
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+.btn_cm.save:hover, #btn_save:hover {
+    background-color: #0069d9;
+}
+
+/* Reset/Refresh button */
+.btn_cm.refresh, #btn_popup_reset {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+}
+.btn_cm.refresh:hover, #btn_popup_reset:hover {
+    background-color: #5a6268;
+}
+
+/* Edit button (팝업 내 수정 버튼) */
+.btn_cm.edit, #btn_popup_edit {
+    background-color: #ffc107;
+    color: #333;
+    border: none;
+}
+.btn_cm.edit:hover, #btn_popup_edit:hover {
+    background-color: #e0a800;
+}
+
+/* Delete button (팝업 내 삭제 버튼) */
+.btn_cm.delete, #btn_popup_delete {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+}
+.btn_cm.delete:hover, #btn_popup_delete:hover {
+    background-color: #c82333;
+}
+
+/* Close button */
+#detail_esc_btn {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+}
+#detail_esc_btn:hover {
+    background-color: #5a6268;
+}
+
+
+/* ==================== Grid View ==================== */
+.titbox {
+    margin-top: 30px; /* 간격 증가 */
+    margin-bottom: 15px;
+    display: flex;
+    align-items: baseline;
+}
+
+.titbox h4 {
+    font-size: 20px; /* 폰트 사이즈 증가 */
+    color: #333;
+    margin: 0;
+    padding-right: 12px;
+    font-weight: 600; /* 더 굵게 */
+}
+
+.titbox .count {
+    font-size: 15px; /* 폰트 사이즈 증가 */
+    color: #666;
+}
+
+.titbox .count .num {
+    font-weight: 700; /* 더 굵게 */
+    color: #007bff;
+}
+
+.gvwbox {
+    border: 1px solid #dbe2ed;
+    border-radius: 10px; /* 더 둥글게 */
+    overflow: hidden;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07); /* 그림자 강화 */
+    background-color: #ffffff; /* 그리드 박스 배경색 */
+}
+
+.gvw {
+    width: 100%;
+    border: none !important;
+}
+
+.gvw table {
+    border-collapse: collapse;
+}
+
+.gvw .w2grid_header table th {
+    background-color: #eef4f9 !important; /* 헤더 배경색 더 밝게 */
+    color: #3a4759 !important; /* 글자색 더 진하게 */
+    font-weight: 600 !important;
+    padding: 12px 15px !important; /* 패딩 증가 */
+    border: 1px solid #e0e6ed !important;
+    border-collapse: collapse;
+    text-align: center;
+    white-space: nowrap;
+    position: sticky; /* 헤더 스크롤 시 고정 */
+    top: 0;
+    z-index: 1; /* 다른 요소 위에 표시 */
+}
+
+.gvw .w2grid_body table td {
+    padding: 10px 15px !important; /* 패딩 증가 */
+    border: 1px solid #f0f5fa !important; /* 셀 구분선 색상 더 연하게 */
+    color: #3a4759 !important; /* 글자색 더 진하게 */
+    text-align: center;
+}
+
+.gvw .w2grid_body table tr:nth-child(even) {
+    background-color: #fbfdff; /* 짝수 행 배경색을 더 밝게 */
+}
+
+.gvw .w2grid_body table tr:hover {
+    background-color: #e6f3ff; /* 호버 시 배경색 더 부드럽게 */
+    cursor: pointer;
+}
+
+.gvw .w2grid_row_selected {
+    background-color: #cce7ff !important; /* 선택된 행 배경색 더 부드럽게 */
+    color: #1a1a1a !important; /* 선택된 행 글자색 */
+}
+
+/* Grid Specific Columns (조금 더 가독성을 높이기 위해) */
+.gvw .w2grid_body [id^="id"],
+.gvw .w2grid_body [id^="name"],
+.gvw .w2grid_body [id^="description"] {
+    text-align: left !important;
+}
+
+/* ==================== Pagination ==================== */
+.pglbox {
+    margin-top: 25px; /* 간격 증가 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px; /* 간격 조정 */
+}
+
+.pgl {
+    margin: 0;
+}
+
+.pgl .w2pagelist_box span,
+.pgl .w2pagelist_box a {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 34px; /* 크기 증가 */
+    height: 34px; /* 크기 증가 */
+    border: 1px solid #dde3ea; /* 보더 색상 조정 */
+    border-radius: 6px; /* 더 둥글게 */
+    margin: 0 4px; /* 마진 조정 */
+    text-decoration: none;
+    color: #667788; /* 글자색 조정 */
+    background-color: #ffffff;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.pgl .w2pagelist_box a:hover {
+    background-color: #eef4f9;
+    border-color: #bbd8f8;
+    color: #007bff;
+}
+
+.pgl .w2pagelist_box .selected {
+    background-color: #007bff !important;
+    color: white !important;
+    border-color: #007bff !important;
+    font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0, 123, 255, 0.25); /* 선택된 페이지에 그림자 */
+}
+
+/* ==================== Popup Styles ==================== */
+#pop_overlay {
+    /* display: none; -> JavaScript에서 제어 */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7); /* 더 진한 오버레이 */
+    z-index: 1000;
+    display: flex; /* Flexbox를 사용하여 중앙 정렬 */
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(3px); /* 블러 효과 강화 */
+}
+
+#pop_overlay > xf\:group.pop_contents {
+    background-color: #ffffff;
+    padding: 35px; /* 패딩 증가 */
+    border-radius: 15px; /* 모서리를 더 둥글게 */
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); /* 그림자 강화 */
+    max-width: 950px; /* 팝업 최대 너비 더 증가 */
+    width: 90%;
+    position: relative;
+    overflow-y: auto;
+    max-height: 90vh;
+    animation: fadeInScale 0.3s ease-out forwards; /* 팝업 등장 애니메이션 */
+}
+
+@keyframes fadeInScale {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+#pop_overlay .titbox {
+    border-bottom: 1px solid #e0e6ed;
+    padding-bottom: 20px; /* 패딩 증가 */
+    margin-bottom: 25px; /* 간격 증가 */
+}
+
+#pop_overlay .titbox h3 {
+    font-size: 22px; /* 폰트 사이즈 증가 */
+    font-weight: 700; /* 더 굵게 */
+    color: #2c3e50;
+    margin: 0;
+}
+
+#pop_overlay .titbox .rt {
+    display: flex;
+    gap: 10px; /* 버튼 간 간격 조정 */
+    align-items: center;
+}
+
+/* 팝업 내 테이블 스타일 */
+#pop_overlay .w2tb.tbl {
+    width: 100%;
+    border-collapse: separate; /* 셀 보더 둥글게 표현을 위해 */
+    border-spacing: 0; /* 기본 간격 제거 */
+    margin-bottom: 25px;
+    border: 1px solid #e0e6ed;
+    border-radius: 10px; /* 더 둥글게 */
+    overflow: hidden;
+}
+
+#pop_overlay .w2tb_th {
+    background-color: #f8fbfd;
+    padding: 15px 20px; /* 패딩 증가 */
+    font-weight: 600; /* 더 굵게 */
+    color: #444;
+    text-align: left;
+    border-bottom: 1px solid #e0e6ed;
+    border-right: 1px solid #e0e6ed;
+}
+
+#pop_overlay .w2tb_td {
+    padding: 15px 20px; /* 패딩 증가 */
+    border-bottom: 1px solid #e0e6ed;
+    border-right: 1px solid #e0e6ed;
+}
+
+#pop_overlay .w2tb.tbl tr:last-child .w2tb_th,
+#pop_overlay .w2tb.tbl tr:last-child .w2tb_td {
+    border-bottom: none;
+}
+#pop_overlay .w2tb.tbl .w2tb_th:last-child,
+#pop_overlay .w2tb.tbl .w2tb_td:last-child {
+    border-right: none;
+}
+
+#pop_overlay xf\:input,
+#pop_overlay xf\:textarea,
+#pop_overlay xf\:select1,
+#pop_overlay w2\:inputCalendar {
+    width: 100%;
+    padding: 10px 15px; /* 패딩 증가 */
+    border: 1px solid #cdd5df;
+    border-radius: 6px;
+    font-size: 14px;
+    box-sizing: border-box;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-color: #ffffff;
+}
+
+#pop_overlay xf\:input:focus,
+#pop_overlay xf\:textarea:focus,
+#pop_overlay xf\:select1:focus,
+#pop_overlay w2\:inputCalendar:focus {
+    border-color: #5cb3fd;
+    box-shadow: 0 0 0 0.3rem rgba(92, 179, 253, 0.3);
+    outline: none;
+}
+
+#pop_overlay xf\:input[readonly],
+#pop_overlay xf\:textarea[readonly],
+#pop_overlay w2\:inputCalendar[readonly] {
+    background-color: #eef2f7; /* 읽기 전용 필드 배경색 더 밝게 */
+    color: #555;
+    cursor: not-allowed;
+}
+
+
+/* File Upload Section */
+.file-section {
+    padding-top: 20px; /* 패딩 증가 */
+    border-top: 1px solid #e0e6ed;
+}
+
+.file-section .titbox h4 {
+    font-size: 18px; /* 폰트 사이즈 증가 */
+    font-weight: 600;
+    color: #333;
+}
+
+.file-section .btn_cm {
+    padding: 8px 15px; /* 패딩 조정 */
+    height: 34px; /* 높이 조정 */
+    font-size: 13px;
+    box-shadow: none; /* 파일 업로드 버튼 그림자 제거 */
+}
+.file-section .btn_cm:hover {
+    transform: none; /* 파일 업로드 버튼 호버 효과 제거 */
+    box-shadow: none;
+}
+
+.file-section .gvwbox {
+    margin-top: 15px;
+    border: 1px solid #dbe2ed;
+}
+
+/* ==================== Utility Classes ==================== */
+.clear\:both {
+    clear: both;
+}
+
+/* Hide specific elements as per discussion if they are causing issues */
+.pgl_count {
+    display: none;

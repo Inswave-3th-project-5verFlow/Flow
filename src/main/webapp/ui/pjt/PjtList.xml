@@ -58,7 +58,7 @@
  * scwin.onpageload();
  */
 scwin.onpageload = function () {
-    scwin.LOGIN_USER_ID = "1";
+    scwin.LOGIN_USER_ID = "1";  
     dmp_pjtVo.set("userId", scwin.LOGIN_USER_ID);
     $c.sbm.execute(sbm_selectPjtVoList);
 };
