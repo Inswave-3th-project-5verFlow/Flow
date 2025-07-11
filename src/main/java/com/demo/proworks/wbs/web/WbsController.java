@@ -37,26 +37,35 @@ public class WbsController {
 	private WbsService wbsService;
 
 	/**
-	 * WBS 목록을 조회합니다.
+	 * WBS 목록을 조회 한다.
 	 *
 	 * @param wbsVo WBS
-	 * @return 목록조회 결과
+	 * @return 단건 조회 결과
 	 * @throws Exception
 	 */
 	@ElService(key = "WbsList")
 	@RequestMapping(value = "WbsList")
 	@ElDescription(sub = "WBS 목록조회", desc = "페이징을 처리하여 WBS 목록 조회를 한다.")
 	public WbsListVo selectListWbs(WbsVo wbsVo) throws Exception {
+		List<WbsVo> wbsList;
+		long totCnt;
 
-		List<WbsVo> wbsList = wbsService.selectListWbs(wbsVo);
-		long totCnt = wbsService.selectListCountWbs(wbsVo);
+		// 검색 조건 확인
+		if (hasSearchCondition(wbsVo)) {
+			// 검색 조건이 있는 경우: 검색 결과 + 관련 계층
+			wbsList = wbsService.selectListWbsSearch(wbsVo);
+			totCnt = wbsService.selectListCountWbsSearch(wbsVo);
+		} else {
+			// 검색 조건이 없는 경우: 전체 계층 구조
+			wbsList = wbsService.selectListWbsAll(wbsVo);
+			totCnt = wbsService.selectListCountWbsAll(wbsVo);
+		}
 
 		WbsListVo retWbsList = new WbsListVo();
 		retWbsList.setWbsVoList(wbsList);
 		retWbsList.setTotalCount(totCnt);
 		retWbsList.setPageSize(wbsVo.getPageSize());
 		retWbsList.setPageIndex(wbsVo.getPageIndex());
-
 		return retWbsList;
 	}
 
@@ -115,23 +124,68 @@ public class WbsController {
 	@ElDescription(sub = "WBS 삭제처리", desc = "WBS를 삭제 처리한다.")
 	public void deleteWbs(WbsVo wbsVo) throws Exception {
 		wbsService.deleteWbs(wbsVo);
-	}	
+	}
 
 	/**
-     * 단계 목록을조회 한다.
-     *
-     * @param  WbsStgVo    
-     * @throws Exception
-     */
-    @ElService(key = "WbsStgList")    
-    @RequestMapping(value = "WbsStgList")
-    @ElDescription(sub = "단계 목록 조회", desc = "단계 목록을 조회한다.")    
-    public WbsStgListVo selectListStg(WbsStgVo wbsStgVo) throws Exception {
-    	List<WbsStgVo> stgList = wbsService.selectListStg(wbsStgVo);
-    	WbsStgListVo list = new WbsStgListVo();
-    	list.setWbsStgVoList(stgList);
-    	return list;
-         
-    }
+	 * 단계 목록을조회 한다.
+	 *
+	 * @param WbsStgVo
+	 * @throws Exception
+	 */
+	@ElService(key = "WbsStgList")
+	@RequestMapping(value = "WbsStgList")
+	@ElDescription(sub = "단계 목록 조회", desc = "단계 목록을 조회한다.")
+	public WbsStgListVo selectListStg(WbsStgVo wbsStgVo) throws Exception {
+		List<WbsStgVo> stgList = wbsService.selectListStg(wbsStgVo);
+		WbsStgListVo list = new WbsStgListVo();
+		list.setWbsStgVoList(stgList);
+		return list;
+
+	}
+
+	/**
+	 * WBS 목록을 다건 처리한다.
+	 *
+	 * @param pugVo 프로젝트 유저 그룹 매핑 정보
+	 * @throws Exception
+	 */
+	@ElService(key = "WbsSave")
+	@RequestMapping(value = "WbsSave")
+	@ElDescription(sub = "WBS 목록을 다건 처리한다.", desc = "WBS 목록을 다건 처리한다.")
+	public void saveWbs(WbsListVo wbsListVo) throws Exception {
+		int cnt = wbsListVo.getWbsVoList().size();
+
+		for (int i = 0; i < cnt; i++) {
+			WbsVo wbsVo = wbsListVo.getWbsVoList().get(i);
+			String rowStatus = wbsVo.getRowStatus();
+
+			switch (rowStatus) {
+			case "C":
+				wbsService.insertWbs(wbsVo);
+				break;
+			case "U":
+				wbsService.updateWbs(wbsVo);
+				break;
+			case "D":
+				wbsService.deleteWbs(wbsVo);
+				break;
+			default:
+				// 예외처리 또는 무시
+				break;
+			}
+		}
+	}
+
+	/**
+	 * 검색 조건이 있는지 확인
+	 */
+	private boolean hasSearchCondition(WbsVo wbsVo) {
+		return (wbsVo.getScTaskId() != null && !wbsVo.getScTaskId().trim().isEmpty())
+				|| (wbsVo.getScTaskName() != null && !wbsVo.getScTaskName().trim().isEmpty())
+				|| (wbsVo.getScTaskStatus() != null && !wbsVo.getScTaskStatus().trim().isEmpty())
+				|| (wbsVo.getScStgId() != null && !wbsVo.getScStgId().trim().isEmpty())
+				|| (wbsVo.getScTaskAsi() != null && !wbsVo.getScTaskAsi().trim().isEmpty())
+				|| (wbsVo.getScTaskRate() != null && !wbsVo.getScTaskRate().trim().isEmpty());
+	}
 
 }

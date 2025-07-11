@@ -16,10 +16,10 @@
         				<w2:key dataType="text" id="taskDes" name="업무상세"></w2:key>
         				<w2:key dataType="text" id="taskStatus" name="업무상태" defaultValue="대기"></w2:key>
         				<w2:key dataType="text" id="isTest" name="테스트여부" defaultValue="N"></w2:key>
-        				<w2:key dataType="text" id="taskDepth" name="뎁스"></w2:key>
+        				<w2:key dataType="text" id="taskDepth" name="뎁스" defaultValue="0"></w2:key>
         				<w2:key dataType="text" id="stgId" name="단계ID"></w2:key>
-        				<w2:key dataType="text" id="ptTaskId" name="상위업무ID"></w2:key>
-        				<w2:key dataType="text" id="ptTaskName" name="상위업무명"></w2:key>
+        				<w2:key dataType="text" id="ptTaskId" name="상위업무ID" defaultValue="0"></w2:key>
+        				<w2:key dataType="text" id="ptTaskName" name="상위업무명" defaultValue=""></w2:key>
         				<w2:key dataType="text" id="taskSeq" name="순서" defaultValue="0"></w2:key>
         				<w2:key dataType="text" id="taskSt" name="시작예정일"></w2:key>
         				<w2:key dataType="text" id="taskEt" name="완료예정일"></w2:key>
@@ -131,12 +131,16 @@ scwin.onpageload = function () {
     if (popupType !== undefined && popupType === "detail") { // 상세 보기 팝업
         // 받아온 데이터로 값 세팅해야함
         console.log("상세 보기 팝업으로 로드");
-        // dmp_taskDetail.setJSON(popUpdata);
+        tbx_title.setValue("업무 상세 팝업");
+        dmp_taskDetail.set("pjtId", scwin.PJT_ID);
+        dmp_taskDetail.setJSON(popupData.rowData);
+        btn_save.setValue("수정");
     }
     else if (popupType !== undefined && popupType === "new") { // 신규 생성 팝업
         console.log("신규 생성 팝업으로 로드");
         tbx_title.setValue("신규 업무 생성 팝업");
         dmp_taskDetail.set("pjtId", scwin.PJT_ID);
+        btn_save.setValue("등록");
     }
 };
 
@@ -178,7 +182,9 @@ scwin.receiveTaskData = function (returnData) {
         dmp_taskDetail.set("ptTaskId", selectedTask.taskId);
         dmp_taskDetail.set("ptTaskName", selectedTask.taskName);
         dmp_taskDetail.set("stgId", selectedTask.stgId);
-        dmp_taskDetail.set("taskDepth", parseInt(selectedTask.taskDepth) + 1);
+        console.log("그리드에서 넘어온 부모 뎁스 !!!!!!")
+        console.log(selectedTask.taskDepth);
+        dmp_taskDetail.set("taskDepth", parseInt(selectedTask.taskDepth));
 
         $c.win.alert("선택된 상위업무: " + selectedTask.taskName);
     }
@@ -267,11 +273,7 @@ scwin.sbm_deleteTaskDetail_submitdone = function (e) {
 
 scwin.btn_cancel_onclick = function (e) {
     $p.closePopup();
-};
-
-
-
-]]></script>
+};]]></script>
     </head>
     
     <body ev:onpageload="scwin.onpageload">
@@ -441,15 +443,17 @@ scwin.btn_cancel_onclick = function (e) {
     				<xf:group class="rt" id="" style="">
     					<w2:textbox class="bar_btndiv" id="" label="" style=""></w2:textbox>
     					<xf:trigger class="btn_cm pt" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
-    						<xf:label><![CDATA[저장]]></xf:label>
+    						<xf:label><![CDATA[버튼]]></xf:label>
     					</xf:trigger>
 
-    					<xf:trigger class="btn_cm pt" id="btn_delete" style=";color:;background-color:#FF0000;" type="button" ev:onclick="scwin.btn_delete_onclick">
+    					<xf:trigger class="btn_cm pt" id="btn_delete" style=";color:;background-color:#FF0000;" type="button"
+    						ev:onclick="scwin.btn_delete_onclick">
     						<xf:label><![CDATA[삭제]]></xf:label>
     					</xf:trigger>
     					<xf:trigger class="btn_cm " id="btn_cancel" style="" type="button" ev:onclick="scwin.btn_cancel_onclick">
     						<xf:label><![CDATA[취소]]></xf:label>
     					</xf:trigger>
+
     				</xf:group>
     			</xf:group>
     		</xf:group>

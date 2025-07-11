@@ -19,22 +19,24 @@ import com.demo.proworks.wbs.vo.WbsVo;
 public interface WbsService {
 
 	/**
-	 * WBS 페이징 처리하여 목록을 조회한다.
-	 *
-	 * @param wbsVo WBS WbsVo
-	 * @return WBS 목록 List<WbsVo>
-	 * @throws Exception
+	 * 전체 WBS 목록을 조회한다.
 	 */
-	public List<WbsVo> selectListWbs(WbsVo wbsVo) throws Exception;
+	public List<WbsVo> selectListWbsAll(WbsVo wbsVo) throws Exception;
 
 	/**
-	 * 조회한 WBS 전체 카운트
-	 * 
-	 * @param wbsVo WBS WbsVo
-	 * @return WBS 목록 전체 카운트
-	 * @throws Exception
+	 * 검색 조건에 따른 WBS 목록을 조회한다.
 	 */
-	public long selectListCountWbs(WbsVo wbsVo) throws Exception;
+	public List<WbsVo> selectListWbsSearch(WbsVo wbsVo) throws Exception;
+
+	/**
+	 * 전체 WBS 카운트를 조회한다.
+	 */
+	public long selectListCountWbsAll(WbsVo wbsVo) throws Exception;
+
+	/**
+	 * 검색 조건에 따른 WBS 카운트를 조회한다.
+	 */
+	public long selectListCountWbsSearch(WbsVo wbsVo) throws Exception;
 
 	/**
 	 * WBS를 상세 조회한다.

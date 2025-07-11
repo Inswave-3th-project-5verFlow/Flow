@@ -88,32 +88,197 @@
 	</delete>
 
 	<select id="selectWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
-		<!-- WBS를 상세 조회한다. -->
-		SELECT /* QueryID : com.demo.proworks.wbs.selectWbs */
-		TASK_ID as taskId, TASK_NAME as taskName, TASK_DES as taskDes, TASK_STATUS as
-		taskStatus, IS_TEST as isTest, TASK_DEPTH as taskDepth, STG_ID as
-		stgId, PT_TASK_ID as ptTaskId, TASK_SEQ as taskSeq, TASK_ST as taskSt,
-		TASK_ET as taskEt, TASK_RST as taskRst, TASK_RET as taskRet,
-		TASK_ASI as taskAsi, TASK_RATE as taskRate, PJT_ID as pjtId
-		FROM TASK
+    <!-- WBS를 상세 조회한다. -->
+    SELECT /* QueryID : com.demo.proworks.wbs.selectWbs */
+        t.TASK_ID as taskId, t.TASK_NAME as taskName, t.TASK_DES as taskDes, 
+        t.TASK_STATUS as taskStatus, t.IS_TEST as isTest, t.TASK_DEPTH as taskDepth, 
+        t.STG_ID as stgId, t.PT_TASK_ID as ptTaskId, pt.TASK_NAME as ptTaskName, 
+        t.TASK_SEQ as taskSeq, t.TASK_ST as taskSt, t.TASK_ET as taskEt, 
+        t.TASK_RST as taskRst, t.TASK_RET as taskRet, t.TASK_ASI as taskAsi, 
+        t.TASK_RATE as taskRate, t.PJT_ID as pjtId
+    FROM TASK t
+    LEFT JOIN TASK pt ON t.PT_TASK_ID = pt.TASK_ID
+    WHERE t.TASK_ID = #{taskId}
+</select>
+
+	<select id="selectListWbsAll" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
+<!-- 전체 WBS 계층 구조를 조회한다. -->
+    /* QueryID : com.demo.proworks.wbs.selectListWbsAll */
+    WITH RECURSIVE task_hierarchy AS (
+        SELECT
+            t.task_id, t.task_name, t.task_des, t.task_status, t.is_test,
+            t.task_depth, t.stg_id, t.pt_task_id, t.task_seq,
+            t.task_st, t.task_et, t.task_rst, t.task_ret, t.task_asi, t.task_rate, t.pjt_id,
+            pt.task_name as pt_task_name, 
+            CAST(LPAD(t.task_id, 10, '0') AS CHAR(1000)) AS sort_path
+        FROM task t
+        LEFT JOIN task pt ON t.pt_task_id = pt.task_id
+        WHERE t.pjt_id = #{pjtId} AND t.pt_task_id = 0
+        
+        UNION ALL
+        
+        SELECT
+            t.task_id, t.task_name, t.task_des, t.task_status, t.is_test,
+            t.task_depth, t.stg_id, t.pt_task_id, t.task_seq,
+            t.task_st, t.task_et, t.task_rst, t.task_ret, t.task_asi, t.task_rate, t.pjt_id,
+            pt.task_name as pt_task_name, 
+            CONCAT(th.sort_path, '-', LPAD(t.task_id, 10, '0')) AS sort_path
+        FROM task t
+        INNER JOIN task_hierarchy th ON t.pt_task_id = th.task_id
+        LEFT JOIN task pt ON t.pt_task_id = pt.task_id
+        WHERE t.pjt_id = #{pjtId}
+    ),
+    ranked_tasks AS (
+        SELECT *,
+               ROW_NUMBER() OVER (ORDER BY sort_path) as rn
+        FROM task_hierarchy
+    )
+    SELECT
+        task_id as taskId, task_name as taskName, task_des as taskDes,
+        task_status as taskStatus, is_test as isTest, task_depth as taskDepth,
+        stg_id as stgId, pt_task_id as ptTaskId, pt_task_name as ptTaskName, 
+        task_seq as taskSeq, task_st as taskSt, task_et as taskEt, task_rst as taskRst,
+        task_ret as taskRet, task_asi as taskAsi, task_rate as taskRate,
+        pjt_id as pjtId
+    FROM ranked_tasks
+    WHERE rn BETWEEN ((#{pageIndex} - 1) * #{pageSize} + 1) AND (#{pageIndex} * #{pageSize})
+    ORDER BY sort_path
+</select>
+
+	<select id="selectListWbsSearch" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
+<!-- 검색 조건에 따른 WBS 계층 구조를 조회한다. -->
+    /* QueryID : com.demo.proworks.wbs.selectListWbsSearch */
+    WITH RECURSIVE 
+    search_matches AS (
+        SELECT task_id, task_name, task_des, task_status, is_test,
+               task_depth, stg_id, pt_task_id, task_seq,
+               task_st, task_et, task_rst, task_ret, task_asi, task_rate, pjt_id
+        FROM task
+        WHERE pjt_id = #{pjtId}
+        <if test="scTaskId != null and scTaskId != ''">
+            AND task_id like CONCAT('%', #{scTaskId}, '%')
+        </if>
+        <if test="scTaskName != null and scTaskName != ''">
+            AND task_name like CONCAT('%', #{scTaskName}, '%')
+        </if>
+        <if test="scTaskStatus != null and scTaskStatus != ''">
+            AND task_status like CONCAT('%', #{scTaskStatus}, '%')
+        </if>
+        <if test="scStgId != null and scStgId != ''">
+            AND stg_id like CONCAT('%', #{scStgId}, '%')
+        </if>
+        <if test="scTaskAsi != null and scTaskAsi != ''">
+            AND task_asi like CONCAT('%', #{scTaskAsi}, '%')
+        </if>
+        <if test="scTaskRate != null and scTaskRate != ''">
+            AND task_rate like CONCAT('%', #{scTaskRate}, '%')
+        </if>
+    ),
+
+    parent_tasks AS (
+        SELECT task_id, task_name, task_des, task_status, is_test,
+               task_depth, stg_id, pt_task_id, task_seq,
+               task_st, task_et, task_rst, task_ret, task_asi, task_rate, pjt_id
+        FROM search_matches
+        
+        UNION ALL
+        
+        SELECT t.task_id, t.task_name, t.task_des, t.task_status, t.is_test,
+               t.task_depth, t.stg_id, t.pt_task_id, t.task_seq,
+               t.task_st, t.task_et, t.task_rst, t.task_ret, t.task_asi, t.task_rate, t.pjt_id
+        FROM task t
+        INNER JOIN parent_tasks pt ON t.task_id = pt.pt_task_id
+        WHERE t.pjt_id = #{pjtId}
+    ),
+
+    child_tasks AS (
+        SELECT task_id, task_name, task_des, task_status, is_test,
+               task_depth, stg_id, pt_task_id, task_seq,
+               task_st, task_et, task_rst, task_ret, task_asi, task_rate, pjt_id
+        FROM search_matches
+        
+        UNION ALL
+        
+        SELECT t.task_id, t.task_name, t.task_des, t.task_status, t.is_test,
+               t.task_depth, t.stg_id, t.pt_task_id, t.task_seq,
+               t.task_st, t.task_et, t.task_rst, t.task_ret, t.task_asi, t.task_rate, t.pjt_id
+        FROM task t
+        INNER JOIN child_tasks ct ON t.pt_task_id = ct.task_id
+        WHERE t.pjt_id = #{pjtId}
+    ),
+
+    all_related_tasks AS (
+        SELECT DISTINCT * FROM parent_tasks
+        UNION 
+        SELECT DISTINCT * FROM child_tasks
+    ),
+ 
+    task_hierarchy AS (
+        SELECT
+            t.task_id, t.task_name, t.task_des, t.task_status, t.is_test,
+            t.task_depth, t.stg_id, t.pt_task_id, t.task_seq,
+            t.task_st, t.task_et, t.task_rst, t.task_ret, t.task_asi, t.task_rate, t.pjt_id,
+            pt.task_name as pt_task_name, 
+            CAST(LPAD(t.task_id, 10, '0') AS CHAR(1000)) AS sort_path
+        FROM all_related_tasks t
+        LEFT JOIN task pt ON t.pt_task_id = pt.task_id 
+        WHERE t.pt_task_id = 0 OR t.pt_task_id NOT IN (SELECT task_id FROM all_related_tasks)
+        
+        UNION ALL
+        
+        SELECT
+            t.task_id, t.task_name, t.task_des, t.task_status, t.is_test,
+            t.task_depth, t.stg_id, t.pt_task_id, t.task_seq,
+            t.task_st, t.task_et, t.task_rst, t.task_ret, t.task_asi, t.task_rate, t.pjt_id,
+            pt.task_name as pt_task_name,  
+            CONCAT(th.sort_path, '-', LPAD(t.task_id, 10, '0')) AS sort_path
+        FROM all_related_tasks t
+        INNER JOIN task_hierarchy th ON t.pt_task_id = th.task_id
+        LEFT JOIN task pt ON t.pt_task_id = pt.task_id 
+    ),
+    ranked_tasks AS (
+        SELECT *,
+               ROW_NUMBER() OVER (ORDER BY sort_path) as rn
+        FROM task_hierarchy
+    )
+    SELECT
+        task_id as taskId, task_name as taskName, task_des as taskDes,
+        task_status as taskStatus, is_test as isTest, task_depth as taskDepth,
+        stg_id as stgId, pt_task_id as ptTaskId, pt_task_name as ptTaskName,
+        task_seq as taskSeq, task_st as taskSt, task_et as taskEt, task_rst as taskRst,
+        task_ret as taskRet, task_asi as taskAsi, task_rate as taskRate,
+        pjt_id as pjtId
+    FROM ranked_tasks
+    WHERE rn BETWEEN ((#{pageIndex} - 1) * #{pageSize} + 1) AND (#{pageIndex} * #{pageSize})
+    ORDER BY sort_path
+</select>
+
+	<select id="selectListCountWbsAll" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="long">
+		<!-- 전체 WBS 카운트를 조회한다. -->
+		/* QueryID : com.demo.proworks.wbs.selectListCountWbsAll */
+		WITH RECURSIVE task_hierarchy AS (
+		SELECT task_id, pt_task_id FROM task
 		WHERE
-		TASK_ID = #{taskId}
+		pjt_id = #{pjtId} AND pt_task_id = 0
+
+		UNION ALL
+
+		SELECT t.task_id, t.pt_task_id FROM task t
+		INNER JOIN task_hierarchy th ON t.pt_task_id =
+		th.task_id
+		WHERE t.pjt_id = #{pjtId}
+		)
+		SELECT COUNT(*) as totcnt FROM task_hierarchy
 	</select>
 
-
-	<select id="selectListWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
-		<!-- WBS 목록을 계층형 정렬로 조회한다. -->
-		/* QueryID : com.demo.proworks.wbs.selectListWbs */
-		WITH RECURSIVE task_hierarchy AS (
-		SELECT
-		task_id, task_name, task_des, task_status,
-		is_test,
-		task_depth, stg_id, pt_task_id, task_seq,
-		task_st, task_et, task_rst, task_ret, task_asi, task_rate, pjt_id,
-		CAST(LPAD(task_id, 10,
-		'0') AS CHAR(1000)) AS sort_path
-		FROM task
-		WHERE pjt_id = #{pjtId} AND pt_task_id = 0
+	<select id="selectListCountWbsSearch" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="long">
+		<!-- 검색 조건에 따른 WBS 카운트를 조회한다. -->
+		/* QueryID : com.demo.proworks.wbs.selectListCountWbsSearch */
+		WITH RECURSIVE
+		search_matches AS (
+		SELECT task_id, pt_task_id FROM task
+		WHERE
+		pjt_id = #{pjtId}
 		<if test="scTaskId != null and scTaskId != ''">
 			AND task_id like CONCAT('%', #{scTaskId}, '%')
 		</if>
@@ -131,123 +296,30 @@
 		</if>
 		<if test="scTaskRate != null and scTaskRate != ''">
 			AND task_rate like CONCAT('%', #{scTaskRate}, '%')
-		</if>
-
-		UNION ALL
-
-		SELECT
-		t.task_id, t.task_name, t.task_des, t.task_status, t.is_test,
-		t.task_depth, t.stg_id, t.pt_task_id, t.task_seq,
-		t.task_st,
-		t.task_et, t.task_rst, t.task_ret, t.task_asi, t.task_rate, t.pjt_id,
-		CONCAT(th.sort_path, '-', LPAD(t.task_id, 10, '0')) AS sort_path
-		FROM
-		task t
-		INNER JOIN task_hierarchy th ON t.pt_task_id = th.task_id
-		WHERE t.pjt_id = #{pjtId}
-		<if test="scTaskId != null and scTaskId != ''">
-			AND t.task_id like CONCAT('%', #{scTaskId}, '%')
-		</if>
-		<if test="scTaskName != null and scTaskName != ''">
-			AND t.task_name like CONCAT('%', #{scTaskName}, '%')
-		</if>
-		<if test="scTaskStatus != null and scTaskStatus != ''">
-			AND t.task_status like CONCAT('%', #{scTaskStatus}, '%')
-		</if>
-		<if test="scStgId != null and scStgId != ''">
-			AND t.stg_id like CONCAT('%', #{scStgId}, '%')
-		</if>
-		<if test="scTaskAsi != null and scTaskAsi != ''">
-			AND t.task_asi like CONCAT('%', #{scTaskAsi}, '%')
-		</if>
-		<if test="scTaskRate != null and scTaskRate != ''">
-			AND t.task_rate like CONCAT('%', #{scTaskRate}, '%')
 		</if>
 		),
-		ranked_tasks AS (
-		SELECT *,
-		ROW_NUMBER() OVER (ORDER BY sort_path) as rn
-		FROM task_hierarchy
-		)
-		SELECT
-		task_id as taskId, task_name as
-		taskName, task_des as taskDes,
-		task_status as taskStatus, is_test as isTest, task_depth as taskDepth,
-		stg_id as stgId, pt_task_id as
-		ptTaskId, task_seq as taskSeq,
-		task_st as taskSt, task_et as taskEt, task_rst as taskRst,
-		task_ret as taskRet, task_asi as taskAsi,
-		task_rate as taskRate,
-		pjt_id as pjtId
-		FROM ranked_tasks
-		WHERE rn BETWEEN ((#{pageIndex} - 1) * #{pageSize} + 1) AND (#{pageIndex} *
-		#{pageSize})
-		ORDER BY sort_path
-	</select>
-
-
-	<select id="selectListCountWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="long">
-		<!-- WBS 목록의 카운트를 조회한다 (계층형 구조 적용) -->
-		/* QueryID : com.demo.proworks.wbs.selectListCountWbs */
-		WITH RECURSIVE task_hierarchy AS (
-		SELECT
-		task_id, task_name, task_des, task_status,
-		is_test,
-		task_depth, stg_id, pt_task_id, task_seq,
-		task_st, task_et, task_rst, task_ret, task_asi, task_rate, pjt_id
-		FROM task
-		WHERE pjt_id =
-		#{pjtId} AND pt_task_id = 0
-		<if test="scTaskId != null and scTaskId != ''">
-			AND task_id like CONCAT('%', #{scTaskId}, '%')
-		</if>
-		<if test="scTaskName != null and scTaskName != ''">
-			AND task_name like CONCAT('%', #{scTaskName}, '%')
-		</if>
-		<if test="scTaskStatus != null and scTaskStatus != ''">
-			AND task_status like CONCAT('%', #{scTaskStatus}, '%')
-		</if>
-		<if test="scStgId != null and scStgId != ''">
-			AND stg_id like CONCAT('%', #{scStgId}, '%')
-		</if>
-		<if test="scTaskAsi != null and scTaskAsi != ''">
-			AND task_asi like CONCAT('%', #{scTaskAsi}, '%')
-		</if>
-		<if test="scTaskRate != null and scTaskRate != ''">
-			AND task_rate like CONCAT('%', #{scTaskRate}, '%')
-		</if>
-
+		parent_tasks AS (
+		SELECT task_id, pt_task_id FROM search_matches
 		UNION ALL
-
-		SELECT
-		t.task_id, t.task_name, t.task_des, t.task_status, t.is_test,
-		t.task_depth, t.stg_id, t.pt_task_id, t.task_seq,
-		t.task_st,
-		t.task_et, t.task_rst, t.task_ret, t.task_asi, t.task_rate, t.pjt_id
-		FROM task t
-		INNER JOIN task_hierarchy th ON t.pt_task_id = th.task_id
+		SELECT t.task_id, t.pt_task_id FROM task t
+		INNER JOIN
+		parent_tasks pt ON t.task_id = pt.pt_task_id
 		WHERE t.pjt_id = #{pjtId}
-		<if test="scTaskId != null and scTaskId != ''">
-			AND t.task_id like CONCAT('%', #{scTaskId}, '%')
-		</if>
-		<if test="scTaskName != null and scTaskName != ''">
-			AND t.task_name like CONCAT('%', #{scTaskName}, '%')
-		</if>
-		<if test="scTaskStatus != null and scTaskStatus != ''">
-			AND t.task_status like CONCAT('%', #{scTaskStatus}, '%')
-		</if>
-		<if test="scStgId != null and scStgId != ''">
-			AND t.stg_id like CONCAT('%', #{scStgId}, '%')
-		</if>
-		<if test="scTaskAsi != null and scTaskAsi != ''">
-			AND t.task_asi like CONCAT('%', #{scTaskAsi}, '%')
-		</if>
-		<if test="scTaskRate != null and scTaskRate != ''">
-			AND t.task_rate like CONCAT('%', #{scTaskRate}, '%')
-		</if>
+		),
+		child_tasks AS (
+		SELECT task_id, pt_task_id FROM search_matches
+		UNION ALL
+		SELECT t.task_id, t.pt_task_id FROM task t
+		INNER JOIN child_tasks ct ON t.pt_task_id = ct.task_id
+		WHERE t.pjt_id = #{pjtId}
+		),
+		all_related_tasks AS (
+		SELECT DISTINCT * FROM parent_tasks
+		UNION
+		SELECT DISTINCT * FROM child_tasks
 		)
-		SELECT COUNT(*) as totcnt
-		FROM task_hierarchy
+		SELECT COUNT(*) as totcnt FROM
+		all_related_tasks
 	</select>
 
 	<select id="selectListStg" parameterType="com.demo.proworks.wbs.vo.WbsStgVo" resultType="com.demo.proworks.wbs.vo.WbsStgVo">

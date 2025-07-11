@@ -33,22 +33,20 @@ public class WbsServiceImpl implements WbsService {
 	private MessageSource messageSource;
 
 	/**
-	 * WBS 목록을 조회합니다.
+	 * 전체 WBS 계층 구조를 조회한다.
 	 *
-	 * @process 1. WBS 페이징 처리하여 목록을 조회한다. 2. 결과 List<WbsVo>을(를) 리턴한다.
+	 * @process
 	 * 
 	 * @param wbsVo WBS WbsVo
 	 * @return WBS 목록 List<WbsVo>
 	 * @throws Exception
 	 */
-	public List<WbsVo> selectListWbs(WbsVo wbsVo) throws Exception {
-		List<WbsVo> list = wbsDAO.selectListWbs(wbsVo);
-
-		return list;
+	public List<WbsVo> selectListWbsAll(WbsVo wbsVo) throws Exception {
+		return wbsDAO.selectListWbsAll(wbsVo);
 	}
 
 	/**
-	 * 조회한 WBS 전체 카운트
+	 * 전체 WBS 카운트를 조회한다.
 	 *
 	 * @process 1. WBS 조회하여 전체 카운트를 리턴한다.
 	 * 
@@ -56,8 +54,35 @@ public class WbsServiceImpl implements WbsService {
 	 * @return WBS 목록 전체 카운트
 	 * @throws Exception
 	 */
-	public long selectListCountWbs(WbsVo wbsVo) throws Exception {
-		return wbsDAO.selectListCountWbs(wbsVo);
+	public long selectListCountWbsAll(WbsVo wbsVo) throws Exception {
+		return wbsDAO.selectListCountWbsAll(wbsVo);
+	}
+
+	/**
+	 * 검색 조건에 따라 WBS 계층 구조를 조회한다.
+	 *
+	 * @process
+	 * 
+	 * @param wbsVo WBS WbsVo
+	 * @return WBS 목록 List<WbsVo>
+	 * @throws Exception
+	 */
+	@Override
+	public List<WbsVo> selectListWbsSearch(WbsVo wbsVo) throws Exception {
+		return wbsDAO.selectListWbsSearch(wbsVo);
+	}
+
+	/**
+	 * 검색 조건에 따라 WBS 카운트를 조회한다.
+	 *
+	 * @process 1. WBS 조회하여 전체 카운트를 리턴한다.
+	 * 
+	 * @param wbsVo WBS WbsVo
+	 * @return WBS 목록 전체 카운트
+	 * @throws Exception
+	 */
+	public long selectListCountWbsSearch(WbsVo wbsVo) throws Exception {
+		return wbsDAO.selectListCountWbsSearch(wbsVo);
 	}
 
 	/**
@@ -121,8 +146,7 @@ public class WbsServiceImpl implements WbsService {
 	 * @return List<WbsStgVo>
 	 * @throws Exception
 	 */
-	@Override
-	public List<WbsStgVo> selectListStg(WbsStgVo wbsStgVo) throws Exception {		
+	public List<WbsStgVo> selectListStg(WbsStgVo wbsStgVo) throws Exception {
 		return wbsDAO.selectListStg(wbsStgVo);
 	}
 }
