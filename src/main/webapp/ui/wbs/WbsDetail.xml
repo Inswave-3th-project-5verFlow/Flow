@@ -28,6 +28,7 @@
         				<w2:key dataType="text" id="taskAsi" name="업무담당자"></w2:key>
         				<w2:key dataType="text" id="taskRate" name="진척률"></w2:key>
         				<w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
+        				<w2:key dataType="text" name="사용자ID" id="userId"></w2:key>
         			</w2:keyInfo>
         		</w2:dataMap>
 
@@ -94,6 +95,10 @@
         					<value><![CDATA[5]]></value>
         					<label><![CDATA[퍼블리싱]]></label>
         				</w2:row>
+        				<w2:row>
+        					<label><![CDATA[개발]]></label>
+        					<value><![CDATA[6]]></value>
+        				</w2:row>
         			</w2:data>
         		</w2:dataList>
         	</w2:dataCollection>
@@ -101,20 +106,20 @@
         	<w2:workflowCollection />
 
         	<!-- 단건 등록용 submission -->
-        	<xf:submission id="sbm_insertTaskDetail" action="/InsWebApp/DESIGN001Ins.pwkjson" method="post" mediatype="application/json"
-        		ref='data:json,{"id":"dmp_taskDetail","key":"designVo"}' target='' encoding="UTF-8" instance="" replace="" errorHandler=""
+        	<xf:submission id="sbm_insertTaskDetail" action="/InsWebApp/WbsIns.pwkjson" method="post" mediatype="application/json"
+        		ref='data:json,{"id":"dmp_taskDetail","key":"elData"}' target='' encoding="UTF-8" instance="" replace="" errorHandler=""
         		customHandler="" mode="asynchronous" processMsg="업무 정보를 등록 중입니다." ev:submit="" ev:submitdone="scwin.sbm_saveTaskDetail_submitdone"
         		ev:submiterror="" abortTrigger="">
         	</xf:submission>
 
         	<!-- 단건 수정용 submission -->
-        	<xf:submission id="sbm_updateTaskDetail" action="/InsWebApp/DESIGN001Upd.pwkjson" method="post" mediatype="application/json"
-        		ref='data:json,{"id":"dmp_taskDetail","key":"designVo"}' target='' encoding="UTF-8" instance="" replace="" errorHandler=""
+        	<xf:submission id="sbm_updateTaskDetail" action="/InsWebApp/WbsUpd.pwkjson" method="post" mediatype="application/json"
+        		ref='data:json,{"id":"dmp_taskDetail","key":"elData"}' target='' encoding="UTF-8" instance="" replace="" errorHandler=""
         		customHandler="" mode="asynchronous" processMsg="업무 정보를 수정 중입니다." ev:submit="" ev:submitdone="scwin.sbm_saveTaskDetail_submitdone"
         		ev:submiterror="" abortTrigger="">
         	</xf:submission>
-        	<xf:submission id="sbm_deleteTaskDetail" action="/InsWebApp/DESIGN001Del.pwkjson" method="post" mediatype="application/json"
-        		ref='data:json,{"id":"dmp_taskDetail","key":"designVo"}' target="" encoding="UTF-8" instance="" replace="" errorHandler=""
+        	<xf:submission id="sbm_deleteTaskDetail" action="/InsWebApp/WbsDel.pwkjson" method="post" mediatype="application/json"
+        		ref='data:json,{"id":"dmp_taskDetail","key":"elData"}' target="" encoding="UTF-8" instance="" replace="" errorHandler=""
         		customHandler="" mode="asynchronous" processMsg="" ev:submit="" ev:submitdone="scwin.sbm_deleteTaskDetail_submitdone" ev:submiterror="" abortTrigger="">
         	</xf:submission>
         </xf:model>
@@ -122,7 +127,9 @@
         <w2:layoutInfo/>
         <w2:publicInfo method=""/>
         
-        <script lazy="false" type="text/javascript"><![CDATA[
+        <script lazy="false" type="text/javascript"><![CDATA[scwin.USER_ID = "";
+scwin.PJT_ID = "";
+
 scwin.onpageload = function () {
 
     const popupData = $p.getParameter("params");
@@ -140,6 +147,7 @@ scwin.onpageload = function () {
         console.log("신규 생성 팝업으로 로드");
         tbx_title.setValue("신규 업무 생성 팝업");
         dmp_taskDetail.set("pjtId", scwin.PJT_ID);
+        dmp_taskDetail.set("userId",popupData.userId);
         btn_save.setValue("등록");
     }
 };
@@ -230,11 +238,11 @@ scwin.sbm_saveTaskDetail_submitdone = function (e) {
         $c.win.alert("업무 정보가 수정되었습니다.");
     }
 
-    // 부모 페이지 재조회 요청
-    $p.parent().scwin.btn_search_onclick();
+    // // 부모 페이지 재조회 요청
+    // //$p.parent().scwin.btn_search_onclick();
 
-    // 팝업 닫기
-    $p.closePopup();
+    // // 팝업 닫기
+    // $p.closePopup();
 };
 
 // 삭제 버튼

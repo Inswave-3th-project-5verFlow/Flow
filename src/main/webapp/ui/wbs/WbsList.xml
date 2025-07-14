@@ -47,6 +47,7 @@
 						<w2:column dataType="text" name="지연여부" id="isLazy"></w2:column>
 						<w2:column dataType="text" name="지연여부코드" id="delayStatusCode"></w2:column>
 						<w2:column dataType="text" name="테스트여부UI" id="isTestDisplay"></w2:column>
+						<w2:column dataType="text" name="사용자ID" id="userId"></w2:column>
 					</w2:columnInfo>
 				</w2:dataList>
 				<w2:dataMap baseNode="map" id="dmp_wbsVoDetail" style="">
@@ -92,6 +93,11 @@
 				target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit=""
 				ev:submitdone="scwin.sbm_saveWbsVoList_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
+			<xf:submission id="sbm_selectWbsVoListForExcel" ref='data:json,{"id":"dmp_wbsVo","key":"wbsVo"}'
+				target='data:json,{"id":"dlt_wbsVoList","key":"elData.wbsVoList"}' action="/InsWebApp/WbsList.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
+				processMsg="엑셀 다운로드용 전체 데이터를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectWbsVoListForExcel_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
 		<w2:publicInfo method="" />
@@ -107,12 +113,15 @@ scwin.PJT_ID = "";
  * scwin.onpageload();
  */
 scwin.onpageload = function () {
-    scwin.LOGIN_USER_ID = "1";
+    var userInfo = $p.getComponentById("mf_dmp_userVoDetail").getJSON();
+    console.log(userInfo);
+    if (userInfo) {
+    scwin.LOGIN_USER_ID = userInfo.userId;
     scwin.PJT_ID = "1";
+    }
 
     // 검색 조건 초기화
     dmp_wbsVo.set("pjtId", scwin.PJT_ID);
-
     // 단계 목록 조회 서브미션 호출
     $c.sbm.execute(sbm_selectWbsStgVoList, {
         elData: {}
@@ -235,7 +244,7 @@ scwin.sbm_wbsList_submitdone = function (e) {
 scwin.initGroupBy = function () {
     var options = {
         sortIndex: [1],     // stgName(1) - 단계명으로 정렬
-        sortOrder: [1],      // 오름차순
+        sortOrder: [-1],      // 오름차순
         closeGroup: false,
         groupbyHeader: [
             {
@@ -250,6 +259,48 @@ scwin.initGroupBy = function () {
     };
 
     // 그룹핑 실행
+    grd_list.groupby(options);
+};
+
+/**
+ * 업무상태별 그룹핑 함수
+ */
+scwin.groupByTaskStatus = function () {
+    var options = {
+        sortIndex: ["taskStatus"], // taskStatus 컬럼으로 정렬
+        sortOrder: [1],      // 오름차순
+        closeGroup: false,
+        groupbyHeader: [
+            {
+                inputType: "expression",
+                expression: 'toggle() + depthStr() + " (" + count() + " 건) "',
+                align: "left",
+                colSpan: "18" // Adjust colSpan as needed based on your grid columns
+            }
+        ],
+        hideFooter: true
+    };
+    grd_list.groupby(options);
+};
+
+/**
+ * 지연여부별 그룹핑 함수
+ */
+scwin.groupByDelayStatus = function () {
+    var options = {
+        sortIndex: ["isLazy"], // isLazy 컬럼으로 정렬
+        sortOrder: [1],      // 오름차순
+        closeGroup: false,
+        groupbyHeader: [
+            {
+                inputType: "expression",
+                expression: 'toggle() + depthStr() + " (" + count() + " 건) "',
+                align: "left",
+                colSpan: "18" // Adjust colSpan as needed
+            }
+        ],
+        hideFooter: true
+    };
     grd_list.groupby(options);
 };
 
@@ -293,30 +344,46 @@ scwin.btn_clearGroupby_onclick = function (e) {
 };
 
 // 등록 버튼
+/**
+ * 팝업을 화면 중앙에 위치시키기 위한 좌표를 계산합니다.
+ * @param {number} popupWidth - 팝업의 너비 (px)
+ * @param {number} popupHeight - 팝업의 높이 (px)
+ * @returns {{left: string, top: string}} - 팝업의 left, top 스타일 값
+ */
+scwin.getCenteredPopupPosition = function (popupWidth, popupHeight) {
+    const scrollX = window.scrollX || document.documentElement.scrollLeft;
+    const scrollY = window.scrollY || document.documentElement.scrollTop;
+    const viewportWidth = window.innerWidth || document.documentElement.clientWidth;
+    const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
+
+    const left = scrollX + (viewportWidth - popupWidth) / 2;
+    const top = scrollY + (viewportHeight - popupHeight) / 2;
+
+    return { left: left + "px", top: top + "px" };
+};
+
 scwin.btn_new_onclick = function (e) {
     var popupData = {
         "type": "json",
         "name": "params",
         "data": {
             "pjtId": scwin.PJT_ID,
+            "userId": scwin.LOGIN_USER_ID,
             "popupType": "new"
         }
     };
 
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
     const popupWidth = 800;
     const popupHeight = 800;
-    const popupLeft = (screenWidth - popupWidth) / 2 + "px";
-    const popupTop = (screenHeight - popupHeight) / 2 + "px";
+    const centeredPosition = scwin.getCenteredPopupPosition(popupWidth, popupHeight);
 
     const options = {
         id: "wbs_new",
         type: "wframePopup",
         width: popupWidth + "px",
         height: popupHeight + "px",
-        top: popupTop,
-        left: popupLeft,
+        top: centeredPosition.top,
+        left: centeredPosition.left,
         popupName: "업무 생성",
         modal: true,
         closeAction: "scwin.popup_closeAction",
@@ -358,20 +425,17 @@ scwin.grd_list_oncelldblclick = function (rowIndex, columnIndex, columnId) {
         }
     };
 
-    const screenWidth = window.innerWidth;
-    const screenHeight = window.innerHeight;
     const popupWidth = 800;
     const popupHeight = 800;
-    const popupLeft = (screenWidth - popupWidth) / 2 + "px";
-    const popupTop = (screenHeight - popupHeight) / 2 + "px";
+    const centeredPosition = scwin.getCenteredPopupPosition(popupWidth, popupHeight);
 
     const options = {
         id: "wbs_detail",
         type: "wframePopup",
         width: popupWidth + "px",
         height: popupHeight + "px",
-        top: popupTop,
-        left: popupLeft,
+        top: centeredPosition.top,
+        left: centeredPosition.left,
         popupName: "업무 상세",
         modal: true,
         closeAction: "scwin.popup_closeAction",
@@ -384,7 +448,7 @@ scwin.grd_list_oncelldblclick = function (rowIndex, columnIndex, columnId) {
 // 삭제 버튼 클릭 이벤트
 scwin.btn_delete_onclick = function (e) {
     let chkArrIdx = grd_list.getCheckedIndex("chk");
-    dlt_wbsVoList.deleteRow(chkArrIdx);
+    dlt_wbsVoList.deleteRows(chkArrIdx);
 };
 
 // 저장 버튼 클릭 이벤트
@@ -444,6 +508,83 @@ scwin.sbm_saveWbsVoList_submitdone = function (e) {
 
 // 다운로드 버튼 이벤트
 scwin.btn_down_onclick = function (e) {
+    // 전체 건수 확인
+    var totalCount = spn_listCnt.getLabel();
+    console.log("전체 데이터 건수:", totalCount);
+
+    if (totalCount === "0") {
+        $c.win.alert("다운로드할 데이터가 없습니다.");
+        return;
+    }
+
+    // 현재 페이징 조건 백업
+    var originalPageIndex = dmp_wbsVo.get("pageIndex");
+    var originalPageSize = dmp_wbsVo.get("pageSize");
+
+    // 전체 데이터 조회를 위한 조건 설정
+    dmp_wbsVo.set("pageIndex", "1");
+    dmp_wbsVo.set("pageSize", totalCount); // 전체 건수만큼 설정
+
+    // 전체 데이터 조회 실행
+    $c.sbm.execute(sbm_selectWbsVoListForExcel);
+
+    // 원래 페이징 조건 복원
+    dmp_wbsVo.set("pageIndex", originalPageIndex);
+    dmp_wbsVo.set("pageSize", originalPageSize);
+};
+
+// 엑셀 다운로드용 전체 데이터 조회 완료 후 처리
+scwin.sbm_selectWbsVoListForExcel_submitdone = function (e) {
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+
+    if (elHeader == null || elHeader == "" || elHeader == "undefined" || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    }
+
+    // 전체 데이터가 없는 경우
+    if (!elData.wbsVoList || elData.wbsVoList.length === 0) {
+        $c.win.alert("다운로드할 데이터가 없습니다.");
+        return;
+    }
+
+    // 임시로 그리드에 전체 데이터 설정
+    var originalData = dlt_wbsVoList.getAllJSON();
+    // 데이터에 단계명 추가                                                                                                                                                             
+    var wbsDataForExcel = elData.wbsVoList.map(function (item) {
+        item.stgName = scwin.getStgNameByStgId(item.stgId);
+        return item;
+    });
+    dlt_wbsVoList.setJSON(wbsDataForExcel);
+
+    // 엑셀 다운로드 실행
+    var options = {
+        fileName: "WBS_목록_" + new Date().toISOString().slice(0, 10).replace(/-/g, ""),
+        useStyle: true,
+        headerFontBold: true,
+        bodyFontBold: false,
+        type: 1, // inputType이 "select", "autoComplete", 혹은 "checkcombobox"인 경우 >> label 값 다운
+        trim: 1,
+        removeColumns: "2,5,7,15,16,19",
+        processMsg: "엑셀 파일을 생성하고 있습니다...",
+        timeout: 60000,
+        checkInterval: 1000,
+        onSuccessCallback: function () {
+            $c.win.alert("엑셀 파일 다운로드가 완료되었습니다.");
+            // 원래 데이터로 복원
+            dlt_wbsVoList.setJSON(originalData);
+            scwin.btn_search_onclick();
+        },
+        onFailureCallback: function () {
+            $c.win.alert("엑셀 파일 다운로드에 실패했습니다.");
+            // 원래 데이터로 복원
+            dlt_wbsVoList.setJSON(originalData);
+            scwin.btn_search_onclick();
+        }
+    };
+
+    grd_list.advancedExcelDownload(options);
 
 };
 
@@ -511,8 +652,6 @@ scwin.getDelayStatusText = function (delayStatus) {
 scwin.setDelayStatusStyle = function () {
     const rowCount = dlt_wbsVoList.getRowCount();
     const colIndex = grd_list.getColumnIndex("isLazy");
-    
-    console.log("지연여부 스타일 적용 시작 - rowCount:", rowCount, "colIndex:", colIndex);
 
     if (colIndex === -1) {
         console.error("isLazy 컬럼을 찾을 수 없습니다.");
@@ -523,8 +662,6 @@ scwin.setDelayStatusStyle = function () {
         // 숫자형으로 확실히 변환
         const delayStatusCode = parseInt(dlt_wbsVoList.getCellData(i, "delayStatusCode"), 10);
         const isLazyText = dlt_wbsVoList.getCellData(i, "isLazy") || "";
-        
-        console.log(`Row ${i}: delayStatusCode=${delayStatusCode} (type: ${typeof delayStatusCode}), isLazyText=${isLazyText}`);
 
         let textColor = "#6c757d"; // 기본 색상
 
@@ -538,8 +675,6 @@ scwin.setDelayStatusStyle = function () {
         } else if (delayStatusCode === 2) {
             textColor = "#0c5460"; // 파란색 - 진행중
         }
-
-        console.log(`Row ${i}: applying color ${textColor} for status ${delayStatusCode}`);
 
         const styles = [
             { type: "cell", rowIndex: i, colIndex, styleName: "color", styleValue: textColor },
@@ -597,7 +732,7 @@ scwin.setTaskStatusStyle = function () {
 /**
  * 테스트여부 표시 텍스트 반환
  */
-scwin.getTestStatusDisplay = function(isTest) {
+scwin.getTestStatusDisplay = function (isTest) {
     if (isTest === "0") {
         return "●"; // 빨간색 원
     } else if (isTest === "1") {
@@ -746,11 +881,15 @@ scwin.setTestStatusStyle = function () {
 				style="">
 				<xf:group class="rt" id="" style="">
 					<xf:trigger class="btn_cm" id="btn_groupby" style="" type="button" ev:onclick="scwin.btn_groupby_onclick">
-						<xf:label><![CDATA[단계별(그룹)]]></xf:label>
+						<xf:label><![CDATA[단계별 보기]]></xf:label>
 					</xf:trigger>
-					<xf:trigger class="btn_cm" id="btn_clearGroupby" style="" type="button" ev:onclick="scwin.btn_clearGroupby_onclick">
-						<xf:label><![CDATA[그룹 초기화]]></xf:label>
+					<xf:trigger class="btn_cm" id="btn_groupby_taskStatus" style="" type="button" ev:onclick="scwin.groupByTaskStatus">
+						<xf:label><![CDATA[업무상태별 보기]]></xf:label>
 					</xf:trigger>
+					<xf:trigger class="btn_cm" id="btn_groupby_delayStatus" style="" type="button" ev:onclick="scwin.groupByDelayStatus">
+						<xf:label><![CDATA[지연여부별 보기]]></xf:label>
+					</xf:trigger>
+
 					<xf:trigger class="btn_cm row_add" id="btn_new" style="" type="button" ev:onclick="scwin.btn_new_onclick">
 						<xf:label><![CDATA[등록]]></xf:label>
 					</xf:trigger>
@@ -768,6 +907,9 @@ scwin.setTestStatusStyle = function () {
 					</xf:trigger>
 
 
+					<xf:trigger class="btn_cm" id="btn_clearGroupby" style="" type="button" ev:onclick="scwin.btn_clearGroupby_onclick">
+						<xf:label><![CDATA[초기화]]></xf:label>
+					</xf:trigger>
 				</xf:group>
 			</xf:group>
 			<xf:group adaptiveThreshold="" class="gvwbox" id="" style="">
@@ -849,7 +991,7 @@ scwin.setTestStatusStyle = function () {
 							<w2:column width="70" inputType="text" style="" id="taskId" value="" displayMode="label" embeddedInput="text"
 								readOnly="true">
 							</w2:column>
-							<w2:column width="70" inputType="drilldown" style="" id="taskName" value="" displayMode="label"
+							<w2:column width="70" inputType="drilldown" style=";text-align:left;" id="taskName" value="" displayMode="label"
 								embeddedInput="text" depthColumn="taskDepth" depthType="line" readOnly="true">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="taskDes" value="" displayMode="label"></w2:column>

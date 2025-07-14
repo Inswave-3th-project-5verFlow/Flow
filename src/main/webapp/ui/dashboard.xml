@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:ev="http://www.w3.org/2001/xml-events"
+    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
+    <head>
+        <w2:type>COMPONENT</w2:type>
+        <w2:buildDate/>
+        <w2:MSA/>
+        <xf:model>
+            <w2:dataCollection baseNode="map">
+                <w2:dataMap baseNode="map" id="dmp_projectSummary">
+                    <w2:keyInfo>
+                        <w2:key id="totalProjects" name="총 프로젝트 수" dataType="text"></w2:key>
+                        <w2:key id="totalTasks" name="총 업무 수" dataType="text"></w2:key>
+                        <w2:key id="totalIssues" name="총 이슈/리스크 수" dataType="text"></w2:key>
+                    </w2:keyInfo>
+                </w2:dataMap>
+                <w2:dataList baseNode="list" id="dlt_projectList" repeatNode="map" saveRemovedData="true" style="">
+                	<w2:columnInfo>
+                		<w2:column dataType="text" id="pjtId" name="프로젝트ID"></w2:column>
+                		<w2:column dataType="text" id="pjtName" name="프로젝트명"></w2:column>
+                		<w2:column dataType="text" id="pjtAsi" name="프로젝트관리자"></w2:column>
+                		<w2:column dataType="text" id="pjtStatus" name="프로젝트상태"></w2:column>
+                		<w2:column dataType="text" id="pjtDetail" name="상세설명"></w2:column>
+                		<w2:column dataType="text" id="createdAt" name="등록일자"></w2:column>
+                		<w2:column dataType="text" id="updatedAt" name="수정일자"></w2:column>
+                		<w2:column dataType="text" id="pjtSt" name="시작일"></w2:column>
+                		<w2:column dataType="text" id="pjtEt" name="완료일"></w2:column>
+                		<w2:column dataType="text" name="진척률" id="pjtProgress"></w2:column>
+                	</w2:columnInfo>
+                	<w2:data use="false">
+                	</w2:data>
+                </w2:dataList>
+                <w2:dataList baseNode="list" repeatNode="map" id="dlt_projectChartData">
+                    <w2:columnInfo>
+                        <w2:column id="label" name="라벨" dataType="text"></w2:column>
+                        <w2:column id="value" name="값" dataType="number"></w2:column>
+                    </w2:columnInfo>
+                </w2:dataList>
+                <w2:dataList baseNode="list" repeatNode="map" id="dlt_taskChartData">
+                    <w2:columnInfo>
+                        <w2:column id="label" name="라벨" dataType="text"></w2:column>
+                        <w2:column id="value" name="값" dataType="number"></w2:column>
+                    </w2:columnInfo>
+                </w2:dataList>
+                <w2:dataList baseNode="list" repeatNode="map" id="dlt_issueChartData">
+                    <w2:columnInfo>
+                        <w2:column id="label" name="라벨" dataType="text"></w2:column>
+                        <w2:column id="value" name="값" dataType="number"></w2:column>
+                    </w2:columnInfo>
+                </w2:dataList>
+            </w2:dataCollection>
+            <!-- 개별 서브미션 정의 -->
+            <xf:submission id="sbm_getDashboardSummary" ref="" target="data:json,{'id':'dmp_projectSummary','key':'elData'}" action="/InsWebApp/DashboardSummary.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace="" customHandler="" ev:submitdone="scwin.sbm_getDashboardSummary_submitdone" ev:submiterror="" mode="asynchronous"></xf:submission>
+            <xf:submission id="sbm_getProjectChartData" ref="" target="data:json,{'id':'dlt_projectChartData','key':'elData.chartVoList'}" action="/InsWebApp/ProjectStatusChart.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace="" customHandler="" ev:submitdone="scwin.sbm_getChartData_submitdone" ev:submiterror="" mode="asynchronous"></xf:submission>
+            <xf:submission id="sbm_getTaskChartData" ref="" target="data:json,{'id':'dlt_taskChartData','key':'elData.chartVoList'}" action="/InsWebApp/TaskStatusChart.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace="" customHandler="" ev:submitdone="scwin.sbm_getChartData_submitdone" ev:submiterror="" abortTrigger="true" mode="asynchronous"></xf:submission>
+            <xf:submission id="sbm_getIssueChartData" ref="" target="data:json,{'id':'dlt_issueChartData','key':'elData.chartVoList'}" action="/InsWebApp/IssueStatusChart.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace="" customHandler="" ev:submitdone="scwin.sbm_getChartData_submitdone" ev:submiterror="" mode="asynchronous"></xf:submission>
+        </xf:model>
+        <w2:layoutInfo/>
+        <w2:publicInfo method=""/>
+        <script lazy="false" type="text/javascript"><![CDATA[scwin.USER_ID = "";
+
+
+scwin.onpageload = function () {
+    scwin.USER_ID = "1";
+    let reqObj = {
+        "elData": { "userId": scwin.USER_ID }
+    };
+    // 각 대시보드 데이터 로드
+    $c.sbm.execute(sbm_getDashboardSummary, reqObj);
+    $c.sbm.execute(sbm_getProjectChartData, reqObj);
+    $c.sbm.execute(sbm_getTaskChartData, reqObj);
+    $c.sbm.execute(sbm_getIssueChartData, reqObj);
+
+};
+
+/**
+ * 대시보드 요약 데이터 로드 성공 시 처리
+ * @param {Object} e - submission 이벤트 객체
+ */
+scwin.sbm_getDashboardSummary_submitdone = function (e) {
+    scwin.checkAllDataLoaded();
+};
+
+/**
+ * 차트 데이터 로드 성공 시 처리
+ * @param {Object} e - submission 이벤트 객체
+ */
+scwin.sbm_getChartData_submitdone = function (e) {
+    scwin.checkAllDataLoaded();
+};
+
+// 모든 데이터 로드 여부를 추적하기 위한 변수
+scwin.loadedCount = 0;
+scwin.totalSubmissions = 4; // 요약 + 3개 차트 데이터
+
+/**
+ * 모든 데이터 로드가 완료되었는지 확인하고 차트를 초기화하는 함수
+ */
+scwin.checkAllDataLoaded = function () {
+    scwin.loadedCount++;
+    if (scwin.loadedCount === scwin.totalSubmissions) {
+        // 모든 데이터 로드가 완료되면 차트 초기화 및 렌더링
+        scwin.initFusionChart(projectPieChart, "프로젝트 현황", { "showPercentValues": "1" });
+        scwin.initFusionChart(taskPieChart, "업무 단계별 현황", { "yAxisName": "업무 수" });
+        scwin.initFusionChart(issuePieChart, "이슈/리스크 현황", { "yAxisName": "이슈 수" });
+    }
+};
+
+/**
+ * 퓨전차트 초기화 및 렌더링 함수
+ * @param {Object} chartObj - 퓨전차트 컴포넌트 객체
+ * @param {string} captionText - 차트 제목
+ * @param {Object} customAttrs - 차트별 커스텀 속성
+ */
+scwin.initFusionChart = function (chartObj, captionText, customAttrs) {
+    let baseAttrs = {
+        "caption": captionText,
+        "captionFontSize": "16",
+        "captionFontBold": "0",
+        "captionPadding": "20",
+        "baseFont": "Noto Sans KR, sans-serif",
+        "baseFontSize": "14",
+        "showValues": "1",
+        "decimals": "0",
+        "theme": "fusion",
+        "palettecolors": "#0d6efd,#198754,#dc3545,#ffc107,#0dcaf0,#6c757d"
+    };
+
+    let finalAttrs = { ...baseAttrs, ...customAttrs };
+
+    chartObj.setChartAttribute(finalAttrs);
+    chartObj.draw();
+};
+]]></script>
+    </head>
+    <body ev:onpageload="scwin.onpageload" style="background-color:#f0f2f5;">
+        <xf:group style="padding: 24px; display: flex; flex-direction: column; gap: 24px;">
+            <w2:textbox style="font-size: 28px; font-weight: bold; color: #333;" label="대시보드"></w2:textbox>
+
+            <!-- 상단 요약 정보 -->
+            <xf:group style="display: flex; justify-content: space-around; gap: 24px;">
+                <xf:group style="flex: 1; padding: 20px; border-radius: 12px; background-color: #ffffff; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+                    <w2:textbox style="font-size: 16px; color: #666; margin-bottom: 12px;" label="총 프로젝트"></w2:textbox>
+                    <w2:textbox style="font-size: 38px; font-weight: bold; color: #0d6efd;" ref="data:dmp_projectSummary.totalProjects"></w2:textbox>
+                </xf:group>
+                <xf:group style="flex: 1; padding: 20px; border-radius: 12px; background-color: #ffffff; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+                    <w2:textbox style="font-size: 16px; color: #666; margin-bottom: 12px;" label="총 업무"></w2:textbox>
+                    <w2:textbox style="font-size: 38px; font-weight: bold; color: #198754;" ref="data:dmp_projectSummary.totalTasks"></w2:textbox>
+                </xf:group>
+                <xf:group style="flex: 1; padding: 20px; border-radius: 12px; background-color: #ffffff; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+                    <w2:textbox style="font-size: 16px; color: #666; margin-bottom: 12px;" label="총 이슈/리스크"></w2:textbox>
+                    <w2:textbox style="font-size: 38px; font-weight: bold; color: #dc3545;" ref="data:dmp_projectSummary.totalIssues"></w2:textbox>
+                </xf:group>
+            </xf:group>
+
+            <!-- 차트 영역 (가로 배치) -->
+            <xf:group style="display: flex; gap: 24px;">
+                <xf:group style="flex: 1; padding: 20px; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+                    <w2:fusionchart chartType="Doughnut2D" id="projectPieChart" ref="data:dlt_projectChartData" style="width: 100%; height: 250px;" drawType="javascript"/>
+                </xf:group>
+                <xf:group style="flex: 1; padding: 20px; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+                    <w2:fusionchart chartType="Bar2D" id="taskPieChart" ref="data:dlt_taskChartData" style="width: 100%; height: 250px;" drawType="javascript"/>
+                </xf:group>
+                <xf:group style="flex: 1; padding: 20px; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+                    <w2:fusionchart chartType="Column2D" id="issuePieChart" ref="data:dlt_issueChartData" style="width: 100%; height: 250px;" drawType="javascript"/>
+                </xf:group>
+            </xf:group>
+
+            <!-- 프로젝트 목록 (pageFrame) -->
+            <xf:group style="flex: 1; padding: 20px; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
+                <w2:pageFrame id="pjtListFrame" src="pjt/PjtList.xml" style="width: 100%; height: 400px;"></w2:pageFrame>
+            </xf:group>
+        </xf:group>
+    </body>
+</html>
