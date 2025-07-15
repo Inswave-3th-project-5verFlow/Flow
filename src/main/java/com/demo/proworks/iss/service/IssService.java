@@ -1,7 +1,12 @@
 package com.demo.proworks.iss.service;
 
+import java.io.File;
 import java.util.List;
 
+import org.springframework.web.multipart.MultipartFile;
+
+import com.amazonaws.services.s3.model.S3Object;
+import com.demo.proworks.att.vo.AttVo;
 import com.demo.proworks.iss.vo.IssVo;
 
 /**  
@@ -19,57 +24,80 @@ import com.demo.proworks.iss.vo.IssVo;
 public interface IssService {
 	
     /**
-     * 이슈리스크관리 페이징 처리하여 목록을 조회한다.
+     * 이슈리스크관리 상세 조회한다.
      *
-     * @param  issVo 이슈리스크관리 IssVo
-     * @return 이슈리스크관리 목록 List<IssVo>
+     * @param  vo 이슈리스크관리
+     * @return 이슈리스크관리
      * @throws Exception
      */
-	public List<IssVo> selectListIss(IssVo issVo) throws Exception;
-	
+    public IssVo selectIss(IssVo vo) throws Exception;
+    
     /**
-     * 조회한 이슈리스크관리 전체 카운트
-     * 
-     * @param  issVo 이슈리스크관리 IssVo
-     * @return 이슈리스크관리 목록 전체 카운트
-     * @throws Exception
-     */
-	public long selectListCountIss(IssVo issVo) throws Exception;
-	
-    /**
-     * 이슈리스크관리를 상세 조회한다.
+     * 페이징을 처리하여 이슈리스크관리 목록조회를 한다.
      *
-     * @param  issVo 이슈리스크관리 IssVo
-     * @return 단건 조회 결과
+     * @param  vo 이슈리스크관리
+     * @return 이슈리스크관리 목록
      * @throws Exception
      */
-	public IssVo selectIss(IssVo issVo) throws Exception;
-		
+    public List<IssVo> selectListIss(IssVo vo) throws Exception;
+    
     /**
-     * 이슈리스크관리를 등록 처리 한다.
+     * 이슈리스크관리 목록 조회의 전체 카운트를 조회한다.
      *
-     * @param  issVo 이슈리스크관리 IssVo
-     * @return 번호
+     * @param  vo 이슈리스크관리
+     * @return 전체 카운트
      * @throws Exception
      */
-	public int insertIss(IssVo issVo) throws Exception;
-	
+    public long selectListCountIss(IssVo vo) throws Exception;
+    
     /**
-     * 이슈리스크관리를 갱신 처리 한다.
+     * 이슈리스크관리를 등록한다.
      *
-     * @param  issVo 이슈리스크관리 IssVo
-     * @return 번호
+     * @param  vo 이슈리스크관리
      * @throws Exception
      */
-	public int updateIss(IssVo issVo) throws Exception;
-	
+    public void insertIss(IssVo vo) throws Exception;
+    
     /**
-     * 이슈리스크관리를 삭제 처리 한다.
+     * 이슈리스크관리를 갱신한다.
      *
-     * @param  issVo 이슈리스크관리 IssVo
-     * @return 번호
+     * @param  vo 이슈리스크관리
      * @throws Exception
      */
-	public int deleteIss(IssVo issVo) throws Exception;
+    public void updateIss(IssVo vo) throws Exception;
+    
+    /**
+     * 이슈리스크관리를 삭제한다.
+     *
+     * @param  vo 이슈리스크관리
+     * @throws Exception
+     */
+    public void deleteIss(IssVo vo) throws Exception;
+    
+    /**
+     * 이슈와 파일을 함께 등록한다. (트랜잭션)
+     * 이슈 등록과 파일 업로드가 모두 성공해야 커밋되며,
+     * 하나라도 실패하면 전체가 롤백된다.
+     *
+     * @param  issVo 이슈리스크 정보
+     * @param  files 업로드할 파일 배열 (null 가능)
+     * @return 등록된 이슈 정보 (생성된 ID 포함)
+     * @throws Exception 등록 실패 시
+     */
+    public IssVo insertIssWithFiles(IssVo issVo, MultipartFile[] files) throws Exception;
+    
+    /**
+     * 이슈와 파일을 함께 수정한다. (트랜잭션)
+     * 이슈 수정과 새 파일 업로드가 모두 성공해야 커밋되며,
+     * 하나라도 실패하면 전체가 롤백된다.
+     *
+     * @param  issVo 이슈리스크 정보 (ID 필수)
+     * @param  files 새로 업로드할 파일 배열 (null 가능)
+     * @return 수정된 이슈 정보
+     * @throws Exception 수정 실패 시
+     */
+    public IssVo updateIssWithFiles(IssVo issVo, MultipartFile[] files) throws Exception;
+
+	public void insertIssWithStoredFiles(IssVo issVo, List<File> fileList, List<String> orgNameList);
 	
 }

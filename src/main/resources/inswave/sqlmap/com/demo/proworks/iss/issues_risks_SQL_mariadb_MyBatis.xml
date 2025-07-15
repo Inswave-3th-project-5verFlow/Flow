@@ -15,38 +15,39 @@
 	2025/07/07              우민지             최초 생성
  -->
 <mapper namespace="com.demo.proworks.iss">
-    <insert id="insertIss" parameterType="com.demo.proworks.iss.vo.IssVo">
-    	<!-- 이슈리스크관리를 등록한다. -->	
-    		
-        INSERT INTO ISSUES_RISKS   /* QueryID : com.demo.proworks.iss.insertIss */
-        ( 
-            <if test="pjtId       != null"> PJT_ID        </if>
-            <if test="name         != null"> , NAME          </if>
-            <if test="userId      != null"> , USER_ID       </if>
-            <if test="dueDate     != null"> , DUE_DATE      </if>
-            <if test="status       != null"> , STATUS        </if>
-            <if test="priority     != null"> , PRIORITY      </if>
-            <if test="description  != null"> , DESCRIPTION   </if>
-            <if test="createdAt   != null"> , CREATED_AT    </if>
-            <if test="resolvedDate!= null"> , RESOLVED_DATE </if>
-            <if test="responsePlan!= null"> , RESPONSE_PLAN </if>
-            <if test="isDeleted   != null"> , IS_DELETED    </if>
-        )
-        VALUES  
-        ( 
-            <if test="pjtId       != null">  #{pjtId}        </if>
-            <if test="name         != null"> , #{name}          </if>
-            <if test="userId      != null"> , #{userId}       </if>
-            <if test="dueDate     != null"> , #{dueDate}      </if>
-            <if test="status       != null"> , #{status}        </if>
-            <if test="priority     != null"> , #{priority}      </if>
-            <if test="description  != null"> , #{description}   </if>
-            <!-- <if test="createdAt   != null"> , #{createdAt}    </if> -->
-            , NOW()
-            <if test="resolvedDate!= null"> , #{resolvedDate} </if>
-            <if test="responsePlan!= null"> , #{responsePlan} </if>
- 			,0 
-        )          
+    <insert id="insertIss" parameterType="com.demo.proworks.iss.vo.IssVo" useGeneratedKeys="true" keyProperty="id" keyColumn="id"> 
+    	INSERT INTO issues_risks   /* QueryID : com.demo.proworks.iss.insertIss */
+	    ( 
+	        <if test="pjtId != null and pjtId != ''"> PJT_ID </if>
+	        <if test="name != null and name != ''"> , NAME </if>
+	        <if test="userId != null and userId != ''"> , USER_ID </if>
+	        <if test="dueDate != null and dueDate != ''"> , DUE_DATE </if>
+	        <if test="status != null and status != ''"> , STATUS </if>
+	        <if test="priority != null and priority != ''"> , PRIORITY </if>
+	        <if test="description != null and description != ''"> , DESCRIPTION </if>
+	        <if test="createdAt != null and createdAt != ''"> , CREATED_AT </if>
+	        <if test="updatedAt != null and updatedAt != ''"> , UPDATED_AT </if>
+	        <!-- resolvedDate는 빈 문자열일 때 제외 -->
+	        <if test="resolvedDate != null and resolvedDate != ''"> , RESOLVED_DATE </if>
+	        <if test="responsePlan != null and responsePlan != ''"> , RESPONSE_PLAN </if>
+	        <if test="isDeleted != null and isDeleted != ''"> , IS_DELETED </if>
+	    )
+	    VALUES  
+	    ( 
+	        <if test="pjtId != null and pjtId != ''"> #{pjtId} </if>
+	        <if test="name != null and name != ''"> , #{name} </if>
+	        <if test="userId != null and userId != ''"> , #{userId} </if>
+	        <if test="dueDate != null and dueDate != ''"> , #{dueDate} </if>
+	        <if test="status != null and status != ''"> , #{status} </if>
+	        <if test="priority != null and priority != ''"> , #{priority} </if>
+	        <if test="description != null and description != ''"> , #{description} </if>
+	        <if test="createdAt != null and createdAt != ''"> , #{createdAt} </if>
+	        <if test="updatedAt != null and updatedAt != ''"> , #{updatedAt} </if>
+	        <!-- resolvedDate는 빈 문자열일 때 제외 -->
+	        <if test="resolvedDate != null and resolvedDate != ''"> , #{resolvedDate} </if>
+	        <if test="responsePlan != null and responsePlan != ''"> , #{responsePlan} </if>
+	        <if test="isDeleted != null and isDeleted != ''"> , #{isDeleted} </if>
+	    )             
     </insert>	
 	
     <update id="updateIss" parameterType="com.demo.proworks.iss.vo.IssVo">
