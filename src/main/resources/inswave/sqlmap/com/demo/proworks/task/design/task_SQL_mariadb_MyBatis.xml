@@ -16,70 +16,84 @@
  -->
 <mapper namespace="com.demo.proworks.task.design">
     <insert id="insertDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo">
-   <!-- 설계 업무 정보를 등록한다. -->
-	INSERT INTO TASK /* QueryID : com.demo.proworks.task.design.insertDesign */
-	<trim prefix="(" suffix=")" suffixOverrides=",">
-	    <if test="taskName != null"> TASK_NAME, </if>
-	    <if test="taskDes != null"> TASK_DES, </if>
-	    <if test="taskStatus != null"> TASK_STATUS, </if>
-	    <if test="isTest != null"> IS_TEST, </if>
-	    <if test="taskDepth != null"> TASK_DEPTH, </if>
-	    <if test="stgId != null"> STG_ID, </if>
-	    <if test="ptTaskId != null"> PT_TASK_ID, </if>
-	    <if test="taskSeq != null"> TASK_SEQ, </if>
-	    <!-- 날짜 필드는 빈 문자열도 제외 -->
-	    <if test="taskSt != null and taskSt != ''"> TASK_ST, </if>
-	    <if test="taskEt != null and taskEt != ''"> TASK_ET, </if>
-	    <if test="taskRst != null and taskRst != ''"> TASK_RST, </if>
-	    <if test="taskRet != null and taskRet != ''"> TASK_RET, </if>
-	    <if test="taskAsi != null"> TASK_ASI, </if>
-	    <if test="taskRate != null"> TASK_RATE, </if>
-	    <if test="pjtId != null"> PJT_ID, </if>
-	</trim>
-	VALUES
-	<trim prefix="(" suffix=")" suffixOverrides=",">
-	    <if test="taskName != null"> #{taskName}, </if>
-	    <if test="taskDes != null"> #{taskDes}, </if>
-	    <if test="taskStatus != null"> #{taskStatus}, </if>
-	    <if test="isTest != null"> #{isTest}, </if>
-	    <if test="taskDepth != null"> #{taskDepth}, </if>
-	    <if test="stgId != null"> #{stgId}, </if>
-	    <if test="ptTaskId != null"> #{ptTaskId}, </if>
-	    <if test="taskSeq != null"> #{taskSeq}, </if>
-	    <!-- 날짜 필드는 빈 문자열도 제외 -->
-	    <if test="taskSt != null and taskSt != ''"> #{taskSt}, </if>
-	    <if test="taskEt != null and taskEt != ''"> #{taskEt}, </if>
-	    <if test="taskRst != null and taskRst != ''"> #{taskRst}, </if>
-	    <if test="taskRet != null and taskRet != ''"> #{taskRet}, </if>
-	    <if test="taskAsi != null"> #{taskAsi}, </if>
-	    <if test="taskRate != null"> #{taskRate}, </if>
-	    <if test="pjtId != null"> #{pjtId}, </if>
-	</trim>
+ <!-- 설계 업무 정보를 등록한다. -->
+<!-- 설계 업무 정보를 등록한다. -->
+INSERT INTO TASK /* QueryID : com.demo.proworks.task.design.insertDesign */
+(
+    TASK_NAME,
+    TASK_DES,
+    TASK_STATUS,
+    IS_TEST,
+    TASK_DEPTH,
+    STG_ID,
+    PT_TASK_ID,
+    PT_TASK_NAME, <!-- 엑셀 업로드를 위한 상위업무명 추가 -->
+    TASK_SEQ,
+    TASK_ST,
+    TASK_ET,
+    TASK_RST,
+    TASK_RET,
+    TASK_ASI,
+    TASK_RATE,
+    PJT_ID
+)
+VALUES
+(
+    #{taskName},                                      <!-- 필수 필드 -->
+    COALESCE(NULLIF(#{taskDes}, ''), ''),            <!-- 빈값이면 빈문자열 -->
+    COALESCE(NULLIF(#{taskStatus}, ''), '대기'),      <!-- 빈값이면 '대기' -->
+    COALESCE(NULLIF(#{isTest}, ''), 0),              <!-- 빈값이면 0 -->
+    COALESCE(NULLIF(#{taskDepth}, ''), 1),           <!-- 빈값이면 1 -->
+    COALESCE(NULLIF(#{stgId}, ''), 0),               <!-- 빈값이면 0 -->
+    COALESCE(NULLIF(#{ptTaskId}, ''), 0),            <!-- 빈값이면 0 -->
+    COALESCE(NULLIF(#{ptTaskName}, ''), ''),		 <!-- 엑셀 업로드를 위한 상위업무명 추가 -->
+    COALESCE(NULLIF(#{taskSeq}, ''), 1),             <!-- 빈값이면 1 -->
+    COALESCE(NULLIF(#{taskSt}, ''), null),             <!-- 빈값이면 빈문자열 -->
+    COALESCE(NULLIF(#{taskEt}, ''), null),             <!-- 빈값이면 빈문자열 -->
+    COALESCE(NULLIF(#{taskRst}, ''), null),            <!-- 빈값이면 빈문자열 -->
+    COALESCE(NULLIF(#{taskRet}, ''), null),            <!-- 빈값이면 빈문자열 -->
+    COALESCE(NULLIF(#{taskAsi}, ''), ''),            <!-- 빈값이면 빈문자열 (나중에 기본값 설정 예정) -->
+    COALESCE(NULLIF(#{taskRate}, ''), 0),            <!-- 빈값이면 0 -->
+    COALESCE(NULLIF(#{pjtId}, ''), 1)                <!-- 빈값이면 1 (나중에 기본값 설정 예정) -->
+)
 </insert>
 	
     <update id="updateDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo">
     	<!-- 설계 업무 정보를 갱신한다. -->
     	
-        UPDATE TASK    /* QueryID : com.demo.proworks.task.design.updateDesign */      
-      	  SET  
-                TASK_ID     = #{taskId}            	                       
-            <if test="taskName  != null"> , TASK_NAME   = #{taskName}   </if>
-            <if test="taskDes   != null"> , TASK_DES    = #{taskDes}    </if>
-            <if test="taskStatus!= null"> , TASK_STATUS = #{taskStatus} </if>
-            <if test="isTest    != null"> , IS_TEST     = #{isTest}     </if>
-            <if test="taskDepth != null"> , TASK_DEPTH  = #{taskDepth}  </if>
-            <if test="stgId     != null"> , STG_ID      = #{stgId}      </if>
-            <if test="ptTaskId != null"> , PT_TASK_ID  = #{ptTaskId}  </if>
-            <if test="taskSeq   != null"> , TASK_SEQ    = #{taskSeq}    </if>
-            <if test="taskSt    != null"> , TASK_ST     = #{taskSt}     </if>
-            <if test="taskEt    != null"> , TASK_ET     = #{taskEt}     </if>
-            <if test="taskRst   != null"> , TASK_RST    = #{taskRst}    </if>
-            <if test="taskRet   != null"> , TASK_RET    = #{taskRet}    </if>
-            <if test="taskAsi   != null"> , TASK_ASI    = #{taskAsi}    </if>
-            <if test="taskRate  != null"> , TASK_RATE   = #{taskRate}   </if>
-            <if test="pjtId     != null"> , PJT_ID      = #{pjtId}      </if>                 
-        WHERE   
-                TASK_ID     = #{taskId}    
+    <!-- 설계 업무 정보를 갱신한다. -->
+	UPDATE TASK /* QueryID : com.demo.proworks.task.design.updateDesign */
+	SET
+	    TASK_NAME = COALESCE(NULLIF(#{taskName}, ''), TASK_NAME),     <!-- null이면 기존값 유지 -->
+	    TASK_DES = COALESCE(NULLIF(#{taskDes}, ''), TASK_DES),       <!-- null이면 기존값 유지 -->
+	    TASK_STATUS = COALESCE(NULLIF(#{taskStatus}, ''), TASK_STATUS), <!-- null이면 기존값 유지 -->
+	    IS_TEST = COALESCE(NULLIF(#{isTest}, ''), IS_TEST),          <!-- null이면 기존값 유지 -->
+	    TASK_DEPTH = COALESCE(NULLIF(#{taskDepth}, ''), TASK_DEPTH), <!-- null이면 기존값 유지 -->
+	    STG_ID = COALESCE(NULLIF(#{stgId}, ''), STG_ID),             <!-- null이면 기존값 유지 -->
+	    PT_TASK_ID = COALESCE(NULLIF(#{ptTaskId}, ''), PT_TASK_ID),  <!-- null이면 기존값 유지 -->
+	    PT_TASK_NAME = COALESCE(NULLIF(#{ptTaskName}, ''), PT_TASK_NAME), <!-- null이면 기존값 유지 -->
+	    TASK_SEQ = COALESCE(NULLIF(#{taskSeq}, ''), TASK_SEQ),       <!-- null이면 기존값 유지 -->
+	    TASK_ST = CASE 
+	        WHEN #{taskSt} IS NULL OR #{taskSt} = '' THEN NULL
+	        ELSE #{taskSt}
+	    END,  <!-- DATE 타입: 빈값이면 NULL -->
+	    TASK_ET = CASE 
+	        WHEN #{taskEt} IS NULL OR #{taskEt} = '' THEN NULL
+	        ELSE #{taskEt}
+	    END,  <!-- DATE 타입: 빈값이면 NULL -->
+	    TASK_RST = CASE 
+	        WHEN #{taskRst} IS NULL OR #{taskRst} = '' THEN NULL
+	        ELSE #{taskRst}
+	    END, <!-- DATE 타입: 빈값이면 NULL -->
+	    TASK_RET = CASE 
+	        WHEN #{taskRet} IS NULL OR #{taskRet} = '' THEN NULL
+	        ELSE #{taskRet}
+	    END, <!-- DATE 타입: 빈값이면 NULL -->
+	    TASK_ASI = COALESCE(NULLIF(#{taskAsi}, ''), TASK_ASI),       <!-- null이면 기존값 유지 -->
+	    TASK_RATE = COALESCE(NULLIF(#{taskRate}, ''), TASK_RATE),    <!-- null이면 기존값 유지 -->
+	    PJT_ID = COALESCE(NULLIF(#{pjtId}, ''), PJT_ID)              <!-- null이면 기존값 유지 -->
+	WHERE
+    TASK_ID = #{taskId}
     </update>
 	
     <delete id="deleteDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo">
@@ -87,7 +101,8 @@
     	
         DELETE FROM TASK   /* QueryID : com.demo.proworks.task.design.deleteDesign */ 
         WHERE   
-                TASK_ID     = #{taskId}            
+                TASK_ID     = #{taskId}    
+        
     </delete>
 	
     <select id="selectDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
@@ -109,12 +124,14 @@
 		    t.TASK_ASI as taskAsi, 
 		    t.TASK_RATE as taskRate, 
 		    t.PJT_ID as pjtId,
-	    	pt.TASK_NAME as ptTaskName,  -- 상위 업무명 추가
+	    	<!-- pt.TASK_NAME as ptTaskName, -->
+	    	COALESCE(pt.TASK_NAME, t.PT_TASK_NAME) as ptTaskName, <!--  엑셀 업로드를 위해서 추가.. -->
 	    	s.STG_NAME as stgName -- 단계명
 		FROM TASK t
 		LEFT JOIN TASK pt ON t.PT_TASK_ID = pt.TASK_ID  -- 상위 업무와 조인
 		LEFT JOIN STG s ON t.STG_ID = s.STG_ID -- 단계와 조인
-		WHERE t.TASK_ID = #{taskId}			
+		WHERE t.TASK_ID = #{taskId}
+			
     </select>
 	
 <select id="selectListDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
@@ -141,7 +158,8 @@
 		            t.TASK_ASI as taskAsi, 
 		            t.TASK_RATE as taskRate, 
 		            t.PJT_ID as pjtId,
-		            pt.TASK_NAME as ptTaskName,
+		            <!-- pt.TASK_NAME as ptTaskName, -->
+		            COALESCE(pt.TASK_NAME, t.PT_TASK_NAME) as ptTaskName, <!--  엑셀 업로드를 위해서 추가.. -->
 		            s.STG_NAME as stgName
 		        FROM TASK t
 		        LEFT JOIN TASK pt ON t.PT_TASK_ID = pt.TASK_ID

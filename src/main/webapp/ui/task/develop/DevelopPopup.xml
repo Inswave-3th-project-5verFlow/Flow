@@ -337,19 +337,16 @@ scwin.btn_cancel_onclick = function (e) {
     							<w2:textbox label="상위업무명" style="color:#333;" />
     						</xf:group>
     						<xf:group class="w2tb_td" tagname="td">
+                                <w2:attributes>
+									<w2:colspan>3</w2:colspan>
+								</w2:attributes>
     							<xf:group style="display:flex; align-items:center;">
-    								<xf:input style="width:140px;" ref="data:dmp_taskDetail.ptTaskName" readOnly="true" />
+    								<xf:input style="width:420px;" ref="data:dmp_taskDetail.ptTaskName" readOnly="true" />
     								<xf:trigger class="btn_cm" id="btn_ptTaskName" style="margin-left:5px; padding:2px 8px;" type="button"
     									ev:onclick="scwin.btn_ptTaskName_onclick">
     									<xf:label>선택</xf:label>
     								</xf:trigger>
     							</xf:group>
-    						</xf:group>
-    						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
-    							<w2:textbox label="순서" style="color:#333;" />
-    						</xf:group>
-    						<xf:group class="w2tb_td" tagname="td">
-    							<xf:input style="width:140px;" ref="data:dmp_taskDetail.taskSeq" />
     						</xf:group>
     					</xf:group>
 
