@@ -121,17 +121,23 @@
    	<!-- 사용자정보, 프로젝트ID, 그룹ID 매핑한다. -->	
 
       <select id="selectUsersMapping" parameterType="com.demo.proworks.users.vo.UsersVo" resultType="com.demo.proworks.users.vo.UsersVo">
-		   	SELECT     /* QueryID : com.demo.proworks.users.selectUsersMapping */
-				U.USER_ID AS userId, P.PJT_ID AS pjtId, P.PJT_NAME AS pjtName, PUG.GRP_ID as grpId
+			SELECT    /* QueryID : com.demo.proworks.users.selectUsersMapping */
+				U.USER_ID AS userId,
+				U.NAME AS name,
+				P.PJT_ID AS pjtId,
+				P.PJT_NAME AS pjtName,
+				PUG.GRP_ID AS grpId,
+				G.GRP_NAME AS grpName
 			FROM USERS U
 			JOIN PROJECT_USER_GROUP PUG
 				ON U.USER_ID = PUG.USER_ID
 			JOIN PJT P
 				ON PUG.PJT_ID = P.PJT_ID
-			WHERE 
-					U.ACCOUNT_ID     = #{accountId}
-			GROUP BY U.USER_ID
-			ORDER BY userId, pjtId, grpId  
+			JOIN GROUPS G
+				ON PUG.GRP_ID = G.GRP_ID
+			WHERE 1 = 1
+				AND U.USER_ID = #{userId}
+			ORDER BY userId, pjtId, grpId
 		
   	   </select>
 

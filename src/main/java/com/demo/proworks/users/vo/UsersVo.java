@@ -58,6 +58,9 @@ public class UsersVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElDtoField(logicalName = "grp_id", physicalName = "grpId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String grpId;
 
+    @ElDtoField(logicalName = "grp_name", physicalName = "grpName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String grpName;
+
     @ElVoField(physicalName = "userId")
     public String getUserId(){
         String ret = this.userId;
@@ -223,6 +226,17 @@ public class UsersVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.grpId = grpId;
     }
 
+    @ElVoField(physicalName = "grpName")
+    public String getGrpName(){
+        String ret = this.grpName;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "grpName")
+    public void setGrpName(String grpName){
+        this.grpName = grpName;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -241,7 +255,8 @@ public class UsersVo extends com.demo.proworks.cmmn.ProworksCommVO {
         sb.append("scName").append("=").append(scName).append(",");
         sb.append("pjtId").append("=").append(pjtId).append(",");
         sb.append("pjtName").append("=").append(pjtName).append(",");
-        sb.append("grpId").append("=").append(grpId);
+        sb.append("grpId").append("=").append(grpId).append(",");
+        sb.append("grpName").append("=").append(grpName);
         sb.append("]");
         return sb.toString();
 

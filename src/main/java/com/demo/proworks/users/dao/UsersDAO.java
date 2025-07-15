@@ -96,11 +96,8 @@ public class UsersDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstract
      * @return UsersVo 사용자정보
      * @throws ElException
      */
-    public UsersVo selectUsersMapping(UsersVo vo) throws ElException {
-        return (UsersVo) selectByPk("com.demo.proworks.users.selectUsersMapping", vo);
+    public List<UsersVo> selectUsersMapping(UsersVo vo) throws ElException {
+        return (List<UsersVo>)list("com.demo.proworks.users.selectUsersMapping", vo);
     }
-    
-    
-    
 
 }

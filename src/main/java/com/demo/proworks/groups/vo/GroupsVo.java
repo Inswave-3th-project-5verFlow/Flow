@@ -13,8 +13,8 @@ public class GroupsVo extends com.demo.proworks.cmmn.ProworksCommVO {
     public GroupsVo(){
     }
 
-    @ElDtoField(logicalName = "grp_id", physicalName = "grpId", type = "int", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private int grpId;
+    @ElDtoField(logicalName = "grp_id", physicalName = "grpId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String grpId;
 
     @ElDtoField(logicalName = "grp_name", physicalName = "grpName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String grpName;
@@ -26,12 +26,13 @@ public class GroupsVo extends com.demo.proworks.cmmn.ProworksCommVO {
     private String rowStatus;
 
     @ElVoField(physicalName = "grpId")
-    public int getGrpId(){
-        return grpId;
+    public String getGrpId(){
+        String ret = this.grpId;
+        return ret;
     }
 
     @ElVoField(physicalName = "grpId")
-    public void setGrpId(int grpId){
+    public void setGrpId(String grpId){
         this.grpId = grpId;
     }
 

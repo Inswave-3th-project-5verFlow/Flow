@@ -47,8 +47,8 @@ public class UsersController {
 	 * @param request 요청 정보 HttpServletRequest
 	 * @throws Exception
 	 */
-	@ElService(key = "CmmLogin")
-    @RequestMapping(value = "CmmLogin")
+	@ElService(key = "Login")
+    @RequestMapping(value = "Login")
     @ElDescription(sub = "로그인", desc = "로그인을 처리한다.")
     public void login(com.demo.proworks.emp.vo.LoginVo loginVo, HttpServletRequest request) throws Exception {
     	String id = loginVo.getId();
@@ -64,8 +64,8 @@ public class UsersController {
 	 * @param request 요청 정보 HttpServletRequest
 	 * @throws Exception
 	 */
-	@ElService(key = "CmmLoginFrm")    
-    @RequestMapping(value = "CmmLoginFrm")   
+	@ElService(key = "LoginFrm")    
+    @RequestMapping(value = "LoginFrm")   
     @ElDescription(sub = "로그인 폼 페이지 로드", desc = "로그인 폼 페이지를 로드한다.")           
     public void loginFrm(com.demo.proworks.emp.vo.LoginVo loginVo, HttpServletRequest request) throws Exception {    
 		String id = loginVo.getId();
@@ -158,20 +158,26 @@ public class UsersController {
      * 사용자정보, 프로젝트ID, 그룹ID 매핑한다.
      *
      * @param  usersVo 사용자정보
-     * @return 단건 조회 결과
+     * @return 목록조회 결과
      * @throws Exception
      */
-    @ElService(key = "USERS0001UpdViewMapping")    
-    @RequestMapping(value = "USERS0001UpdViewMapping") 
-    @ElDescription(sub = "사용자정보 갱신 폼을 위한 조회", desc = "사용자정보 갱신 폼을 위한 조회를 한다.")    
-    public UsersVo selectUsersMapping(UsersVo usersVo) throws Exception {
-    	UsersVo selectUsersMappingVo = usersService.selectUsersMapping(usersVo);    	    
-		
-        return selectUsersMappingVo;
-    }
-    
-    
-    
+    @ElService(key = "USERS0001ListMapping")
+    @RequestMapping(value = "USERS0001ListMapping")    
+    @ElDescription(sub = "사용자정보, 프로젝트ID, 그룹ID 매핑", desc = "사용자정보, 프로젝트ID, 그룹ID 매핑한다.")               
+    public UsersListVo selectUsersMapping(UsersVo usersVo) throws Exception {    	   	
+        List<UsersVo> usersListMapping = usersService.selectUsersMapping(usersVo);                  
+
+        long totCnt = usersService.selectListCountUsers(usersVo);
+	
+		UsersListVo retUsersList = new UsersListVo();
+		retUsersList.setUsersVoList(usersListMapping); 
+		retUsersList.setTotalCount(totCnt);
+		retUsersList.setPageSize(usersVo.getPageSize());
+		retUsersList.setPageIndex(usersVo.getPageIndex());
+
+        return retUsersList;     
+       
+    }  
 
     
    

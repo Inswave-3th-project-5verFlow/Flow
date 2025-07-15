@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
+	xmlns:xf="http://www.w3.org/2002/xforms">
+	<head meta_screenId="">
+		<w2:type>COMPONENT</w2:type>
+		<w2:buildDate />
+		<w2:MSA />
+		<xf:model>
+			<w2:dataCollection baseNode="map">
+				<w2:dataMap baseNode="map" id="dmp_groupsVo" style="">
+					<w2:keyInfo>
+
+						<w2:key dataType="text" id="pageIndex" name="페이지번호" defaultValue="1"></w2:key>
+						<w2:key dataType="text" id="pageSize" name="페이지사이즈" defaultValue="10"></w2:key>
+						<w2:key dataType="text" id="totalPageCount" name="페이지건수"></w2:key>
+					</w2:keyInfo>
+					<w2:data use="false"></w2:data>
+				</w2:dataMap>
+				<w2:dataList baseNode="list" id="dlt_groupsVoList" repeatNode="map" saveRemovedData="true" style=""
+					ev:ondataload="scwin.dlt_groupsVoList_ondataload" ev:oninsertrow="scwin.dlt_groupsVoList_insertrow"
+					ev:onremoverow="scwin.dlt_groupsVoList_removerow">
+					<w2:columnInfo>
+						<w2:column dataType="number" id="grpId" name="grp_id"></w2:column>
+						<w2:column dataType="text" id="grpName" name="grp_name"></w2:column>
+
+						<w2:column dataType="text" id="description" name="description"></w2:column>
+
+						<w2:column id="checkBox" name="checkBox" dataType="text" ignoreStatus="true"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
+				<w2:dataMap baseNode="map" id="dmp_groupsVoDetail" style="">
+					<w2:keyInfo>
+						<w2:key dataType="text" id="grpId" name="grp_id"></w2:key>
+						<w2:key dataType="text" id="grpName" name="grp_name"></w2:key>
+						<w2:key dataType="text" id="description" name="description"></w2:key>
+
+					</w2:keyInfo>
+				</w2:dataMap>
+			</w2:dataCollection>
+			<w2:workflowCollection></w2:workflowCollection>
+
+			<xf:submission id="sbm_selectGroupsVoList" ref='data:json,{"id":"dmp_groupsVo","key":"groupsVo"}'
+				target='data:json,{"id":"dlt_groupsVoList","key":"elData.groupsVoList"}' action="/InsWebApp/GROUPS0001List.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
+				processMsg="그룹정보 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_groupsList_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+			<xf:submission id="sbm_deleteGroupsVo" ref='data:json,{"id":"dmp_groupsVoDetail","key":"groupsVo"}' target=""
+				action="/InsWebApp/GROUPS0001Del.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace=""
+				errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit="" ev:submitdone="scwin.sbm_deleteGroupsVo_submitdone"
+				ev:submiterror="" abortTrigger="">
+			</xf:submission>
+			<xf:submission id="sbm_updateGroupsVo" ref='data:json,["dmp_groupsVoDetail",{"id":"dmp_groupsVoDetail","key":"groupsVo"}]'
+				target="" action="/InsWebApp/GROUPS0001Upd.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace=""
+				errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit="" ev:submitdone="scwin.sbm_updateGroupsVo_submitdone"
+				ev:submiterror="" abortTrigger="">
+			</xf:submission>
+			<xf:submission id="sbm_insertGroupsVo" ref='data:json,["dmp_groupsVoDetail",{"id":"dmp_groupsVoDetail","key":"groupsVo"}]'
+				target="" action="/InsWebApp/GROUPS0001Ins.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace=""
+				errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit="" ev:submitdone="scwin.sbm_insertGroupsVo_submitdone"
+				ev:submiterror="" abortTrigger="">
+			</xf:submission>
+			<xf:submission id="sbm_selectGroupsVo" ref="" target="" action="/InsWebApp/GROUPS0001UpdView.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
+				processMsg="그룹정보를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectGroupsVo_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+			<xf:submission id="sbm_saveGroupsVoList" action="/InsWebApp/GROUPS0001Save.pwkjson" method="post" mediatype="application/json"
+				ref="" target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit=""
+				ev:submitdone="scwin.sbm_saveGroupsVoList_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+		</xf:model>
+		<w2:layoutInfo></w2:layoutInfo>
+		<w2:publicInfo method="" />
+		<script lazy="false" type="text/javascript"><![CDATA[
+scwin.onpageload = function () {
+
+    $c.sbm.execute($p, sbm_selectGroupsVoList);
+
+
+};
+
+// 페이지 번호 클릭 이벤트
+scwin.pgl_groupsList_onclick = function (idx) {
+
+    // 페이지 번호 세팅
+    dmp_groupsVo.set("pageIndex", idx);
+
+    // 서버통신 - 그룹정보 조회
+    $c.sbm.execute($p, sbm_selectGroupsVoList);
+};
+
+// 행추가 버튼 이벤트
+scwin.btn_insert_onclick = function (e) {
+
+    var focus = grd_list.getFocusedRowIndex();
+    dlt_groupsVoList.insertRow(focus + 1);
+};
+
+
+// 다중행삭제 버튼 클릭 시 체크한 행 일괄 제거
+scwin.btn_deleteRows_onclick = function (e) {
+    var chkIdxArr = grd_list.getCheckedIndex("checkBox");
+    console.log(chkIdxArr);
+    dlt_groupsVoList.deleteRows(chkIdxArr);
+};
+
+
+// 초기화 버튼 클릭시 화면에 데이터 모두 제거
+scwin.btn_reset_onclick = function (e) {
+
+    dlt_groupsVoList.setData([]);
+
+};
+
+
+scwin.sbm_groupsList_submitdone = function (e) {
+
+    // error 수신시
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+    if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    }
+
+    // 총 레코드 수 업데이트
+    spn_listCnt.setLabel(elData.totalCount);
+
+    // 페이지 네비게이터 업데이트
+    var totalPageCount = Math.ceil(elData.totalCount / dmp_groupsVo.get("pageSize"));
+    pgl_groupsList.setCount(totalPageCount);
+
+    // 페이징 정보 업데이트
+    spn_totalPageCount.setValue(totalPageCount);
+    spn_pageIndex.setValue(dmp_groupsVo.get("pageIndex"));
+    pgl_groupsList.setSelectedIndex(dmp_groupsVo.get("pageIndex"));
+
+};
+
+// 등록 버튼 클릭시 등록/수정 팝업창이 뜸
+scwin.btn_reg_onclick = function (e) {
+    popup.show();
+};
+
+
+// 저장 버튼클릭 시 입력값 서버로 전송
+scwin.btn_save_onclick = function (e) {
+    // 다건 신규입력, 수정, 삭제 한꺼번에 처리
+    let reqObj = {
+        "elData": { "groupsVoList": dlt_groupsVoList.getModifiedJSON() }
+    };
+    console.log(dlt_groupsVoList.getModifiedJSON());
+    $c.sbm.execute(sbm_saveGroupsVoList, reqObj);
+};
+
+// 저장 이후 수행되는 로직
+scwin.sbm_saveGroupsVoList_submitdone = function (e) {
+    // error 수신시
+    var elHeader = e.responseJSON.elHeader;
+    if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    } else {
+        // msg 출력
+        $c.win.alert("저장되었습니다.");
+    }
+
+    // 저장 후 페이지 재업로드
+    scwin.onpageload;
+};
+
+
+/*
+	scwin.btn_save_onclick = function(e) {
+		
+		// 유효성 체크
+		var valInfo = [
+			{ id: "id", mandatory: true }
+           
+		];
+
+        console.log("id", valInfo)
+		
+		if ($c.data.validateGroup(grp_outInfo, valInfo) === true) {
+			var promise = $c.win.confirm("저장하시겠습니까?");
+			promise.then(function(result) {  
+				if (result){
+					$c.sbm.execute(sbm_insertOutVo);
+				}
+			})
+		} 	
+	};
+
+*/
+
+scwin.sbm_save_onclick = function (e) {
+    console.log("저장..");
+    $c.sbm.execute(sbm_insertGroupsVo);
+    alert("저장되었습니다");
+};
+]]></script>
+	</head>
+	<body ev:onpageload="scwin.onpageload">
+		<xf:group style="" id="" class="sub_contents ">
+			<xf:group style="" id="" class="pgtbox">
+				<w2:textbox tagname="" style="" id="" label="그룹 정보" class="pgt_tit"></w2:textbox>
+			</xf:group>
+			<xf:group style="" id="" class="titbox"></xf:group>
+			<xf:group meta_snippetCategory="08_버튼" meta_snippetName="8_04 전체제어버튼" meta_snippetKeyComponent="true" style="" id=""
+				class="btnbox">
+				<xf:group style="" id="" class="rt">
+					<xf:trigger style="" id="btn_reg" type="button" class="btn_cm row_add" ev:onclick="scwin.btn_reg_onclick">
+						<xf:label><![CDATA[ 등록/수정]]></xf:label>
+					</xf:trigger>
+					<xf:trigger ev:onclick="scwin.btn_insert_onclick" style="" id="btn_insert" type="button" class="btn_cm row_add">
+						<xf:label><![CDATA[ 행 추가]]></xf:label>
+					</xf:trigger>
+					<xf:trigger style="" id="btn_deleteRows" type="button" class="btn_cm row_del"
+						ev:onclick="scwin.btn_deleteRows_onclick">
+						<xf:label><![CDATA[ 행 삭제]]></xf:label>
+					</xf:trigger>
+					<xf:trigger style="" id="btn_save" type="button" class="btn_cm pt" ev:onclick="scwin.btn_save_onclick">
+						<xf:label><![CDATA[저장]]></xf:label>
+					</xf:trigger>
+					<w2:textbox style="" id="" label="" class="bar_btndiv"></w2:textbox>
+					<xf:trigger ev:onclick="scwin.btn_reset_onclick" style="" id="btn_reset" type="button" class="btn_cm refresh"
+						localeRef="">
+						<xf:label><![CDATA[ 초기화]]></xf:label>
+					</xf:trigger>
+				</xf:group>
+			</xf:group>
+			<xf:group style="" id="" class="titbox">
+				<xf:group id="" class="count">
+					<w2:span localeRef="COMMON_LABEL_00002" style="" id="" label="총"></w2:span>
+					<w2:span ref="" style="" id="spn_listCnt" label="0" class="num"></w2:span>
+					<w2:span localeRef="COMMON_LABEL_00003" style="" id="" label="건"></w2:span>
+				</xf:group>
+			</xf:group>
+			<xf:group adaptiveThreshold="" style="" id="" class="gvwbox">
+				<w2:gridView rowNumVisible="true" rowStatusWidth="20" scrollByColumn="false" rowNumHeaderValue="순번" defaultCellHeight="26"
+					checkReadOnlyOnPasteEnable="" focusMode="row" rowNumWidth="20" fixedColumn="1" keyMoveEditMode="true" autoFit="allColumn" id="grd_list"
+					class="gvw" ev:oncellclick="scwin.grd_list_oncellclick" scrollByColumnAdaptive="false" editModeEvent="ondblclick" readOnly="false"
+					focusFlow="linear" sortable="true" rowStatusHeaderValue="상태" rowStatusVisible="true" dataList="data:dlt_groupsVoList"
+					style="height: 150px;" columnMove="true" visibleRowNum="15" useFilterList="true">
+					<w2:caption style="" id="caption2" value="this is a grid caption."></w2:caption>
+					<w2:header style="" id="header2">
+						<w2:row style="" id="row3">
+							<w2:column width="30" inputType="checkbox" style="" id="column4" value="" displayMode="label"></w2:column>
+							<w2:column width="70" localeRef="Groups_COLNAME_00002" inputType="text" style="" id="column2" value="grp_name"
+								displayMode="label">
+							</w2:column>
+							<w2:column width="70" localeRef="Groups_COLNAME_00003" inputType="text" style="" id="column3"
+								value="description" displayMode="label">
+							</w2:column>
+						</w2:row>
+					</w2:header>
+					<w2:gBody style="" id="gBody2">
+						<w2:row style="" id="row4">
+							<w2:column width="30" inputType="checkbox" style="" id="checkBox" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="grpName" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="description" value="" displayMode="label"></w2:column>
+						</w2:row>
+					</w2:gBody>
+				</w2:gridView>
+			</xf:group>
+			<xf:group style="" id="" class="pglbox">
+				<w2:pageList ev:onclick="scwin.pgl_groupsList_onclick" displayButtonType="display" displayFormat="#" pageSize="5"
+					pagingType="0" style="" id="pgl_groupsList" class="pgl">
+				</w2:pageList>
+				<xf:group style="display: none;" id="" class="pgl_count">
+					<w2:span ref="data:dma_groupsVo.pageIndex" style="" id="spn_pageIndex" label="0" class="num"></w2:span>
+					<w2:span style="" id="span1" label="/"></w2:span>
+					<w2:span ref="data:dma_groupsVo.totalPageCount" style="" id="spn_totalPageCount" label="0"></w2:span>
+					<w2:span localeRef="COMMON_LABEL_00005" style="" id="span2" label="페이지"></w2:span>
+				</xf:group>
+			</xf:group>
+		</xf:group>
+		<xf:group meta_snippetCategory="00_화면시작" meta_snippetName="0_02 팝업페이지시작" meta_snippetKeyComponent="true" id="popup"
+			class="pop_contents" style="">
+			<xf:group style="" id="" class="titbox">
+				<xf:group tagname="h3" style="" id="">
+					<w2:textbox localeRef="" style="" id="" label="그룹정보" class=""></w2:textbox>
+					<w2:textbox style="" id="" label="(" class=""></w2:textbox>
+					<w2:textbox localeRef="COMMON_LABEL_00006" style="" id="spn_registerFlag" label="등록/수정" class=""></w2:textbox>
+					<w2:textbox style="" id="" label=")" class=""></w2:textbox>
+				</xf:group>
+				<xf:group style="" id="" class="rt"></xf:group>
+			</xf:group>
+			<xf:group style="" id="grp_groupsInfo" class="tblbox">
+				<xf:group adaptive="layout" adaptiveThreshold="600" tagname="table" style="" id="" class="w2tb tbl">
+					<w2:attributes>
+						<w2:summary></w2:summary>
+					</w2:attributes>
+					<xf:group tagname="colgroup">
+						<xf:group tagname="col" style="width:150px;"></xf:group>
+						<xf:group tagname="col" style=""></xf:group>
+						<xf:group tagname="col" style="width:150px;"></xf:group>
+						<xf:group tagname="col" style=""></xf:group>
+					</xf:group>
+					<xf:group tagname="tr" style="">
+						<xf:group tagname="th" style="" class="w2tb_th">
+							<w2:textbox ref="" localeRef="Groups_COLNAME_00001" style="" userData2="" id="" label="grp_name" class=""></w2:textbox>
+						</xf:group>
+						<xf:group tagname="td" style="" class="w2tb_td">
+							<xf:input ref="data:dlt_groupsVoList.grpName" style="width:100%;" id="" placeholder="" class=""></xf:input>
+						</xf:group>
+						<xf:group tagname="th" style="" class="w2tb_th">
+							<w2:textbox ref="" localeRef="Groups_COLNAME_00002" style="" userData2="" id="" label="description" class="">
+							</w2:textbox>
+						</xf:group>
+						<xf:group tagname="td" style="" class="w2tb_td">
+							<xf:input ref="data:dlt_groupsVoList.description" style="width:100%;" id="" placeholder="" class=""></xf:input>
+						</xf:group>
+					</xf:group>
+				</xf:group>
+			</xf:group>
+			<xf:group meta_snippetCategory="08_버튼" meta_snippetName="8_04 전체제어버튼" meta_snippetKeyComponent="true" style="" id=""
+				class="btnbox">
+				<xf:group style="" id="" class="rt">
+					<w2:textbox style="" id="" label="" class="bar_btndiv"></w2:textbox>
+					<xf:trigger ev:onclick="scwin.sbm_save_onclick" style="" id="sbm_save" type="button" class="btn_cm pt">
+						<xf:label><![CDATA[저장]]></xf:label>
+					</xf:trigger>
+				</xf:group>
+			</xf:group>
+		</xf:group>
+	</body>
+</html>
