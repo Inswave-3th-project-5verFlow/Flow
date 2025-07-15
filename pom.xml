@@ -36,6 +36,34 @@
 	</repositories>
 
 	<dependencies>
+	
+		<!-- AWS SDK for Java -->
+	    <dependency>
+	        <groupId>com.amazonaws</groupId>
+	        <artifactId>aws-java-sdk-s3</artifactId>
+	        <version>1.12.470</version>
+	    </dependency>
+	    
+	    <!-- AWS SDK Core -->
+	    <dependency>
+	        <groupId>com.amazonaws</groupId>
+	        <artifactId>aws-java-sdk-core</artifactId>
+	        <version>1.12.470</version>
+	    </dependency>
+	    
+	    <!-- 파일 업로드 처리를 위한 Apache Commons FileUpload -->
+	    <dependency>
+	        <groupId>commons-fileupload</groupId>
+	        <artifactId>commons-fileupload</artifactId>
+	        <version>1.4</version>
+	    </dependency>
+	    
+	    <!-- Apache Commons IO -->
+	    <dependency>
+	        <groupId>commons-io</groupId>
+	        <artifactId>commons-io</artifactId>
+	        <version>2.11.0</version>
+	    </dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-aop</artifactId>

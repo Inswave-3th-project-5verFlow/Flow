@@ -140,7 +140,6 @@
 			        LEFT JOIN TASK task ON test.TASK_ID = task.TASK_ID
 			        LEFT JOIN USERS user ON test.ASSIGNEE = user.USER_ID -- 추가된 조인
 			        WHERE 1=1
-			        -- 필요한 조건 추가 (예: AND test.IS_DELETED = 0)
 			    ) S, (SELECT @ROWNUM := 0) TMP
 			) A
 			WHERE PAGE = #{pageIndex}
