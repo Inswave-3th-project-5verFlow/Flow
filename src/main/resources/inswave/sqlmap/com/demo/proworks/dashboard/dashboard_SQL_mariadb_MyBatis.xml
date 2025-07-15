@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	@subject : 대시보드 관련 처리를 담당하는 Sql Mapper
+	@description : 대시보드 관련 처리를 담당하는 Sql Mapper
+	@author : 김성민
+	@since : 2025/07/14
+-->
+<mapper namespace="com.demo.proworks.dashboard">
+
+    <!-- 대시보드 요약 정보 조회 -->
+    <select id="selectDashboardSummary" parameterType="com.demo.proworks.pjt.vo.PjtVo" resultType="com.demo.proworks.dashboard.vo.DashboardVo">
+/* QueryID : com.demo.proworks.dashboard.selectDashboardSummary */
+        SELECT
+            (SELECT COUNT(DISTINCT p.PJT_ID)
+               FROM PJT p
+              WHERE p.USER_ID = #{userId}) AS totalProjects,
+
+            (SELECT COUNT(t.TASK_ID)
+               FROM TASK t
+              WHERE t.USER_ID = #{userId}) AS totalTasks,
+
+            (SELECT COUNT(ir.id)
+               FROM issues_risks ir
+              WHERE ir.USER_ID = #{userId}) AS totalIssues
+</select>
+
+    <!-- 프로젝트 현황 차트 데이터 조회 -->
+    <select id="selectProjectStatusChart" parameterType="com.demo.proworks.pjt.vo.PjtVo" resultType="com.demo.proworks.dashboard.vo.ChartVo">
+/* QueryID : com.demo.proworks.dashboard.selectProjectStatusChart */
+        SELECT
+            p.PJT_STATUS AS label,
+            COUNT(p.PJT_ID) AS value
+        FROM PJT p
+        WHERE p.USER_ID = #{userId}
+        GROUP BY p.PJT_STATUS
+        ORDER BY p.PJT_STATUS
+</select>
+
+    <!-- 업무 단계별 현황 차트 데이터 조회 -->
+    <select id="selectTaskStatusChart" parameterType="com.demo.proworks.pjt.vo.PjtVo" resultType="com.demo.proworks.dashboard.vo.ChartVo">
+/* QueryID : com.demo.proworks.dashboard.selectTaskStatusChart */
+        SELECT
+            s.STG_NAME AS label,
+            COUNT(DISTINCT t.TASK_ID) AS value
+        FROM TASK t
+        INNER JOIN STG s ON t.STG_ID = s.STG_ID
+        INNER JOIN PROJECT_USER_GROUP g ON t.PJT_ID = g.PJT_ID
+        WHERE t.USER_ID = #{userId}
+        GROUP BY s.STG_NAME
+        ORDER BY s.STG_ID
+</select>
+
+    <!-- 이슈/리스크 현황 차트 데이터 조회 -->
+    <select id="selectIssueStatusChart" parameterType="com.demo.proworks.pjt.vo.PjtVo" resultType="com.demo.proworks.dashboard.vo.ChartVo">
+/* QueryID : com.demo.proworks.dashboard.selectIssueStatusChart */
+        SELECT
+            ir.status AS label,
+            COUNT(ir.id) AS value
+        FROM issues_risks ir
+        WHERE ir.USER_ID = #{userId}
+        GROUP BY ir.status
+        ORDER BY ir.status
+</select>
+
+</mapper>

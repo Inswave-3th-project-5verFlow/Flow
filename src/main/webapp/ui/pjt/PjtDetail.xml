@@ -71,7 +71,7 @@ scwin.onpageload = function () {
     scwin.LOGIN_USER_ID = "1";
     scwin.LOGIN_USER_NAME = "김프로젝트";
     scwin.GROUP_ID = "1";
-    scwin.PJT_ID = "25";
+    scwin.PJT_ID = "30";
 
     // 기존 프로젝트 정보 조회 서브미션 호출
     $c.sbm.execute(sbm_selectPjtVo, {

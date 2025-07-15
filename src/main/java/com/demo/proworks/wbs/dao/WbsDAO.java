@@ -35,28 +35,6 @@ public class WbsDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
 	}
 
 	/**
-	 * 페이징을 처리하여 WBS 목록조회를 한다.
-	 * 
-	 * @param WbsVo WBS
-	 * @return List<WbsVo> WBS
-	 * @throws ElException
-	 */
-	public List<WbsVo> selectListWbs(WbsVo vo) throws ElException {
-		return (List<WbsVo>) list("com.demo.proworks.wbs.selectListWbs", vo);
-	}
-
-	/**
-	 * WBS 목록 조회의 전체 카운트를 조회한다.
-	 * 
-	 * @param WbsVo WBS
-	 * @return WBS 조회의 전체 카운트
-	 * @throws ElException
-	 */
-	public long selectListCountWbs(WbsVo vo) throws ElException {
-		return (Long) selectByPk("com.demo.proworks.wbs.selectListCountWbs", vo);
-	}
-
-	/**
 	 * WBS를 등록한다.
 	 * 
 	 * @param WbsVo WBS
@@ -98,6 +76,50 @@ public class WbsDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
 	 */
 	public List<WbsStgVo> selectListStg(WbsStgVo vo) throws ElException {
 		return (List<WbsStgVo>) list("com.demo.proworks.wbs.selectListStg", vo);
+	}
+
+	/**
+	 * 페이징을 처리하여 전체 WBS 계층 구조를 조회한다.
+	 * 
+	 * @param WbsVo WBS
+	 * @return List<WbsVo> WBS
+	 * @throws ElException
+	 */
+	public List<WbsVo> selectListWbsAll(WbsVo vo) throws ElException {
+		return (List<WbsVo>) list("com.demo.proworks.wbs.selectListWbsAll", vo);
+	}
+
+	/**
+	 * 전체 WBS 카운트를 조회한다.
+	 * 
+	 * @param WbsVo WBS
+	 * @return WBS 조회의 전체 카운트
+	 * @throws ElException
+	 */
+	public long selectListCountWbsAll(WbsVo vo) throws ElException {
+		return (Long) selectByPk("com.demo.proworks.wbs.selectListCountWbsAll", vo);
+	}
+
+	/**
+	 * 페이징을 처리하여 검색 조건에 따른 WBS 계층 구조를 조회한다.
+	 * 
+	 * @param WbsVo WBS
+	 * @return List<WbsVo> WBS
+	 * @throws ElException
+	 */
+	public List<WbsVo> selectListWbsSearch(WbsVo vo) throws ElException {
+		return (List<WbsVo>) list("com.demo.proworks.wbs.selectListWbsSearch", vo);
+	}
+
+	/**
+	 * 검색 조건에 따른 WBS 카운트를 조회한다.
+	 * 
+	 * @param WbsVo WBS
+	 * @return WBS 조회의 카운트
+	 * @throws ElException
+	 */
+	public long selectListCountWbsSearch(WbsVo vo) throws ElException {
+		return (Long) selectByPk("com.demo.proworks.wbs.selectListCountWbsSearch", vo);
 	}
 
 }

@@ -16,7 +16,7 @@
 -->
 <mapper namespace="com.demo.proworks.pjt">
 	<insert id="insertPjt" parameterType="com.demo.proworks.pjt.vo.PjtVo" useGeneratedKeys="true" keyProperty="pjtId">
-		<!-- 프로젝트 정보를 등록한다. -->
+<!-- 프로젝트 정보를 등록한다. -->
 		INSERT INTO PJT /* QueryID : com.demo.proworks.pjt.insertPjt */ (
 		<if test="pjtName  != null"> PJT_NAME   </if>
 		<if test="pjtAsi   != null"> , PJT_ASI    </if>
@@ -24,6 +24,7 @@
 		<if test="pjtDetail!= null"> , PJT_DETAIL </if>
 		<if test="pjtSt    != null and pjtSt != '' "> , PJT_ST     </if>
 		<if test="pjtEt    != null and pjtEt != '' "> , PJT_ET     </if>
+		<if test="userId    != null and userId != '' "> , USER_ID     </if>
 		) VALUES (
 		<if test="pjtName  != null"> #{pjtName}   </if>
 		<if test="pjtAsi   != null"> , #{pjtAsi}    </if>
@@ -31,8 +32,9 @@
 		<if test="pjtDetail!= null"> , #{pjtDetail} </if>
 		<if test="pjtSt    != null and pjtSt != '' "> , #{pjtSt}     </if>
 		<if test="pjtEt    != null and pjtEt != '' "> , #{pjtEt}     </if>
+		<if test="userId    != null and userId != '' "> , #{userId}     </if>
 		)
-	</insert>
+</insert>
 
 	<update id="updatePjt" parameterType="com.demo.proworks.pjt.vo.PjtVo">
 <!-- 프로젝트 ID로 프로젝트 정보를 갱신한다. -->
