@@ -49,47 +49,14 @@ public class ProworksUserHeader extends com.inswave.elfw.core.UserHeader {
     @ElDtoField(logicalName = "테스트", physicalName = "location", type = "String", typeKind = "", fldYn = "Yes", delimeterYn = "Yes", cryptoGbn = "", cryptoKind = "", length = 10, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String location;
 
-    @ElDtoField(logicalName = "사용자이름", physicalName = "name", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String name;
-
-    @ElDtoField(logicalName = "직책", physicalName = "position", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String position;
-
-    @ElDtoField(logicalName = "이메일", physicalName = "email", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String email;
-
-    @ElDtoField(logicalName = "연락처", physicalName = "phone", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String phone;
-
-    @ElDtoField(logicalName = "사용자ID", physicalName = "accountId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    @ElDtoField(logicalName = "계정ID", physicalName = "accountId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String accountId;
 
-    @ElDtoField(logicalName = "사용자비밀번호", physicalName = "accountPwd", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    @ElDtoField(logicalName = "계정비밀번호", physicalName = "accountPwd", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String accountPwd;
 
-    @ElDtoField(logicalName = "이미지", physicalName = "image", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String image;
-
-    @ElDtoField(logicalName = "삭제여부", physicalName = "isDeleted", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String isDeleted;
-
-    @ElDtoField(logicalName = "관리자여부", physicalName = "isAdmin", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String isAdmin;
-
-    @ElDtoField(logicalName = "프로젝트생성여부", physicalName = "isCreate", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String isCreate;
-
-    @ElDtoField(logicalName = "리얼유저아이디", physicalName = "usrId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    @ElDtoField(logicalName = "유저ID", physicalName = "usrId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String usrId;
-
-    @ElDtoField(logicalName = "프로젝트ID", physicalName = "pjtId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String pjtId;
-
-    @ElDtoField(logicalName = "프로젝트명", physicalName = "pjtName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String pjtName;
-
-    @ElDtoField(logicalName = "그룹ID", physicalName = "grpId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String grpId;
 
     @ElVoField(physicalName = "fldLen")
     public int getFldLen(){
@@ -178,50 +145,6 @@ public class ProworksUserHeader extends com.inswave.elfw.core.UserHeader {
         this.location = location;
     }
 
-    @ElVoField(physicalName = "name")
-    public String getName(){
-        String ret = this.name;
-        return ret;
-    }
-
-    @ElVoField(physicalName = "name")
-    public void setName(String name){
-        this.name = name;
-    }
-
-    @ElVoField(physicalName = "position")
-    public String getPosition(){
-        String ret = this.position;
-        return ret;
-    }
-
-    @ElVoField(physicalName = "position")
-    public void setPosition(String position){
-        this.position = position;
-    }
-
-    @ElVoField(physicalName = "email")
-    public String getEmail(){
-        String ret = this.email;
-        return ret;
-    }
-
-    @ElVoField(physicalName = "email")
-    public void setEmail(String email){
-        this.email = email;
-    }
-
-    @ElVoField(physicalName = "phone")
-    public String getPhone(){
-        String ret = this.phone;
-        return ret;
-    }
-
-    @ElVoField(physicalName = "phone")
-    public void setPhone(String phone){
-        this.phone = phone;
-    }
-
     @ElVoField(physicalName = "accountId")
     public String getAccountId(){
         String ret = this.accountId;
@@ -244,50 +167,6 @@ public class ProworksUserHeader extends com.inswave.elfw.core.UserHeader {
         this.accountPwd = accountPwd;
     }
 
-    @ElVoField(physicalName = "image")
-    public String getImage(){
-        String ret = this.image;
-        return ret;
-    }
-
-    @ElVoField(physicalName = "image")
-    public void setImage(String image){
-        this.image = image;
-    }
-
-    @ElVoField(physicalName = "isDeleted")
-    public String getIsDeleted(){
-        String ret = this.isDeleted;
-        return ret;
-    }
-
-    @ElVoField(physicalName = "isDeleted")
-    public void setIsDeleted(String isDeleted){
-        this.isDeleted = isDeleted;
-    }
-
-    @ElVoField(physicalName = "isAdmin")
-    public String getIsAdmin(){
-        String ret = this.isAdmin;
-        return ret;
-    }
-
-    @ElVoField(physicalName = "isAdmin")
-    public void setIsAdmin(String isAdmin){
-        this.isAdmin = isAdmin;
-    }
-
-    @ElVoField(physicalName = "isCreate")
-    public String getIsCreate(){
-        String ret = this.isCreate;
-        return ret;
-    }
-
-    @ElVoField(physicalName = "isCreate")
-    public void setIsCreate(String isCreate){
-        this.isCreate = isCreate;
-    }
-
     @ElVoField(physicalName = "usrId")
     public String getUsrId(){
         String ret = this.usrId;
@@ -297,39 +176,6 @@ public class ProworksUserHeader extends com.inswave.elfw.core.UserHeader {
     @ElVoField(physicalName = "usrId")
     public void setUsrId(String usrId){
         this.usrId = usrId;
-    }
-
-    @ElVoField(physicalName = "pjtId")
-    public String getPjtId(){
-        String ret = this.pjtId;
-        return ret;
-    }
-
-    @ElVoField(physicalName = "pjtId")
-    public void setPjtId(String pjtId){
-        this.pjtId = pjtId;
-    }
-
-    @ElVoField(physicalName = "pjtName")
-    public String getPjtName(){
-        String ret = this.pjtName;
-        return ret;
-    }
-
-    @ElVoField(physicalName = "pjtName")
-    public void setPjtName(String pjtName){
-        this.pjtName = pjtName;
-    }
-
-    @ElVoField(physicalName = "grpId")
-    public String getGrpId(){
-        String ret = this.grpId;
-        return ret;
-    }
-
-    @ElVoField(physicalName = "grpId")
-    public void setGrpId(String grpId){
-        this.grpId = grpId;
     }
 
     @Override
@@ -344,20 +190,9 @@ public class ProworksUserHeader extends com.inswave.elfw.core.UserHeader {
         sb.append("errorCode").append("=").append(errorCode).append(",");
         sb.append("errMag").append("=").append(errMag).append(",");
         sb.append("location").append("=").append(location).append(",");
-        sb.append("name").append("=").append(name).append(",");
-        sb.append("position").append("=").append(position).append(",");
-        sb.append("email").append("=").append(email).append(",");
-        sb.append("phone").append("=").append(phone).append(",");
         sb.append("accountId").append("=").append(accountId).append(",");
         sb.append("accountPwd").append("=").append(accountPwd).append(",");
-        sb.append("image").append("=").append(image).append(",");
-        sb.append("isDeleted").append("=").append(isDeleted).append(",");
-        sb.append("isAdmin").append("=").append(isAdmin).append(",");
-        sb.append("isCreate").append("=").append(isCreate).append(",");
-        sb.append("usrId").append("=").append(usrId).append(",");
-        sb.append("pjtId").append("=").append(pjtId).append(",");
-        sb.append("pjtName").append("=").append(pjtName).append(",");
-        sb.append("grpId").append("=").append(grpId);
+        sb.append("usrId").append("=").append(usrId);
         sb.append("]");
         return sb.toString();
 

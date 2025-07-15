@@ -79,7 +79,7 @@ public interface UsersService {
      * @return 단건 조회 결과
      * @throws Exception
      */
-	public UsersVo selectUsersMapping(UsersVo usersVo) throws Exception;
+	public List<UsersVo> selectUsersMapping(UsersVo usersVo) throws Exception;
 	
 	
 	

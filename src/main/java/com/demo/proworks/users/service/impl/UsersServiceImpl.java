@@ -133,10 +133,10 @@ public class UsersServiceImpl implements UsersService {
      * @return 단건 조회 결과
      * @throws Exception
      */
-	public UsersVo selectUsersMapping(UsersVo usersVo) throws Exception {
-		UsersVo resultVO = usersDAO.selectUsersMapping(usersVo);			
+	public List<UsersVo> selectUsersMapping(UsersVo usersVo) throws Exception {
+		List<UsersVo> list = usersDAO.selectUsersMapping(usersVo);			
         
-        return resultVO;
+        return list;
 	}
 	
 	

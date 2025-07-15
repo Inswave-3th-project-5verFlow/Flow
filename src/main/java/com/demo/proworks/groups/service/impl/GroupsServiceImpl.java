@@ -15,12 +15,12 @@ import com.demo.proworks.groups.dao.GroupsDAO;
  * @subject     : 그룹정보 관련 처리를 담당하는 ServiceImpl
  * @description	: 그룹정보 관련 처리를 담당하는 ServiceImpl
  * @author      : Inswave
- * @since       : 2025/07/05
+ * @since       : 2025/07/15
  * @modification
  * ===========================================================
  * DATE				AUTHOR				DESC
  * ===========================================================
- * 2025/07/05			 Inswave	 		최초 생성
+ * 2025/07/15			 Inswave	 		최초 생성
  * 
  */
 @Service("groupsServiceImpl")

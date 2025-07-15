@@ -8,23 +8,18 @@
         <w2:MSA/>
         <xf:model>
         	<w2:dataCollection baseNode="map">
-        		<w2:dataMap baseNode="map" id="dmp_usersVo">
-        			<w2:keyInfo>
-        				<w2:key dataType="text" name="페이지번호" id="pageIndex"></w2:key>
-        				<w2:key dataType="text" name="페이지사이즈" id="pageSize"></w2:key>
-        				<w2:key dataType="text" name="페이지건수" id="totalPageCount"></w2:key>
-        			</w2:keyInfo>
-        		</w2:dataMap>
+        		<w2:dataList baseNode="list" repeatNode="map" id="dlt_projectName" saveRemovedData="true">
+        			<w2:columnInfo>
+        				<w2:column dataType="text" name="pjtId" id="pjtId"></w2:column>
+        				<w2:column dataType="text" name="pjtName" id="pjtName"></w2:column>
+        			</w2:columnInfo>
+        		</w2:dataList>
         	</w2:dataCollection>
         	<w2:workflowCollection />
-        	<xf:submission id="sbm_selectUsersMappingVo" action="/InsWebApp/USERS0001UpdViewMapping.pwkjson" method="post"
+        	<xf:submission id="sbm_selectUsersMapping" action="/InsWebApp/USERS0001ListMapping.pwkjson" method="post"
         		mediatype="application/json" ref="" target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler=""
-        		mode="asynchronous" processMsg="" ev:submit="" ev:submitdone="scwin.sbm_selectUsersMappingVo_submitdone" ev:submiterror=""
+        		mode="asynchronous" processMsg="" ev:submit="" ev:submitdone="scwin.sbm_selectUsersMapping_submitdone" ev:submiterror=""
         		abortTrigger="">
-        	</xf:submission>
-        	<xf:submission id="sbm_selectUsersVo" action="/InsWebApp/USERS0001UpdView.pwkjson" method="post" mediatype="application/json"
-        		ref="" target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg=""
-        		ev:submit="" ev:submitdone="" ev:submiterror="" abortTrigger="">
         	</xf:submission>
         </xf:model>
         <w2:layoutInfo/>
@@ -32,111 +27,94 @@
         <script lazy="false" type="text/javascript"><![CDATA[
 // 전역변수 선언
 scwin.SERVER_TIME = "";
-scwin.USER_ID  = "";
-scwin.ACCOUNT_ID  = "";
-scwin.NAME  = "";
-scwin.POSITION  = "";
-scwin.PJT_ID  = "";
-scwin.PJT_NAME  = "";
-scwin.GRP_ID  = "";
+scwin.USER_ID = "";
 
 scwin.onpageload = function() {
     scwin.SERVER_TIME = $c.date.getServerDateTime("yyyy-MM-dd hh:mm:ss");
     serverTime.setValue(scwin.SERVER_TIME);
-
     scwin.USER_ID = WebSquare.cookie.getCookie("usrId");
-    scwin.NAME = WebSquare.cookie.getCookie("name");
-    scwin.POSITION_ID = WebSquare.cookie.getCookie("position");
-    scwin.PJT_ID = WebSquare.cookie.getCookie("pjtId");
-    scwin.PJT_NAME = WebSquare.cookie.getCookie("pjtName");
-    scwin.GRP_ID = WebSquare.cookie.getCookie("grpId");
 
-    textName.setValue(scwin.NAME);
-    textUserId.setValue(scwin.USER_ID);
-    textGrpId.setValue(scwin.GRP_ID);
-    selectBoxProjectName.setValue(scwin.PJT_NAME);
+    var requestData = {
+        "elData": { "userId": scwin.USER_ID}
+    }
+    $c.sbm.execute(sbm_selectUsersMapping, requestData);
 
 };
 
+scwin.sbm_selectUsersMapping_submitdone = function (e) {
+    var data  = e.responseJSON.elData.usersVoList;
 
-/*
-// 로그아웃 버튼 클릭
-scwin.logout_onclick = function () {
-    WebSquare.cookie.delCookie("usrId");
-    alert("로그아웃");
-    location.href = "/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/login.xml";
+    // SelectBox와 프로젝트명 Bind
+    var projectNameData = data.map(item => ({
+    pjtId: item.pjtId,
+    pjtName: item.pjtName
+    }));
+
+    dlt_projectName.setJSON(projectNameData, false);
+
+    selectBoxProjectName.setNodeSet("data:dlt_projectName", "pjtName", "pjtId")
+    
+    // TextBox와 그룹ID Bind
+    var grpIdData = data[0].grpName;
+    textGrpId.setValue(grpIdData);
+
+    // TextBox와 사용자명 Bind
+    var nameData = data[0].name;
+    textName1.setValue(nameData);
+
 };
-*/
 
-scwin.btn_fav_onclick = function (e) {
-    popup_select.show();
+// 오른쪽 상단 아이콘 클릭 이벤트 (마이페이지, 회원탈퇴, 로그아웃 버튼 있는 팝업창 표시)
+scwin.accountImg_onclick = function (e) {
+    var screenWidth = window.innerWidth || document.documentElement.clientWidth;
+
+    var domBtn = document.querySelector('[id$="accountImg"]'); // ID가 accountImg로 끝나는 요소
+    var rect = domBtn.getBoundingClientRect();
+
+    var popupWidth = 300;
+    var popupHeight = 280;
+    var paddingTop = 4;
+    var rightMargin = 20;
+
+    var options = {
+        id: "popup1",
+        type: "wframePopup",
+        height: popupHeight + "px",
+        width: popupWidth + "px",
+        top: (rect.top + rect.height + window.scrollY + paddingTop) + "px",
+        left: (screenWidth - popupWidth - rightMargin) + "px",
+        resizable: false,
+        modal: false,
+        popupName: "계정 관리"
+    };
+
+    $p.openPopup("popup_test.xml", options);
 };
 ]]></script>
     </head>
     <body ev:onpageload="scwin.onpageload">
-    	<xf:group class="sub_contents" id="grp1" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true"
-    		meta_snippetName="0_01 페이지시작" style="">
+    	<xf:group class="sub_contents" id="sub_content1" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true"
+    		meta_snippetName="0_01 페이지시작" style="background: #EBF4FD">
     		<xf:group class="pgtbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_01 페이지타이틀"
     			style="">
-    			<w2:textbox class="pgt_tit" id="" label="헤더" style="" tagname=""></w2:textbox>
-    			<xf:group class="breadcrumb" id="" style=""></xf:group>
-    		</xf:group>
-    		<xf:group style="height:28px; margin-bottom: 20px;" id="">
-    			<xf:group class="pgtbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_01 페이지타이틀"
-    				style="height: 50px;">
-    				<xf:trigger class="btn_fav" id="" style="" type="button">
-    					<xf:label></xf:label>
-    				</xf:trigger>
-    				<xf:select1 id="selectBoxProjectName" chooseOption="false"
-    					style="width:300px;height:30px; margin-left: 10px; margin-right:30px;" submenuSize="auto" allOption="false" disabled="false"
-    					direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled">
-    				</xf:select1>
-    				<w2:span class="" id="textGrpId" label="#GRP_ID#" style="color:#000000; font-size: 16px;;min-width:150px;"></w2:span>
-    				<w2:span id="textName" label="#NAME#" style="color:#000000; font-size: 16px;margin-left:30px;min-width:150px;"
-    					class="">
-    				</w2:span>
-
-    				<xf:group class="breadcrumb" id="" style=""></xf:group>
-
-    				<xf:select1 submenuSize="auto" chooseOption="" meta_snippetKeyComponent="true" allOption="true" ref=""
-    					appearance="minimal" disabledClass="w2selectbox_disabled" meta_snippetCategory="10_입력폼" meta_snippetName="10_02 SelectBox"
-    					ev:onclick="scwin.popup_select_onclick" disabled="false" style="width: 150px; display:none;" id="popup_select" renderType=""
-    					class="" direction="auto">
-    					<xf:choices>
-    						<xf:item>
-    							<xf:label><![CDATA[마이페이지]]></xf:label>
-    							<xf:value><![CDATA[]]></xf:value>
-    						</xf:item>
-    						<xf:item>
-    							<xf:label><![CDATA[회원탈퇴]]></xf:label>
-    							<xf:value><![CDATA[]]></xf:value>
-    						</xf:item>
-    						<xf:item>
-    							<xf:label><![CDATA[로그아웃]]></xf:label>
-    							<xf:value><![CDATA[]]></xf:value>
-    						</xf:item>
-    					</xf:choices>
-    				</xf:select1>
-    				<xf:trigger class="btn_fav" id="btn_fav" style="" type="button" ev:onclick="scwin.btn_fav_onclick">
-    					<xf:label></xf:label>
-    				</xf:trigger>
-
-
-
-
-
-
+    			<xf:trigger ev:onclick="scwin.btn_sidebarToggle_onclick"
+    				style="width: 40px; height: 40px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;"
+    				id="trigger1">
+    				<xf:label>☰</xf:label>
+    			</xf:trigger>
+    			<xf:image src="logoImg.jpg" style="width: 40px;height: 40px;margin-left: 20px;" id="image1"></xf:image>
+    			<xf:select1 id="selectBoxProjectName" chooseOption="false" style="width: 300px;height: 30px; margin-left: 30px;"
+    				submenuSize="auto" allOption="false" disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled">
+    			</xf:select1>
+    			<xf:group style="width:572px;height:40px;" id="" class="rt">
+    				<w2:span style="color:#000000; min-width:100px; font-weight:bold;" id="textGrpId" label="#GRP_ID#" class=""></w2:span>
+    				<w2:span style="color:#000000; min-width:100px; font-weight:bold;" id="textName1" label="#NAME#" class=""></w2:span>
+    				<w2:span style="margin-left: 50px; margin-right: 5px; font-weight:bold;" id="span6" label="접속시간 : "></w2:span>
+    				<w2:span style="font-weight:bold;" id="serverTime" label="#SERVER_TIME#"></w2:span>
+    				<xf:image src="testImg.jpg" ev:onclick="scwin.accountImg_onclick" style="width: 40px;height: 40px;" id="accountImg"
+    					class="rt">
+    				</xf:image>
     			</xf:group>
-    		</xf:group>
-    		<xf:group id="" style="margin-top: 60px; height:28px;">
-
-    			<w2:span id="span1" label="접속시간 : " style="margin-right: 15px; font-weight:bold;"></w2:span>
-    			<w2:span id="serverTime" label="#SERVER_TIME#" style=""></w2:span>
-    		</xf:group>
-    		<xf:group class="titbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_03 서브타이틀(h4)"
-    			style="">
-    			<w2:span id="textUserId" label="#USER_ID#" style="color:#000000; font-size: 16px; font-weight:bold;" class=""></w2:span>
-    			<w2:span id="span6" label="님 환영합니다!" style="color:#000000;float: left; font-size: 16px; font-weight:bold;"></w2:span>
     		</xf:group>
     	</xf:group>
     </body>

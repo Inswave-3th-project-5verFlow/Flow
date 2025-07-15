@@ -16,7 +16,7 @@
         		</w2:dataMap>
         	</w2:dataCollection>
         	<w2:workflowCollection />
-        	<xf:submission id="sbm_login" action="/InsWebApp/CmmLogin.pwkjson" method="post" mediatype="application/json"
+        	<xf:submission id="sbm_login" action="/InsWebApp/Login.pwkjson" method="post" mediatype="application/json"
         		ref='data:json,{"id":"dma_login","key":"elData"}' target="" encoding="UTF-8" instance="" replace="" errorHandler=""
         		customHandler="" mode="asynchronous" processMsg="로그인 처리중..." ev:submit="" ev:submitdone="scwin.sbm_login_submitdone"
         		ev:submiterror="" abortTrigger="">
@@ -41,65 +41,78 @@ scwin.pw_input_onclick = function (e) {
 
 // 로그인 버튼 클릭시 로그인 처리
 scwin.btn_login_onclick = function (e) {
-    
     $c.sbm.execute(sbm_login);
 };
 
 // 로그인 완료 처리 후
 scwin.sbm_login_submitdone = function (e) {
-    
+
     var elHeader = e.responseJSON.elHeader; // 응답 전문 elHeader
     var userHeader = e.responseJSON.userHeader;
 
     if(userHeader != "" && userHeader != null && userHeader != "undefined") {
         if(elHeader.resSuc == true) {
            WebSquare.cookie.setCookie("usrId", userHeader.usrId);
-           WebSquare.cookie.setCookie("name", userHeader.name); 
-           WebSquare.cookie.setCookie("position", userHeader.position);
-           WebSquare.cookie.setCookie("pjtId", userHeader.pjtId);
-           WebSquare.cookie.setCookie("pjtName", userHeader.pjtName); 
-           WebSquare.cookie.setCookie("grpId", userHeader.grpId);
 
            location.href = "/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/header.xml";
         } else {
-            //exceptionAlert("로그인", elHeader.resCode, elHeader.resMsg);
             alert(elHeader.resMsg);
         }
     }
-
 };
-
 ]]></script>
     </head>
     <body ev:onpageload="scwin.onpageload">
     	<xf:group class="sub_contents" id="" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true" meta_snippetName="0_01 페이지시작"
-    		style="">
-    		<xf:group class="titbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_03 서브타이틀(h4)"
-    			style="">
-    			<w2:textbox class="" id="" label="로그인 화면" style="" tagname="h4"></w2:textbox>
-    		</xf:group>
-    		<w2:span id="" label="ID" meta_snippetCategory="10_입력폼" meta_snippetKeyComponent="true" meta_snippetName="10_16 출력텍스트"
-    			style="">
-    		</w2:span>
-    		<xf:input class="" id="id_input" meta_snippetCategory="10_입력폼" meta_snippetKeyComponent="true" meta_snippetName="10_01 InputBox"
-    			placeholder="" style="margin-left: 10px; margin-right: 50px;" ev:onclick="scwin.id_input_onclick" initValue="아이디를 입력하세요" ref="data:dma_login.id">
-    		</xf:input>
-    		<w2:span id="" label="PASSWORD" meta_snippetCategory="10_입력폼" meta_snippetKeyComponent="true" meta_snippetName="10_16 출력텍스트"
-    			style="margin-right: 10px;">
-    		</w2:span>
-    		<xf:input class="" id="pw_input" meta_snippetCategory="10_입력폼" meta_snippetKeyComponent="true"
-    			meta_snippetName="10_01 InputBox" placeholder="" style="margin-left: 10px; margin-right: 50px;" ev:onclick="scwin.pw_input_onclick" initValue="패스워드를 입력하세요" ref="data:dma_login.pw">
-    		</xf:input>
-    		<xf:group class="btnbox" id="" meta_snippetCategory="08_버튼" meta_snippetKeyComponent="true" meta_snippetName="8_04 전체제어버튼"
-    			style="">
-    			<xf:group class="rt" id="" style="">
-    				<xf:trigger class="btn_cm pt" id="btn_login" style="" type="button" ev:onclick="scwin.btn_login_onclick">
-    					<xf:label><![CDATA[로그인]]></xf:label>
-    				</xf:trigger>
-    				<w2:textbox class="bar_btndiv" id="" label="" style=""></w2:textbox>
-
+    		style="display: flex;justify-content: center;align-items: center;">
+    		<xf:group style="width: 300px;height: 300px;" id="">
+    			<xf:group style="margin-bottom: 30px;display: flex;justify-content: center;align-items: center;height: 60px;" id="">
+    				<xf:image id="image1" src="logoImg.jpg" style="height: 100%;"></xf:image>
+    				<w2:span id="" label="Flow" meta_snippetCategory="10_입력폼" meta_snippetKeyComponent="true" meta_snippetName="10_16 출력텍스트"
+    					style="font-size: 24px;font-weight: bold;margin-left: 15px;">
+    				</w2:span>
     			</xf:group>
-    			
+    			<xf:group style="margin-bottom: 10px;display: flex;justify-content: center;" id="">
+    				<w2:span meta_snippetCategory="10_입력폼" meta_snippetName="10_16 출력텍스트" meta_snippetKeyComponent="true"
+    					style="font-size: 20px;font-weight: bold;" id="" label="Log In">
+    				</w2:span>
+    			</xf:group>
+    			<xf:group style="margin-bottom: 30px;display: flex;justify-content: center;" id="">
+    				<w2:span meta_snippetCategory="10_입력폼" meta_snippetName="10_16 출력텍스트" meta_snippetKeyComponent="true"
+    					style="font-size: 15px;font-weight: bold;font-color: #637381;" id="" label="프로젝트 관리의 새로운 경험을 시작하세요">
+    				</w2:span>
+    			</xf:group>
+    			<xf:group style="" id="">
+    				<w2:span meta_snippetCategory="10_입력폼" meta_snippetName="10_16 출력텍스트" meta_snippetKeyComponent="true"
+    					style="font-size: 18px;font-weight: bold;" id="" label="ID">
+    				</w2:span>
+    			</xf:group>
+    			<xf:group style="" id="">
+    				<xf:input ref="data:dma_login.id" meta_snippetCategory="10_입력폼" meta_snippetName="10_01 InputBox"
+    					ev:onclick="scwin.id_input_onclick" meta_snippetKeyComponent="true"
+    					style="margin-top: 10px;margin-bottom: 30px;border-radius: 8px;width: 100%;" id="id_input" placeholder="" class=""
+    					initValue="아이디를 입력하세요">
+    				</xf:input>
+    			</xf:group>
+    			<xf:group style="" id="">
+    				<w2:span meta_snippetCategory="10_입력폼" meta_snippetName="10_16 출력텍스트" meta_snippetKeyComponent="true"
+    					style="font-size: 18px;font-weight: bold;" id="" label="PASSWORD">
+    				</w2:span>
+    			</xf:group>
+    			<xf:group style="" id="">
+    				<xf:input ref="data:dma_login.pw" meta_snippetCategory="10_입력폼" meta_snippetName="10_01 InputBox"
+    					ev:onclick="scwin.pw_input_onclick" meta_snippetKeyComponent="true"
+    					style="margin-top: 10px;margin-bottom: 60px;border-radius: 8px;width: 100%;" id="pw_input" placeholder="" class=""
+    					initValue="패스워드를 입력하세요">
+    				</xf:input>
+    				<xf:group meta_snippetCategory="08_버튼" meta_snippetName="8_04 전체제어버튼" meta_snippetKeyComponent="true" style="" id=""
+    					class="btnbox lt">
+    					<xf:trigger ev:onclick="scwin.btn_login_onclick"
+    						style="width: 30%;height: 35px;border-radius: 8px;font-size: 16px;background: #DCEFFF;" id="btn_login" type="button">
+    						<xf:label><![CDATA[로그인]]></xf:label>
+    					</xf:trigger>
+    				</xf:group>
+    			</xf:group>
     		</xf:group>
     	</xf:group>
     </body>

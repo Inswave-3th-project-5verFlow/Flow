@@ -14,18 +14,17 @@ import com.demo.proworks.groups.vo.GroupsListVo;
 import com.inswave.elfw.annotation.ElDescription;
 import com.inswave.elfw.annotation.ElService;
 import com.inswave.elfw.annotation.ElValidator;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 /**  
  * @subject     : 그룹정보 관련 처리를 담당하는 컨트롤러
  * @description : 그룹정보 관련 처리를 담당하는 컨트롤러
  * @author      : Inswave
- * @since       : 2025/07/05
+ * @since       : 2025/07/15
  * @modification
  * ===========================================================
  * DATE				AUTHOR				DESC
  * ===========================================================
- * 2025/07/05			 Inswave	 		최초 생성
+ * 2025/07/15			 Inswave	 		최초 생성
  * 
  */
 @Controller
@@ -116,9 +115,8 @@ public class GroupsController {
     public void deleteGroups(GroupsVo groupsVo) throws Exception {
         groupsService.deleteGroups(groupsVo);
     }
-    
-    
-    	/**
+   
+    /**
      * 그룹정보를 통합 저장 처리한다.
      *
      * @param  groupsVo 그룹정보    
@@ -139,7 +137,6 @@ public class GroupsController {
     		   else if(rowStatus.equals("U")) groupsService.updateGroups(groupsVoList.getGroupsVoList().get(i));
     	   }
     }
-    
-    
+   
    
 }

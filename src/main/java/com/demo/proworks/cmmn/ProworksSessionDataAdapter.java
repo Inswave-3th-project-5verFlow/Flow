@@ -1,10 +1,10 @@
 package com.demo.proworks.cmmn;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.demo.proworks.emp.vo.EmpVo;
 import com.demo.proworks.users.service.UsersService;
 import com.demo.proworks.users.vo.UsersVo;
 import com.inswave.elfw.adapter.AdapterException;
@@ -60,24 +60,8 @@ public class ProworksSessionDataAdapter extends SessionDataAdapter {
 
 			usersVo.setAccountId(id); // pmkim
 			UsersVo resUsersVo = usersService.selectUsers(usersVo);
-			UsersVo resUsersMappingVo = usersService.selectUsersMapping(usersVo);
 			
 			userHeader.setUsrId(resUsersVo.getUserId());
-			userHeader.setName(resUsersVo.getName());
-			userHeader.setPosition(resUsersVo.getPosition());
-			userHeader.setEmail(resUsersVo.getEmail());
-			userHeader.setPhone(resUsersVo.getPhone());
-			userHeader.setAccountId(resUsersVo.getAccountId());
-			userHeader.setImage(resUsersVo.getImage());
-			userHeader.setIsDeleted(resUsersVo.getIsDeleted());
-			userHeader.setIsAdmin(resUsersVo.getIsAdmin());
-			userHeader.setIsCreate(resUsersVo.getIsCreate());
-			userHeader.setPjtId(resUsersMappingVo.getPjtId());
-			userHeader.setPjtName(resUsersMappingVo.getPjtName());
-			userHeader.setGrpId(resUsersMappingVo.getGrpId());
-
-			System.out.println("==========================");
-			System.out.println(userHeader);
 
 			if (resUsersVo == null) {
 				throw new AdapterException("EL.ERROR.LOGIN.0004", new String[] { id });
