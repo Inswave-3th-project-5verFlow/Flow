@@ -1,0 +1,661 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
+	xmlns:xf="http://www.w3.org/2002/xforms">
+	<head>
+		<w2:type>COMPONENT</w2:type>
+		<w2:buildDate />
+		<w2:MSA />
+		<!-- DHTMLX Gantt JS 로드 -->
+		<script src="https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.js"></script>
+		
+		<style>
+			body, html {
+				margin: 0;
+				padding: 0;
+				overflow-x: auto;
+				font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			}
+			.gantt_container {
+				background: #f8f9fa;
+				min-height: 100vh;
+				padding: 20px;
+			}
+			.gantt_header {
+				background: white;
+				border-radius: 12px;
+				padding: 24px;
+				margin-bottom: 20px;
+				box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+			}
+			.gantt_title {
+				font-size: 28px;
+				font-weight: 700;
+				color: #2d3748;
+				margin-bottom: 16px;
+				text-align: center;
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				-webkit-background-clip: text;
+				-webkit-text-fill-color: transparent;
+				background-clip: text;
+			}
+			.gantt_controls {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				gap: 12px;
+				flex-wrap: wrap;
+			}
+			.smart_button {
+				background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+				color: white;
+				border: none;
+				padding: 12px 20px;
+				border-radius: 8px;
+				cursor: pointer;
+				font-size: 14px;
+				font-weight: 600;
+				transition: all 0.3s ease;
+				box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+			}
+			.smart_button:hover {
+				transform: translateY(-2px);
+				box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+			}
+			.smart_button.secondary {
+				background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+				box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+			}
+			.smart_button.secondary:hover {
+				box-shadow: 0 6px 20px rgba(108, 117, 125, 0.6);
+			}
+			.gantt_main {
+				background: white;
+				border-radius: 12px;
+				box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+				overflow: hidden;
+			}
+			.gantt_content {
+				padding: 24px;
+			}
+			.gantt_layout {
+				display: block;
+				min-height: 700px;
+			}
+			.gantt_chart_section {
+				width: 100%;
+				background: white;
+				border-radius: 8px;
+				border: 1px solid #dee2e6;
+				position: relative;
+			}
+			.table_header {
+				font-size: 16px;
+				font-weight: 600;
+				color: #495057;
+				margin-bottom: 12px;
+				text-align: center;
+			}
+			.status_badge {
+				padding: 3px 8px;
+				border-radius: 12px;
+				font-size: 10px;
+				font-weight: 600;
+				text-align: center;
+				white-space: nowrap;
+			}
+			.status_waiting { background: #fff3cd; color: #856404; }
+			.status_progress { background: #cce7f0; color: #0c5460; }
+			.status_completed { background: #d4edda; color: #155724; }
+			.status_delayed { background: #f8d7da; color: #721c24; }
+			.status_hold { background: #e2e3e5; color: #383d41; }
+			.chart_legend {
+				background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+				padding: 16px;
+				margin-bottom: 20px;
+				border-radius: 8px;
+				border: 1px solid #dee2e6;
+			}
+			.legend_title {
+				font-weight: 600;
+				margin-bottom: 12px;
+				color: #495057;
+				font-size: 14px;
+				text-align: center;
+			}
+			.legend_items {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 16px;
+				justify-content: center;
+			}
+			.legend_item {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				background: white;
+				padding: 6px 12px;
+				border-radius: 6px;
+				box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+			}
+			.legend_color {
+				width: 16px;
+				height: 12px;
+				border-radius: 3px;
+			}
+			.legend_label {
+				font-size: 12px;
+				color: #495057;
+				font-weight: 500;
+			}
+			.loading_state {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+				height: 400px;
+				color: #6c757d;
+				font-style: italic;
+				font-size: 16px;
+			}
+			.error_state {
+				background: #f8d7da;
+				color: #721c24;
+				padding: 20px;
+				border-radius: 8px;
+				text-align: center;
+				margin: 20px;
+				font-weight: 500;
+			}
+			.chart_canvas_wrapper {
+				height: 650px;
+				overflow: hidden;
+				padding: 16px;
+				background: white;
+			}
+			.quarter_header {
+				position: sticky;
+				top: 0;
+				background: white;
+				z-index: 10;
+				padding: 8px 16px;
+				border-bottom: 2px solid #dee2e6;
+				display: flex;
+				justify-content: space-around;
+				font-weight: 600;
+				color: #495057;
+				font-size: 14px;
+			}
+			.quarter_item {
+				flex: 1;
+				text-align: center;
+				padding: 4px;
+				background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+				border-radius: 4px;
+				margin: 0 2px;
+			}
+			
+			/* DHTMLX Gantt 간트차트 컨테이너 */
+			#ganttCanvas {
+				height: 600px !important;
+				width: 100% !important;
+				border: 1px solid #dee2e6;
+				border-radius: 4px;
+				background: white;
+			}
+			
+			/* 상태별 색상 커스터마이징 */
+			.gantt_task_line.status_waiting {
+				background-color: #ffc107 !important;
+				border-color: #e0a800 !important;
+			}
+			.gantt_task_line.status_progress {
+				background-color: #17a2b8 !important;
+				border-color: #138496 !important;
+			}
+			.gantt_task_line.status_completed {
+				background-color: #28a745 !important;
+				border-color: #1e7e34 !important;
+			}
+			.gantt_task_line.status_delayed {
+				background-color: #dc3545 !important;
+				border-color: #c82333 !important;
+			}
+		</style>
+		<xf:model>
+			<w2:dataCollection baseNode="map">
+				<w2:dataMap baseNode="map" id="dmp_searchVo">
+					<w2:keyInfo>
+						<w2:key dataType="text" id="pjtId" defaultValue="1"></w2:key>
+						<w2:key id="pageSize" name="name2" dataType="text" defaultValue="9999"></w2:key>
+					</w2:keyInfo>
+				</w2:dataMap>
+				<w2:dataList baseNode="list" id="dlt_designVoList" repeatNode="map" saveRemovedData="true" style="">
+					<w2:columnInfo>
+						<w2:column dataType="text" id="taskId" name="업무ID"></w2:column>
+						<w2:column dataType="text" id="taskName" name="업무명"></w2:column>
+						<w2:column dataType="text" id="taskStatus" name="업무상태"></w2:column>
+						<w2:column dataType="text" id="stgId" name="단계ID" defaultValue="0"></w2:column>
+						<w2:column dataType="text" id="stgName" name="단계명"></w2:column>
+						<w2:column dataType="text" id="taskSt" name="시작예정일"></w2:column>
+						<w2:column dataType="text" id="taskEt" name="완료예정일"></w2:column>
+						<w2:column dataType="text" id="taskRst" name="실제시작일"></w2:column>
+						<w2:column dataType="text" id="taskRet" name="실제완료일"></w2:column>
+						<w2:column dataType="text" id="taskAsi" name="업무담당자"></w2:column>
+						<w2:column dataType="text" id="taskRate" name="진척률" defaultValue="0"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
+			</w2:dataCollection>
+			<xf:submission id="sbm_selectTaskList" ref='data:json,{"id":"dmp_searchVo","key":"designVo"}'
+				target='data:json,{"id":"dlt_designVoList","key":"elData.designVoList"}' action="/InsWebApp/DESIGN001List.pwkjson" 
+				method="post" mediatype="application/json" encoding="UTF-8" mode="asynchronous" 
+				processMsg="업무 목록 조회중..." ev:submitdone="scwin.sbm_selectTaskList_submitdone">
+			</xf:submission>
+		</xf:model>
+		<script lazy="false" type="text/javascript"><![CDATA[
+var ganttChart = null;
+
+/**
+ * DHTMLX Gantt CSS 동적 로딩
+ */
+function loadDhtmlxCSS() {
+    return new Promise(function(resolve, reject) {
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = 'https://cdn.dhtmlx.com/gantt/edge/dhtmlxgantt.css';
+        link.onload = function() {
+            console.log("DHTMLX Gantt CSS 로딩 완료");
+            resolve();
+        };
+        link.onerror = function() {
+            console.error("DHTMLX Gantt CSS 로딩 실패");
+            reject();
+        };
+        document.head.appendChild(link);
+    });
+}
+
+/**
+ * DHTMLX Gantt 라이브러리 로딩 확인
+ */
+function waitForDhtmlxGantt(callback) {
+    if (typeof gantt !== 'undefined') {
+        callback();
+    } else {
+        setTimeout(function() {
+            waitForDhtmlxGantt(callback);
+        }, 100);
+    }
+}
+
+scwin.onpageload = function () {
+    console.log("DHTMLX Gantt 간트차트 페이지 로딩 시작");
+    
+    // 1단계: CSS 동적 로딩
+    loadDhtmlxCSS().then(function() {
+        console.log("CSS 로딩 성공, Gantt 라이브러리 확인 중...");
+        
+        // 2단계: Gantt 라이브러리 확인
+        waitForDhtmlxGantt(function() {
+            console.log("DHTMLX Gantt 라이브러리 로딩 완료");
+            
+            // 3단계: 간트차트 초기화 후 데이터 로딩
+            setTimeout(function() {
+                scwin.initGanttConfig();
+                scwin.loadTaskList();
+            }, 300); // CSS 완전 적용 대기
+        });
+    }).catch(function() {
+        console.error("CSS 로딩 실패");
+        scwin.showErrorState("CSS 로딩에 실패했습니다.");
+    });
+};
+
+/**
+ * DHTMLX Gantt 설정 초기화
+ */
+scwin.initGanttConfig = function() {
+    try {
+        // 기본 설정
+        gantt.config.date_format = "%Y-%m-%d";
+        gantt.config.xml_date = "%Y-%m-%d";
+        gantt.config.duration_unit = "day";
+        
+        // 최신 스케일 설정 (경고 메시지 해결)
+        gantt.config.scales = [
+            {unit: "month", step: 1, format: "%Y년 %m월"},
+            {unit: "day", step: 1, format: "%d일"}
+        ];
+        
+        // 한국어 설정
+        gantt.config.fit_tasks = true;
+        gantt.config.autosize = "y";
+        gantt.config.row_height = 40;
+        gantt.config.scale_height = 60;
+        gantt.config.sort = true;
+        
+        // 컬럼 설정
+        gantt.config.columns = [
+            {name: "text", label: "업무명", width: 200, tree: true},
+            {name: "stage", label: "단계", width: 80, align: "center"},
+            {name: "status", label: "상태", width: 70, align: "center", template: function(task) {
+                return '<span class="status_badge ' + scwin.getStatusClass(task.status) + '">' + (task.status || '대기') + '</span>';
+            }},
+            {name: "assignee", label: "담당자", width: 80, align: "center"},
+            {name: "progress", label: "진척률", width: 60, align: "center", template: function(task) {
+                return Math.round(task.progress * 100) + "%";
+            }},
+            {name: "start_date", label: "시작일", width: 80, align: "center"},
+            {name: "duration", label: "기간", width: 50, align: "center"}
+        ];
+        
+        // 작업 클래스 템플릿 (상태별 색상)
+        gantt.templates.task_class = function(start, end, task) {
+            var status = task.status || "waiting";
+            return "status_" + status.replace(" ", "_");
+        };
+        
+        // 작업 텍스트 템플릿
+        gantt.templates.task_text = function(start, end, task) {
+            var duration = gantt.calculateDuration(start, end);
+            return task.text + " (" + duration + "일)";
+        };
+        
+        // 툴팁 템플릿
+        gantt.templates.tooltip_text = function(start, end, task) {
+            var duration = gantt.calculateDuration(start, end);
+            return "<b>업무:</b> " + task.text + "<br/>" +
+                   "<b>단계:</b> " + (task.stage || "기타") + "<br/>" +
+                   "<b>상태:</b> " + (task.status || "대기") + "<br/>" +
+                   "<b>담당자:</b> " + (task.assignee || "미지정") + "<br/>" +
+                   "<b>시작일:</b> " + gantt.templates.task_date(start) + "<br/>" +
+                   "<b>종료일:</b> " + gantt.templates.task_date(end) + "<br/>" +
+                   "<b>기간:</b> " + duration + "일<br/>" +
+                   "<b>진척률:</b> " + Math.round(task.progress * 100) + "%";
+        };
+        
+        // 간트차트 초기화
+        gantt.init("ganttCanvas");
+        
+        console.log("DHTMLX Gantt 설정 초기화 완료");
+        
+    } catch (error) {
+        console.error("Gantt 설정 초기화 오류:", error);
+        scwin.showErrorState("간트차트 설정 초기화 실패: " + error.message);
+    }
+};
+
+scwin.loadTaskList = function() {
+    console.log("업무 목록 조회 요청");
+    $c.sbm.execute($p, sbm_selectTaskList);
+};
+
+scwin.sbm_selectTaskList_submitdone = function(e) {
+    try {
+        console.log("서버 응답 수신:", e.responseJSON);
+        var elData = e.responseJSON.elData;
+        
+        if (elData && elData.designVoList && elData.designVoList.length > 0) {
+            console.log("업무 데이터 개수:", elData.designVoList.length);
+            dlt_designVoList.setJSON(elData.designVoList);
+            
+            // DHTMLX Gantt 확인 후 차트 생성
+            if (typeof gantt !== 'undefined') {
+                scwin.createGanttChart();
+            } else {
+                console.error("DHTMLX Gantt가 로드되지 않았습니다.");
+                scwin.showErrorState("DHTMLX Gantt 라이브러리 로딩 실패");
+            }
+        } else {
+            console.log("업무 데이터가 없음");
+            scwin.showEmptyState();
+        }
+    } catch (error) {
+        console.error("데이터 처리 오류:", error);
+        scwin.showErrorState("데이터를 처리하는 중 오류가 발생했습니다.");
+    }
+};
+
+/**
+ * DHTMLX Gantt 차트 생성
+ */
+scwin.createGanttChart = function() {
+    try {
+        var taskData = dlt_designVoList.getAllJSON();
+        
+        if (!taskData || taskData.length === 0) {
+            scwin.showEmptyState();
+            return;
+        }
+        
+        // DHTMLX Gantt 데이터 형식으로 변환
+        var ganttData = {
+            data: [],
+            links: []
+        };
+        
+        taskData.forEach(function(task, index) {
+            var taskId = task.taskId || String(index + 1);
+            var taskName = task.taskName || ("업무 " + (index + 1));
+            var stageName = task.stgName || "기타";
+            var taskStatus = task.taskStatus || "대기";
+            var assignee = task.taskAsi || "미지정";
+            var progress = parseFloat(task.taskRate || "0") / 100;
+            
+            // 시작일과 종료일 설정 (예정일정 우선, 없으면 실제일정)
+            var startDate = task.taskSt || task.taskRst;
+            var endDate = task.taskEt || task.taskRet;
+            
+            // 날짜가 없는 경우 기본값 설정
+            if (!startDate) {
+                startDate = "2025-01-01";
+            }
+            if (!endDate) {
+                var start = new Date(startDate);
+                start.setDate(start.getDate() + 30);
+                endDate = start.toISOString().split('T')[0];
+            }
+            
+            var ganttTask = {
+                id: taskId,
+                text: taskName,
+                start_date: startDate,
+                end_date: endDate,
+                duration: gantt.calculateDuration(new Date(startDate), new Date(endDate)),
+                progress: progress,
+                stage: stageName,
+                status: taskStatus,
+                assignee: assignee,
+                open: true
+            };
+            
+            ganttData.data.push(ganttTask);
+        });
+        
+        // 간트차트에 데이터 파싱
+        gantt.clearAll();
+        gantt.parse(ganttData);
+        
+        console.log("DHTMLX Gantt 차트 생성 완료 - 업무 수:", taskData.length);
+        
+    } catch (error) {
+        console.error("간트차트 생성 오류:", error);
+        scwin.showErrorState("간트차트를 생성하는 중 오류가 발생했습니다: " + error.message);
+    }
+};
+
+/**
+ * 상태별 CSS 클래스 반환
+ */
+scwin.getStatusClass = function(status) {
+    var classes = {
+        '대기': 'status_waiting',
+        '진행중': 'status_progress', 
+        '완료': 'status_completed',
+        '지연': 'status_delayed'
+    };
+    return classes[status] || 'status_waiting';
+};
+
+/**
+ * 텍스트 자르기
+ */
+scwin.truncateText = function(text, maxLength) {
+    if (!text) return '';
+    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+};
+
+/**
+ * 날짜 포맷팅
+ */
+scwin.formatDate = function(date) {
+    try {
+        return date.toLocaleDateString('ko-KR', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+        });
+    } catch (e) {
+        return date.toString();
+    }
+};
+
+scwin.showEmptyState = function() {
+    try {
+        var chartWrapper = document.querySelector('.chart_canvas_wrapper');
+        if (chartWrapper) {
+            chartWrapper.innerHTML = '<div class="loading_state">표시할 업무가 없습니다</div>';
+        }
+    } catch (error) {
+        console.error("빈 상태 표시 오류:", error);
+    }
+};
+
+scwin.showErrorState = function(message) {
+    try {
+        var chartWrapper = document.querySelector('.chart_canvas_wrapper');
+        if (chartWrapper) {
+            chartWrapper.innerHTML = '<div class="error_state">' + message + '</div>';
+        }
+    } catch (error) {
+        console.error("에러 상태 표시 오류:", error);
+    }
+};
+
+// 버튼 이벤트
+scwin.refreshData = function() {
+    scwin.loadTaskList();
+};
+
+scwin.goToListPage = function() {
+    $p.url("/InsWebApp/ui/task/design/DesignList.xml");
+};
+
+
+// 뷰 변경 함수들 (새로운 스케일 방식)
+scwin.changeToMonthView = function() {
+    try {
+        gantt.config.scales = [
+            {unit: "month", step: 1, format: "%Y년 %m월"},
+            {unit: "day", step: 1, format: "%d"}
+        ];
+        gantt.render();
+    } catch (error) {
+        console.error("월별 보기 변경 오류:", error);
+    }
+};
+
+scwin.changeToWeekView = function() {
+    try {
+        gantt.config.scales = [
+            {unit: "week", step: 1, format: "%Y년 %W주"},
+            {unit: "day", step: 1, format: "%d"}
+        ];
+        gantt.render();
+    } catch (error) {
+        console.error("주별 보기 변경 오류:", error);
+    }
+};
+
+scwin.changeToDayView = function() {
+    try {
+        gantt.config.scales = [
+            {unit: "day", step: 1, format: "%m월 %d일"}
+        ];
+        gantt.render();
+    } catch (error) {
+        console.error("일별 보기 변경 오류:", error);
+    }
+};
+]]></script>
+	</head>
+	<body ev:onpageload="scwin.onpageload">
+		<xf:group class="gantt_container" id="gantt_container">
+			<xf:group class="gantt_header" id="grp_header">
+				<w2:span class="gantt_title" id="spn_title" label="프로젝트 간트차트"></w2:span>
+				
+				<xf:group class="gantt_controls">
+					<xf:trigger class="smart_button" id="btn_refresh" type="button" ev:onclick="scwin.refreshData">
+						<xf:label><![CDATA[새로고침]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="smart_button secondary" id="btn_month_view" type="button" ev:onclick="scwin.changeToMonthView">
+						<xf:label><![CDATA[월별보기]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="smart_button secondary" id="btn_week_view" type="button" ev:onclick="scwin.changeToWeekView">
+						<xf:label><![CDATA[주별보기]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="smart_button secondary" id="btn_day_view" type="button" ev:onclick="scwin.changeToDayView">
+						<xf:label><![CDATA[일별보기]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="smart_button" id="btn_go_list" type="button" ev:onclick="scwin.goToListPage">
+						<xf:label><![CDATA[리스트 보기]]></xf:label>
+					</xf:trigger>
+				</xf:group>
+			</xf:group>
+			
+			<!-- 범례 -->
+<!-- 			<xf:group class="chart_legend">
+				<w2:span class="legend_title">업무 상태별 색상</w2:span>
+				<xf:group class="legend_items">
+					<xf:group class="legend_item">
+						<w2:span class="legend_color" style="background-color: #ffc107;"></w2:span>
+						<w2:span class="legend_label">대기</w2:span>
+					</xf:group>
+					<xf:group class="legend_item">
+						<w2:span class="legend_color" style="background-color: #17a2b8;"></w2:span>
+						<w2:span class="legend_label">진행중</w2:span>
+					</xf:group>
+					<xf:group class="legend_item">
+						<w2:span class="legend_color" style="background-color: #28a745;"></w2:span>
+						<w2:span class="legend_label">완료</w2:span>
+					</xf:group>
+					<xf:group class="legend_item">
+						<w2:span class="legend_color" style="background-color: #dc3545;"></w2:span>
+						<w2:span class="legend_label">지연</w2:span>
+					</xf:group>
+				</xf:group>
+			</xf:group> -->
+
+			<!-- 메인 간트차트 영역 -->
+			<xf:group class="gantt_main" id="grp_gantt_main">
+				<xf:group class="gantt_content">
+					<!-- 분기 헤더 -->
+					<xf:group class="quarter_header">
+						<w2:span class="quarter_item">Q1 2025</w2:span>
+						<w2:span class="quarter_item">Q2 2025</w2:span>
+						<w2:span class="quarter_item">Q3 2025</w2:span>
+						<w2:span class="quarter_item">Q4 2025</w2:span>
+					</xf:group>
+					
+					<!-- 간트차트 레이아웃 -->
+					<xf:group class="gantt_layout">
+						<!-- 간트차트 영역 -->
+						<xf:group class="gantt_chart_section">
+							<xf:group class="chart_canvas_wrapper">
+								<div id="ganttCanvas"></div>
+							</xf:group>
+						</xf:group>
+					</xf:group>
+				</xf:group>
+			</xf:group>
+		</xf:group>
+	</body>
+</html>

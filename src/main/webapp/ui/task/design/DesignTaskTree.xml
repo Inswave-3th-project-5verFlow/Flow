@@ -23,6 +23,7 @@
         				<w2:column dataType="text" name="task_name" id="taskName"></w2:column>
         				<w2:column dataType="text" name="pt_task_id" id="ptTaskId"></w2:column>
         				<w2:column dataType="text" name="task_depth" id="taskDepth"></w2:column>
+        				<w2:column dataType="text" name="original_depth" id="originalDepth"></w2:column>
         				<w2:column dataType="text" name="task_seq" id="taskSeq"></w2:column>
         				<w2:column dataType="text" name="stg_id" id="stgId"></w2:column>
         				<w2:column dataType="text" name="pjt_id" id="pjtId"></w2:column>
@@ -86,6 +87,8 @@ function getStgName(stgId) {
 scwin.buildTreeView = function (originalData) {
     var currentStgId = "";
     var stgHeaderIndex = 0;
+
+    // 부모 페이지에서 클릭한 업무
     var taskData = $p.getParameter("taskData");
     var currentTaskId = taskData ? taskData.currentTaskId : null;
     var treeData = [];
@@ -93,6 +96,7 @@ scwin.buildTreeView = function (originalData) {
     for (var i = 0; i < originalData.length; i++) {
         var rowData = originalData[i];
 
+        // 자기 자신의 업무는 표시 X
         if (currentTaskId && rowData.taskId === currentTaskId) {
             continue;
         }
@@ -115,7 +119,8 @@ scwin.buildTreeView = function (originalData) {
         }
 
         var taskDepth = rowData.taskDepth;
-        var adjustedDepth = parseInt(taskDepth) + 1;
+        // 단계 헤더 때문에 depth 조정: 실제 업무의 원본 depth 유지
+        var adjustedDepth = parseInt(taskDepth) + 1;  // 단계 헤더로 인한 트리 구조상 +1
         var adjustedPtTaskId = taskDepth == "1" ? "STG_" + stgId : rowData.ptTaskId;
 
         treeData.push({
@@ -123,6 +128,7 @@ scwin.buildTreeView = function (originalData) {
             taskName: rowData.taskName,
             ptTaskId: adjustedPtTaskId,
             taskDepth: adjustedDepth.toString(),
+            originalDepth: taskDepth,  // 원본 depth 보존
             taskSeq: rowData.taskSeq,
             stgId: stgId,
             pjtId: rowData.pjtId
@@ -148,7 +154,8 @@ scwin.trv_taskTree_onlabelclick = function (value, node, index) {
             if (rowIndex >= 0) {
                 var rowData = dlt_taskTreeList.getRowJSON(rowIndex);
                 dmp_selectedTask.set("selectedStgId", rowData.stgId);
-                dmp_selectedTask.set("selectedTaskDepth", rowData.taskDepth); 
+                // 원본 depth 사용 (트리 구조상 + 1 했던 depth 아니라 원본 depth 임)
+                dmp_selectedTask.set("selectedTaskDepth", rowData.originalDepth); 
             }
         }
     }

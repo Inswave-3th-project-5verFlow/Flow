@@ -23,6 +23,7 @@
         				<w2:column dataType="text" name="task_name" id="taskName"></w2:column>
         				<w2:column dataType="text" name="pt_task_id" id="ptTaskId"></w2:column>
         				<w2:column dataType="text" name="task_depth" id="taskDepth"></w2:column>
+        				<w2:column dataType="text" name="original_depth" id="originalDepth"></w2:column>
         				<w2:column dataType="text" name="task_seq" id="taskSeq"></w2:column>
         				<w2:column dataType="text" name="stg_id" id="stgId"></w2:column>
         				<w2:column dataType="text" name="pjt_id" id="pjtId"></w2:column>
@@ -115,7 +116,8 @@ scwin.buildTreeView = function (originalData) {
         }
 
         var taskDepth = rowData.taskDepth;
-        var adjustedDepth = parseInt(taskDepth) + 1;
+        // 단계 헤더 때문에 depth 조정: 실제 업무의 원본 depth 유지
+        var adjustedDepth = parseInt(taskDepth) + 1;  // 단계 헤더로 인한 트리 구조상 +1
         var adjustedPtTaskId = taskDepth == "1" ? "STG_" + stgId : rowData.ptTaskId;
 
         treeData.push({
@@ -123,6 +125,7 @@ scwin.buildTreeView = function (originalData) {
             taskName: rowData.taskName,
             ptTaskId: adjustedPtTaskId,
             taskDepth: adjustedDepth.toString(),
+            originalDepth: taskDepth,  // 원본 depth 보존
             taskSeq: rowData.taskSeq,
             stgId: stgId,
             pjtId: rowData.pjtId
@@ -148,7 +151,8 @@ scwin.trv_taskTree_onlabelclick = function (value, node, index) {
             if (rowIndex >= 0) {
                 var rowData = dlt_taskTreeList.getRowJSON(rowIndex);
                 dmp_selectedTask.set("selectedStgId", rowData.stgId);
-                dmp_selectedTask.set("selectedTaskDepth", rowData.taskDepth); 
+                // 원본 depth 사용 (트리 구조상 조정된 값이 아닌)
+                dmp_selectedTask.set("selectedTaskDepth", rowData.originalDepth); 
             }
         }
     }
