@@ -63,13 +63,14 @@ scwin.GROUP_ID = "";
  * scwin.onpageload();
  */
 scwin.onpageload = function () {
-    scwin.LOGIN_USER_ID = "1";
-    scwin.LOGIN_USER_NAME = "김프로젝트";
+    var usrId = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_ID;
+    var userName = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_NAME;
+    debugger;
     scwin.GROUP_ID = "1";
 
     dmp_pjtVoDetail.set("userId", scwin.LOGIN_USER_ID);
     dmp_pjtVoDetail.set("grpId", scwin.GROUP_ID);
-    ipt_pjtAsi.setValue(scwin.LOGIN_USER_NAME);
+    ipt_pjtAsi.setValue(userName);
 };
 
 /**

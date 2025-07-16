@@ -58,6 +58,9 @@ public class ProworksUserHeader extends com.inswave.elfw.core.UserHeader {
     @ElDtoField(logicalName = "유저ID", physicalName = "usrId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String usrId;
 
+    @ElDtoField(logicalName = "유저이름", physicalName = "userName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String userName;
+
     @ElVoField(physicalName = "fldLen")
     public int getFldLen(){
         return fldLen;
@@ -178,6 +181,17 @@ public class ProworksUserHeader extends com.inswave.elfw.core.UserHeader {
         this.usrId = usrId;
     }
 
+    @ElVoField(physicalName = "userName")
+    public String getUserName(){
+        String ret = this.userName;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "userName")
+    public void setUserName(String userName){
+        this.userName = userName;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -192,7 +206,8 @@ public class ProworksUserHeader extends com.inswave.elfw.core.UserHeader {
         sb.append("location").append("=").append(location).append(",");
         sb.append("accountId").append("=").append(accountId).append(",");
         sb.append("accountPwd").append("=").append(accountPwd).append(",");
-        sb.append("usrId").append("=").append(usrId);
+        sb.append("usrId").append("=").append(usrId).append(",");
+        sb.append("userName").append("=").append(userName);
         sb.append("]");
         return sb.toString();
 

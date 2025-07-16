@@ -46,9 +46,7 @@
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
 		<w2:publicInfo method="" />
-		<script lazy="false" type="text/javascript"><![CDATA[scwin.LOGIN_USER_ID = "";
-
-/**
+		<script lazy="false" type="text/javascript"><![CDATA[/**
  * @method
  * @name scwin.onpageload
  * @description 페이지 로드 시 사용자 ID를 설정하고, 프로젝트 목록을 조회한다.
@@ -58,8 +56,9 @@
  * scwin.onpageload();
  */
 scwin.onpageload = function () {
-    scwin.LOGIN_USER_ID = "1";
-    dmp_pjtVo.set("userId", scwin.LOGIN_USER_ID);
+    var usrId = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_ID;
+
+    dmp_pjtVo.set("userId", usrId);
     $c.sbm.execute(sbm_selectPjtVoList);
 };
 
