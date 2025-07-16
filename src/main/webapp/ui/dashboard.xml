@@ -141,15 +141,15 @@ scwin.initFusionChart = function (chartObj, captionText, customAttrs) {
             <!-- 상단 요약 정보 -->
             <xf:group style="display: flex; justify-content: space-around; gap: 24px;">
                 <xf:group style="flex: 1; padding: 20px; border-radius: 12px; background-color: #ffffff; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
-                    <w2:textbox style="font-size: 16px; color: #666; margin-bottom: 12px;" label="총 프로젝트"></w2:textbox>
+                    <w2:textbox style="font-size: 16px; color: #666; margin-bottom: 12px;" label="나의 프로젝트"></w2:textbox>
                     <w2:textbox style="font-size: 38px; font-weight: bold; color: #0d6efd;" ref="data:dmp_projectSummary.totalProjects"></w2:textbox>
                 </xf:group>
                 <xf:group style="flex: 1; padding: 20px; border-radius: 12px; background-color: #ffffff; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
-                    <w2:textbox style="font-size: 16px; color: #666; margin-bottom: 12px;" label="총 업무"></w2:textbox>
+                    <w2:textbox style="font-size: 16px; color: #666; margin-bottom: 12px;" label="나의 업무"></w2:textbox>
                     <w2:textbox style="font-size: 38px; font-weight: bold; color: #198754;" ref="data:dmp_projectSummary.totalTasks"></w2:textbox>
                 </xf:group>
                 <xf:group style="flex: 1; padding: 20px; border-radius: 12px; background-color: #ffffff; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
-                    <w2:textbox style="font-size: 16px; color: #666; margin-bottom: 12px;" label="총 이슈/리스크"></w2:textbox>
+                    <w2:textbox style="font-size: 16px; color: #666; margin-bottom: 12px;" label="나의 이슈/리스크"></w2:textbox>
                     <w2:textbox style="font-size: 38px; font-weight: bold; color: #dc3545;" ref="data:dmp_projectSummary.totalIssues"></w2:textbox>
                 </xf:group>
             </xf:group>
