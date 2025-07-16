@@ -54,7 +54,7 @@ scwin.sbm_login_submitdone = function (e) {
         if(elHeader.resSuc == true) {
            WebSquare.cookie.setCookie("usrId", userHeader.usrId);
 
-           location.href = "/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/header.xml";
+           location.href = "/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/testMain.xml";
         } else {
             alert(elHeader.resMsg);
         }

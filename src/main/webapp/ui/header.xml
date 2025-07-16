@@ -12,6 +12,8 @@
         			<w2:columnInfo>
         				<w2:column dataType="text" name="pjtId" id="pjtId"></w2:column>
         				<w2:column dataType="text" name="pjtName" id="pjtName"></w2:column>
+        				<w2:column dataType="text" name="그룹id" id="grpId" defaultValue=""></w2:column>
+        				<w2:column dataType="text" name="그룹명" id="grpName" defaultValue=""></w2:column>
         			</w2:columnInfo>
         		</w2:dataList>
         	</w2:dataCollection>
@@ -28,6 +30,7 @@
 // 전역변수 선언
 scwin.SERVER_TIME = "";
 scwin.USER_ID = "";
+scwin.USER_NAME = "";
 
 scwin.onpageload = function() {
     scwin.SERVER_TIME = $c.date.getServerDateTime("yyyy-MM-dd hh:mm:ss");
@@ -43,11 +46,16 @@ scwin.onpageload = function() {
 
 scwin.sbm_selectUsersMapping_submitdone = function (e) {
     var data  = e.responseJSON.elData.usersVoList;
+    var header = e.responseJSON.userHeader;
+    scwin.USER_ID = header.usrId;
+    scwin.USER_NAME = header.userName; 
 
     // SelectBox와 프로젝트명 Bind
     var projectNameData = data.map(item => ({
     pjtId: item.pjtId,
-    pjtName: item.pjtName
+    pjtName: item.pjtName,
+    grpId: item.grpId,
+    grpName: item.grpName
     }));
 
     dlt_projectName.setJSON(projectNameData, false);
@@ -90,11 +98,23 @@ scwin.accountImg_onclick = function (e) {
 
     $p.openPopup("popup_test.xml", options);
 };
+
+scwin.selectBoxProjectName_onchange = function (info) {
+    var selectedPjtId = info.newValue; // 변경된 프로젝트 id
+    var grpId = dlt_projectName.getMatchedColumnData("pjtId", selectedPjtId, "grpId"); // pjtId로 데이터 리스트에서 그룹아이디 조회
+
+    var parentScwin = $p.getParentWindow().scwin;
+
+    // 부모의 onProjectChange 함수를 호출하여, 선택된 프로젝트 정보를 전달합니다.
+    if (parentScwin && typeof parentScwin.onProjectChange === "function") {
+        parentScwin.onProjectChange(selectedPjtId, grpId);
+    }
+};
 ]]></script>
     </head>
     <body ev:onpageload="scwin.onpageload">
     	<xf:group class="sub_contents" id="sub_content1" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true"
-    		meta_snippetName="0_01 페이지시작" style="background: #EBF4FD">
+    		meta_snippetName="0_01 페이지시작" style="background: #EBF4FD;">
     		<xf:group class="pgtbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_01 페이지타이틀"
     			style="">
     			<xf:trigger ev:onclick="scwin.btn_sidebarToggle_onclick"
@@ -103,8 +123,10 @@ scwin.accountImg_onclick = function (e) {
     				<xf:label>☰</xf:label>
     			</xf:trigger>
     			<xf:image src="logoImg.jpg" style="width: 40px;height: 40px;margin-left: 20px;" id="image1"></xf:image>
-    			<xf:select1 id="selectBoxProjectName" chooseOption="false" style="width: 300px;height: 30px; margin-left: 30px;"
-    				submenuSize="auto" allOption="false" disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled">
+    			<xf:select1 id="selectBoxProjectName" chooseOption="true" style="width: 300px;height: 30px; margin-left: 30px;"
+    				submenuSize="auto" allOption="" disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled"
+    				ev:onchange="scwin.selectBoxProjectName_onchange" chooseOptionLabel="$blank" ref="">
+    				<xf:choices></xf:choices>
     			</xf:select1>
     			<xf:group style="width:572px;height:40px;" id="" class="rt">
     				<w2:span style="color:#000000; min-width:100px; font-weight:bold;" id="textGrpId" label="#GRP_ID#" class=""></w2:span>

@@ -10,6 +10,7 @@
 	* ====================================================================
 	*/
 -->
+<?xml-stylesheet href="/InsWebApp/css/main/Main.css" type="text/css"?>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
 	xmlns:xf="http://www.w3.org/2002/xforms">
 
@@ -31,14 +32,12 @@
 						<w2:column id="menuUrl" name="메뉴URL" dataType="text"></w2:column>
 						<w2:column id="parentMenuId" name="상위메뉴ID" dataType="text"></w2:column>
 						<w2:column id="depth" name="레벨" dataType="text"></w2:column>
-						<w2:column dataType="text" name="메뉴설명" id="description"></w2:column>
 					</w2:columnInfo>
-					<w2:data use="true">
+					<w2:data use="false">
 						<w2:row>
 							<menuId><![CDATA[1]]></menuId>
 							<menuName><![CDATA[프로젝트 관리]]></menuName>
-							<menuUrl><![CDATA[]]>
-							</menuUrl>
+							<menuUrl></menuUrl>
 							<parentMenuId></parentMenuId>
 							<depth><![CDATA[1]]></depth>
 						</w2:row>
@@ -59,8 +58,7 @@
 						<w2:row>
 							<menuId><![CDATA[4]]></menuId>
 							<menuName><![CDATA[일정 관리]]></menuName>
-							<menuUrl><![CDATA[]]>
-							</menuUrl>
+							<menuUrl></menuUrl>
 							<parentMenuId></parentMenuId>
 							<depth><![CDATA[1]]></depth>
 						</w2:row>
@@ -210,6 +208,10 @@
 					</w2:data>
 				</w2:dataList>
 			</w2:dataCollection>
+			<xf:submission id="sbm_selectMenuList" action="/InsWebApp/MenuList.pwkjson" method="post" mediatype="application/json" ref="" target=""
+				encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit="" ev:submitdone="scwin.sbm_selectMenuList_submitdone"
+				ev:submiterror="" abortTrigger="">
+			</xf:submission>
 		</xf:model>
 
 		<!-- =============================================== -->
@@ -217,29 +219,59 @@
 		<!-- =============================================== -->
 		<script type="text/javascript"><![CDATA[
 scwin.GRP_ID = "";
+scwin.SEL_PJT_ID = "";
 
 /**
  * 페이지 로드 이벤트
  */
 scwin.onpageload = function () {
-    // 대시보드 탭 기본 열기
-    scwin.openTab("dashboard.xml", "대시보드");
+    // 1. 고정 대시보드 탭 추가
+    tab_content.addTab("dashboardTab", {
+        label: "HOME",
+        closable: false,
+        openAction: "select"
+    }, {
+        src: "dashboard.xml",
+        frameMode: "wframe"
+    });
+
+    // 2. 페이지 로드 시 사이드바를 숨김 상태로 시작
+    scwin.hideSidebar();
+};
+
+/**
+ * 사이드바를 보여주는 함수
+ */
+scwin.showSidebar = function() {
+    grp_menu.removeClass("closed");
+};
+
+/**
+ * 사이드바를 숨기는 함수
+ */
+scwin.hideSidebar = function() {
+    grp_menu.addClass("closed");
 };
 
 // 프로젝트 변경시 호출되는 공용 함수
-scwin.onProjectChange = function (pjtid, grpId) {
-    console.log("헤더로부터 프로젝트 변경 이벤트 발생");
-    console.log("pjtId: ", pjtid);
-    console.log("grpId: ", grpId);
-    grpId = "2"; // 2번 그룹 (개발자 그룹이라고 가정)
-    // TODO : 메뉴 목록을 가져오는 서브미션 
-    scwin.GRP_ID = grpId;
+scwin.onProjectChange = function (pjtId, grpId) {
+    console.log("헤더로부터 프로젝트 변경 이벤트 발생: pjtId=" + pjtId);
 
-    // 웹스퀘어 Generator를 사용한 동적 메뉴 생성
-    scwin.createMenuWithGenerator();
-}
+    // 1. 프로젝트 ID 유무에 따라 사이드바 제어
+    if (pjtId && pjtId !== "") {
+        scwin.showSidebar();
+    } else {
+        scwin.hideSidebar();
+    }
 
-
+    // 2. 메뉴 목록을 가져오는 서브미션 실행
+    scwin.SEL_PJT_ID = pjtId;
+    scwin.GRP_ID = grpId ? grpId[0] : "";
+    
+    $c.sbm.execute(sbm_selectMenuList, {
+        "elData": { "grpId": scwin.GRP_ID }
+    });
+};
 
 /**
  * 웹스퀘어 Generator를 사용한 메뉴 생성 함수
@@ -396,7 +428,23 @@ scwin.openTab = function (url, title) {
         console.error("탭 생성 실패:", e);
         $c.win.alert("페이지를 로드할 수 없습니다: " + title);
     }
-};]]></script>
+};
+
+// 메뉴조회 콜백
+scwin.sbm_selectMenuList_submitdone = function (e) {
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+
+    if (elHeader == null || elHeader === "" || elHeader === "undefined" || elHeader.resSuc === false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    }
+
+    dlt_menuVoList.setJSON(elData.menuVo);
+    // 웹스퀘어 Generator를 사용한 동적 메뉴 생성
+    scwin.createMenuWithGenerator();
+};
+]]></script>
 	</head>
 
 	<!-- =============================================== -->
@@ -496,7 +544,7 @@ scwin.openTab = function (url, title) {
 
 			<!-- ===== 사이드바 영역 (높이 자동 확장) ===== -->
 			<xf:group id="grp_menu"
-				style="width: 250px; background-color: #f8f9fa; padding: 15px; display: flex; flex-direction: column; border-right: 1px solid #dee2e6;">
+				style="width: 290px; background-color: #f8f9fa; padding: 15px; display: flex; flex-direction: column; border-right: 1px solid #dee2e6;" class="sidebar">
 				<w2:textbox id="txt_menuTitle"
 					style="font-weight: bold; font-size: 16px; margin-bottom: 15px; border: none; background: transparent; flex-shrink: 0;" readOnly="true">
 					<xf:label>메뉴</xf:label>
@@ -527,11 +575,7 @@ scwin.openTab = function (url, title) {
 			</xf:group>
 
 			<!-- ===== 컨텐츠 영역 (높이 자동 확장) ===== -->
-			<xf:group id="grp_content" style="flex: 1; background-color: #ffffff; padding: 15px; display: flex; flex-direction: column;">
-				<w2:textbox id="txt_contentTitle"
-					style="font-weight: bold; font-size: 16px; margin-bottom: 15px; border: none; background: transparent; flex-shrink: 0;" readOnly="true">
-					<xf:label>컨텐츠 영역</xf:label>
-				</w2:textbox>
+			<xf:group id="grp_content" style="flex: 1; background-color: #ffffff; padding: 15px; display: flex; flex-direction: column; overflow-y: scroll;">
 
 				<!-- 탭 컨트롤 (남은 공간 모두 차지) -->
 				<w2:tabControl id="tab_content" style="flex: 1; border: 1px solid #dee2e6;" useTabScroll="true" closable="true">

@@ -1,0 +1,10 @@
+/* 기본 상태의 사이드바 (sidebar 클래스) */
+.sidebar {
+	transition: margin-left 0.3s ease-in-out;
+	margin-left: 0; /* 기본 마진 */
+}
+
+/* 닫혔을 때의 사이드바 (sidebar 클래스와 closed 클래스가 모두 있을 때) */
+.sidebar.closed {
+	margin-left: -290px; /* grp_menu의 너비(width)와 동일한 값 */
+}
