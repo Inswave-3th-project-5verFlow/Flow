@@ -140,3 +140,9 @@ matrix_mobile_home/
 # 웹팩 빌드 결과물
 src/main/webapp/_wpack_/
 src/main/webapp/websquare/_websquare_/
+
+# Properties file
+src/main/resources/inswave/properties/elfw.properties
+
+# Config file
+src/main/webapp/websquare/config.js
