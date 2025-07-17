@@ -84,7 +84,8 @@
             f.name as storedFileName,
             f.org_name as originalFileName,
             f.path as s3Key,
-    		<!-- f.file_extension as fileExtension, -->
+    		f.file_extension as fileExtension,
+    		f.file_size as fileSize,
             f.created_at as createdAt
         FROM file_attachments fa
         INNER JOIN file f ON fa.file_id = f.id
