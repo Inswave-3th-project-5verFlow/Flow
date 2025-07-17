@@ -147,7 +147,7 @@ scwin.btn_sidebarToggle_onclick = function(e) {
     				<xf:label>☰</xf:label>
     			</xf:trigger>
     			<xf:image src="logoImg.jpg" style="width: 40px;height: 40px;margin-left: 20px;" id="image1"></xf:image>
-    			<xf:select1 id="selectBoxProjectName" chooseOption="" style="width: 300px;height: 30px; margin-left: 30px;"
+    			<xf:select1 id="selectBoxProjectName" chooseOption="true" style="width: 300px;height: 30px; margin-left: 30px;"
     				submenuSize="auto" allOption="" disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled"
     				ev:onchange="scwin.selectBoxProjectName_onchange" chooseOptionLabel="$blank" ref="">
     				<xf:choices></xf:choices>
