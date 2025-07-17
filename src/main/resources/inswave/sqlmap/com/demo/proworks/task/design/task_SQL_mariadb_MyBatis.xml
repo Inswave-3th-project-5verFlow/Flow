@@ -342,7 +342,7 @@ WITH RECURSIVE task_tree AS (
             task_seq,
             stg_id,
             pjt_id,
-            CAST(LPAD(task_seq, 3, '0') AS VARCHAR(100)) as sort_path
+            CAST(LPAD(task_id, 10, '0') AS VARCHAR(200)) as tree_path  -- task_id 기반 경로 (설계용)
         FROM task 
         WHERE pt_task_id = 0 
               AND pjt_id = #{pjtId}
@@ -359,12 +359,12 @@ WITH RECURSIVE task_tree AS (
             t.task_seq,
             t.stg_id,
             t.pjt_id,
-            CAST(CONCAT(tt.sort_path, '-', LPAD(t.task_seq, 3, '0')) AS VARCHAR(100)) as sort_path
+            CAST(CONCAT(tt.tree_path, '-', LPAD(t.task_id, 10, '0')) AS VARCHAR(200)) as tree_path
         FROM task t
         INNER JOIN task_tree tt ON t.pt_task_id = tt.task_id
-        WHERE t.task_depth &lt;=5 
-          	  AND t.pjt_id = #{pjtId}
-          	  AND t.stg_id BETWEEN 1 AND 5
+        WHERE t.task_depth &lt;=10  
+              AND t.pjt_id = #{pjtId}
+              AND t.stg_id BETWEEN 1 AND 5
 )
     SELECT
         task_id as taskId,
@@ -375,11 +375,11 @@ WITH RECURSIVE task_tree AS (
         stg_id as stgId,
         pjt_id as pjtId
     FROM task_tree
-    ORDER BY stg_id, sort_path
+    ORDER BY stg_id, tree_path
 </select>
 
 <select id="selectTreeListDevelop" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
-<!-- 트리 구조에 맞게 설계 업무 목록을 조회한다. -->
+<!-- 트리 구조에 맞게 개발 업무 목록을 조회한다. -->
 WITH RECURSIVE task_tree AS (
         -- 1단계: 최상위 업무들 (pt_task_id = 0)
         SELECT
@@ -390,7 +390,7 @@ WITH RECURSIVE task_tree AS (
             task_seq,
             stg_id,
             pjt_id,
-            CAST(LPAD(task_seq, 3, '0') AS VARCHAR(100)) as sort_path
+            CAST(LPAD(task_id, 10, '0') AS VARCHAR(200)) as tree_path  -- task_id 기반 정렬
         FROM task 
         WHERE pt_task_id = 0 
           AND pjt_id = #{pjtId}
@@ -407,10 +407,10 @@ WITH RECURSIVE task_tree AS (
             t.task_seq,
             t.stg_id,
             t.pjt_id,
-            CAST(CONCAT(tt.sort_path, '-', LPAD(t.task_seq, 3, '0')) AS VARCHAR(100)) as sort_path
+            CAST(CONCAT(tt.tree_path, '-', LPAD(t.task_id, 10, '0')) AS VARCHAR(200)) as tree_path  -- task_id 기반 정렬
         FROM task t
         INNER JOIN task_tree tt ON t.pt_task_id = tt.task_id
-        WHERE t.task_depth &lt;=5 
+        WHERE t.task_depth &lt;=10
           AND t.pjt_id = #{pjtId}
           AND t.stg_id = 6
 )
@@ -423,75 +423,124 @@ WITH RECURSIVE task_tree AS (
         stg_id as stgId,
         pjt_id as pjtId
     FROM task_tree
-    ORDER BY stg_id, sort_path
+    ORDER BY stg_id, tree_path  -- 단계별 + 경로 기반 정렬 (개발용)
 </select>
 
+<select id="selectTreeList" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
+<!-- 트리 구조에 맞게 개발 업무 목록을 조회한다. -->
+WITH RECURSIVE task_tree AS (
+        -- 1단계: 최상위 업무들 (pt_task_id = 0)
+        SELECT
+            task_id,
+            task_name,
+            pt_task_id,
+            task_depth,
+            task_seq,
+            stg_id,
+            pjt_id,
+            CAST(LPAD(task_id, 10, '0') AS VARCHAR(200)) as tree_path  -- task_id 기반 정렬
+        FROM task 
+        WHERE pt_task_id = 0 
+          AND pjt_id = #{pjtId}
+
+        
+        UNION ALL
+        
+        -- 2-3단계: 하위 업무들 재귀 조회
+        SELECT
+            t.task_id,
+            t.task_name,
+            t.pt_task_id,
+            t.task_depth,
+            t.task_seq,
+            t.stg_id,
+            t.pjt_id,
+            CAST(CONCAT(tt.tree_path, '-', LPAD(t.task_id, 10, '0')) AS VARCHAR(200)) as tree_path  -- task_id 기반 정렬
+        FROM task t
+        INNER JOIN task_tree tt ON t.pt_task_id = tt.task_id
+        WHERE t.task_depth &lt;=10
+          AND t.pjt_id = #{pjtId}
+
+)
+    SELECT
+        task_id as taskId,
+        task_name as taskName,
+        pt_task_id as ptTaskId,
+        task_depth as taskDepth,
+        task_seq as taskSeq,
+        stg_id as stgId,
+        pjt_id as pjtId
+    FROM task_tree
+    ORDER BY stg_id, tree_path 
+</select>
 
 <select id="selectListTask" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
 <!-- 모든 단계의 업무를 정렬된 형태로 조회한다. -->
 WITH RECURSIVE task_tree AS (
-      -- 1단계: 최상위 업무들 (pt_task_id = 0)
-      SELECT
-          task_id,
-       task_name,
-       task_status,
-       pt_task_id,
-       task_depth,
-       task_seq,
-       stg_id,
-       pjt_id,
-       task_st,
-       task_et,
-       task_rst,
-       task_ret,
-       task_asi,
-          CAST(LPAD(task_seq, 3, '0') AS VARCHAR(100)) as sort_path
-      FROM task 
-      WHERE pt_task_id = 0 
-       	    AND pjt_id = #{pjtId}
+    -- 1단계: 최상위 업무들 (pt_task_id = 0)
+    SELECT
+        task_id,
+        task_name,
+        task_status,
+        pt_task_id,
+        task_depth,
+        task_seq,
+        stg_id,
+        pjt_id,
+        task_st,
+        task_et,
+        task_rst,
+        task_ret,
+        task_asi,
+        task_rate,
+        CAST(LPAD(task_id, 10, '0') AS VARCHAR(200)) as tree_path -- task_id 기반 정렬로 변경
+    FROM task
+    WHERE pt_task_id = 0
+    AND pjt_id = #{pjtId}
 
-      
-      UNION ALL
-      
-      -- 2-3단계: 하위 업무들 재귀 조회
-      SELECT
-          t.task_id,
-       t.task_name,
-       t.task_status,
-       t.pt_task_id,
-       t.task_depth,
-       t.task_seq,
-       t.stg_id,
-       t.pjt_id,
-       t.task_st,
-       t.task_et,
-       t.task_rst,
-       t.task_ret,
-       t.task_asi,
-          CAST(CONCAT(tt.sort_path, '-', LPAD(t.task_seq, 3, '0')) AS VARCHAR(100)) as sort_path
-      FROM task t
-      INNER JOIN task_tree tt ON t.pt_task_id = tt.task_id
-      WHERE t.pjt_id = #{pjtId}  <!--and t.task_depth &lt;=5  -->
+    UNION ALL
+
+    -- 2-3단계: 하위 업무들 재귀 조회
+    SELECT
+        t.task_id,
+        t.task_name,
+        t.task_status,
+        t.pt_task_id,
+        t.task_depth,
+        t.task_seq,
+        t.stg_id,
+        t.pjt_id,
+        t.task_st,
+        t.task_et,
+        t.task_rst,
+        t.task_ret,
+        t.task_asi,
+        t.task_rate,
+        CAST(CONCAT(tt.tree_path, '-', LPAD(t.task_id, 10, '0')) AS VARCHAR(200)) as tree_path -- task_id 기반 정렬로 변경
+    FROM task t
+    INNER JOIN task_tree tt ON t.pt_task_id = tt.task_id
+    WHERE t.pjt_id = #{pjtId}
 )
 SELECT
- tt.task_id as taskId,
- tt.task_name as taskName,
- tt.task_status as taskStatus,
- tt.pt_task_id as ptTaskId,
- tt.task_depth as taskDepth,
- tt.task_seq as taskSeq,
- tt.stg_id as stgId,
- tt.pjt_id as pjtId,
- tt.task_st AS taskSt,
- tt.task_et AS taskEt,
- tt.task_rst AS taskRst,
- tt.task_ret AS taskRet,
- tt.task_asi AS taskAsi,
- s.stg_name AS stgName 
+    tt.task_id as taskId,
+    tt.task_name as taskName,
+    tt.task_status as taskStatus,
+    tt.pt_task_id as ptTaskId,
+    tt.task_depth as taskDepth,
+    tt.task_seq as taskSeq,
+    tt.stg_id as stgId,
+    tt.pjt_id as pjtId,
+    tt.task_st AS taskSt,
+    tt.task_et AS taskEt,
+    tt.task_rst AS taskRst,
+    tt.task_ret AS taskRet,
+    tt.task_asi AS taskAsi,
+    tt.task_rate AS taskRate,
+    s.stg_name AS stgName
 FROM task_tree tt
-LEFT JOIN stg s ON tt.stg_id = s.stg_id 
-ORDER BY tt.stg_id, tt.sort_path
-</select>	
+LEFT JOIN stg s ON tt.stg_id = s.stg_id
+ORDER BY tt.stg_id, tt.tree_path -- task_id 기반 경로로 정렬
+</select>
 
 
 <!-- 해당 업무의 하위업무들 조회 -->

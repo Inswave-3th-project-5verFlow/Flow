@@ -1027,7 +1027,7 @@ scwin.btn_excel_template_download_onclick = function (e) {
 						</xf:trigger>
 
 						<!-- 상위업무 자동설정 버튼 추가 -->
-						<xf:trigger class="btn_cm" id="btn_excel_template" style="background-color:#28A745;color:#FFFFFF;" type="button"
+						<xf:trigger class="btn_cm" id="btn_excel_template" style="background-color:;color:;" type="button"
 							ev:onclick="scwin.btn_excel_template_download_onclick">
 							<xf:label><![CDATA[템플릿 다운로드]]></xf:label>
 						</xf:trigger>
@@ -1040,10 +1040,10 @@ scwin.btn_excel_template_download_onclick = function (e) {
 							<xf:label><![CDATA[엑셀 다운로드]]></xf:label>
 						</xf:trigger>
 						<w2:textbox class="bar_btndiv" id="" label="" style=""></w2:textbox>
-						<xf:trigger class="btn_cm" id="btn_auto_set_parent" style="background-color:#FFA500;color:#FFFFFF;" type="button"
+						<xf:trigger class="btn_cm" id="btn_auto_set_parent" style="background-color:;color:;" type="button"
 							ev:onclick="scwin.btn_auto_set_parent_onclick">
-							<xf:label><![CDATA[🚀 자동화]]></xf:label>
-						</xf:trigger>
+							<xf:label><![CDATA[자동화]]></xf:label>			
+                        </xf:trigger>
 						<xf:trigger class="btn_cm pt" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
 							<xf:label><![CDATA[저장]]></xf:label>
 						</xf:trigger>
