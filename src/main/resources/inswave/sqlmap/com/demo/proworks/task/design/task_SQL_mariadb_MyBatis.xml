@@ -35,7 +35,8 @@ INSERT INTO TASK /* QueryID : com.demo.proworks.task.design.insertDesign */
     TASK_RET,
     TASK_ASI,
     TASK_RATE,
-    PJT_ID
+    PJT_ID,
+    USER_ID
 )
 VALUES
 (
@@ -52,9 +53,13 @@ VALUES
     COALESCE(NULLIF(#{taskEt}, ''), null),             <!-- 빈값이면 빈문자열 -->
     COALESCE(NULLIF(#{taskRst}, ''), null),            <!-- 빈값이면 빈문자열 -->
     COALESCE(NULLIF(#{taskRet}, ''), null),            <!-- 빈값이면 빈문자열 -->
-    COALESCE(NULLIF(#{taskAsi}, ''), ''),            <!-- 빈값이면 빈문자열 (나중에 기본값 설정 예정) -->
+    COALESCE(
+            NULLIF(#{taskAsi}, ''), 
+            (SELECT name FROM users WHERE user_id = #{userId})
+        ),
     COALESCE(NULLIF(#{taskRate}, ''), 0),            <!-- 빈값이면 0 -->
-    COALESCE(NULLIF(#{pjtId}, ''), 1)                <!-- 빈값이면 1 (나중에 기본값 설정 예정) -->
+    #{pjtId},
+    #{userId}
 )
 </insert>
 	
@@ -133,6 +138,56 @@ VALUES
 		WHERE t.TASK_ID = #{taskId}
 			
     </select>
+    
+    <select id="selectTasks" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
+		<!-- 모든 업무 정보 목록을 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.task.design.selectListDesign */
+		taskId, taskName, taskDes, taskStatus, isTest, taskDepth, stgId, ptTaskId, taskSeq, taskSt, taskEt, taskRst, taskRet, taskAsi, taskRate, pjtId, ptTaskName, stgName
+		FROM (
+		    SELECT S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
+		    FROM (
+		        SELECT
+		            t.TASK_ID as taskId, 
+		            t.TASK_NAME as taskName, 
+		            t.TASK_DES as taskDes, 
+		            t.TASK_STATUS as taskStatus, 
+		            t.IS_TEST as isTest, 
+		            t.TASK_DEPTH as taskDepth, 
+		            t.STG_ID as stgId, 
+		            t.PT_TASK_ID as ptTaskId, 
+		            t.TASK_SEQ as taskSeq, 
+		            t.TASK_ST as taskSt, 
+		            t.TASK_ET as taskEt, 
+		            t.TASK_RST as taskRst, 
+		            t.TASK_RET as taskRet, 
+		            t.TASK_ASI as taskAsi, 
+		            t.TASK_RATE as taskRate, 
+		            t.PJT_ID as pjtId,
+		            <!-- pt.TASK_NAME as ptTaskName, -->
+		            COALESCE(pt.TASK_NAME, t.PT_TASK_NAME) as ptTaskName, <!--  엑셀 업로드를 위해서 추가.. -->
+		            s.STG_NAME as stgName
+		        FROM TASK t
+		        LEFT JOIN TASK pt ON t.PT_TASK_ID = pt.TASK_ID
+		        LEFT JOIN STG s ON t.STG_ID = s.STG_ID
+		        WHERE t.PJT_ID = #{pjtId} and t.USER_ID = #{userId}
+		        <if test="scTaskName != null and scTaskName != ''">
+		            AND t.TASK_NAME like '%${scTaskName}%'
+		        </if>
+		        <if test="scTaskStatus != null and scTaskStatus != ''">
+		            AND t.TASK_STATUS like '%${scTaskStatus}%'
+		        </if>
+		        <if test="scIsTest != null and scIsTest != ''">
+		            AND t.IS_TEST like '%${scIsTest}%'
+		        </if>
+		        <if test="scStgId != null and scStgId != ''">
+		            AND t.STG_ID like '%${scStgId}%'
+		        </if>
+		    ) S, (SELECT @ROWNUM := 0) TMP
+		) A
+		WHERE PAGE = #{pageIndex}
+</select>
+    
+    
 	
 <select id="selectListDesign" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
 		<!-- 설계 업무 정보 목록을 조회한다. -->
@@ -164,7 +219,7 @@ VALUES
 		        FROM TASK t
 		        LEFT JOIN TASK pt ON t.PT_TASK_ID = pt.TASK_ID
 		        LEFT JOIN STG s ON t.STG_ID = s.STG_ID
-		        WHERE t.STG_ID BETWEEN 1 AND 5  AND t.PJT_ID = #{pjtId}
+		        WHERE t.STG_ID BETWEEN 1 AND 5  AND t.PJT_ID = #{pjtId} AND t.USER_ID = #{userId}
 		        <if test="scTaskName != null and scTaskName != ''">
 		            AND t.TASK_NAME like '%${scTaskName}%'
 		        </if>
@@ -212,7 +267,7 @@ VALUES
 		        FROM TASK t
 		        LEFT JOIN TASK pt ON t.PT_TASK_ID = pt.TASK_ID
 		        LEFT JOIN STG s ON t.STG_ID = s.STG_ID
-		        WHERE t.STG_ID = 6 AND t.PJT_ID = #{pjtId}
+		        WHERE t.STG_ID = 6 AND t.PJT_ID = #{pjtId} AND t.USER_ID = #{userId}
 		        <if test="scTaskName != null and scTaskName != ''">
 		            AND t.TASK_NAME like '%${scTaskName}%'
 		        </if>
@@ -236,7 +291,7 @@ VALUES
          SELECT    /* QueryID : com.demo.proworks.task.design.selectListCountDesign */
              COUNT(*) totcnt  		                  
          FROM TASK
-         WHERE  stg_id between 1 and 5 AND PJT_ID = #{pjtId}   		
+         WHERE  stg_id between 1 and 5 AND PJT_ID = #{pjtId} AND USER_ID = #{userId}   		
             <if test="scTaskName != null and scTaskName != ''">
                  AND TASK_NAME like '%${scTaskName}%'
             </if>
@@ -257,7 +312,7 @@ VALUES
          SELECT    /* QueryID : com.demo.proworks.task.design.selectListCountDesign */
              COUNT(*) totcnt  		                  
          FROM TASK
-         WHERE  stg_id = 6  AND PJT_ID = #{pjtId}	
+         WHERE  stg_id = 6  AND PJT_ID = #{pjtId} AND USER_ID = #{userId}   		
             <if test="scTaskName != null and scTaskName != ''">
                  AND TASK_NAME like '%${scTaskName}%'
             </if>
@@ -370,6 +425,89 @@ WITH RECURSIVE task_tree AS (
     FROM task_tree
     ORDER BY stg_id, sort_path
 </select>
-			
 
+
+<select id="selectListTask" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
+<!-- 모든 단계의 업무를 정렬된 형태로 조회한다. -->
+WITH RECURSIVE task_tree AS (
+      -- 1단계: 최상위 업무들 (pt_task_id = 0)
+      SELECT
+          task_id,
+       task_name,
+       task_status,
+       pt_task_id,
+       task_depth,
+       task_seq,
+       stg_id,
+       pjt_id,
+       task_st,
+       task_et,
+       task_rst,
+       task_ret,
+       task_asi,
+          CAST(LPAD(task_seq, 3, '0') AS VARCHAR(100)) as sort_path
+      FROM task 
+      WHERE pt_task_id = 0 
+       	    AND pjt_id = #{pjtId}
+
+      
+      UNION ALL
+      
+      -- 2-3단계: 하위 업무들 재귀 조회
+      SELECT
+          t.task_id,
+       t.task_name,
+       t.task_status,
+       t.pt_task_id,
+       t.task_depth,
+       t.task_seq,
+       t.stg_id,
+       t.pjt_id,
+       t.task_st,
+       t.task_et,
+       t.task_rst,
+       t.task_ret,
+       t.task_asi,
+          CAST(CONCAT(tt.sort_path, '-', LPAD(t.task_seq, 3, '0')) AS VARCHAR(100)) as sort_path
+      FROM task t
+      INNER JOIN task_tree tt ON t.pt_task_id = tt.task_id
+      WHERE t.pjt_id = #{pjtId}  <!--and t.task_depth &lt;=5  -->
+)
+SELECT
+ tt.task_id as taskId,
+ tt.task_name as taskName,
+ tt.task_status as taskStatus,
+ tt.pt_task_id as ptTaskId,
+ tt.task_depth as taskDepth,
+ tt.task_seq as taskSeq,
+ tt.stg_id as stgId,
+ tt.pjt_id as pjtId,
+ tt.task_st AS taskSt,
+ tt.task_et AS taskEt,
+ tt.task_rst AS taskRst,
+ tt.task_ret AS taskRet,
+ tt.task_asi AS taskAsi,
+ s.stg_name AS stgName 
+FROM task_tree tt
+LEFT JOIN stg s ON tt.stg_id = s.stg_id 
+ORDER BY tt.stg_id, tt.sort_path
+</select>	
+
+
+<!-- 해당 업무의 하위업무들 조회 -->
+ <select id="selectChildTasks" parameterType="com.demo.proworks.task.design.vo.DesignVo" resultType="com.demo.proworks.task.design.vo.DesignVo">
+	   WITH RECURSIVE child_depth_update AS (
+        SELECT task_id, task_depth as new_depth, 0 as level_depth
+        FROM task WHERE task_id = #{taskId}
+        
+        UNION ALL
+        
+        SELECT t.task_id, cdu.new_depth + 1 as new_depth, cdu.level_depth + 1 as level_depth
+        FROM task t
+        JOIN child_depth_update cdu ON t.pt_task_id = cdu.task_id
+        WHERE cdu.level_depth &lt; 10
+    	)
+    SELECT task_id as taskId, new_depth as taskDepth
+    FROM child_depth_update WHERE task_id != #{taskId}
+</select>
 </mapper>

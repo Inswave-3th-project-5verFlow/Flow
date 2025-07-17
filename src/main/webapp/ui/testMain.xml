@@ -613,7 +613,7 @@ scwin.sbm_selectMenuList_submitdone = function (e) {
 
 			<!-- ===== 사이드바 영역 (높이 자동 확장) ===== -->
 			<xf:group id="grp_menu"
-				style="width: 14%; background-color: #f8f9fa; padding: 15px; display: flex; flex-direction: column; border-right: 1px solid #dee2e6;" class="sidebar">
+				style="width: 250px; background-color: #f8f9fa; padding: 15px; display: flex; flex-direction: column; border-right: 1px solid #dee2e6;" class="sidebar">
 				<w2:textbox id="txt_menuTitle"
 					style="font-weight: bold; font-size: 16px; margin-bottom: 15px; border: none; background: transparent; flex-shrink: 0;" readOnly="true">
 					<xf:label>메뉴</xf:label>

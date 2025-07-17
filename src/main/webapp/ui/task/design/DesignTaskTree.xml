@@ -54,16 +54,19 @@
         
         <script lazy="false" type="text/javascript"><![CDATA[
 scwin.onpageload = function () {
+
     btn_search.hide();
     var taskData = $p.getParameter("taskData");
     console.log(taskData);
+    dmp_projectId.set("pjtId", taskData.currentPjtId);
+
     $c.sbm.execute(sbm_designTaskTreeList);
 };
 
 scwin.sbm_designTaskTreeList_submitdone = function (e) {
     var elData = e.responseJSON.elData;
     var elHeader = e.responseJSON.elHeader;
-    
+
     if (elHeader == null || elHeader == "" || elHeader == "undefined" || elHeader.resSuc == false) {
         $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
         return false;
@@ -75,7 +78,7 @@ scwin.sbm_designTaskTreeList_submitdone = function (e) {
 function getStgName(stgId) {
     var stgNames = {
         "1": "[ 1단계 ] 리서치",
-        "2": "[ 2단계 ] 분석", 
+        "2": "[ 2단계 ] 분석",
         "3": "[ 3단계 ] 기획",
         "4": "[ 4단계 ] 디자인",
         "5": "[ 5단계 ] 퍼블리싱",
@@ -155,7 +158,7 @@ scwin.trv_taskTree_onlabelclick = function (value, node, index) {
                 var rowData = dlt_taskTreeList.getRowJSON(rowIndex);
                 dmp_selectedTask.set("selectedStgId", rowData.stgId);
                 // 원본 depth 사용 (트리 구조상 + 1 했던 depth 아니라 원본 depth 임)
-                dmp_selectedTask.set("selectedTaskDepth", rowData.originalDepth); 
+                dmp_selectedTask.set("selectedTaskDepth", rowData.originalDepth);
             }
         }
     }
@@ -183,17 +186,17 @@ scwin.btn_confirm_onclick = function (e) {
 
     if (selectedTaskId) {
         var taskData = $p.getParameter("taskData");
-        
+
         var returnData = {
             selectedTask: {
                 taskId: selectedTaskId,
                 taskName: selectedTaskName,
                 stgId: selectedStgId,
-                taskDepth: selectedTaskDepth  
+                taskDepth: selectedTaskDepth
             },
             currentRowIndex: taskData ? taskData.currentRowIndex : null
         };
-        
+
         $p.parent().scwin.receiveTaskData(returnData);
         $p.closePopup();
     } else {

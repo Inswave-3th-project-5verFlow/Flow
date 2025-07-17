@@ -17,6 +17,7 @@
 						<w2:key dataType="text" id="pageIndex" name="페이지_번호" defaultValue="1"></w2:key>
 						<w2:key dataType="text" id="pageSize" name="페이지_건수" defaultValue="15"></w2:key>
 						<w2:key id="pjtId" name="프로젝트 ID" dataType="text" defaultValue="1"></w2:key>
+						<w2:key id="userId" name="사용자 ID" dataType="text"></w2:key>
 					</w2:keyInfo>
 					<w2:data use="false"></w2:data>
 				</w2:dataMap>
@@ -28,7 +29,7 @@
 						<w2:column dataType="text" id="taskStatus" name="업무상태"></w2:column>
 						<w2:column dataType="text" id="isTest" name="테스트여부" defaultValue="0"></w2:column>
 						<w2:column dataType="text" id="taskDepth" name="뎁스" defaultValue="1"></w2:column>
-						<w2:column dataType="text" id="stgId" name="단계ID" defaultValue="0"></w2:column>
+						<w2:column dataType="text" id="stgId" name="단계ID" defaultValue="6"></w2:column>
 						<w2:column dataType="text" id="ptTaskId" name="상위업무ID" defaultValue="0"></w2:column>
 						<w2:column dataType="text" id="taskSeq" name="순서" defaultValue="1"></w2:column>
 						<w2:column dataType="text" id="taskSt" name="시작예정일"></w2:column>
@@ -42,6 +43,7 @@
 						<w2:column id="chk" name="chk" dataType="text" ignoreStatus="true"></w2:column>
 						<w2:column id="ptTaskName" name="상위업무명" dataType="text"></w2:column>
 						<w2:column id="stgName" name="단계명" dataType="text"></w2:column>
+						<w2:column id="userId" name="사용자 ID" dataType="text"></w2:column>
 					</w2:columnInfo>
 				</w2:dataList>
 				<w2:dataList baseNode="list" repeatNode="map" id="dlt_taskStatus" saveRemovedData="true">
@@ -116,8 +118,17 @@
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
 		<w2:publicInfo method="" />
-		<script lazy="false" type="text/javascript"><![CDATA[
+		<script lazy="false" type="text/javascript"><![CDATA[scwin.userId = '';
+scwin.pjtId = '';
+
 scwin.onpageload = function () {
+    scwin.userId = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_ID;
+    scwin.pjtId = $p.parent().scwin.SEL_PJT_ID;
+    console.log('로그인한 userID : ', scwin.userId);
+    console.log('현재 pjtID : ', scwin.pjtId);
+    dmp_designVo.set("userId", scwin.userId);
+    dmp_designVo.set("pjtId", scwin.pjtId);
+
     var cptIbxName = $p.getComponentById("searchComp_1");
     if (cptIbxName == undefined) {
         search_box.hide();
@@ -162,7 +173,7 @@ scwin.btn_reset_onclick = function (e) {
     dmp_designVo.setEmptyValue();
     dmp_designVo.set("pageIndex", "1");
     pgl_designList.setSelectedIndex(1);
-    
+
     $c.sbm.execute($p, sbm_selectDevelopVoList);
 };
 
@@ -176,9 +187,19 @@ scwin.btn_delete_onclick = function (e) {
 };
 
 scwin.btn_save_onclick = function (e) {
+
+    let modifiedData = dlt_designVoList.getModifiedJSON();
+
+    modifiedData.forEach(function (item) {
+        item.userId = scwin.userId;
+        item.pjtId = scwin.pjtId;
+    });
+
     let reqObj = {
-        "elData": { "designVoList": dlt_designVoList.getModifiedJSON() }
-    }
+        "elData": {
+            "designVoList": modifiedData
+        }
+    };
     $c.sbm.execute(sbm_saveDevelopVoList, reqObj);
 };
 
@@ -231,7 +252,8 @@ scwin.openParentTaskPopup = function (rowIndex) {
         currentTaskId: rowData.taskId,
         currentTaskName: rowData.taskName,
         currentRowIndex: rowIndex,
-        currentStgId: rowData.stgId
+        currentStgId: rowData.stgId,
+        currentPjtId : rowData.pjtId
     };
 
     var jsnPopupData = {
@@ -378,13 +400,13 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 							<w2:summary />
 						</w2:attributes>
 						<xf:group tagname="colgroup">
-							<xf:group tagname="col" style="width:100px;" id="searchComp_1"></xf:group>
+							<xf:group tagname="col" style="width:63px;" id="searchComp_1"></xf:group>
 							<xf:group tagname="col" style="" id="searchComp_2"></xf:group>
-							<xf:group tagname="col" style="width:100px;" id="searchComp_3"></xf:group>
+							<xf:group tagname="col" style="width:75px;" id="searchComp_3"></xf:group>
 							<xf:group tagname="col" style="" id="searchComp_4"></xf:group>
-							<xf:group tagname="col" style="width:100px;" id="searchComp_5"></xf:group>
+							<xf:group tagname="col" style="width:92px;" id="searchComp_5"></xf:group>
 							<xf:group tagname="col" style="" id="searchComp_6"></xf:group>
-							<xf:group tagname="col" style="width:100px;" id="searchComp_7"></xf:group>
+							<xf:group tagname="col" style="width:60px;" id="searchComp_7"></xf:group>
 							<xf:group tagname="col" style="" id="searchComp_8"></xf:group>
 						</xf:group>
 						<xf:group tagname="tr" style="" id="" class="">
@@ -392,14 +414,14 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 								<w2:textbox localeRef="Design_SEARCH_00001" style="" id="" label="업무명" class=""></w2:textbox>
 							</xf:group>
 							<xf:group tagname="td" style="" id="" class="w2tb_td">
-								<xf:input ref="data:dmp_designVo.scTaskName" style="width:100%;" id="" placeholder="" class=""></xf:input>
+								<xf:input ref="data:dmp_designVo.scTaskName" style="width:100%;height: 21px;" id="" placeholder="" class=""></xf:input>
 							</xf:group>
 							<xf:group tagname="th" style="" class="w2tb_th">
 								<w2:textbox localeRef="Design_SEARCH_00002" style="" id="" label="업무상태" class=""></w2:textbox>
 							</xf:group>
 							<xf:group tagname="td" style="" id="" class="w2tb_td">
 								<xf:select1 submenuSize="auto" ref="data:dmp_designVo.scTaskStatus" chooseOptionLabel=""
-									appearance="minimal" disabledClass="w2selectbox_disabled" chooseOption="true" style="width: 148px;height: 21px;" disabled="false"
+									appearance="minimal" disabledClass="w2selectbox_disabled" chooseOption="true" style="width: 100%;height: 21px;" disabled="false"
 									id="" allOption="" direction="auto">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_taskStatus">
@@ -414,7 +436,7 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 							</xf:group>
 							<xf:group tagname="td" style="" id="" class="w2tb_td">
 								<xf:select1 submenuSize="auto" ref="data:dmp_designVo.scIsTest" chooseOptionLabel="" appearance="minimal"
-									disabledClass="w2selectbox_disabled" chooseOption="true" style="width: 148px;height: 21px;" disabled="false" id="" allOption=""
+									disabledClass="w2selectbox_disabled" chooseOption="true" style="width: 100%;height: 21px;" disabled="false" id="" allOption=""
 									direction="auto">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_isTest">
@@ -429,7 +451,7 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 							</xf:group>
 							<xf:group tagname="td" style="" id="" class="w2tb_td">
 								<xf:select1 chooseOptionLabel="" ref="data:dmp_designVo.scStgId" submenuSize="auto" appearance="minimal"
-									disabledClass="w2selectbox_disabled" chooseOption="" disabled="false" style="width: 148px;height: 21px;" allOption="" id=""
+									disabledClass="w2selectbox_disabled" chooseOption="true" disabled="false" style="width: 100%;height: 21px;" allOption="" id=""
 									direction="auto">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_stgId">

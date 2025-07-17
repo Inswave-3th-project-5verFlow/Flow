@@ -222,7 +222,6 @@
 				<w2:dataMap baseNode="map" id="dmp_searchVo">
 					<w2:keyInfo>
 						<w2:key dataType="text" id="pjtId" defaultValue="1"></w2:key>
-						<w2:key id="pageSize" name="name2" dataType="text" defaultValue="9999"></w2:key>
 					</w2:keyInfo>
 				</w2:dataMap>
 				<w2:dataList baseNode="list" id="dlt_designVoList" repeatNode="map" saveRemovedData="true" style="">
@@ -242,13 +241,14 @@
 				</w2:dataList>
 			</w2:dataCollection>
 			<xf:submission id="sbm_selectTaskList" ref='data:json,{"id":"dmp_searchVo","key":"designVo"}'
-				target='data:json,{"id":"dlt_designVoList","key":"elData.designVoList"}' action="/InsWebApp/DESIGN001List.pwkjson" method="post"
+				target='data:json,{"id":"dlt_designVoList","key":"elData.designVoList"}' action="/InsWebApp/TASK001List.pwkjson" method="post"
 				mediatype="application/json" encoding="UTF-8" mode="asynchronous" processMsg="업무 목록 조회중..."
 				ev:submitdone="scwin.sbm_selectTaskList_submitdone">
 			</xf:submission>
 		</xf:model>
 		<script lazy="false" type="text/javascript"><![CDATA[
 var ganttChart = null;
+
 
 /**
  * DHTMLX Gantt CSS 동적 로딩
@@ -284,7 +284,13 @@ function waitForDhtmlxGantt(callback) {
 }
 
 scwin.onpageload = function () {
+    let pjtId = $p.parent().scwin.SEL_PJT_ID;
+    console.log("선택되 프로젝트 ID : " , pjtId);
+    dmp_searchVo.set("pjtId", pjtId);
+
     console.log("DHTMLX Gantt 간트차트 페이지 로딩 시작");
+
+    
 
     // 1단계: CSS 동적 로딩
     loadDhtmlxCSS().then(function () {
@@ -343,7 +349,7 @@ scwin.initGanttConfig = function () {
             { unit: "day", step: 1, format: "%d" }
         ];
 
-        gantt.config.min_column_width = 50;
+        gantt.config.min_column_width = 30;
 
         // 툴팁 활성화 및 현재 날짜 라인 추가
         gantt.plugins({
@@ -742,7 +748,7 @@ scwin.changeToDayView = function () {
     try {
         gantt.config.scales = [
             { unit: "month", step: 1, format: "%Y년 %m월" },
-            { unit: "day", step: 1, format: "%d일" }
+            { unit: "day", step: 1, format: "%d" }
         ];
         gantt.config.min_column_width = 30;
         gantt.render();
