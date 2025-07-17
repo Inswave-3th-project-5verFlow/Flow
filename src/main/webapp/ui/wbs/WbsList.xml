@@ -113,11 +113,11 @@ scwin.PJT_ID = "";
  * scwin.onpageload();
  */
 scwin.onpageload = function () {
-    var userInfo = $p.getComponentById("mf_dmp_userVoDetail").getJSON();
-    console.log(userInfo);
-    if (userInfo) {
-    scwin.LOGIN_USER_ID = userInfo.userId;
-    scwin.PJT_ID = "1";
+    var usrId = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_ID; // 헤더에서 조회
+    var selPjtId = $p.getParentWindow().scwin.SEL_PJT_ID; // 메인 페이지에서 조회
+    if (usrId && selPjtId) {
+        scwin.LOGIN_USER_ID = usrId;
+        scwin.PJT_ID = selPjtId;
     }
 
     // 검색 조건 초기화
@@ -1004,7 +1004,7 @@ scwin.setTestStatusStyle = function () {
 									</w2:itemset>
 								</w2:choices>
 							</w2:column>
-							<w2:column width="70" inputType="text" style="" id="isTestDisplay" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="isTestDisplay" value="" displayMode="label" readOnly="true"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="isTest" value="" displayMode="label" readOnly="true"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="taskDepth" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="ptTaskId" value="" displayMode="label" readOnly="true"></w2:column>
@@ -1022,7 +1022,7 @@ scwin.setTestStatusStyle = function () {
 							<w2:column width="70" inputType="text" style="" id="taskRate" value="" displayMode="label" readOnly="false"
 								displayFormat="###%" applyFormat="all" dataType="number">
 							</w2:column>
-							<w2:column width="70" inputType="text" style="" id="isLazy" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="isLazy" value="" displayMode="label" readOnly="true"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="pjtId" value="" displayMode="label"></w2:column>
 
 						</w2:row>

@@ -65,10 +65,9 @@ scwin.GROUP_ID = "";
 scwin.onpageload = function () {
     var usrId = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_ID;
     var userName = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_NAME;
-    debugger;
     scwin.GROUP_ID = "1";
 
-    dmp_pjtVoDetail.set("userId", scwin.LOGIN_USER_ID);
+    dmp_pjtVoDetail.set("userId", usrId);
     dmp_pjtVoDetail.set("grpId", scwin.GROUP_ID);
     ipt_pjtAsi.setValue(userName);
 };

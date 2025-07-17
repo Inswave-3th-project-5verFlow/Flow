@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import com.demo.proworks.dashboard.dao.DashboardDAO;
 import com.demo.proworks.dashboard.service.DashboardService;
 import com.demo.proworks.dashboard.vo.ChartVo;
+import com.demo.proworks.dashboard.vo.DashboardDataVo;
 import com.demo.proworks.dashboard.vo.DashboardVo;
 import com.demo.proworks.pjt.vo.PjtVo;
 
@@ -47,5 +48,29 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public List<ChartVo> selectIssueStatusChart(PjtVo pjtVo) throws Exception {
         return dashboardDAO.selectIssueStatusChart(pjtVo);
+    }
+
+
+    /**
+     * 대시보드 전체 데이터를 조회한다. (통합)
+     */
+    @Override
+    public DashboardDataVo getDashboardData(PjtVo pjtVo) throws Exception {
+        DashboardDataVo dashboardData = new DashboardDataVo();
+
+        // 1. 기존 DAO 메소드를 재사용하여 각 데이터 조회
+        DashboardVo summary = dashboardDAO.selectDashboardSummary(pjtVo);
+        List<ChartVo> projectChart = dashboardDAO.selectProjectStatusChart(pjtVo);
+        List<ChartVo> taskChart = dashboardDAO.selectTaskStatusChart(pjtVo);
+        List<ChartVo> issueChart = dashboardDAO.selectIssueStatusChart(pjtVo);
+
+        // 2. 통합 VO에 데이터 담기
+        dashboardData.setPjtChartVo(projectChart);
+        dashboardData.setIrrChartVo(issueChart);
+        dashboardData.setTaskChartVo(taskChart); 
+        dashboardData.setDashboardVo(summary);
+
+
+        return dashboardData;
     }
 }
