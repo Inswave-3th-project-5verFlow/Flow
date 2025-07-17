@@ -6,5 +6,5 @@
 
 /* 닫혔을 때의 사이드바 (sidebar 클래스와 closed 클래스가 모두 있을 때) */
 .sidebar.closed {
-	margin-left: -13%; /* grp_menu의 너비(width)와 동일한 값 */
+	margin-left: -15%; /* grp_menu의 너비(width)와 동일한 값 */
 }
