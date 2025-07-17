@@ -120,7 +120,8 @@ scwin.btn_ptTaskName_onclick = function (e) {
     var taskData = {
         currentTaskId: currentTaskData.taskId,
         currentTaskName: currentTaskData.taskName,
-        currentStgId: currentTaskData.stgId
+        currentStgId: currentTaskData.stgId,
+        currentPjtId : currentTaskData.pjtId
     };
 
     var jsnPopupData = {

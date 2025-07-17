@@ -35,6 +35,33 @@ public class DesignController {
 	private DesignService designService;
 
 	/**
+	 * 모든 업무 정보 목록을 조회합니다.
+	 *
+	 * @param designVo 설계 업무 정보
+	 * @return 목록조회 결과
+	 * @throws Exception
+	 */
+	@ElService(key = "TASK001All")
+	@RequestMapping(value = "TASK001All")
+	@ElDescription(sub = "모든 업무 정보 목록조회", desc = "모든 업무 정보 목록조회한다.")
+	public DesignListVo selectTasks(DesignVo designVo) throws Exception {
+
+		List<DesignVo> designList = designService.selectTasks(designVo);
+		long totCnt = designService.selectListCountDesign(designVo);
+
+		DesignListVo retDesignList = new DesignListVo();
+
+		System.out.println(designList);
+
+		retDesignList.setDesignVoList(designList);
+		retDesignList.setTotalCount(totCnt);
+		retDesignList.setPageSize(designVo.getPageSize());
+		retDesignList.setPageIndex(designVo.getPageIndex());
+
+		return retDesignList;
+	}
+
+	/**
 	 * 설계 업무 정보 목록을 조회합니다.
 	 *
 	 * @param designVo 설계 업무 정보
@@ -214,6 +241,31 @@ public class DesignController {
 		designVo.setPageUnit(9999);
 		System.out.println("조회 전 Param: " + designVo);
 		List<DesignVo> designList = designService.selectTreeListDevelop(designVo);
+		System.out.println("조회 결과 개수: " + designList.size());
+		System.out.println(designList);
+		DesignListVo retDesignList = new DesignListVo();
+		retDesignList.setDesignVoList(designList);
+		System.out.println(retDesignList);
+		return retDesignList;
+	}
+
+	/**
+	 * 트리 구조로 보여주기 위해서 필요한 개발 업무 depth별로 정렬된 상태로 조회한다.
+	 *
+	 * @param designVo 설계 업무 정보
+	 * @return 목록조회 결과
+	 * @throws Exception
+	 */
+	@ElService(key = "TASK001List")
+	@RequestMapping(value = "TASK001List")
+	@ElDescription(sub = "모든 단계의 업무를 정렬된 형태로 조회.", desc = "모든 단계의 업무를 정렬된 형태로 조회한다.")
+	public DesignListVo selectListTask(DesignVo designVo) throws Exception {
+		System.out.println("DESIGN001Tree 컨트롤러");
+
+		designVo.setPageSize(9999);
+		designVo.setPageUnit(9999);
+		System.out.println("조회 전 Param: " + designVo);
+		List<DesignVo> designList = designService.selectListTask(designVo);
 		System.out.println("조회 결과 개수: " + designList.size());
 		System.out.println(designList);
 		DesignListVo retDesignList = new DesignListVo();

@@ -34,6 +34,28 @@ public class DesignDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstrac
 	}
 
 	/**
+	 * 하위 업무 정보 목록을 새로운 depth와 함께 조회한다.
+	 * 
+	 * @param DesignVo 설계 업무 정보
+	 * @return List<DesignVo> 설계 업무 정보
+	 * @throws ElException
+	 */
+	public List<DesignVo> selectChildTasks(DesignVo vo) throws ElException {
+		return (List<DesignVo>) list("com.demo.proworks.task.design.selectChildTasks", vo);
+	}
+
+	/**
+	 * 페이징을 처리하여 모든 업무 정보 목록조회를 한다.
+	 * 
+	 * @param DesignVo 설계 업무 정보
+	 * @return List<DesignVo> 설계 업무 정보
+	 * @throws ElException
+	 */
+	public List<DesignVo> selectTasks(DesignVo vo) throws ElException {
+		return (List<DesignVo>) list("com.demo.proworks.task.design.selectTasks", vo);
+	}
+
+	/**
 	 * 페이징을 처리하여 설계 업무 정보 목록조회를 한다.
 	 * 
 	 * @param DesignVo 설계 업무 정보
@@ -65,7 +87,7 @@ public class DesignDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstrac
 	public long selectListCountDesign(DesignVo vo) throws ElException {
 		return (Long) selectByPk("com.demo.proworks.task.design.selectListCountDesign", vo);
 	}
-	
+
 	/**
 	 * 개발 업무 정보 목록 조회의 전체 카운트를 조회한다.
 	 * 
@@ -100,6 +122,17 @@ public class DesignDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstrac
 	}
 
 	/**
+	 * 특정 업무의 모든 하위업무들의 depth를 재계산하여 업데이트한다.
+	 * 
+	 * @param DesignVo 설계 업무 정보 (taskId 필요)
+	 * @return 번호
+	 * @throws ElException
+	 */
+	public int updateChildTasksDepth(DesignVo vo) throws ElException {
+		return update("com.demo.proworks.task.design.updateChildTasksDepth", vo);
+	}
+
+	/**
 	 * 설계 업무 정보를 삭제한다.
 	 * 
 	 * @param DesignVo 설계 업무 정보
@@ -120,7 +153,7 @@ public class DesignDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstrac
 	public List<DesignVo> selectTreeListDesign(DesignVo vo) throws ElException {
 		return (List<DesignVo>) list("com.demo.proworks.task.design.selectTreeListDesign", vo);
 	}
-	
+
 	/**
 	 * 트리 구조에 맞게 개발 업무 목록을 조회한다.
 	 * 
@@ -130,6 +163,17 @@ public class DesignDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstrac
 	 */
 	public List<DesignVo> selectTreeListDevelop(DesignVo vo) throws ElException {
 		return (List<DesignVo>) list("com.demo.proworks.task.design.selectTreeListDevelop", vo);
+	}
+
+	/**
+	 * 모든 단계의 업무를 정렬된 형태로 조회한다.
+	 * 
+	 * @param DesignVo 업무 정보
+	 * @return List<DesignVo> 업무 정보
+	 * @throws ElException
+	 */
+	public List<DesignVo> selectListTask(DesignVo vo) throws ElException {
+		return (List<DesignVo>) list("com.demo.proworks.task.design.selectListTask", vo);
 	}
 
 }

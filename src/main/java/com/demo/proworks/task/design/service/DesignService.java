@@ -18,6 +18,15 @@ import com.demo.proworks.task.design.vo.DesignVo;
 public interface DesignService {
 
 	/**
+	 * 모든 업무 정보 목록을 조회합니다.
+	 *
+	 * @param designVo 설계 업무 정보 DesignVo
+	 * @return 설계 업무 정보 목록 List<DesignVo>
+	 * @throws Exception
+	 */
+	public List<DesignVo> selectTasks(DesignVo designVo) throws Exception;
+
+	/**
 	 * 설계 업무 정보 페이징 처리하여 목록을 조회한다.
 	 *
 	 * @param designVo 설계 업무 정보 DesignVo
@@ -43,7 +52,7 @@ public interface DesignService {
 	 * @throws Exception
 	 */
 	public long selectListCountDesign(DesignVo designVo) throws Exception;
-	
+
 	/**
 	 * 조회한 개발 업무 정보 전체 카운트
 	 * 
@@ -106,4 +115,13 @@ public interface DesignService {
 	 * @throws Exception
 	 */
 	public List<DesignVo> selectTreeListDevelop(DesignVo designVo) throws Exception;
+
+	/**
+	 * 모든 단계의 업무를 정렬된 형태로 조회한다.
+	 *
+	 * @param designVo 설계 업무 정보 DesignVo
+	 * @return 설계 업무 정보 목록 List<DesignVo>
+	 * @throws Exception
+	 */
+	public List<DesignVo> selectListTask(DesignVo designVo) throws Exception;
 }
