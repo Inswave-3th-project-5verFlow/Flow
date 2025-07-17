@@ -279,7 +279,50 @@
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
 		<w2:publicInfo method="" />
-		<script lazy="false" type="text/javascript"><![CDATA[scwin.onpageload = function () {
+		<script lazy="false" type="text/javascript"><![CDATA[/************************** 
+ * 이슈리스크 관리 시스템 JavaScript
+ * 작성일: 2025.07.17
+ * 기능: 이슈/리스크 CRUD, 파일 관리, 상태별 분류 등
+ **************************/
+
+/************************** 1. 페이지 초기화 및 기본 설정 *************************/
+
+scwin.currentMode = "list"; // "list", "new", "edit", "view"
+
+// 사용자 및 프로젝트 정보 전역 변수
+scwin.USER_ID = "";
+scwin.USER_NAME = "";
+scwin.SELECTED_PROJECT_ID = "";
+scwin.GROUP_ID = "";
+scwin.SELECTED_PROJECT_NAME = "";
+
+/**
+ * 페이지 로드 시 초기화
+ */
+scwin.onpageload = function () {
+    // 헤더에서 사용자 정보 가져오기
+    var headerWindow = $p.getComponentById("mf_pg_header");
+    if (headerWindow) {
+        scwin.USER_ID = headerWindow.getWindow().scwin.USER_ID;
+        scwin.USER_NAME = headerWindow.getWindow().scwin.USER_NAME;
+    }
+    
+    // 부모 window에서 프로젝트 정보 가져오기
+    var parentWindow = $p.getParentWindow();
+    if (parentWindow && parentWindow.scwin) {
+        scwin.SELECTED_PROJECT_ID = parentWindow.scwin.SEL_PJT_ID;
+        scwin.GROUP_ID = parentWindow.scwin.GRP_ID;
+        
+        // 프로젝트명 가져오기
+        if (parentWindow.scwin.SEL_PJT_ID) {
+            var projectList = parentWindow.$p.getComponentById("mf_pg_header").getWindow().dlt_projectName;
+            if (projectList) {
+                var projectName = projectList.getMatchedColumnData("pjtId", scwin.SELECTED_PROJECT_ID, "pjtName");
+                scwin.SELECTED_PROJECT_NAME = projectName || "선택된 프로젝트";
+            }
+        }
+    }
+    
     // 버튼 초기화
     btn_save.show("");
     btn_edit.hide();
@@ -288,21 +331,31 @@
     // 페이지 정보 초기화
     scwin.initPaginationInfo();
 
-    // 전체 데이터 조회를 위해 페이지 크기를 크게 설정
+    // 검색 조건 설정
     dmp_issVo.set("pageIndex", "1");
     dmp_issVo.set("pageSize", "1000");
+    dmp_issVo.set("pjtId", scwin.SELECTED_PROJECT_ID);
+    dmp_issVo.set("userId", scwin.USER_ID);
 
-    // search_box
+    // 검색박스 표시/숨김 처리
     var cptIbxName = $p.getComponentById("searchComp_1");
     if (cptIbxName == undefined) {
         search_box.hide();
     }
 
-    // 이슈리스크관리 조회
-    scwin.btn_search_onclick();
+    // 프로젝트가 선택된 경우에만 데이터 조회
+    if (scwin.SELECTED_PROJECT_ID) {
+        scwin.btn_search_onclick();
+    } else {
+        // 프로젝트가 선택되지 않은 경우 빈 데이터 표시
+        scwin.updateCountLabels(0, 0, 0, 0);
+        scwin.updateGridData(); // 빈 그리드 표시
+    }
 };
 
-// 각 그리드별 페이지 정보 초기화
+/**
+ * 각 그리드별 페이지 정보 초기화
+ */
 scwin.initPaginationInfo = function () {
     console.log("페이지 정보 초기화 시작");
 
@@ -339,7 +392,14 @@ scwin.initPaginationInfo = function () {
     };
 };
 
-// 페이지별 데이터 분할 함수
+/************************** 2. 공통 유틸리티 함수 *************************/
+
+/**
+ * 페이지별 데이터 분할 함수
+ * @param {Array} data - 전체 데이터 배열
+ * @param {Object} pageInfo - 페이지 정보 객체
+ * @returns {Array} 분할된 데이터 배열
+ */
 scwin.getPageData = function (data, pageInfo) {
     if (!data || !pageInfo) {
         console.error("getPageData: 데이터 또는 페이지 정보가 없습니다.");
@@ -351,7 +411,11 @@ scwin.getPageData = function (data, pageInfo) {
     return data.slice(startIndex, endIndex);
 };
 
-// 페이지 네비게이터 업데이트 함수
+/**
+ * 페이지 네비게이터 업데이트 함수
+ * @param {Object} pageInfo - 페이지 정보
+ * @param {Object} paginationComponent - 페이지네이션 컴포넌트
+ */
 scwin.updatePagination = function (pageInfo, paginationComponent) {
     if (!pageInfo || !paginationComponent) {
         console.error("updatePagination: 페이지 정보 또는 컴포넌트가 없습니다.");
@@ -365,49 +429,121 @@ scwin.updatePagination = function (pageInfo, paginationComponent) {
     }
 };
 
-/************************** 조회 관련 함수 *************************/
+/**
+ * 공통 오류 처리 함수
+ * @param {string} operation - 작업명
+ * @param {Object} error - 오류 객체
+ * @param {boolean} showAlert - 알림 표시 여부
+ * @returns {string} 오류 메시지
+ */
+scwin.handleError = function(operation, error, showAlert) {
+    showAlert = showAlert !== false; // 기본값 true
+    
+    var errorMsg = operation + "에 실패했습니다.";
+    if (error && error.message) {
+        errorMsg += "\n상세 오류: " + error.message;
+    }
+    
+    console.error(operation + " 오류:", error);
+    
+    if (showAlert) {
+        $c.win.alert(errorMsg);
+    }
+    
+    return errorMsg;
+};
 
-// 조회 버튼 클릭 이벤트
+/**
+ * HTML 태그 제거 함수
+ * @param {string} htmlString - HTML 문자열
+ * @returns {string} 텍스트만 추출된 문자열
+ */
+scwin.stripHtmlTags = function(htmlString) {
+    if (!htmlString) return "";
+    
+    // HTML 태그 제거
+    var text = htmlString.replace(/<[^>]*>/g, "");
+    
+    // HTML 엔티티 디코딩
+    text = text.replace(/&nbsp;/g, " ");
+    text = text.replace(/&lt;/g, "<");
+    text = text.replace(/&gt;/g, ">");
+    text = text.replace(/&amp;/g, "&");
+    text = text.replace(/&quot;/g, '"');
+    
+    // 여러 개의 공백이나 줄바꿈을 하나로 정리
+    text = text.replace(/\s+/g, " ").trim();
+    
+    return text;
+};
+
+/************************** 3. 데이터 조회 관련 함수 *************************/
+
+/**
+ * 조회 버튼 클릭 이벤트
+ */
 scwin.btn_search_onclick = function (e) {
     if (!scwin.allDataPageInfo) {
         scwin.initPaginationInfo();
     }
 
+    // 프로젝트가 선택되지 않은 경우 조회하지 않음
+    if (!scwin.SELECTED_PROJECT_ID) {
+        console.log("프로젝트가 선택되지 않았습니다.");
+        return;
+    }
+
     dmp_issVo.set("pageIndex", "1");
     dmp_issVo.set("pageSize", "1000");
-    scwin.allDataPageInfo.currentPage = 1;
+    dmp_issVo.set("pjtId", scwin.SELECTED_PROJECT_ID);
+    dmp_issVo.set("userId", scwin.USER_ID);
+    
+    console.log("검색 조건:", {
+        pjtId: scwin.SELECTED_PROJECT_ID,
+        userId: scwin.USER_ID
+    });
 
     $c.sbm.execute($p, sbm_selectIssVoList);
 };
 
-// 서버 조회 결과 처리
+/**
+ * 서버 조회 결과 처리 콜백
+ * @param {Object} e - 서버 응답 이벤트 객체
+ */
 scwin.sbm_issList_submitdone = function (e) {
     console.log("서버 응답 수신", e);
     
-
     if (!scwin.allDataPageInfo) {
         scwin.initPaginationInfo();
     }
 
-    var elData = e.responseJSON.elData;
-    var elHeader = e.responseJSON.elHeader;
+    var elData = e.responseJSON ? e.responseJSON.elData : null;
+    var elHeader = e.responseJSON ? e.responseJSON.elHeader : null;
     
-    if (!elHeader || elHeader.resSuc == false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+    // 응답 성공 여부 확인
+    if (!elHeader || elHeader.resSuc !== true) {
+        var errorMsg = "데이터 조회에 실패했습니다.";
+        if (elHeader && elHeader.resMsg) {
+            errorMsg += "\n오류메시지: " + elHeader.resMsg;
+        }
+        if (elHeader && elHeader.resCode) {
+            errorMsg += "\n오류코드: " + elHeader.resCode;
+        }
+        $c.win.alert(errorMsg);
         return false;
     }
 
-    // 전체 데이터 저장
+    // 성공 시 데이터 처리
     var allData = elData.issVoList || [];
     console.log("전체 데이터:", allData.length, "개");
 
     scwin.allDataPageInfo.data = allData;
     scwin.allDataPageInfo.totalCount = elData.totalCount;
 
-    // status별로 데이터 필터링
-    var waitingData = [];
-    var processingData = [];
-    var completedData = [];
+    // 상태별로 데이터 필터링
+    var waitingData = [];      // 대기 (PEN)
+    var processingData = [];   // 진행중 (IPR)
+    var completedData = [];    // 완료 (COM)
 
     for (var i = 0; i < allData.length; i++) {
         var item = allData[i];
@@ -433,43 +569,32 @@ scwin.sbm_issList_submitdone = function (e) {
     scwin.completedPageInfo.totalCount = completedData.length;
     scwin.completedPageInfo.currentPage = 1;
 
-    // 그리드 업데이트
+    // 그리드 및 UI 업데이트
     scwin.updateGridData();
-
-    // 페이지 네비게이터 업데이트
-    var serverPageInfo = {
-        currentPage: 1,
-        pageSize: 10,
-        totalCount: elData.totalCount
-    };
-    scwin.updatePagination(serverPageInfo, pgl_issList);
-    scwin.updatePagination(scwin.waitingPageInfo, pgl_waiting);
-    scwin.updatePagination(scwin.processingPageInfo, pgl_processing);
-    scwin.updatePagination(scwin.completedPageInfo, pgl_com);
-
-    // 카운트 업데이트
-    spn_waitListCnt.setLabel(waitingData.length);
-    spn_processingListCnt.setLabel(processingData.length);
-    spn_completeListCnt.setLabel(completedData.length);
-    spn_listCnt.setLabel(elData.totalCount);
+    scwin.updatePaginationAll(elData.totalCount);
+    scwin.updateCountLabels(waitingData.length, processingData.length, completedData.length, elData.totalCount);
 
     // 폼 초기화
     dmp_issVoDetail.setEmptyValue();
 };
 
-// 각 그리드 데이터 업데이트
+/**
+ * 조회 오류 처리 콜백
+ */
+scwin.sbm_issList_submiterror = function(e) {
+    scwin.handleError("데이터 조회", e);
+};
+
+/**
+ * 각 그리드 데이터 업데이트
+ */
 scwin.updateGridData = function () {
     console.log("그리드 데이터 업데이트 시작");
 
     try {
-        // 전체 데이터 그리드
+        // 전체 데이터 그리드 (첫 페이지만 표시)
         if (scwin.allDataPageInfo && scwin.allDataPageInfo.data) {
-            var displayPageSize = 10;
-            var currentPage = 1;
-            var startIndex = 0;
-            var endIndex = displayPageSize;
-
-            var allPageData = scwin.allDataPageInfo.data.slice(startIndex, endIndex);
+            var allPageData = scwin.allDataPageInfo.data.slice(0, 10);
             dlt_issVoList.setJSON(allPageData);
         }
 
@@ -495,16 +620,53 @@ scwin.updateGridData = function () {
     }
 };
 
-/************************** 페이지 클릭 이벤트 *************************/
+/**
+ * 전체 페이지네이션 업데이트
+ * @param {number} totalCount - 전체 데이터 수
+ */
+scwin.updatePaginationAll = function(totalCount) {
+    var serverPageInfo = {
+        currentPage: 1,
+        pageSize: 10,
+        totalCount: totalCount
+    };
+    
+    scwin.updatePagination(serverPageInfo, pgl_issList);
+    scwin.updatePagination(scwin.waitingPageInfo, pgl_waiting);
+    scwin.updatePagination(scwin.processingPageInfo, pgl_processing);
+    scwin.updatePagination(scwin.completedPageInfo, pgl_com);
+};
 
-// 전체 데이터 페이지 클릭
+/**
+ * 카운트 라벨 업데이트
+ * @param {number} waitingCount - 대기 건수
+ * @param {number} processingCount - 진행중 건수
+ * @param {number} completedCount - 완료 건수
+ * @param {number} totalCount - 전체 건수
+ */
+scwin.updateCountLabels = function(waitingCount, processingCount, completedCount, totalCount) {
+    spn_waitListCnt.setLabel(waitingCount);
+    spn_processingListCnt.setLabel(processingCount);
+    spn_completeListCnt.setLabel(completedCount);
+    spn_listCnt.setLabel(totalCount);
+};
+
+/************************** 4. 페이지네이션 이벤트 *************************/
+
+/**
+ * 전체 데이터 페이지 클릭
+ * @param {number} idx - 페이지 인덱스
+ */
 scwin.pgl_issList_onclick = function (idx) {
     dmp_issVo.set("pageIndex", idx);
     dmp_issVo.set("pageSize", "10");
     $c.sbm.execute($p, sbm_selectIssVoList);
 };
 
-// 대기 데이터 페이지 클릭
+/**
+ * 대기 데이터 페이지 클릭
+ * @param {number} idx - 페이지 인덱스
+ */
 scwin.pgl_waiting_onclick = function (idx) {
     if (!scwin.waitingPageInfo) return;
     
@@ -514,7 +676,10 @@ scwin.pgl_waiting_onclick = function (idx) {
     pgl_waiting.setSelectedIndex(idx);
 };
 
-// 진행중 데이터 페이지 클릭
+/**
+ * 진행중 데이터 페이지 클릭
+ * @param {number} idx - 페이지 인덱스
+ */
 scwin.pgl_processing_onclick = function (idx) {
     if (!scwin.processingPageInfo) return;
     
@@ -524,7 +689,10 @@ scwin.pgl_processing_onclick = function (idx) {
     pgl_processing.setSelectedIndex(idx);
 };
 
-// 완료 데이터 페이지 클릭
+/**
+ * 완료 데이터 페이지 클릭
+ * @param {number} idx - 페이지 인덱스
+ */
 scwin.pgl_com_onclick = function (idx) {
     if (!scwin.completedPageInfo) return;
     
@@ -534,29 +702,36 @@ scwin.pgl_com_onclick = function (idx) {
     pgl_com.setSelectedIndex(idx);
 };
 
-/************************** 그리드 이벤트 *************************/
+/************************** 5. 그리드 이벤트 *************************/
 
-// 전체 그리드 셀 클릭 이벤트
+/**
+ * 전체 그리드 셀 클릭 이벤트
+ * @param {number} row - 행 인덱스
+ * @param {number} col - 열 인덱스  
+ * @param {string} colId - 열 ID
+ */
 scwin.grd_list_oncellclick = function (row, col, colId) {
     dmp_issVoDetail.setJSON(dlt_issVoList.getRowJSON(row));
     
+    // 버튼 상태 변경 (조회 모드)
     btn_save.hide();
     btn_edit.show("");
     btn_delete.show("");
 };
 
-// 대기 그리드 더블클릭
+/**
+ * 대기 그리드 더블클릭 - 상세보기 팝업
+ * @param {number} rowIndex - 행 인덱스
+ * @param {number} columnIndex - 열 인덱스
+ * @param {string} columnId - 열 ID
+ */
 scwin.waiting_grd_oncelldblclick = function (rowIndex, columnIndex, columnId) {
     var selectedData = dlt_waitingList.getRowJSON(rowIndex);
     dmp_issVoDetail.setJSON(selectedData);
     
     pop_overlay.show();
+    scwin.setFormMode("view");
     
-    btn_save.hide();
-    btn_popup_edit.show();
-    btn_popup_delete.show();
-    
-    // 제목 설정 (지연)
     setTimeout(function() {
         try {
             spn_popupTitle.setValue("대기 이슈/리스크 상세정보");
@@ -570,16 +745,15 @@ scwin.waiting_grd_oncelldblclick = function (rowIndex, columnIndex, columnId) {
     scwin.loadFileList();
 };
 
-// 진행중 그리드 더블클릭
+/**
+ * 진행중 그리드 더블클릭 - 상세보기 팝업
+ */
 scwin.processing_grd_oncelldblclick = function (rowIndex, columnIndex, columnId) {
     var selectedData = dlt_processingList.getRowJSON(rowIndex);
     dmp_issVoDetail.setJSON(selectedData);
     
     pop_overlay.show();
-    
-    btn_save.hide();
-    btn_popup_edit.show();
-    btn_popup_delete.show();
+    scwin.setFormMode("view");
     
     setTimeout(function() {
         try {
@@ -594,16 +768,15 @@ scwin.processing_grd_oncelldblclick = function (rowIndex, columnIndex, columnId)
     scwin.loadFileList();
 };
 
-// 완료 그리드 더블클릭
+/**
+ * 완료 그리드 더블클릭 - 상세보기 팝업
+ */
 scwin.complete_grd_oncelldblclick = function (rowIndex, columnIndex, columnId) {
     var selectedData = dlt_completedList.getRowJSON(rowIndex);
     dmp_issVoDetail.setJSON(selectedData);
     
     pop_overlay.show();
-    
-    btn_save.hide();
-    btn_popup_edit.show();
-    btn_popup_delete.show();
+    scwin.setFormMode("view");
     
     setTimeout(function() {
         try {
@@ -618,48 +791,382 @@ scwin.complete_grd_oncelldblclick = function (rowIndex, columnIndex, columnId) {
     scwin.loadFileList();
 };
 
-/************************** 팝업 관련 이벤트 *************************/
+/************************** 6. 폼 모드 및 UI 제어 *************************/
 
-// 등록 버튼 클릭 (새 이슈 등록)
+/**
+ * 폼 모드 설정 함수
+ * @param {string} mode - 모드 ('new', 'edit', 'view')
+ */
+scwin.setFormMode = function(mode) {
+    console.log("폼 모드 전환:", mode);
+    scwin.currentMode = mode; // 현재 모드 저장
+    
+    if (mode === "edit") {
+        // 수정 모드
+        scwin.setFieldsReadOnly(false);
+        scwin.setEditorMode(true);
+        scwin.showFileUploadSection(true);
+        
+        // 수정 모드에서는 상태 선택 가능
+        sel_status.setDisabled(false);
+        
+        // 버튼 상태 변경
+        btn_save.show();
+        btn_popup_edit.hide();
+        
+    } else if (mode === "view") {
+        // 조회 모드
+        scwin.setFieldsReadOnly(true);
+        scwin.setEditorMode(false);
+        scwin.showFileUploadSection(false);
+        
+        // 조회 모드에서는 상태 선택 불가
+        sel_status.setDisabled(true);
+        
+        // 버튼 상태 변경
+        btn_save.hide();
+        btn_popup_edit.show();
+        
+    } else if (mode === "new") {
+        // 등록 모드
+        scwin.setFieldsReadOnly(false);
+        scwin.setEditorMode(true);
+        scwin.showFileUploadSection(true);
+        
+        // 등록 모드에서는 상태를 대기로 고정하고 선택 불가
+        sel_status.setValue("PEN");
+        sel_status.setDisabled(true);
+        
+        // 버튼 상태 변경
+        btn_save.show();
+        btn_popup_edit.hide();
+        btn_popup_delete.hide();
+    }
+};
+
+/**
+ * 필드 읽기 전용 설정
+ * @param {boolean} readOnly - 읽기 전용 여부
+ */
+scwin.setFieldsReadOnly = function(readOnly) {
+    try {
+        // 편집 가능한 필드들 (상태 제외)
+        var editableFields = [
+            "inp_issueName",     // 이슈/리스크명
+            "sel_priority",      // 우선순위
+            "cal_dueDate",       // 완료예정일
+            "cal_resolvedDate"   // 해결일
+        ];
+        
+        editableFields.forEach(function(fieldId) {
+            var field = $p.getComponentById(fieldId);
+            if (field && field.setReadOnly) {
+                field.setReadOnly(readOnly);
+            }
+        });
+        
+        // 프로젝트명과 담당자명은 항상 readOnly
+        var alwaysReadOnlyFields = ["inp_projectName", "inp_userName"];
+        alwaysReadOnlyFields.forEach(function(fieldId) {
+            var field = $p.getComponentById(fieldId);
+            if (field && field.setReadOnly) {
+                field.setReadOnly(true);
+            }
+        });
+        
+    } catch(e) {
+        console.error("필드 읽기 전용 설정 오류:", e);
+    }
+};
+
+/**
+ * 파일 업로드 섹션 표시/숨김
+ * @param {boolean} show - 표시 여부
+ */
+scwin.showFileUploadSection = function(show) {
+    try {
+        if (show) {
+            grp_fileUploadArea.show();
+        } else {
+            grp_fileUploadArea.hide();
+        }
+    } catch(e) {
+        console.error("파일 업로드 섹션 표시 오류:", e);
+    }
+};
+
+/************************** 7. 에디터 관련 함수 *************************/
+
+/**
+ * 에디터 모드 전환 함수
+ * @param {boolean} isEditMode - 편집 모드 여부
+ */
+scwin.setEditorMode = function(isEditMode) {
+    console.log("에디터 모드 전환:", isEditMode ? "편집" : "조회");
+    
+    if (isEditMode) {
+        // 편집 모드: 에디터 표시
+        var description = dmp_issVoDetail.get("description") || "";
+        var responsePlan = dmp_issVoDetail.get("responsePlan") || "";
+        
+        try {
+            editor_description.setText(description);
+            editor_responsePlan.setText(responsePlan);
+        } catch(e) {
+            console.error("에디터 값 설정 오류:", e);
+        }
+
+        grp_description_edit.show();
+        grp_description_view.hide();
+        grp_response_edit.show();
+        grp_response_view.hide();
+    } else {
+        // 조회 모드: HTML 렌더링 표시
+        grp_description_edit.hide();
+        grp_description_view.show();
+        grp_response_edit.hide();
+        grp_response_view.show();
+        
+        scwin.updateViewContentWithHTML();
+    }
+};
+
+/**
+ * HTML 스타일을 포함한 내용 표시
+ */
+scwin.updateViewContentWithHTML = function() {
+    try {
+        var description = dmp_issVoDetail.get("description") || "";
+        var responsePlan = dmp_issVoDetail.get("responsePlan") || "";
+        
+        // HTML을 div 요소에 직접 렌더링
+        scwin.renderHTMLContent("div_description_view", description);
+        scwin.renderHTMLContent("div_response_view", responsePlan);
+        
+    } catch(e) {
+        console.error("HTML 내용 업데이트 실패:", e);
+        // 오류 시 기존 방식으로 폴백
+        scwin.updateViewContent();
+    }
+};
+
+/**
+ * HTML 내용을 안전하게 렌더링
+ * @param {string} elementId - DOM 요소 ID
+ * @param {string} htmlContent - HTML 내용
+ */
+scwin.renderHTMLContent = function(elementId, htmlContent) {
+    try {
+        // 빈 내용 처리
+        if (!htmlContent || htmlContent.trim() === "") {
+            htmlContent = "<p style='color: #999; font-style: italic;'>내용이 없습니다.</p>";
+        }
+        
+        // DOM 요소 찾기
+        var element = document.getElementById(elementId);
+        if (!element) {
+            console.warn("요소를 찾을 수 없습니다:", elementId);
+            return;
+        }
+        
+        // HTML 내용 설정 및 스타일 적용
+        element.innerHTML = htmlContent;
+        element.style.padding = "15px";
+        element.style.border = "1px solid #ddd";
+        element.style.borderRadius = "4px";
+        element.style.backgroundColor = "#f9f9f9";
+        element.style.minHeight = "100px";
+        element.style.maxHeight = "300px";
+        element.style.overflowY = "auto";
+        element.style.lineHeight = "1.6";
+        element.style.fontFamily = "inherit";
+        
+        console.log("HTML 내용 렌더링 완료:", elementId);
+        
+    } catch(e) {
+        console.error("HTML 렌더링 오류:", e);
+    }
+};
+
+/**
+ * 조회 모드에서 HTML 내용을 텍스트로 변환 (폴백용)
+ */
+scwin.updateViewContent = function() {
+    try {
+        var description = dmp_issVoDetail.get("description") || "";
+        var responsePlan = dmp_issVoDetail.get("responsePlan") || "";
+        
+        // HTML 태그 제거하고 텍스트만 추출
+        var descriptionText = scwin.stripHtmlTags(description);
+        var responsePlanText = scwin.stripHtmlTags(responsePlan);
+        
+        // 조회 영역에 설정
+        txt_description_view.setValue(descriptionText);
+        txt_response_view.setValue(responsePlanText);
+        
+    } catch(e) {
+        console.error("내용 업데이트 실패:", e);
+    }
+};
+
+/**
+ * 에디터 내용 동기화
+ * @returns {boolean} 동기화 성공 여부
+ */
+scwin.syncEditorContent = function() {
+    try {
+        var descriptionHTML = "";
+        var responsePlanHTML = "";
+        
+        // 에디터에서 HTML 내용을 가져오기
+        if (editor_description) {
+            if (typeof editor_description.getHTML === 'function') {
+                descriptionHTML = editor_description.getHTML();
+            } else if (typeof editor_description.getValue === 'function') {
+                descriptionHTML = editor_description.getValue();
+            }
+        }
+        
+        if (editor_responsePlan) {
+            if (typeof editor_responsePlan.getHTML === 'function') {
+                responsePlanHTML = editor_responsePlan.getHTML();
+            } else if (typeof editor_responsePlan.getValue === 'function') {
+                responsePlanHTML = editor_responsePlan.getValue();
+            }
+        }
+        
+        // 데이터맵에 HTML 내용 설정
+        dmp_issVoDetail.set("description", descriptionHTML);
+        dmp_issVoDetail.set("responsePlan", responsePlanHTML);
+        
+        console.log("에디터 내용 동기화 완료");
+        console.log("상세설명 HTML 길이:", descriptionHTML.length);
+        console.log("대응방안 HTML 길이:", responsePlanHTML.length);
+        
+        return true;
+        
+    } catch(e) {
+        console.error("에디터 내용 동기화 오류:", e);
+        return false;
+    }
+};
+
+/**
+ * 에디터 내용 변경 시 자동 동기화 - 상세설명
+ */
+scwin.editor_description_onchange = function() {
+    try {
+        var content = editor_description.getHTML();
+        dmp_issVoDetail.set("description", content);
+        console.log("상세설명 에디터 내용 자동 동기화:", content.length, "자");
+    } catch(e) {
+        console.error("상세설명 자동 동기화 실패:", e);
+    }
+};
+
+/**
+ * 에디터 내용 변경 시 자동 동기화 - 대응방안
+ */
+scwin.editor_responsePlan_onchange = function() {
+    try {
+        var content = editor_responsePlan.getHTML();
+        dmp_issVoDetail.set("responsePlan", content);
+        console.log("대응방안 에디터 내용 자동 동기화:", content.length, "자");
+    } catch(e) {
+        console.error("대응방안 자동 동기화 실패:", e);
+    }
+};
+
+/**
+ * 에디터 디버깅 함수 (개발용)
+ */
+scwin.debugEditorContent = function() {
+    console.log("=== 에디터 내용 디버깅 ===");
+    
+    try {
+        if (editor_description) {
+            console.log("editor_description 객체:", editor_description);
+            if (typeof editor_description.getHTML === 'function') {
+                var desc = editor_description.getHTML();
+                console.log("상세설명 내용:", desc);
+            }
+        }
+        
+        if (editor_responsePlan) {
+            console.log("editor_responsePlan 객체:", editor_responsePlan);
+            if (typeof editor_responsePlan.getHTML === 'function') {
+                var resp = editor_responsePlan.getHTML();
+                console.log("대응방안 내용:", resp);
+            }
+        }
+        
+        console.log("데이터맵 상세설명:", dmp_issVoDetail.get("description"));
+        console.log("데이터맵 대응방안:", dmp_issVoDetail.get("responsePlan"));
+        
+    } catch(e) {
+        console.error("디버깅 중 오류:", e);
+    }
+};
+
+/************************** 8. 팝업 관련 이벤트 *************************/
+
+/**
+ * 등록 버튼 클릭 - 새 이슈 등록 팝업
+ */
 scwin.reg_btn_onclick = function (e) {
+    if (!scwin.SELECTED_PROJECT_ID) {
+        $c.win.alert("프로젝트를 선택해주세요.");
+        return;
+    }
+
     dmp_issVoDetail.setEmptyValue();
     
-    // 시연용 데이터 설정
-    dmp_issVoDetail.set("pjtId", "6");
-    dmp_issVoDetail.set("pjtName", "ERP 시스템 고도화 프로젝트");
-    dmp_issVoDetail.set("userId", "1");
-    dmp_issVoDetail.set("userName", "김개발");
+    // 현재 선택된 프로젝트 및 사용자 정보 설정
+    dmp_issVoDetail.set("pjtId", scwin.SELECTED_PROJECT_ID);
+    dmp_issVoDetail.set("pjtName", scwin.SELECTED_PROJECT_NAME);
+    dmp_issVoDetail.set("userId", scwin.USER_ID);
+    dmp_issVoDetail.set("userName", scwin.USER_NAME);
     
+    // 등록 시 상태를 무조건 대기(PEN)로 고정
+    dmp_issVoDetail.set("status", "PEN");
+    
+    // 파일 관련 초기화
     dlt_upload.setJSON([]);
     dlt_FileList.setJSON([]);
     
     pop_overlay.show();
-    
-    btn_save.show();
-    btn_popup_edit.hide();
-    btn_popup_delete.hide();
+    scwin.setFormMode("new");
     
     setTimeout(function() {
         try {
             spn_popupTitle.setValue("이슈리스크 등록");
+            sel_status.setValue("PEN");
+            sel_status.setDisabled(true);
         } catch(e) {
             setTimeout(function() {
                 spn_popupTitle.setValue("이슈리스크 등록");
+                sel_status.setValue("PEN");
+                sel_status.setDisabled(true);
             }, 50);
         }
     }, 50);
     
-    // 미리보기 초기화
+    // 파일 미리보기 초기화
     scwin.hideAllPreviewPanels();
     scwin.showNoPreview();
 };
 
-// 팝업 닫기
+
+/**
+ * 팝업 닫기
+ */
 scwin.detail_esc_btn_onclick = function (e) {
     pop_overlay.hide();
 };
 
-// 초기화 버튼
+/**
+ * 초기화 버튼
+ */
 scwin.btn_reset_onclick = function (e) {
     dmp_issVoDetail.setEmptyValue();
     btn_save.show("");
@@ -667,20 +1174,172 @@ scwin.btn_reset_onclick = function (e) {
     btn_delete.hide();
 };
 
-/************************** CRUD 트랜잭션 이벤트 *************************/
-
-// 저장 버튼 클릭 이벤트
-scwin.btn_save_onclick = function (e) {
-    var issueName = dmp_issVoDetail.get("name");
-    if (!issueName || issueName.trim() === "") {
-        $c.win.alert("이슈/리스크명을 입력해주세요.");
-        return;
-    }
-
-    scwin.sendIssueAndFiles();
+/**
+ * 팝업 수정 버튼 클릭
+ */
+scwin.btn_popup_edit_onclick = function(e) {
+    scwin.setFormMode("edit");
 };
 
-// 수정 버튼 클릭 이벤트
+/**
+ * 팝업 삭제 버튼 클릭
+ */
+scwin.btn_popup_delete_onclick = function(e) {
+    scwin.btn_delete_onclick(e);
+};
+
+/************************** 9. CRUD 트랜잭션 이벤트 *************************/
+
+/**
+ * 저장 버튼 클릭 이벤트
+ */
+scwin.btn_save_onclick = function (e) {
+    console.log("저장 버튼 클릭됨 - 현재 모드:", scwin.currentMode);
+    
+    // 에디터 포커스 해제하여 내용 확정
+    try {
+        if (editor_description && editor_description.blur) {
+            editor_description.blur();
+        }
+        if (editor_responsePlan && editor_responsePlan.blur) {
+            editor_responsePlan.blur();
+        }
+    } catch(e) {
+        console.log("에디터 blur 실패, 무시");
+    }
+    
+    // 잠시 대기 후 저장 실행 (에디터 내용 동기화 시간 확보)
+    setTimeout(function() {
+        var issueName = dmp_issVoDetail.get("name");
+        if (!issueName || issueName.trim() === "") {
+            $c.win.alert("이슈/리스크명을 입력해주세요.");
+            return;
+        }
+
+        // 모드에 따라 다른 저장 로직 실행
+        if (scwin.currentMode === "new") {
+            scwin.sendIssueAndFiles(); // 등록
+        } else if (scwin.currentMode === "edit") {
+            scwin.updateIssueAndFiles(); // 수정
+        } else {
+            console.error("잘못된 모드:", scwin.currentMode);
+        }
+    }, 100);
+};
+
+/**
+ * 이슈와 파일 전송 (등록용)
+ */
+scwin.sendIssueAndFiles = function () {
+    console.log("sendIssueAndFiles() 시작됨");
+    
+    // 에디터 내용을 먼저 확실하게 동기화
+    try {
+        var descriptionHTML = "";
+        var responsePlanHTML = "";
+        
+        // 에디터에서 HTML 내용 가져오기
+        if (editor_description && typeof editor_description.getHTML === 'function') {
+            descriptionHTML = editor_description.getHTML();
+            console.log("상세설명 HTML:", descriptionHTML);
+        }
+        
+        if (editor_responsePlan && typeof editor_responsePlan.getHTML === 'function') {
+            responsePlanHTML = editor_responsePlan.getHTML();
+            console.log("대응방안 HTML:", responsePlanHTML);
+        }
+        
+        // 데이터맵에 HTML 내용 직접 설정
+        dmp_issVoDetail.set("description", descriptionHTML);
+        dmp_issVoDetail.set("responsePlan", responsePlanHTML);
+        
+    } catch(e) {
+        console.error("에디터 내용 가져오기 실패:", e);
+    }
+    
+    // FormData 생성 및 데이터 추가
+    var formData = new FormData();
+    formData.append("pjtId", dmp_issVoDetail.get("pjtId"));
+    formData.append("name", dmp_issVoDetail.get("name"));
+    formData.append("userId", dmp_issVoDetail.get("userId"));
+    formData.append("dueDate", dmp_issVoDetail.get("dueDate"));
+    formData.append("status", "PEN"); // 등록 시 상태를 무조건 대기(PEN)로 강제 설정
+    formData.append("priority", dmp_issVoDetail.get("priority") || "MD");
+    formData.append("description", dmp_issVoDetail.get("description") || "");
+    formData.append("responsePlan", dmp_issVoDetail.get("responsePlan") || "");
+    formData.append("resolvedDate", dmp_issVoDetail.get("resolvedDate"));
+    
+    // 파일 추가
+    if (mpd_html5Type && mpd_html5Type.fileArray) {
+        var fileList = mpd_html5Type.fileArray;
+        console.log("fileList", fileList);
+        
+        if (fileList && fileList.length > 0) {
+            for (var i = 0; i < fileList.length; i++) {
+                var realFile = fileList[i];
+                console.log('real', realFile);
+                formData.append("files", realFile);
+            }
+        }
+    }
+
+    // FormData 내용 확인 (디버깅용)
+    console.log("=== FormData 내용 확인 ===");
+    for (var pair of formData.entries()) {
+        console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+    }
+
+    // 서버로 전송
+    fetch("/InsWebApp/ISS001InsWithFiles.pwkjson", {
+        method: "POST",
+        body: formData
+    })
+    .then(function(res) { 
+        if (!res.ok) {
+            throw new Error('HTTP ' + res.status + ': ' + res.statusText);
+        }
+        return res.json(); 
+    })
+    .then(function(res) {
+        console.log("서버 응답:", res);
+        
+        // 서버 응답 구조 확인 및 성공 여부 판단
+        var elHeader = res.elHeader;
+        
+        if (elHeader && elHeader.resSuc === true) {
+            // 성공인 경우
+            $c.win.alert("등록되었습니다.");
+            dlt_upload.removeAll();
+            if (mpd_html5Type && mpd_html5Type.removeAllFiles) {
+                mpd_html5Type.removeAllFiles();
+            }
+            pop_overlay.hide();
+            scwin.btn_search_onclick();
+        } else {
+            // 실패인 경우
+            var errorMsg = "등록에 실패했습니다.";
+            if (elHeader && elHeader.resMsg) {
+                errorMsg += "\n오류메시지: " + elHeader.resMsg;
+            }
+            if (elHeader && elHeader.resCode) {
+                errorMsg += "\n오류코드: " + elHeader.resCode;
+            }
+            $c.win.alert(errorMsg);
+        }
+    })
+    .catch(function(err) {
+        console.error("전송 실패:", err);
+        var errorMsg = "등록 중 오류가 발생했습니다.";
+        if (err.message) {
+            errorMsg += "\n상세 오류: " + err.message;
+        }
+        $c.win.alert(errorMsg);
+    });
+};
+
+/**
+ * 수정 버튼 클릭 이벤트
+ */
 scwin.btn_edit_onclick = function (e) {
     var issueId = dmp_issVoDetail.get("id");
     var issueName = dmp_issVoDetail.get("name");
@@ -695,28 +1354,84 @@ scwin.btn_edit_onclick = function (e) {
         return;
     }
 
+    // 수정 시에도 에디터 내용 동기화
+    try {
+        var descriptionHTML = "";
+        var responsePlanHTML = "";
+        
+        if (editor_description && typeof editor_description.getHTML === 'function') {
+            descriptionHTML = editor_description.getHTML();
+            dmp_issVoDetail.set("description", descriptionHTML);
+        }
+        
+        if (editor_responsePlan && typeof editor_responsePlan.getHTML === 'function') {
+            responsePlanHTML = editor_responsePlan.getHTML();
+            dmp_issVoDetail.set("responsePlan", responsePlanHTML);
+        }
+        
+        console.log("수정 시 에디터 내용 동기화 완료");
+        
+    } catch(e) {
+        console.error("수정 시 에디터 내용 동기화 실패:", e);
+    }
+
     var promise = $c.win.confirm("수정하시겠습니까?");
     promise.then(function (result) {
         if (result) {
             $c.sbm.execute($p, sbm_updateIssVo);
+        } else {
+            scwin.setFormMode("view");
         }
     });
 };
 
-// 이슈와 파일 전송
-scwin.sendIssueAndFiles = function () {
-    console.log("sendIssueAndFiles() 시작됨");
+/**
+ * 이슈와 파일 수정 (새로 추가)
+ */
+scwin.updateIssueAndFiles = function () {
+    console.log("updateIssueAndFiles() 시작됨");
     
+    var issueId = dmp_issVoDetail.get("id");
+    if (!issueId || issueId.trim() === "") {
+        $c.win.alert("수정할 이슈 ID가 없습니다.");
+        return;
+    }
+    
+    // 에디터 내용을 먼저 확실하게 동기화
+    try {
+        var descriptionHTML = "";
+        var responsePlanHTML = "";
+        
+        // 에디터에서 HTML 내용 가져오기
+        if (editor_description && typeof editor_description.getHTML === 'function') {
+            descriptionHTML = editor_description.getHTML();
+            console.log("상세설명 HTML:", descriptionHTML);
+        }
+        
+        if (editor_responsePlan && typeof editor_responsePlan.getHTML === 'function') {
+            responsePlanHTML = editor_responsePlan.getHTML();
+            console.log("대응방안 HTML:", responsePlanHTML);
+        }
+        
+        // 데이터맵에 HTML 내용 직접 설정
+        dmp_issVoDetail.set("description", descriptionHTML);
+        dmp_issVoDetail.set("responsePlan", responsePlanHTML);
+        
+    } catch(e) {
+        console.error("에디터 내용 가져오기 실패:", e);
+    }
+    
+    // FormData 생성 및 데이터 추가
     var formData = new FormData();
-
+    formData.append("id", issueId); // 수정 시 ID 필수
     formData.append("pjtId", dmp_issVoDetail.get("pjtId"));
     formData.append("name", dmp_issVoDetail.get("name"));
     formData.append("userId", dmp_issVoDetail.get("userId"));
     formData.append("dueDate", dmp_issVoDetail.get("dueDate"));
-    formData.append("status", dmp_issVoDetail.get("status") || "PEN");
+    formData.append("status", dmp_issVoDetail.get("status"));
     formData.append("priority", dmp_issVoDetail.get("priority") || "MD");
-    formData.append("description", dmp_issVoDetail.get("description"));
-    formData.append("responsePlan", dmp_issVoDetail.get("responsePlan"));
+    formData.append("description", dmp_issVoDetail.get("description") || "");
+    formData.append("responsePlan", dmp_issVoDetail.get("responsePlan") || "");
     formData.append("resolvedDate", dmp_issVoDetail.get("resolvedDate"));
     
     // 파일 추가
@@ -726,47 +1441,70 @@ scwin.sendIssueAndFiles = function () {
         
         if (fileList && fileList.length > 0) {
             for (var i = 0; i < fileList.length; i++) {
-                var realFile = fileList[i].file;
+                var realFile = fileList[i];
                 console.log('real', realFile);
                 formData.append("files", realFile);
             }
         }
     }
 
-    fetch("/InsWebApp/ISS001InsWithFiles.pwkjson", {
+    // FormData 내용 확인 (디버깅용)
+    console.log("=== FormData 내용 확인 ===");
+    for (var pair of formData.entries()) {
+        console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+    }
+
+    // 서버로 전송 (수정 URL)
+    fetch("/InsWebApp/ISS001UpdWithFiles.pwkjson", {
         method: "POST",
         body: formData
     })
-    .then(function(res) { return res.json(); })
-    .then(function(res) {
-        $c.win.alert("등록되었습니다.");
-        dlt_upload.removeAll();
-        if (mpd_html5Type && mpd_html5Type.removeAllFiles) {
-            mpd_html5Type.removeAllFiles();
+    .then(function(res) { 
+        if (!res.ok) {
+            throw new Error('HTTP ' + res.status + ': ' + res.statusText);
         }
-        pop_overlay.hide();
-        scwin.btn_search_onclick();
+        return res.json(); 
+    })
+    .then(function(res) {
+        console.log("서버 응답:", res);
+        
+        // 서버 응답 구조 확인 및 성공 여부 판단
+        var elHeader = res.elHeader;
+        
+        if (elHeader && elHeader.resSuc === true) {
+            // 성공인 경우
+            $c.win.alert("수정되었습니다.");
+            dlt_upload.removeAll();
+            if (mpd_html5Type && mpd_html5Type.removeAllFiles) {
+                mpd_html5Type.removeAllFiles();
+            }
+            pop_overlay.hide();
+            scwin.btn_search_onclick();
+        } else {
+            // 실패인 경우
+            var errorMsg = "수정에 실패했습니다.";
+            if (elHeader && elHeader.resMsg) {
+                errorMsg += "\n오류메시지: " + elHeader.resMsg;
+            }
+            if (elHeader && elHeader.resCode) {
+                errorMsg += "\n오류코드: " + elHeader.resCode;
+            }
+            $c.win.alert(errorMsg);
+        }
     })
     .catch(function(err) {
-        console.error("전송 실패", err);
-        $c.win.alert("트랜잭션 실패");
+        console.error("전송 실패:", err);
+        var errorMsg = "수정 중 오류가 발생했습니다.";
+        if (err.message) {
+            errorMsg += "\n상세 오류: " + err.message;
+        }
+        $c.win.alert(errorMsg);
     });
 };
 
-// 일반 수정 완료 콜백
-scwin.sbm_updateIssVo_submitdone = function (e) {
-    var elHeader = e.responseJSON.elHeader;
-    if (!elHeader || elHeader.resSuc == false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
-        return false;
-    }
-    
-    $c.win.alert("수정되었습니다.");
-    pop_overlay.hide();
-    scwin.btn_search_onclick();
-};
-
-// 삭제 버튼 클릭 이벤트
+/**
+ * 삭제 버튼 클릭 이벤트
+ */
 scwin.btn_delete_onclick = function (e) {
     var issueId = dmp_issVoDetail.get("id");
     
@@ -783,34 +1521,168 @@ scwin.btn_delete_onclick = function (e) {
     });
 };
 
-// 삭제 완료 콜백
+/************************** 10. CRUD 트랜잭션 콜백 함수 *************************/
+
+/**
+ * 등록 완료 콜백 (일반 submission용)
+ */
+scwin.sbm_insertIssVo_submitdone = function (e) {
+    console.log("등록 응답:", e);
+    
+    var elHeader = e.responseJSON ? e.responseJSON.elHeader : null;
+    
+    if (elHeader && elHeader.resSuc === true) {
+        $c.win.alert("등록되었습니다.");
+        pop_overlay.hide();
+        scwin.btn_search_onclick();
+    } else {
+        var errorMsg = "등록에 실패했습니다.";
+        if (elHeader && elHeader.resMsg) {
+            errorMsg += "\n오류메시지: " + elHeader.resMsg;
+        }
+        if (elHeader && elHeader.resCode) {
+            errorMsg += "\n오류코드: " + elHeader.resCode;
+        }
+        $c.win.alert(errorMsg);
+    }
+};
+
+/**
+ * 수정 완료 콜백
+ */
+scwin.sbm_updateIssVo_submitdone = function (e) {
+    console.log("수정 응답:", e);
+    
+    var elHeader = e.responseJSON ? e.responseJSON.elHeader : null;
+    
+    if (elHeader && elHeader.resSuc === true) {
+        $c.win.alert("수정되었습니다.");
+        scwin.setFormMode("view");
+        scwin.btn_search_onclick();
+    } else {
+        var errorMsg = "수정에 실패했습니다.";
+        if (elHeader && elHeader.resMsg) {
+            errorMsg += "\n오류메시지: " + elHeader.resMsg;
+        }
+        if (elHeader && elHeader.resCode) {
+            errorMsg += "\n오류코드: " + elHeader.resCode;
+        }
+        $c.win.alert(errorMsg);
+        scwin.setFormMode("view");
+    }
+};
+
+/**
+ * 삭제 완료 콜백
+ */
 scwin.sbm_deleteIssVo_submitdone = function (e) {
-    var elHeader = e.responseJSON.elHeader;
-    if (!elHeader || elHeader.resSuc == false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+    console.log("삭제 응답:", e);
+    
+    var elHeader = e.responseJSON ? e.responseJSON.elHeader : null;
+    
+    if (elHeader && elHeader.resSuc === true) {
+        $c.win.alert("삭제되었습니다.");
+        pop_overlay.hide();
+        scwin.btn_search_onclick();
+    } else {
+        var errorMsg = "삭제에 실패했습니다.";
+        if (elHeader && elHeader.resMsg) {
+            errorMsg += "\n오류메시지: " + elHeader.resMsg;
+        }
+        if (elHeader && elHeader.resCode) {
+            errorMsg += "\n오류코드: " + elHeader.resCode;
+        }
+        $c.win.alert(errorMsg);
+    }
+};
+
+/**
+ * CRUD 오류 처리 콜백들
+ */
+scwin.sbm_insertIssVo_submiterror = function(e) {
+    scwin.handleError("등록", e);
+};
+
+scwin.sbm_updateIssVo_submiterror = function(e) {
+    scwin.handleError("수정", e);
+    scwin.setFormMode("view");
+};
+
+scwin.sbm_deleteIssVo_submiterror = function(e) {
+    scwin.handleError("삭제", e);
+};
+
+/************************** 11. 파일 관리 함수 *************************/
+
+/**
+ * 파일 확장자 추출
+ * @param {string} fileName - 파일명
+ * @returns {string} 파일 확장자
+ */
+scwin.getFileExtension = function(fileName) {
+    if (!fileName || fileName.indexOf('.') === -1) return '';
+    return fileName.split('.').pop().toLowerCase();
+};
+
+/**
+ * 파일 목록 로드
+ */
+scwin.loadFileList = function() {
+    console.log("=== 파일 목록 로드 시작 ===");
+    
+    var issueId = dmp_issVoDetail.get("id");
+    console.log("이슈 ID:", issueId);
+
+    if (!issueId || issueId.trim() === "") {
+        console.log("이슈 ID가 없습니다. 파일 목록을 초기화합니다.");
+        dlt_attVoList.setJSON([]);
+        scwin.hideAllPreviewPanels();
+        scwin.showNoPreview();
+        return;
+    }
+    
+    // 데이터맵에 검색 조건 설정
+    dmp_fileSearch.set("id", issueId);
+    $c.sbm.execute($p, sbm_getIssFileList);
+};
+
+/**
+ * 파일 목록 조회 성공 콜백
+ */
+scwin.sbm_getIssFileList_submitdone = function(e) {
+    console.log("=== 파일 목록 조회 응답 처리 ===");
+    console.log("responseJSON:", e.responseJSON);
+    
+    var elData = e.responseJSON ? e.responseJSON.elData : null;
+    var elHeader = e.responseJSON ? e.responseJSON.elHeader : null;
+    
+    if (!elHeader || elHeader.resSuc !== true) {
+        var errorMsg = "파일 목록 조회에 실패했습니다.";
+        if (elHeader && elHeader.resMsg) {
+            errorMsg += "\n오류메시지: " + elHeader.resMsg;
+        }
+        console.error("파일 목록 조회 실패:", errorMsg);
+        
+        dlt_attVoList.setJSON([]);
         return false;
     }
     
-    $c.win.alert("삭제되었습니다.");
-    pop_overlay.hide();
-    scwin.btn_search_onclick();
+    var fileList = elData.attVoList || [];
+    console.log("파일 목록 설정 완료:", fileList.length, "개");
+    console.log("dlt_attVoList 총 행 수:", dlt_attVoList.getTotalRow());
 };
 
-/************************** 파일 관련 함수 (새로 추가) *************************/
-
-// 탭 변경 이벤트
-scwin.tab_main_onchange = function(e) {
-    var selectedTab = e.newSelectedIndex;
-    
-    // 첨부파일 탭 선택 시 파일 목록 로드
-    if (selectedTab === 1) {
-        setTimeout(function() {
-            scwin.loadFileList();
-        }, 100);
-    }
+/**
+ * 파일 목록 조회 실패 콜백
+ */
+scwin.sbm_getIssFileList_submiterror = function(e) {
+    scwin.handleError("파일 목록 조회", e, false);
+    dlt_attVoList.setJSON([]);
 };
 
-// 파일 선택 완료 콜백
+/**
+ * 파일 업로드 선택 완료 콜백
+ */
 scwin.multiUploadSelectDone = function () {
     console.log("파일 선택 완료 콜백 실행");
     var fileInfos = mpd_html5Type.getFileInfos();
@@ -822,8 +1694,7 @@ scwin.multiUploadSelectDone = function () {
             originalFileName: file.name,
             fileSize: file.size,
             fileExtension: scwin.getFileExtension(file.name),
-            status: "업로드 대기",        // 상태 필드 추가
-            action: "❌"                // 작업 필드 추가
+            fileIndex: i
         });
     }
     
@@ -837,86 +1708,67 @@ scwin.multiUploadSelectDone = function () {
     console.log("업로드 대기 파일 수:", newFileData.length);
 };
 
-// 파일 확장자 추출
-scwin.getFileExtension = function(fileName) {
-    if (!fileName || fileName.indexOf('.') === -1) return '';
-    return fileName.split('.').pop().toLowerCase();
-};
-
-// 파일 목록 로드
-scwin.loadFileList = function() {
-
-    console.log("=== 파일 목록 로드 시작 ===");
+/**
+ * 업로드 파일 개별 삭제
+ * @param {number} row - 행 인덱스
+ */
+scwin.removeUploadFile = function(row, col, colId, targetId) {
+    console.log("업로드 파일 삭제:", row);
     
-    // 현재 선택된 이슈 ID 확인
-    var issueId = dmp_issVoDetail.get("id");
-    console.log("이슈 ID:", issueId);
-
-    // 이슈 ID가 있는지 확인
-    if (!issueId || issueId.trim() === "") {
-        console.log("이슈 ID가 없습니다. 파일 목록을 초기화합니다.");
-        dlt_FileList.setJSON([]);
-        scwin.hideAllPreviewPanels();
-        scwin.showNoPreview();
-        return;
-    }
-      // 데이터맵에 검색 조건 설정
-    // dmp_fileSearch.set("refType", "ISSUE");          // 컨트롤러에서 덮어씌워짐
-    dmp_fileSearch.set("id", issueId);      // 실제 이슈 ID
-    // dmp_fileSearch.set("isDeleted", "0");            // 삭제되지 않은 파일만
-    
-
-    $c.sbm.execute($p, sbm_getIssFileList);
-};
-
-
-// 파일 목록 조회 성공 콜백
-scwin.sbm_getIssFileList_submitdone = function(e) {
-      console.log("=== 파일 목록 조회 응답 처리 ===");
-    console.log("responseJSON:", e.responseJSON);
-    
-    var elData = e.responseJSON.elData;
-    var elHeader = e.responseJSON.elHeader;
-    
-    if (!elHeader || elHeader.resSuc == false) {
-        console.error("파일 목록 조회 실패:", elHeader ? elHeader.resMsg : "알 수 없는 오류");
-        return false;
-    }
-    
-    var fileList = elData.attVoList || [];
-    console.log("파일 목록 설정 완료:", fileList.length, "개");
-    
-    // target에서 이미 dlt_attVoList에 자동 설정됨
-    console.log("dlt_attVoList 총 행 수:", dlt_attVoList.getTotalRow());
-};
-
-
-// 파일 목록 조회 실패 콜백
-scwin.sbm_getFileList_submiterror = function(e) {
-    console.error("파일 목록 조회 실패:", e);
-    dlt_FileList.setJSON([]);
-    scwin.hideAllPreviewPanels();
-    scwin.showNoPreview();
-    $c.win.alert("파일 목록 조회 중 네트워크 오류가 발생했습니다.");
-};
-
-// 파일 그리드 액션 버튼 클릭 이벤트 (다운로드|삭제 버튼)
-scwin.fileActionClick = function(row, col, colId, targetId) {
-    var rowData = dlt_attVoList.getRowJSON(row);  // dlt_FileList → dlt_attVoList
-    var fileId = rowData.fileId;
-    var fileName = rowData.originalFileName;
-    
-    if (targetId.indexOf("download") >= 0 || col === 3) {
-        scwin.downloadFile(fileId, fileName);
-    } else if (targetId.indexOf("delete") >= 0) {
-        scwin.deleteFile(fileId);
+    try {
+        dlt_upload.removeRow(row);
+        
+        if (mpd_html5Type && mpd_html5Type.removeFileByIndex) {
+            mpd_html5Type.removeFileByIndex(row);
+        } else if (mpd_html5Type && mpd_html5Type.fileArray) {
+            mpd_html5Type.fileArray.splice(row, 1);
+        }
+        
+        console.log("파일 삭제 완료, 남은 파일 수:", dlt_upload.getTotalRow());
+        
+        try {
+            grd_uploadList.refresh();
+        } catch(e) {
+            console.log("그리드 새로고침 실패, 무시");
+        }
+        
+    } catch(error) {
+        console.error("파일 삭제 중 오류:", error);
+        alert("파일 삭제 중 오류가 발생했습니다.");
     }
 };
 
+/**
+ * 파일 업로드 전체 초기화
+ */
+scwin.btn_InitMultiupload_onclick = function(e) {
+    console.log("파일 업로드 초기화");
+    
+    dlt_upload.removeAll();
+    
+    if (mpd_html5Type) {
+        if (mpd_html5Type.clear) {
+            mpd_html5Type.clear();
+        } else if (mpd_html5Type.removeAllFiles) {
+            mpd_html5Type.removeAllFiles();
+        } else if (mpd_html5Type.fileArray) {
+            mpd_html5Type.fileArray = [];
+        }
+    }
+    
+    console.log("파일 업로드 초기화 완료");
+};
 
-// 파일 그리드 셀 클릭 이벤트 (미리보기)
+/************************** 12. 파일 미리보기 관련 함수 *************************/
+
+/**
+ * 파일 그리드 셀 클릭 이벤트 (미리보기)
+ * @param {number} row - 행 인덱스
+ * @param {number} col - 열 인덱스
+ * @param {string} colId - 열 ID
+ */
 scwin.grd_fileList_oncellclick = function(row, col, colId) {
-    var rowData = dlt_attVoList.getRowJSON(row);  // dlt_FileList → dlt_attVoList
+    var rowData = dlt_attVoList.getRowJSON(row);
     
     // 파일명 컬럼 클릭시만 미리보기
     if (colId === "originalFileName") {
@@ -924,7 +1776,12 @@ scwin.grd_fileList_oncellclick = function(row, col, colId) {
     }
 };
 
-// 파일 미리보기 함수
+/**
+ * 파일 미리보기 함수
+ * @param {string} fileId - 파일 ID
+ * @param {string} fileName - 파일명
+ * @param {string} fileExtension - 파일 확장자
+ */
 scwin.previewFile = function(fileId, fileName, fileExtension) {
     console.log("파일 미리보기:", fileName, fileExtension);
     
@@ -933,10 +1790,8 @@ scwin.previewFile = function(fileId, fileName, fileExtension) {
     dmp_currentFile.set("originalFileName", fileName);
     dmp_currentFile.set("fileExtension", fileExtension);
     
-    // 모든 미리보기 영역 숨기기
     scwin.hideAllPreviewPanels();
     
-    // 파일 확장자에 따른 미리보기 처리
     var ext = fileExtension ? fileExtension.toLowerCase() : "";
     
     if (scwin.isImageFile(ext)) {
@@ -950,7 +1805,9 @@ scwin.previewFile = function(fileId, fileName, fileExtension) {
     }
 };
 
-// 파일 타입 체크 함수들
+/**
+ * 파일 타입 체크 함수들
+ */
 scwin.isImageFile = function(ext) {
     var imageExts = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'svg', 'webp'];
     return imageExts.indexOf(ext) !== -1;
@@ -966,7 +1823,9 @@ scwin.isDocumentFile = function(ext) {
     return docExts.indexOf(ext) !== -1;
 };
 
-// 모든 미리보기 패널 숨기기
+/**
+ * 모든 미리보기 패널 숨기기
+ */
 scwin.hideAllPreviewPanels = function() {
     try {
         grp_noPreview.hide();
@@ -984,7 +1843,9 @@ scwin.hideAllPreviewPanels = function() {
     }
 };
 
-// 기본 미리보기 표시
+/**
+ * 기본 미리보기 표시
+ */
 scwin.showNoPreview = function() {
     try {
         grp_noPreview.show();
@@ -994,9 +1855,12 @@ scwin.showNoPreview = function() {
     }
 };
 
-// 이미지 미리보기 표시
+/**
+ * 이미지 미리보기 표시
+ * @param {string} fileId - 파일 ID
+ * @param {string} fileName - 파일명
+ */
 scwin.showImagePreview = function(fileId, fileName) {
-    // AttController의 ImagePreview 사용 (프로웍스 방식)
     var imageUrl = "/InsWebApp/ImagePreview.pwkjson?fileId=" + fileId;
     
     try {
@@ -1007,6 +1871,16 @@ scwin.showImagePreview = function(fileId, fileName) {
             var imgElement = document.getElementById("img_preview");
             if (imgElement) {
                 imgElement.src = imageUrl;
+                
+                // 썸네일 스타일 적용
+                imgElement.style.width = "150px";
+                imgElement.style.height = "150px";
+                imgElement.style.objectFit = "cover";
+                imgElement.style.border = "1px solid #ddd";
+                imgElement.style.background = "white";
+                imgElement.style.boxShadow = "0 2px 8px rgba(0,0,0,0.1)";
+                imgElement.style.borderRadius = "4px";
+                
                 imgElement.onerror = function() {
                     console.error("이미지 로드 실패:", imageUrl);
                     scwin.showUnsupportedPreview(fileName, "이미지를 로드할 수 없습니다.");
@@ -1022,20 +1896,35 @@ scwin.showImagePreview = function(fileId, fileName) {
     }
 };
 
-// 텍스트 파일 미리보기 표시
+/**
+ * 텍스트 파일 미리보기 표시
+ * @param {string} fileId - 파일 ID
+ * @param {string} fileName - 파일명
+ */
 scwin.showTextPreview = function(fileId, fileName) {
     try {
         txt_textFileName.setValue(fileName);
         grp_textPreview.show();
         
-        // AttController의 FilePreview 사용
         fetch("/InsWebApp/FilePreview.pwkjson?fileId=" + fileId)
-            .then(function(response) { return response.text(); })
-            .then(function(text) {
-                if (text.length > 5000) {
-                    text = text.substring(0, 5000) + "\n\n... (파일 내용이 길어서 일부만 표시됩니다)";
+            .then(function(response) { return response.json(); })
+            .then(function(data) {
+                if (data.success && data.content) {
+                    try {
+                        var decodedContent = atob(data.content);
+                        var utf8Content = decodeURIComponent(escape(decodedContent));
+                        
+                        if (utf8Content.length > 5000) {
+                            utf8Content = utf8Content.substring(0, 5000) + "\n\n... (파일 내용이 길어서 일부만 표시됩니다)";
+                        }
+                        txt_textContent.setValue(utf8Content);
+                    } catch (decodeError) {
+                        console.error("디코딩 오류:", decodeError);
+                        txt_textContent.setValue("텍스트 인코딩 오류가 발생했습니다.");
+                    }
+                } else {
+                    txt_textContent.setValue(data.message || "텍스트 파일을 로드할 수 없습니다.");
                 }
-                txt_textContent.setValue(text);
             })
             .catch(function(error) {
                 console.error("텍스트 파일 로드 실패:", error);
@@ -1047,7 +1936,12 @@ scwin.showTextPreview = function(fileId, fileName) {
     }
 };
 
-// 문서 파일 미리보기 표시
+/**
+ * 문서 파일 미리보기 표시
+ * @param {string} fileId - 파일 ID
+ * @param {string} fileName - 파일명
+ * @param {string} ext - 파일 확장자
+ */
 scwin.showDocumentPreview = function(fileId, fileName, ext) {
     try {
         txt_documentFileName.setValue(fileName);
@@ -1084,15 +1978,42 @@ scwin.showDocumentPreview = function(fileId, fileName, ext) {
     }
 };
 
-// 지원하지 않는 파일 미리보기
+/**
+ * 지원하지 않는 파일 미리보기
+ * @param {string} fileName - 파일명
+ * @param {string} message - 메시지
+ */
 scwin.showUnsupportedPreview = function(fileName, message) {
     scwin.hideAllPreviewPanels();
     scwin.showNoPreview();
 };
 
-// 현재 미리보기 중인 파일 다운로드
+/************************** 13. 파일 다운로드 및 삭제 *************************/
+
+/**
+ * 파일 그리드 액션 버튼 클릭 이벤트 (다운로드|삭제 버튼)
+ * @param {number} row - 행 인덱스
+ * @param {number} col - 열 인덱스
+ * @param {string} colId - 열 ID
+ * @param {string} targetId - 타겟 ID
+ */
+scwin.fileActionClick = function(row, col, colId, targetId) {
+    var rowData = dlt_attVoList.getRowJSON(row);
+    var fileId = rowData.fileId;
+    var fileName = rowData.originalFileName;
+    
+    if (targetId.indexOf("download") >= 0 || col === 3) {
+        scwin.downloadFile(fileId, fileName);
+    } else if (targetId.indexOf("delete") >= 0) {
+        scwin.deleteFile(fileId);
+    }
+};
+
+/**
+ * 현재 미리보기 중인 파일 다운로드
+ */
 scwin.downloadCurrentFile = function() {
-    var fileId = dmp_currentFile.get("fileId");      // 이 부분은 수정 안해도 됨!
+    var fileId = dmp_currentFile.get("fileId");
     var fileName = dmp_currentFile.get("originalFileName");
     
     if (fileId && fileName) {
@@ -1102,7 +2023,9 @@ scwin.downloadCurrentFile = function() {
     }
 };
 
-// 새 창에서 파일 열기
+/**
+ * 새 창에서 파일 열기
+ */
 scwin.openFileInNewWindow = function() {
     var fileId = dmp_currentFile.get("fileId");
     
@@ -1114,7 +2037,11 @@ scwin.openFileInNewWindow = function() {
     }
 };
 
-// 파일 다운로드
+/**
+ * 파일 다운로드
+ * @param {string} fileId - 파일 ID
+ * @param {string} fileName - 파일명
+ */
 scwin.downloadFile = function(fileId, fileName) {
     if (!fileId || !fileName) {
         alert("다운로드할 파일 정보가 없습니다.");
@@ -1124,7 +2051,6 @@ scwin.downloadFile = function(fileId, fileName) {
     console.log("파일 다운로드 시작:", fileName);
     
     try {
-        // AttController의 FileDownload 사용
         var downloadUrl = "/InsWebApp/FileDownload.pwkjson?fileId=" + encodeURIComponent(fileId);
         
         var iframe = document.createElement('iframe');
@@ -1144,7 +2070,10 @@ scwin.downloadFile = function(fileId, fileName) {
     }
 };
 
-// 파일 삭제
+/**
+ * 파일 삭제
+ * @param {string} fileId - 파일 ID
+ */
 scwin.deleteFile = function(fileId) {
     if (!fileId) {
         alert("삭제할 파일을 선택해주세요.");
@@ -1187,164 +2116,34 @@ scwin.deleteFile = function(fileId) {
     });
 };
 
-// 파일 업로드 초기화
-scwin.btn_InitMultiupload_onclick = function(e) {
-    dlt_upload.removeAll();
-    if (mpd_html5Type && mpd_html5Type.clear) {
-        mpd_html5Type.clear();
+/************************** 14. 기타 이벤트 및 미사용 함수 *************************/
+
+/**
+ * 탭 변경 이벤트 (현재 미사용)
+ */
+scwin.tab_main_onchange = function(e) {
+    var selectedTab = e.newSelectedIndex;
+    
+    // 첨부파일 탭 선택 시 파일 목록 로드
+    if (selectedTab === 1) {
+        setTimeout(function() {
+            scwin.loadFileList();
+        }, 100);
     }
 };
 
-scwin.removeUploadFile = function(row, col, colId, targetId) {
-    console.log("업로드 파일 삭제:", row);
-    
-    try {
-        // 그리드에서 해당 행 삭제
-        dlt_upload.removeRow(row);
-        
-        // multiupload 컴포넌트에서도 해당 파일 제거
-        if (mpd_html5Type && mpd_html5Type.removeFileByIndex) {
-            mpd_html5Type.removeFileByIndex(row);
-        } else if (mpd_html5Type && mpd_html5Type.fileArray) {
-            // 직접 fileArray에서 제거
-            mpd_html5Type.fileArray.splice(row, 1);
-        }
-        
-        console.log("파일 삭제 완료, 남은 파일 수:", dlt_upload.getTotalRow());
-        
-        // 그리드 새로고침
-        try {
-            grd_uploadList.refresh();
-        } catch(e) {
-            console.log("그리드 새로고침 실패, 무시");
-        }
-        
-    } catch(error) {
-        console.error("파일 삭제 중 오류:", error);
-        alert("파일 삭제 중 오류가 발생했습니다.");
-    }
+/**
+ * 기존 파일 목록 조회 실패 콜백 (사용되지 않음 - 삭제 예정)
+ */
+scwin.sbm_getFileList_submiterror = function(e) {
+    console.error("파일 목록 조회 실패:", e);
+    dlt_FileList.setJSON([]);
+    scwin.hideAllPreviewPanels();
+    scwin.showNoPreview();
+    $c.win.alert("파일 목록 조회 중 네트워크 오류가 발생했습니다.");
 };
 
-// 파일 선택 완료 콜백 수정 (인덱스 추가)
-scwin.multiUploadSelectDone = function () {
-    console.log("파일 선택 완료 콜백 실행");
-    var fileInfos = mpd_html5Type.getFileInfos();
-    var newFileData = [];
-
-    for (var i = 0; i < fileInfos.length; i++) {
-        var file = fileInfos[i];
-        newFileData.push({
-            originalFileName: file.name,
-            fileSize: file.size,
-            fileExtension: scwin.getFileExtension(file.name),
-            fileIndex: i  // 인덱스 추가 (삭제용)
-        });
-    }
-    
-    dlt_upload.setJSON(newFileData);
-    try {
-        grd_uploadList.refresh();
-    } catch(e) {
-        console.log("그리드 새로고침 실패, 무시");
-    }
-    
-    console.log("업로드 대기 파일 수:", newFileData.length);
-};
-
-// 전체 파일 초기화 (기존 함수 개선)
-scwin.btn_InitMultiupload_onclick = function(e) {
-    console.log("파일 업로드 초기화");
-    
-    // 그리드 데이터 삭제
-    dlt_upload.removeAll();
-    
-    // multiupload 컴포넌트 초기화
-    if (mpd_html5Type) {
-        if (mpd_html5Type.clear) {
-            mpd_html5Type.clear();
-        } else if (mpd_html5Type.removeAllFiles) {
-            mpd_html5Type.removeAllFiles();
-        } else if (mpd_html5Type.fileArray) {
-            mpd_html5Type.fileArray = [];
-        }
-    }
-    
-    console.log("파일 업로드 초기화 완료");
-};
-
-
-/************************** 팝업 버튼 이벤트 연결 *************************/
-
-scwin.btn_popup_edit_onclick = function(e) {
-    scwin.btn_edit_onclick(e);
-};
-
-scwin.btn_popup_delete_onclick = function(e) {
-    scwin.btn_delete_onclick(e);
-};
-
-
-
-// 에디터 모드 전환 함수
-scwin.setEditorMode = function(isEditMode) {
-    console.log("에디터 모드 전환:", isEditMode ? "편집" : "조회");
-    
-    if (isEditMode) {
-        // 편집 모드: 에디터 표시, 읽기 전용 숨김
-        grp_description_edit.show();
-        grp_description_view.hide();
-        grp_response_edit.show();
-        grp_response_view.hide();
-    } else {
-        // 조회 모드: 읽기 전용 표시, 에디터 숨김
-        grp_description_edit.hide();
-        grp_description_view.show();
-        grp_response_edit.hide();
-        grp_response_view.show();
-        
-        // HTML 내용을 텍스트로 변환하여 표시
-        scwin.updateViewContent();
-    }
-};
-
-// 조회 모드에서 HTML 내용을 텍스트로 변환
-scwin.updateViewContent = function() {
-    try {
-        var description = dmp_issVoDetail.get("description") || "";
-        var responsePlan = dmp_issVoDetail.get("responsePlan") || "";
-        
-        // HTML 태그 제거하고 텍스트만 추출
-        var descriptionText = scwin.stripHtmlTags(description);
-        var responsePlanText = scwin.stripHtmlTags(responsePlan);
-        
-        // 조회 영역에 설정
-        txt_description_view.setValue(descriptionText);
-        txt_response_view.setValue(responsePlanText);
-        
-    } catch(e) {
-        console.error("내용 업데이트 실패:", e);
-    }
-};
-
-// HTML 태그 제거 함수
-scwin.stripHtmlTags = function(htmlString) {
-    if (!htmlString) return "";
-    
-    // HTML 태그 제거
-    var text = htmlString.replace(/<[^>]*>/g, "");
-    
-    // HTML 엔티티 디코딩
-    text = text.replace(/&nbsp;/g, " ");
-    text = text.replace(/&lt;/g, "<");
-    text = text.replace(/&gt;/g, ">");
-    text = text.replace(/&amp;/g, "&");
-    text = text.replace(/&quot;/g, '"');
-    
-    // 여러 개의 공백이나 줄바꿈을 하나로 정리
-    text = text.replace(/\s+/g, " ").trim();
-    
-    return text;
-};]]></script>
+/************************** 스크립트 끝 **************************/]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">
 		<xf:group class="sub_contents " id="" style="">
@@ -1408,6 +2207,11 @@ scwin.stripHtmlTags = function(htmlString) {
 						ev:onclick="scwin.btn_search_onclick" localeRef="COMMON_BUTTON_00001">
 						<xf:label><![CDATA[조회]]></xf:label>
 					</xf:trigger>
+                     <xf:trigger class="btn_cm" disabled="" escape="false" id="btn_refresh_project" 
+                        style="background: #17a2b8; color: white; border: 1px solid #17a2b8;" type="button"
+                        ev:onclick="scwin.btn_refresh_project_onclick">
+                        <xf:label><![CDATA[프로젝트 새로고침]]></xf:label>
+                    </xf:trigger>
 					<xf:trigger class="" disabled="" escape="false" id="reg_btn" localeRef="COMMON_BUTTON_00001"
 						style="background: linear-gradient(to bottom, #5cb85c 0%, #449d44 100%); color: white; border: 1px solid #4cae4c; padding: 8px 16px; font-size: 12px;  height: 30px; border-radius: 3px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 70px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);border-radius: 4px;"
 						type="button" ev:onclick="scwin.reg_btn_onclick">
@@ -1425,14 +2229,16 @@ scwin.stripHtmlTags = function(htmlString) {
 					</xf:action>
 				</xf:trigger>
 			</xf:group>
-			<xf:group class="titbox" id="" style="">
+
+			<xf:group class="titbox" id="all_count" style="display: none;">
 				<xf:group class="count" id="">
 					<w2:span id="" label="총" localeRef="COMMON_LABEL_00002" style=""></w2:span>
 					<w2:span class="num" id="spn_listCnt" label="0" ref="" style=""></w2:span>
 					<w2:span id="" label="건" localeRef="COMMON_LABEL_00003" style=""></w2:span>
 				</xf:group>
 			</xf:group>
-			<xf:group adaptiveThreshold="" class="gvwbox" id="" style="">
+
+			<xf:group adaptiveThreshold="" class="gvwbox" id="" style="display: none;">
 				<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dlt_issVoList"
 					defaultCellHeight="26" focusMode="row" id="grd_list" scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;"
 					visibleRowNum="10" ev:oncellclick="scwin.grd_list_oncellclick" readOnly="true" ev:oncelldblclick="scwin.grd_list_oncelldblclick">
@@ -1486,7 +2292,7 @@ scwin.stripHtmlTags = function(htmlString) {
 					</w2:gBody>
 				</w2:gridView>
 			</xf:group>
-			<xf:group class="pglbox" id="" style="">
+			<xf:group class="pglbox" id="all_pgl" style="display:none;">
 				<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_issList" pageSize="5" pagingType="0" style=""
 					ev:onclick="scwin.pgl_issList_onclick">
 				</w2:pageList>
@@ -1684,17 +2490,7 @@ scwin.stripHtmlTags = function(htmlString) {
 					</w2:gBody>
 				</w2:gridView>
 			</xf:group>
-
-			<xf:group class="pglbox" id="" style="">
-				<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" ev:onclick="scwin.pgl_com_onclick" id="pgl_com"
-					pageSize="5" pagingType="0" style="">
-				</w2:pageList>
-				<w2:span class="num" id="span21" label="0" ref="data:dma_issVo.pageIndex" style=""></w2:span>
-				<w2:span id="span22" label="/" style=""></w2:span>
-				<w2:span id="span23" label="0" ref="data:dma_issVo.totalPageCount" style=""></w2:span>
-				<w2:span id="span24" label="페이지" localeRef="COMMON_LABEL_00005" style=""></w2:span>
-			</xf:group>
-
+            
 			<xf:group class="pop_contents" id="pop_overlay"
 				style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
 				<xf:group class="pop_contents" id="group1"
@@ -1737,100 +2533,106 @@ scwin.stripHtmlTags = function(htmlString) {
 							</xf:group>
 							<!-- 기본 정보 테이블 -->
 							<xf:group adaptive="layout" adaptiveThreshold="600" class="w2tb tbl" style="margin-bottom: 25px;" tagname="table">
-								<w2:attributes>
-									<w2:summary></w2:summary>
-								</w2:attributes>
-								<xf:group tagname="colgroup">
-									<xf:group style="width:140px;" tagname="col"></xf:group>
-									<xf:group style="width:220px;" tagname="col"></xf:group>
-									<xf:group style="width:140px;" tagname="col"></xf:group>
-									<xf:group style="" tagname="col"></xf:group>
-								</xf:group>
+                                <w2:attributes>
+                                    <w2:summary></w2:summary>
+                                </w2:attributes>
+                                <xf:group tagname="colgroup">
+                                    <xf:group style="width:140px;" tagname="col"></xf:group>
+                                    <xf:group style="width:220px;" tagname="col"></xf:group>
+                                    <xf:group style="width:140px;" tagname="col"></xf:group>
+                                    <xf:group style="" tagname="col"></xf:group>
+                                </xf:group>
 
-								<!-- 프로젝트명 -->
-								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
-										<w2:textbox class="" label="프로젝트명" style=""></w2:textbox>
-										<span style="color: red;">*</span>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td" colspan="3">
-										<xf:input class="" value="ERP 시스템 고도화 프로젝트" readOnly="true" style="width: 100%; height: 25px; background-color: #f5f5f5;"
-											ref="data:dmp_issVoDetail.pjtName"></xf:input>
-										<xf:input type="hidden" ref="data:dmp_issVoDetail.pjtId" value="6"></xf:input>
-									</xf:group>
-								</xf:group>
+                                <!-- 프로젝트명 (항상 readOnly) -->
+                                <xf:group tagname="tr">
+                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                        <w2:textbox class="" label="프로젝트명" style=""></w2:textbox>
+                                        <span style="color: red;">*</span>
+                                    </xf:group>
+                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td" colspan="3">
+                                        <xf:input class="" id="inp_projectName" readOnly="true" 
+                                            style="width: 100%; height: 25px; background-color: #f5f5f5;"
+                                            ref="data:dmp_issVoDetail.pjtName"></xf:input>
+                                        <xf:input type="hidden" ref="data:dmp_issVoDetail.pjtId" value="6"></xf:input>
+                                    </xf:group>
+                                </xf:group>
 
-								<!-- 이슈/리스크명, 작성자 -->
-								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
-										<w2:textbox class="" label="이슈/리스크명" style=""></w2:textbox>
-										<span style="color: red;">*</span>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-										<xf:input class="" placeholder="이슈/리스크명을 입력하세요" ref="data:dmp_issVoDetail.name" style="width: 100%; height: 25px;"></xf:input>
-									</xf:group>
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
-										<w2:textbox class="" label="작성자" style=""></w2:textbox>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-										<xf:input class="" id="inp_userId" value="김개발" ref="data:dmp_issVoDetail.userName" readOnly="true"
-											style="width: 100%; height: 25px; background-color: #f5f5f5;"></xf:input>
-										<xf:input type="hidden" ref="data:dmp_issVoDetail.userId" value="1"></xf:input>
-									</xf:group>
-								</xf:group>
+                                <!-- 이슈/리스크명, 작성자 -->
+                                <xf:group tagname="tr">
+                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                        <w2:textbox class="" label="이슈/리스크명" style=""></w2:textbox>
+                                        <span style="color: red;">*</span>
+                                    </xf:group>
+                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                        <xf:input class="" id="inp_issueName" placeholder="이슈/리스크명을 입력하세요" 
+                                            ref="data:dmp_issVoDetail.name" style="width: 100%; height: 25px;"></xf:input>
+                                    </xf:group>
+                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                        <w2:textbox class="" label="작성자" style=""></w2:textbox>
+                                    </xf:group>
+                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                        <xf:input class="" id="inp_userName" readOnly="true" 
+                                            ref="data:dmp_issVoDetail.userName" 
+                                            style="width: 100%; height: 25px; background-color: #f5f5f5;"></xf:input>
+                                        <xf:input type="hidden" ref="data:dmp_issVoDetail.userId" value="1"></xf:input>
+                                    </xf:group>
+                                </xf:group>
 
-								<!-- 우선순위, 상태 -->
-								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
-										<w2:textbox class="" label="우선순위" style=""></w2:textbox>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-										<xf:select1 allOption="" appearance="minimal" chooseOption="true" direction="auto" disabled="false"
-											disabledClass="w2selectbox_disabled" id="" style="width: 148px;height: 21px;" submenuSize="auto"
-											ref="data:dmp_issVoDetail.priority" chooseOptionLabel="">
-											<xf:choices>
-												<xf:itemset nodeset="data:dlt_priority">
-													<xf:label ref="priority"></xf:label>
-													<xf:value ref="code"></xf:value>
-												</xf:itemset>
-											</xf:choices>
-										</xf:select1>
-									</xf:group>
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
-										<w2:textbox class="" label="상태" style=""></w2:textbox>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-										<xf:select1 id="sel_status" chooseOption="true" style="width: 148px;height: 21px;" submenuSize="auto" allOption=""
-											disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" chooseOptionLabel=""
-											ref="data:dmp_issVoDetail.status">
-											<xf:choices>
-												<xf:itemset nodeset="data:dlt_status">
-													<xf:label ref="status"></xf:label>
-													<xf:value ref="code"></xf:value>
-												</xf:itemset>
-											</xf:choices>
-										</xf:select1>
-									</xf:group>
-								</xf:group>
+                                <!-- 우선순위, 상태 -->
+                                <xf:group tagname="tr">
+                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                        <w2:textbox class="" label="우선순위" style=""></w2:textbox>
+                                    </xf:group>
+                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                        <xf:select1 allOption="" appearance="minimal" chooseOption="true" direction="auto" 
+                                            disabled="false" disabledClass="w2selectbox_disabled" id="sel_priority" 
+                                            style="width: 148px;height: 21px;" submenuSize="auto"
+                                            ref="data:dmp_issVoDetail.priority" chooseOptionLabel="">
+                                            <xf:choices>
+                                                <xf:itemset nodeset="data:dlt_priority">
+                                                    <xf:label ref="priority"></xf:label>
+                                                    <xf:value ref="code"></xf:value>
+                                                </xf:itemset>
+                                            </xf:choices>
+                                        </xf:select1>
+                                    </xf:group>
+                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                        <w2:textbox class="" label="상태" style=""></w2:textbox>
+                                    </xf:group>
+                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                        <xf:select1 id="sel_status" chooseOption="true" 
+                                            style="width: 148px;height: 21px;" submenuSize="auto" allOption=""
+                                            disabled="false" direction="auto" appearance="minimal" 
+                                            disabledClass="w2selectbox_disabled" chooseOptionLabel=""
+                                            ref="data:dmp_issVoDetail.status">
+                                            <xf:choices>
+                                                <xf:itemset nodeset="data:dlt_status">
+                                                    <xf:label ref="status"></xf:label>
+                                                    <xf:value ref="code"></xf:value>
+                                                </xf:itemset>
+                                            </xf:choices>
+                                        </xf:select1>
+                                    </xf:group>
+                                </xf:group>
 
-								<!-- 완료예정일, 해결일 -->
-								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
-										<w2:textbox class="" label="완료예정일" style=""></w2:textbox>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-										<w2:inputCalendar id="cal_dueDate" style="width: 100%; height: 25px;" calendarValueType="yearMonthDate"
-											ref="data:dmp_issVoDetail.dueDate"></w2:inputCalendar>
-									</xf:group>
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
-										<w2:textbox class="" label="해결일" style=""></w2:textbox>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-										<w2:inputCalendar id="cal_resolvedDate" style="width: 100%; height: 25px;" calendarValueType="yearMonthDate"
-											ref="data:dmp_issVoDetail.resolvedDate"></w2:inputCalendar>
-									</xf:group>
-								</xf:group>
-							</xf:group>
+                                <!-- 완료예정일, 해결일 -->
+                                <xf:group tagname="tr">
+                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                        <w2:textbox class="" label="완료예정일" style=""></w2:textbox>
+                                    </xf:group>
+                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                        <w2:inputCalendar id="cal_dueDate" style="width: 100%; height: 25px;" 
+                                            calendarValueType="yearMonthDate" ref="data:dmp_issVoDetail.dueDate"></w2:inputCalendar>
+                                    </xf:group>
+                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                        <w2:textbox class="" label="해결일" style=""></w2:textbox>
+                                    </xf:group>
+                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+                                        <w2:inputCalendar id="cal_resolvedDate" style="width: 100%; height: 25px;" 
+                                            calendarValueType="yearMonthDate" ref="data:dmp_issVoDetail.resolvedDate"></w2:inputCalendar>
+                                    </xf:group>
+                                </xf:group>
+                            </xf:group>
 							
                             <!-- 상세설명 섹션 -->
                             <xf:group class="description-section" style="margin-bottom: 25px;">
@@ -1838,192 +2640,215 @@ scwin.stripHtmlTags = function(htmlString) {
                                     <w2:textbox label="상세설명" style="font-weight: bold; font-size: 14px;" tagname="h4"></w2:textbox>
                                     <span style="color: red;">*</span>
                                 </xf:group>
-                                
-                                <!-- 조회 모드: 읽기 전용 영역 -->
-                                <xf:group id="grp_description_view" style="border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px; padding: 15px; min-height: 100px; display: none;">
-                                    <w2:textbox id="txt_description_view" style="width: 100%; min-height: 80px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word;" ref="data:dmp_issVoDetail.description"></w2:textbox>
+
+                                <!-- 조회 모드: div 영역 (HTML 렌더링) -->
+                                <xf:group id="grp_description_view" style="display: none;">
+                                    <div id="div_description_view" 
+                                        style="width: 100%; min-height: 150px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px; padding: 15px; font-family: inherit; line-height: 1.6; overflow-y: auto; max-height: 300px;">
+                                        <!-- HTML 내용이 여기에 렌더링됩니다 -->
+                                    </div>
                                 </xf:group>
-                                
-                                <!-- 등록/수정 모드: 에디터 영역 -->
-                                <xf:group id="grp_description_edit" style="border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px; display: block;">
-                                    <w2:htmlEditor id="editor_description" style="width: 100%; height: 250px;" ref="data:dmp_issVoDetail.description"
-                                        toolbarConfig="fontname|fontsize|forecolor|backcolor|bold|italic|underline|strikethrough|subscript|superscript|removeformat|justifyleft|justifycenter|justifyright|justifyfull|outdent|indent|insertorderedlist|insertunorderedlist|inserthorizontalrule|createlink|unlink|insertimage|inserttable|undo|redo|print|fullscreen|html">
-                                    </w2:htmlEditor>
+
+                                <!-- 편집 모드: w2:editor 영역 -->
+                                <xf:group id="grp_description_edit" style="display: block;">
+                                    <w2:editor id="editor_description" style="width: 100%; height: 250px;"
+                                        ref="data:dmp_issVoDetail.description">
+                                    </w2:editor>
                                 </xf:group>
                             </xf:group>
 
                             <!-- 대응방안 섹션 -->
-                            <xf:group class="response-section" style="">
+                            <xf:group class="response-section" style="margin-bottom: 25px;">
                                 <xf:group class="titbox" style="margin-bottom: 10px;">
                                     <w2:textbox label="대응방안" style="font-weight: bold; font-size: 14px;" tagname="h4"></w2:textbox>
                                 </xf:group>
                                 
-                                <!-- 조회 모드: 읽기 전용 영역 -->
-                                <xf:group id="grp_response_view" style="border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px; padding: 15px; min-height: 80px; display: none;">
-                                    <w2:textbox id="txt_response_view" style="width: 100%; min-height: 60px; line-height: 1.5; white-space: pre-wrap; word-wrap: break-word;" ref="data:dmp_issVoDetail.responsePlan"></w2:textbox>
+                                <!-- 조회 모드: div 영역 (HTML 렌더링) -->
+                                <xf:group id="grp_response_view" style="display: none;">
+                                    <div id="div_response_view" 
+                                        style="width: 100%; min-height: 120px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px; padding: 15px; font-family: inherit; line-height: 1.6; overflow-y: auto; max-height: 250px;">
+                                        <!-- HTML 내용이 여기에 렌더링됩니다 -->
+                                    </div>
                                 </xf:group>
                                 
-                                <!-- 등록/수정 모드: 에디터 영역 -->
-                                <xf:group id="grp_response_edit" style="border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px; display: block;">
-                                    <w2:htmlEditor id="editor_responsePlan" style="width: 100%; height: 180px;"
-                                        ref="data:dmp_issVoDetail.responsePlan"
-                                        toolbarConfig="fontname|fontsize|forecolor|backcolor|bold|italic|underline|strikethrough|justifyleft|justifycenter|justifyright|outdent|indent|insertorderedlist|insertunorderedlist|createlink|unlink|undo|redo">
-                                    </w2:htmlEditor>
+                                <!-- 편집 모드: w2:editor 영역 -->
+                                <xf:group id="grp_response_edit" style="display: block;">
+                                    <w2:editor id="editor_responsePlan" style="width: 100%; height: 180px;"
+                                        ref="data:dmp_issVoDetail.responsePlan">
+                                    </w2:editor>
                                 </xf:group>
                             </xf:group>
 						</xf:group>
 
 						<!-- 2. 파일 첨부 섹션 -->
-						<xf:group class="section file-section"
-							style="margin: 0 20px 20px 20px; padding: 25px; border: 1px solid #e9ecef; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                        <!-- 파일 관리 섹션 -->
+                        <xf:group class="section file-section"
+                            style="margin: 0 20px 20px 20px; padding: 25px; border: 1px solid #e9ecef; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
 
-							<!-- 파일 업로드 영역 -->
-							<xf:group class="upload-area"
-								style="margin-bottom: 25px; border: 2px dashed #ddd; padding: 20px; background: #f8f9fa; border-radius: 8px;">
-								<xf:group class="titbox" style="margin-bottom: 15px;">
-									<w2:textbox label="파일 업로드" style="font-weight: bold; font-size: 16px; display: inline-block;" tagname="h4"></w2:textbox>
-									<w2:textbox label="* 최대 10개 파일, 파일당 10MB 이하"
-										style="color: #666; font-size: 12px; margin-left: 10px; display: inline-block;"></w2:textbox>
-								</xf:group>
-								<xf:group class="upload-buttons" style="margin-bottom: 15px;">
-									<xf:group style="position: relative; display: inline-block; margin-right: 10px;">
-										<xf:trigger class="btn_cm"
-											style="background: #007bff; color: white; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 38px;"
-											type="button">
-											<xf:label>파일 선택</xf:label>
-										</xf:trigger>
-										<w2:multiupload ev:ondone="scwin.mpd_html5Type_ondone" id="mpd_html5Type" maxcount="10" maxsize="10485760"
-											mode="html5_transparent" selectCallback="scwin.multiUploadSelectDone"
-											style="position: absolute;left: 0px;top:0px;width:100%;height: 100%;cursor: pointer;z-index: 999;" uploadButton="" wmode="false"></w2:multiupload>
-									</xf:group>
+                            <!-- 파일 업로드 영역 (편집 모드에서만 표시) -->
+                            <xf:group class="upload-area" id="grp_fileUploadArea"
+                                style="margin-bottom: 25px; border: 2px dashed #ddd; padding: 20px; background: #f8f9fa; border-radius: 8px; display: none;">
+                                <xf:group class="titbox" style="margin-bottom: 15px;">
+                                    <w2:textbox label="파일 업로드" style="font-weight: bold; font-size: 16px; display: inline-block;" tagname="h4"></w2:textbox>
+                                    <w2:textbox label="* 최대 10개 파일, 파일당 10MB 이하"
+                                        style="color: #666; font-size: 12px; margin-left: 10px; display: inline-block;"></w2:textbox>
+                                </xf:group>
+                                <xf:group class="upload-buttons" style="margin-bottom: 15px;">
+                                    <xf:group style="position: relative; display: inline-block; margin-right: 10px;">
+                                        <xf:trigger class="btn_cm"
+                                            style="background: #007bff; color: white; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 38px;"
+                                            type="button">
+                                            <xf:label>파일 선택</xf:label>
+                                        </xf:trigger>
+                                        <w2:multiupload ev:ondone="scwin.mpd_html5Type_ondone" id="mpd_html5Type" maxcount="10" maxsize="10485760"
+                                            mode="html5_transparent" selectCallback="scwin.multiUploadSelectDone"
+                                            style="position: absolute;left: 0px;top:0px;width:100%;height: 100%;cursor: pointer;z-index: 999;" 
+                                            uploadButton="" wmode="false"></w2:multiupload>
+                                    </xf:group>
 
-									<xf:trigger class="btn_cm" ev:onclick="scwin.btn_InitMultiupload_onclick"
-										style="background: #6c757d; color: white; padding: 10px 15px; border-radius: 4px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 38px;"
-										type="button">
-										<xf:label>전체 삭제</xf:label>
-									</xf:trigger>
-								</xf:group>
-								<!-- 업로드된 파일 목록 -->
-								<xf:group class="upload-list" style="margin-top: 5px;">
-									<w2:textbox label="선택된 파일" style="font-weight: bold; margin-bottom: 8px;" tagname="h5"></w2:textbox>
-									<w2:gridView autoFit="allColumn" class="gvw" dataList="dlt_upload" id="grd_uploadList" noResultMessage="선택된 파일이 없습니다."
-										rowNumVisible="false" style="height: 120px; border: 1px solid #ddd; width: 100%;" visibleRowNum="4">
-										<w2:header style="">
-											<w2:row style="">
-												<w2:column displayMode="label" inputType="text" style="height:25px; background-color: #e9ecef;" value="파일명"
-													width="250"></w2:column>
-												<w2:column displayMode="label" inputType="text" style="height:25px; background-color: #e9ecef;" value="크기" width="100"></w2:column>
-												<w2:column displayMode="label" inputType="text" style="height:25px; background-color: #e9ecef;" value="상태" width="100"></w2:column>
-												<w2:column displayMode="label" inputType="text" style="height:25px; background-color: #e9ecef;" value="작업" width="60"></w2:column>
-											</w2:row>
-										</w2:header>
-										<w2:gBody style="">
-											<w2:row style="">
-												<w2:column displayMode="label" id="originalFileName" inputType="text" style="height:25px; padding: 5px;"
-													textAlign="left" width="250"></w2:column>
-												<w2:column dataType="number" displayFormat="#,###" displayMode="label" id="fileSize" inputType="text"
-													style="height:25px; padding: 5px;" textAlign="right" width="100"></w2:column>
-												<w2:column displayMode="label" id="status" inputType="text" style="height:25px; padding: 5px; color: #007bff;"
-													textAlign="center" width="100"></w2:column>
-												<w2:column displayMode="label" id="action" inputType="text"
-													style="height:25px; padding: 2px; color: #dc3545; cursor: pointer; font-size: 14px; font-weight: bold;" textAlign="center"
-													width="60" ev:onclick="scwin.removeUploadFile"></w2:column>
-											</w2:row>
-										</w2:gBody>
-									</w2:gridView>
-								</xf:group>
-							</xf:group>
-							<!-- 기존 첨부파일 목록 -->
-							<xf:group class="existing-files" style="">
-								<xf:group class="titbox" style="margin-bottom: 15px;">
-									<w2:textbox label="기존 첨부파일" style="font-weight: bold; font-size: 16px; display: inline-block;" tagname="h4"></w2:textbox>
-									<xf:trigger class="btn_cm" ev:onclick="scwin.loadFileList"
-										style="margin-left: 10px; background: #28a745; color: white; padding: 5px 10px; border-radius: 3px; font-size: 12px; display: inline-block;"
-										type="button">
-										<xf:label>새로고침</xf:label>
-									</xf:trigger>
-								</xf:group>
+                                    <xf:trigger class="btn_cm" ev:onclick="scwin.btn_InitMultiupload_onclick"
+                                        style="background: #6c757d; color: white; padding: 10px 15px; border-radius: 4px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 38px;"
+                                        type="button">
+                                        <xf:label>전체 삭제</xf:label>
+                                    </xf:trigger>
+                                </xf:group>
+                                <!-- 업로드 대기 파일 목록 -->
+                                <xf:group class="upload-list" style="margin-top: 5px;">
+                                    <w2:textbox label="선택된 파일" style="font-weight: bold; margin-bottom: 8px;" tagname="h5"></w2:textbox>
+                                    <w2:gridView autoFit="allColumn" class="gvw" dataList="dlt_upload" id="grd_uploadList" 
+                                        noResultMessage="선택된 파일이 없습니다." rowNumVisible="false" 
+                                        style="height: 120px; border: 1px solid #ddd; width: 100%;" visibleRowNum="4">
+                                        <w2:header style="">
+                                            <w2:row style="">
+                                                <w2:column displayMode="label" inputType="text" 
+                                                    style="height:25px; background-color: #e9ecef;" value="파일명" width="250"></w2:column>
+                                                <w2:column displayMode="label" inputType="text" 
+                                                    style="height:25px; background-color: #e9ecef;" value="크기" width="100"></w2:column>
+                                                <w2:column displayMode="label" inputType="text" 
+                                                    style="height:25px; background-color: #e9ecef;" value="상태" width="100"></w2:column>
+                                                <w2:column displayMode="label" inputType="text" 
+                                                    style="height:25px; background-color: #e9ecef;" value="작업" width="60"></w2:column>
+                                            </w2:row>
+                                        </w2:header>
+                                        <w2:gBody style="">
+                                            <w2:row style="">
+                                                <w2:column displayMode="label" id="originalFileName" inputType="text" 
+                                                    style="height:25px; padding: 5px;" textAlign="left" width="250"></w2:column>
+                                                <w2:column dataType="number" displayFormat="#,###" displayMode="label" 
+                                                    id="fileSize" inputType="text" style="height:25px; padding: 5px;" 
+                                                    textAlign="right" width="100"></w2:column>
+                                                <w2:column displayMode="label" id="status" inputType="text" 
+                                                    style="height:25px; padding: 5px; color: #007bff;" textAlign="center" width="100"></w2:column>
+                                                <w2:column displayMode="label" id="action" inputType="text"
+                                                    style="height:25px; padding: 2px; color: #dc3545; cursor: pointer; font-size: 14px; font-weight: bold;" 
+                                                    textAlign="center" width="60" ev:onclick="scwin.removeUploadFile"></w2:column>
+                                            </w2:row>
+                                        </w2:gBody>
+                                    </w2:gridView>
+                                </xf:group>
+                            </xf:group>
+                            
+                            <!-- 기존 첨부파일 목록 (항상 표시) -->
+                            <xf:group class="existing-files" style="">
+                                <xf:group class="titbox" style="margin-bottom: 15px;">
+                                    <w2:textbox label="기존 첨부파일" style="font-weight: bold; font-size: 16px; display: inline-block;" tagname="h4"></w2:textbox>
+                                    <xf:trigger class="btn_cm" ev:onclick="scwin.loadFileList"
+                                        style="margin-left: 10px; background: #28a745; color: white; padding: 5px 10px; border-radius: 3px; font-size: 12px; display: inline-block;"
+                                        type="button">
+                                        <xf:label>새로고침</xf:label>
+                                    </xf:trigger>
+                                </xf:group>
 
-								<xf:group class="file-grid-container" style="display: flex; gap: 20px;">
-									<!-- 파일 목록 그리드 -->
-									<xf:group style="flex: 1;">
-										<w2:gridView autoFit="lastColumn" class="gvw" dataList="dlt_attVoList" id="grd_fileList"
-											noResultMessage="첨부된 파일이 없습니다." rowNumVisible="true" rowNumWidth="30" style="height: 300px; border: 1px solid #ddd;"
-											visibleRowNum="8" ev:oncellclick="scwin.grd_fileList_oncellclick">
-											<w2:header style="">
-												<w2:row style="">
-													<w2:column displayMode="label" inputType="text"
-														style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="파일명" width="200"></w2:column>
-													<w2:column displayMode="label" inputType="text"
-														style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="크기" width="80"></w2:column>
-													<w2:column displayMode="label" inputType="text"
-														style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="업로드일" width="100"></w2:column>
-													<w2:column displayMode="label" inputType="text"
-														style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="작업" width="120"></w2:column>
-												</w2:row>
-											</w2:header>
-											<w2:gBody style="">
-												<w2:row style="">
-													<w2:column displayMode="label" id="originalFileName" inputType="text"
-														style="height:30px; padding: 8px; cursor: pointer; color: #007bff; text-decoration: underline;" textAlign="left" width="200"></w2:column>
-													<w2:column dataType="number" displayFormat="#,###" displayMode="label" id="fileSize" inputType="text"
-														style="height:30px; padding: 8px;" textAlign="right" width="80"></w2:column>
-													<w2:column displayMode="label" id="attachedAt" inputType="text" style="height:30px; padding: 8px;" textAlign="center"
-														width="100"></w2:column>
-													<w2:column displayMode="button" inputType="button" style="height:30px; padding: 2px;" textAlign="center" width="120"
-														value="다운로드|삭제" ev:onclick="scwin.fileActionClick"></w2:column>
-												</w2:row>
-											</w2:gBody>
-										</w2:gridView>
-									</xf:group>
+                                <xf:group class="file-grid-container" style="display: flex; gap: 20px;">
+                                    <!-- 파일 목록 그리드 -->
+                                    <xf:group style="flex: 1;">
+                                        <w2:gridView autoFit="lastColumn" class="gvw" dataList="dlt_attVoList" id="grd_fileList"
+                                            noResultMessage="첨부된 파일이 없습니다." rowNumVisible="true" rowNumWidth="30" 
+                                            style="height: 300px; border: 1px solid #ddd;" visibleRowNum="8" 
+                                            ev:oncellclick="scwin.grd_fileList_oncellclick">
+                                            <w2:header style="">
+                                                <w2:row style="">
+                                                    <w2:column displayMode="label" inputType="text"
+                                                        style="height:30px; background-color: #343a40; color: white; font-weight: bold;" 
+                                                        value="파일명" width="200"></w2:column>
+                                                    <w2:column displayMode="label" inputType="text"
+                                                        style="height:30px; background-color: #343a40; color: white; font-weight: bold;" 
+                                                        value="크기" width="80"></w2:column>
+                                                    <w2:column displayMode="label" inputType="text"
+                                                        style="height:30px; background-color: #343a40; color: white; font-weight: bold;" 
+                                                        value="업로드일" width="100"></w2:column>
+                                                    <w2:column displayMode="label" inputType="text"
+                                                        style="height:30px; background-color: #343a40; color: white; font-weight: bold;" 
+                                                        value="작업" width="120"></w2:column>
+                                                </w2:row>
+                                            </w2:header>
+                                            <w2:gBody style="">
+                                                <w2:row style="">
+                                                    <w2:column displayMode="label" id="originalFileName" inputType="text"
+                                                        style="height:30px; padding: 8px; cursor: pointer; color: #007bff; text-decoration: underline;" 
+                                                        textAlign="left" width="200"></w2:column>
+                                                    <w2:column dataType="number" displayFormat="#,###" displayMode="label" 
+                                                        id="fileSize" inputType="text" style="height:30px; padding: 8px;" 
+                                                        textAlign="right" width="80"></w2:column>
+                                                    <w2:column displayMode="label" id="attachedAt" inputType="text" 
+                                                        style="height:30px; padding: 8px;" textAlign="center" width="100"></w2:column>
+                                                    <w2:column displayMode="button" inputType="button" 
+                                                        style="height:30px; padding: 2px;" textAlign="center" width="120"
+                                                        value="다운로드|삭제" ev:onclick="scwin.fileActionClick"></w2:column>
+                                                </w2:row>
+                                            </w2:gBody>
+                                        </w2:gridView>
+                                    </xf:group>
 
-									<!-- 파일 미리보기 영역 -->
-									<xf:group class="preview-panel" style="width: 400px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 8px;">
-										<xf:group class="preview-header"
-											style="background: #495057; color: white; padding: 10px; font-weight: bold; border-radius: 8px 8px 0 0;">
-											<w2:textbox label="파일 미리보기" style="margin: 0;"></w2:textbox>
-										</xf:group>
-										<xf:group class="preview-content" id="grp_previewContent" style="padding: 15px; min-height: 250px;">
+                                    <!-- 파일 미리보기 영역 -->
+                                    <xf:group class="preview-panel" style="width: 400px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 8px;">
+                                        <xf:group class="preview-header"
+                                            style="background: #495057; color: white; padding: 10px; font-weight: bold; border-radius: 8px 8px 0 0;">
+                                            <w2:textbox label="파일 미리보기" style="margin: 0;"></w2:textbox>
+                                        </xf:group>
+                                        <xf:group class="preview-content" id="grp_previewContent" style="padding: 15px; min-height: 250px;">
 
-											<!-- 기본 상태 -->
-											<w2:group id="grp_noPreview" style="text-align: center; color: #6c757d; padding-top: 80px;">
-												<w2:textbox label="파일을 선택하면 미리보기가 표시됩니다." style="font-size: 14px;"></w2:textbox>
-											</w2:group>
+                                            <!-- 기본 상태 -->
+                                            <w2:group id="grp_noPreview" style="text-align: center; color: #6c757d; padding-top: 80px;">
+                                                <w2:textbox label="파일을 선택하면 미리보기가 표시됩니다." style="font-size: 14px;"></w2:textbox>
+                                            </w2:group>
 
-											<!-- 이미지 미리보기 -->
-											<w2:group id="grp_imagePreview" style="display: none; text-align: center;">
-												<w2:textbox id="txt_previewFileName" style="font-weight: bold; margin-bottom: 10px; word-break: break-all;"></w2:textbox>
-												<img id="img_preview"
-													style="width: auto; height: auto; max-width: 100%; max-height: 200px; object-fit: contain; border: 1px solid #ddd; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 4px;" />
-												<xf:group style="margin-top: 10px;">
-													<xf:trigger
-														style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin: 2px;"
-														ev:onclick="scwin.downloadCurrentFile">
-														<xf:label>다운로드</xf:label>
-													</xf:trigger>
-												</xf:group>
-											</w2:group>
+                                            <!-- 이미지 미리보기 -->
+                                            <w2:group id="grp_imagePreview" style="display: none; text-align: center;">
+                                                <w2:textbox id="txt_previewFileName" style="font-weight: bold; margin-bottom: 10px; word-break: break-all;"></w2:textbox>
+                                                <img id="img_preview" style="width: 150px; height: 150px; object-fit: cover; border: 1px solid #ddd; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 4px;" />
+                                                <xf:group style="margin-top: 10px;">
+                                                    <xf:trigger
+                                                        style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin: 2px;"
+                                                        ev:onclick="scwin.downloadCurrentFile">
+                                                        <xf:label>다운로드</xf:label>
+                                                    </xf:trigger>
+                                                </xf:group>
+                                            </w2:group>
 
-											<!-- 텍스트 파일 미리보기 -->
-											<w2:group id="grp_textPreview" style="display: none;">
-												<w2:textbox id="txt_textFileName" style="font-weight: bold; margin-bottom: 10px; word-break: break-all;"></w2:textbox>
-												<xf:textarea id="txt_textContent" readOnly="true"
-													style="width: 100%; height: 200px; border: 1px solid #ccc; font-family: monospace; font-size: 12px; background: white; padding: 8px; border-radius: 4px;"></xf:textarea>
-												<xf:group style="margin-top: 10px;">
-													<xf:trigger
-														style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin: 2px;"
-														ev:onclick="scwin.downloadCurrentFile">
-														<xf:label>다운로드</xf:label>
-													</xf:trigger>
-												</xf:group>
-											</w2:group>
+                                            <!-- 텍스트 파일 미리보기 -->
+                                            <w2:group id="grp_textPreview" style="display: none;">
+                                                <w2:textbox id="txt_textFileName" style="font-weight: bold; margin-bottom: 10px; word-break: break-all;"></w2:textbox>
+                                                <xf:textarea id="txt_textContent" readOnly="true"
+                                                    style="width: 100%; height: 200px; border: 1px solid #ccc; font-family: monospace; font-size: 12px; background: white; padding: 8px; border-radius: 4px;"></xf:textarea>
+                                                <xf:group style="margin-top: 10px;">
+                                                    <xf:trigger
+                                                        style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin: 2px;"
+                                                        ev:onclick="scwin.downloadCurrentFile">
+                                                        <xf:label>다운로드</xf:label>
+                                                    </xf:trigger>
+                                                </xf:group>
+                                            </w2:group>
 
-										</xf:group>
-									</xf:group>
+                                        </xf:group>
+                                    </xf:group>
+                                </xf:group>
+                            </xf:group>
+                        </xf:group>
 
-								</xf:group>
-							</xf:group>
-						</xf:group>
+
+
+
 					</xf:group>
 				</xf:group>
 			</xf:group>

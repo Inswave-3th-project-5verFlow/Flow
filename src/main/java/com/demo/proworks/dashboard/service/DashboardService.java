@@ -3,6 +3,7 @@ package com.demo.proworks.dashboard.service;
 import java.util.List;
 
 import com.demo.proworks.dashboard.vo.ChartVo;
+import com.demo.proworks.dashboard.vo.DashboardDataVo;
 import com.demo.proworks.dashboard.vo.DashboardVo;
 import com.demo.proworks.pjt.vo.PjtVo;
 
@@ -55,4 +56,13 @@ public interface DashboardService {
      * @throws Exception
      */
     public List<ChartVo> selectIssueStatusChart(PjtVo pjtVo) throws Exception;
+
+    /**
+     * 대시보드 전체 데이터를 조회한다. (통합)
+     *
+     * @param pjtVo 프로젝트 정보 PjtVo (userId를 포함)
+     * @return DashboardDataVO 대시보드 전체 데이터
+     * @throws Exception
+     */
+    public DashboardDataVo getDashboardData(PjtVo pjtVo) throws Exception;
 }

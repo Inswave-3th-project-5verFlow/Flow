@@ -273,6 +273,7 @@ public class AttServiceImpl implements AttService {
         System.out.println("파일 ID: " + fileId);
         
         AttVo fileVo = attDAO.selectFileInfo(fileId);
+        System.out.println("fileVo: " + fileVo);
         if (fileVo == null) {
             System.out.println("파일을 찾을 수 없습니다.");
         } else {

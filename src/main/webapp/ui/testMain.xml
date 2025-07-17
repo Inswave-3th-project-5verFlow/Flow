@@ -217,40 +217,97 @@
 		<!-- =============================================== -->
 		<!-- 기본 JavaScript -->
 		<!-- =============================================== -->
-		<script type="text/javascript"><![CDATA[
-scwin.GRP_ID = "";
+		<script type="text/javascript"><![CDATA[scwin.GRP_ID = "";
 scwin.SEL_PJT_ID = "";
 
 /**
- * 페이지 로드 이벤트
+ * 페이지 로드 이벤트 - 수정된 버전
  */
 scwin.onpageload = function () {
-    // 1. 고정 대시보드 탭 추가
-    tab_content.addTab("dashboardTab", {
-        label: "HOME",
-        closable: false,
-        openAction: "select"
-    }, {
-        src: "dashboard.xml",
-        frameMode: "wframe"
-    });
-
-    // 2. 페이지 로드 시 사이드바를 숨김 상태로 시작
+    // 페이지 로드 시 사이드바를 숨김 상태로 시작
     scwin.hideSidebar();
+
+    // 초기화 완료 후 실행
+    setTimeout(function () {
+        try {
+            tab_content.deleteAllTabs();
+            tab_content.addTab("dashboardTab", {
+                label: "HOME",
+                closable: false,
+                openAction: "select"
+            }, {
+                src: "dashboard.xml",
+                frameMode: "wframe"
+            });
+        } catch (e) {
+            console.error("초기 탭 생성 실패:", e);
+            // 실패 시 다시 시도
+            scwin.initializeDefaultTab();
+        }
+    }, 200); // 200ms 후 실행
 };
+
+/**
+ * 기본 탭 초기화 함수 (재시도 로직 포함)
+ */
+scwin.initializeDefaultTab = function () {
+    var retryCount = 0;
+    var maxRetries = 5;
+
+    var tryInitTab = function () {
+        try {
+            if (tab_content && typeof tab_content.addTab === 'function') {
+                tab_content.deleteAllTabs();
+                tab_content.addTab("dashboardTab", {
+                    label: "HOME",
+                    closable: false,
+                    openAction: "select"
+                }, {
+                    src: "dashboard.xml",
+                    frameMode: "wframe"
+                });
+                console.log("기본 탭 초기화 성공");
+            } else {
+                throw new Error("tab_content가 초기화되지 않음");
+            }
+        } catch (e) {
+            retryCount++;
+            if (retryCount < maxRetries) {
+                console.log(`탭 초기화 재시도 ${retryCount}/${maxRetries}`);
+                setTimeout(tryInitTab, 200 * retryCount); // 점진적 지연
+            } else {
+                console.error("탭 초기화 최종 실패:", e);
+            }
+        }
+    };
+
+    tryInitTab();
+};
+
 
 /**
  * 사이드바를 보여주는 함수
  */
-scwin.showSidebar = function() {
+scwin.showSidebar = function () {
     grp_menu.removeClass("closed");
 };
 
 /**
  * 사이드바를 숨기는 함수
  */
-scwin.hideSidebar = function() {
+scwin.hideSidebar = function () {
     grp_menu.addClass("closed");
+};
+
+/**
+ * 사이드바를 토글하는 함수 (기존 show/hide 함수 재사용)
+ */
+scwin.toggleSidebar = function () {
+    if (grp_menu.hasClass("closed")) {
+        scwin.showSidebar();
+    } else {
+        scwin.hideSidebar();
+    }
 };
 
 // 프로젝트 변경시 호출되는 공용 함수
@@ -267,10 +324,11 @@ scwin.onProjectChange = function (pjtId, grpId) {
     // 2. 메뉴 목록을 가져오는 서브미션 실행
     scwin.SEL_PJT_ID = pjtId;
     scwin.GRP_ID = grpId ? grpId[0] : "";
-    
+
     $c.sbm.execute(sbm_selectMenuList, {
         "elData": { "grpId": scwin.GRP_ID }
     });
+
 };
 
 /**
@@ -443,6 +501,17 @@ scwin.sbm_selectMenuList_submitdone = function (e) {
     dlt_menuVoList.setJSON(elData.menuVo);
     // 웹스퀘어 Generator를 사용한 동적 메뉴 생성
     scwin.createMenuWithGenerator();
+
+    // 탭 초기화
+    tab_content.deleteAllTabs();
+    tab_content.addTab("dashboardTab", {
+        label: "HOME",
+        closable: false,
+        openAction: "select"
+    }, {
+        src: "dashboard.xml",
+        frameMode: "wframe"
+    });
 };
 ]]></script>
 	</head>
@@ -450,7 +519,7 @@ scwin.sbm_selectMenuList_submitdone = function (e) {
 	<!-- =============================================== -->
 	<!-- HTML Body 영역 -->
 	<!-- =============================================== -->
-	<body ev:onpageload="scwin.onpageload" style="display: flex; flex-direction: column; height: 100vh; margin: 0;">
+	<body ev:onpageload="scwin.onpageload" style="display: flex; flex-direction: column; height: 100vh; margin: 0; overflow-y: scroll;">
 
 		<!-- ===== 헤더 영역 (높이 일단 80 고정) ===== -->
 		<xf:group id="grp_header"
@@ -551,7 +620,7 @@ scwin.sbm_selectMenuList_submitdone = function (e) {
 				</w2:textbox>
 
 				<!-- Generator를 사용한 동적 메뉴 생성 -->
-				<w2:generator tagname="div" id="gen_menu" style="flex: 1; overflow-y: auto;">
+				<w2:generator tagname="div" id="gen_menu" style="flex: 1;">
 					<!-- 1뎁스 메뉴 -->
 					<xf:group style="margin-bottom: 5px;">
 						<w2:anchor id="anc_menu"
@@ -575,7 +644,7 @@ scwin.sbm_selectMenuList_submitdone = function (e) {
 			</xf:group>
 
 			<!-- ===== 컨텐츠 영역 (높이 자동 확장) ===== -->
-			<xf:group id="grp_content" style="flex: 1; background-color: #ffffff; padding: 15px; display: flex; flex-direction: column; overflow-y: scroll;">
+			<xf:group id="grp_content" style="flex: 1; background-color: #ffffff; padding: 15px; display: flex; flex-direction: column;overflow-y: scroll;">
 
 				<!-- 탭 컨트롤 (남은 공간 모두 차지) -->
 				<w2:tabControl id="tab_content" style="flex: 1; border: 1px solid #dee2e6;" useTabScroll="true" closable="true">

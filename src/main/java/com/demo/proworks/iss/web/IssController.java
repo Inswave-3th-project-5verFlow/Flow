@@ -101,47 +101,46 @@ public class IssController {
 	@ElDescription(sub = "이슈리스크관리 파일 등록처리", desc = "이슈리스크관리를 파일과 함께 등록 처리 한다.")
 	public void insertIssWithFiles(HttpServletRequest request) throws Exception {
 
-		System.out.println("=== 이슈 파일 등록 시작 ===");
-
-		// 1. 이슈 정보 세팅
-		IssVo issVo = new IssVo();
-		issVo.setPjtId(request.getParameter("pjtId"));
-		issVo.setName(request.getParameter("name"));
-		issVo.setUserId(request.getParameter("userId"));
-		issVo.setDueDate(request.getParameter("dueDate"));
-		issVo.setStatus(request.getParameter("status"));
-		issVo.setPriority(request.getParameter("priority"));
-		issVo.setDescription(request.getParameter("description"));
-		issVo.setResponsePlan(request.getParameter("responsePlan"));
-		issVo.setResolvedDate(request.getParameter("resolvedDate"));
-
-		System.out.println("이슈 정보: " + issVo);
-
-		// 2. 파일명 목록 받아오기
-		String[] fileNames = request.getParameterValues("fileNames");
-		String[] originalNames = request.getParameterValues("originalNames");
-
-		List<File> fileList = new ArrayList<>();
-		List<String> orgNameList = new ArrayList<>();
-
-		if (fileNames != null) {
-			for (int i = 0; i < fileNames.length; i++) {
-				String storedFileName = fileNames[i];
-				String originalFileName = (originalNames != null && i < originalNames.length) ? originalNames[i]
-						: storedFileName;
-
-				File file = new File("C:/InswaveToolSP1/tools/websquare_home/upload/el", storedFileName);
-				if (file.exists()) {
-					fileList.add(file);
-					orgNameList.add(originalFileName);
-				}
-			}
-		}
-
-		// 3. 서비스 호출 (파일을 S3로 업로드하고 DB도 처리)
-		issService.insertIssWithStoredFiles(issVo, fileList, orgNameList);
-		
-		System.out.println("=== 이슈 파일 등록 완료 ===");
+	    System.out.println("=== 이슈 파일 등록 시작 ===");
+	
+	    // MultipartHttpServletRequest로 캐스팅
+	    MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+	
+	    // 1. 이슈 정보 세팅
+	    IssVo issVo = new IssVo();
+	    issVo.setPjtId(request.getParameter("pjtId"));
+	    issVo.setName(request.getParameter("name"));
+	    issVo.setUserId(request.getParameter("userId"));
+	    issVo.setDueDate(request.getParameter("dueDate"));
+	    issVo.setStatus(request.getParameter("status"));
+	    issVo.setPriority(request.getParameter("priority"));
+	    issVo.setDescription(request.getParameter("description"));
+	    issVo.setResponsePlan(request.getParameter("responsePlan"));
+	    issVo.setResolvedDate(request.getParameter("resolvedDate"));
+	
+	    System.out.println("이슈 정보: " + issVo);
+	
+	    // 2. 실제 파일 객체들 받아오기
+	    List<MultipartFile> fileList = multipartRequest.getFiles("files");
+	    System.out.println("받은 파일 개수: " + (fileList != null ? fileList.size() : 0));
+	
+	    // 3. MultipartFile 배열로 변환 (null이 아닌 파일만)
+	    List<MultipartFile> validFiles = new ArrayList<>();
+	    if (fileList != null) {
+	        for (MultipartFile file : fileList) {
+	            if (file != null && !file.isEmpty()) {
+	                validFiles.add(file);
+	                System.out.println("유효한 파일: " + file.getOriginalFilename() + " (크기: " + file.getSize() + ")");
+	            }
+	        }
+	    }
+	
+	    MultipartFile[] files = validFiles.toArray(new MultipartFile[0]);
+	
+	    // 4. 서비스 호출 (기존 방식 사용)
+	    issService.insertIssWithFiles(issVo, files);
+	    
+	    System.out.println("=== 이슈 파일 등록 완료 ===");
 	}
 
 	/**
@@ -161,32 +160,55 @@ public class IssController {
 	@ElService(key = "ISS001UpdWithFiles")
 	@RequestMapping(value = "ISS001UpdWithFiles")
 	@ElDescription(sub = "이슈리스크관리 파일 갱신처리", desc = "이슈리스크관리를 파일과 함께 갱신 처리 한다.")
-	public void updateIssWithFiles(MultipartHttpServletRequest request) throws Exception {
+	public void updateIssWithFiles(HttpServletRequest request) throws Exception {
 
-		System.out.println("=== 이슈 파일 수정 시작 ===");
-
-		// 1. IssVo 객체 생성 및 파라미터 바인딩
-		IssVo issVo = new IssVo();
-		issVo.setId(request.getParameter("id")); // 필수
-		issVo.setPjtId(request.getParameter("pjtId"));
-		issVo.setName(request.getParameter("name"));
-		issVo.setUserId(request.getParameter("userId"));
-		issVo.setDueDate(request.getParameter("dueDate"));
-		issVo.setStatus(request.getParameter("status"));
-		issVo.setPriority(request.getParameter("priority"));
-		issVo.setDescription(request.getParameter("description"));
-		issVo.setResponsePlan(request.getParameter("responsePlan"));
-		issVo.setResolvedDate(request.getParameter("resolvedDate"));
-
-		// 2. 파일 목록 추출
-		List<MultipartFile> fileList = request.getFiles("files");
-		MultipartFile[] files = (fileList != null && !fileList.isEmpty()) ? fileList.toArray(new MultipartFile[0])
-				: null;
-
-		// 3. 서비스 호출 (트랜잭션 포함)
-		issService.updateIssWithFiles(issVo, files);
-
-		System.out.println("=== 이슈 파일 수정 완료 ===");
+	    System.out.println("=== 이슈 파일 수정 시작 ===");
+	    
+	    // MultipartHttpServletRequest로 캐스팅
+	    MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
+	
+	    // 1. 이슈 정보 세팅 (ID 필수!)
+	    IssVo issVo = new IssVo();
+	    issVo.setId(request.getParameter("id"));  // 수정 시 ID 필수
+	    issVo.setPjtId(request.getParameter("pjtId"));
+	    issVo.setName(request.getParameter("name"));
+	    issVo.setUserId(request.getParameter("userId"));
+	    issVo.setDueDate(request.getParameter("dueDate"));
+	    issVo.setStatus(request.getParameter("status"));
+	    issVo.setPriority(request.getParameter("priority"));
+	    issVo.setDescription(request.getParameter("description"));
+	    issVo.setResponsePlan(request.getParameter("responsePlan"));
+	    issVo.setResolvedDate(request.getParameter("resolvedDate"));
+	
+	    System.out.println("수정할 이슈 정보: " + issVo);
+	    System.out.println("이슈 ID: " + issVo.getId());
+	
+	    // ID가 없으면 오류
+	    if (issVo.getId() == null || issVo.getId().trim().isEmpty()) {
+	        throw new RuntimeException("수정할 이슈 ID가 필요합니다.");
+	    }
+	
+	    // 2. 실제 파일 객체들 받아오기
+	    List<MultipartFile> fileList = multipartRequest.getFiles("files");
+	    System.out.println("받은 파일 개수: " + (fileList != null ? fileList.size() : 0));
+	
+	    // 3. MultipartFile 배열로 변환 (null이 아닌 파일만)
+	    List<MultipartFile> validFiles = new ArrayList<>();
+	    if (fileList != null) {
+	        for (MultipartFile file : fileList) {
+	            if (file != null && !file.isEmpty()) {
+	                validFiles.add(file);
+	                System.out.println("유효한 파일: " + file.getOriginalFilename() + " (크기: " + file.getSize() + ")");
+	            }
+	        }
+	    }
+	
+	    MultipartFile[] files = validFiles.toArray(new MultipartFile[0]);
+	
+	    // 4. 서비스 호출 (수정 메서드)
+	    issService.updateIssWithFiles(issVo, files);
+	    
+	    System.out.println("=== 이슈 파일 수정 완료 ===");
 	}
 
 	/**

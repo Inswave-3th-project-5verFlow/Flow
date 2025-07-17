@@ -68,10 +68,15 @@ scwin.PJT_ID = "";
  * scwin.onpageload();
  */
 scwin.onpageload = function () {
-    scwin.LOGIN_USER_ID = "1";
-    scwin.LOGIN_USER_NAME = "김프로젝트";
-    scwin.GROUP_ID = "1";
-    scwin.PJT_ID = "30";
+    var usrId = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_ID; // 헤더에서 조회
+    var userName = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_NAME; // 헤더에서 조회
+    var selPjtId = $p.getParentWindow().scwin.SEL_PJT_ID; // 메인 페이지에서 조회
+    var grpId = $p.getParentWindow().scwin.GRP_ID; // 메인 페이지에서 조회
+
+    scwin.LOGIN_USER_ID = usrId;
+    scwin.LOGIN_USER_NAME = userName;
+    scwin.GROUP_ID = grpId;
+    scwin.PJT_ID = selPjtId;
 
     // 기존 프로젝트 정보 조회 서브미션 호출
     $c.sbm.execute(sbm_selectPjtVo, {
@@ -140,7 +145,8 @@ scwin.sbm_updatePjtVo_submitdone = function (e) {
 scwin.btn_refresh_onclick = function (e) {
     ipt_pjtSt.setValue("");
     ipt_pjtEt.setValue("");
-
+    txt_detail.setValue("");
+    
     // 프로젝트 상세정보 재조회
     $c.sbm.execute(sbm_selectPjtVo, {
         "elData": { "pjtId": scwin.PJT_ID }
@@ -297,7 +303,7 @@ scwin.sbm_selectPjtVo_submitdone = function (e) {
 							<w2:attributes>
 								<w2:colspan>3</w2:colspan>
 							</w2:attributes>
-							<xf:textarea ref="data:dmp_pjtVoDetail.pjtDetail" style="width:100%; height:100px;" />
+							<xf:textarea ref="data:dmp_pjtVoDetail.pjtDetail" style="width:100%; height:100px;" id="txt_detail"/>
 						</xf:group>
 					</xf:group>
 				</xf:group>
