@@ -43,7 +43,7 @@
         	
         	<w2:workflowCollection />
         	
-        	<xf:submission id="sbm_designTaskTreeList" action="/InsWebApp/DESIGN001Tree.pwkjson" method="post" mediatype="application/json"
+        	<xf:submission id="sbm_designTaskTreeList" action="/InsWebApp/TASK001List.pwkjson" method="post" mediatype="application/json"
         		ref='data:json,{"id":"dmp_projectId","key":"designVo"}' target='' encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg=""
         		ev:submit="" ev:submitdone="scwin.sbm_designTaskTreeList_submitdone" ev:submiterror="" abortTrigger="">
         	</xf:submission>
