@@ -94,39 +94,54 @@
 				PJT_ID as pjtId, PJT_NAME as pjtName, ID as id, NAME as name, USER_ID as userId, USER_NAME as userName, DUE_DATE as dueDate, STATUS as status, PRIORITY as priority, DESCRIPTION as description, CREATED_AT as createdAt, UPDATED_AT as updatedAt, RESOLVED_DATE as resolvedDate, RESPONSE_PLAN as responsePlan, IS_DELETED as isDeleted
 			FROM (
 				SELECT S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
-				FROM (
-					SELECT
-						ir.ID,
-						ir.PJT_ID,
-						ir.NAME,
-						ir.USER_ID,
-						ir.DUE_DATE,
-						ir.STATUS,
-						ir.PRIORITY,
-						ir.DESCRIPTION,
-						ir.CREATED_AT,
-						ir.UPDATED_AT,
-						ir.RESOLVED_DATE,
-						ir.RESPONSE_PLAN,
-						ir.IS_DELETED,
-						pjt.PJT_NAME as PJT_NAME,
-						u.NAME as USER_NAME
-					FROM ISSUES_RISKS ir
-					LEFT JOIN PJT pjt ON ir.PJT_ID = pjt.PJT_ID
-					LEFT JOIN USERS u ON ir.USER_ID = u.USER_ID
-					WHERE 1=1
+					FROM (
+						SELECT
+							ir.ID,
+							ir.PJT_ID,
+							ir.NAME,
+							ir.USER_ID,
+							ir.DUE_DATE,
+							ir.STATUS,
+							ir.PRIORITY,
+							ir.DESCRIPTION,
+							ir.CREATED_AT,
+							ir.UPDATED_AT,
+							ir.RESOLVED_DATE,
+							ir.RESPONSE_PLAN,
+							ir.IS_DELETED,
+							pjt.PJT_NAME as PJT_NAME,
+							u.NAME as USER_NAME
+						FROM ISSUES_RISKS ir
+						LEFT JOIN PJT pjt ON ir.PJT_ID = pjt.PJT_ID
+						LEFT JOIN USERS u ON ir.USER_ID = u.USER_ID
+						WHERE 1=1
+						<if test="pjtId != null and pjtId != ''">
+						AND ir.PJT_ID = #{pjtId}
+						</if>
+						<if test="userId != null and userId != ''">
+						AND ir.USER_ID = #{userId}
+						</if>
+						AND ir.IS_DELETED = 'N'
+						ORDER BY ir.CREATED_AT DESC
 					) S, (SELECT @ROWNUM := 0) TMP
-						) A
-			WHERE PAGE = #{pageIndex}
+				) A
+				WHERE PAGE = #{pageIndex}
     </select>
 	
     <select id="selectListCountIss" parameterType="com.demo.proworks.iss.vo.IssVo" resultType="long">
     <!-- 이슈리스크관리 목록의 카운트를 조회한다. -->
     
-         SELECT    /* QueryID : com.demo.proworks.iss.selectListCountIss */
-             COUNT(*) totcnt  		                  
-         FROM ISSUES_RISKS
-         WHERE  1=1    		
+		SELECT /* QueryID : com.demo.proworks.iss.selectListCountIss */
+			COUNT(*) totcnt
+		FROM ISSUES_RISKS
+		WHERE 1=1
+		<if test="pjtId != null and pjtId != ''">
+		AND PJT_ID = #{pjtId}
+		</if>
+		<if test="userId != null and userId != ''">
+		AND USER_ID = #{userId}
+		</if>
+		AND IS_DELETED = 'N'	
 
     </select>
 

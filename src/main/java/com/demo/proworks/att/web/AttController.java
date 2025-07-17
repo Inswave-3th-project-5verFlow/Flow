@@ -199,62 +199,76 @@ public class AttController {
     /**
      * 파일 미리보기 (텍스트 파일용)
      */
-    @RequestMapping(value = "FilePreview")
+    @ElService(key = "FilePreview")
+	@RequestMapping(value = "FilePreview")
     @ElDescription(sub = "파일 미리보기", desc = "텍스트 파일의 내용을 미리보기한다.")
     @ResponseBody
-    public String previewTextFile(@RequestParam("fileId") String fileId) throws Exception {
+    public Map<String, Object> previewTextFile(@RequestParam("fileId") String fileId) throws Exception {
 
-        S3Object s3Object = null;
-        InputStream inputStream = null;
+	    S3Object s3Object = null;
+	    InputStream inputStream = null;
+	    Map<String, Object> result = new HashMap<>();
+	
+	    try {
+	        System.out.println("=== 파일 미리보기 시작 ===");
+	        
+	        // 파일 정보 조회
+	        AttVo fileVo = attService.getFileInfo(fileId);
+	        if (fileVo == null) {
+	            result.put("success", false);
+	            result.put("message", "파일을 찾을 수 없습니다.");
+	            return result;
+	        }
+	
+	        // S3에서 파일 다운로드
+	        s3Object = attService.downloadFile(fileId);
+	        inputStream = s3Object.getObjectContent();
+	
+	        // 텍스트 내용 읽기
+	        StringBuilder content = new StringBuilder();
+	        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
+	        String line;
+	        int charCount = 0;
+	        int maxChars = 5000;
+	
+	        while ((line = reader.readLine()) != null && charCount < maxChars) {
+	            if (charCount + line.length() > maxChars) {
+	                content.append(line.substring(0, maxChars - charCount));
+	                content.append("\n\n... (파일 내용이 길어서 일부만 표시됩니다)");
+	                break;
+	            }
+	            content.append(line).append("\n");
+	            charCount += line.length() + 1;
+	        }
+	
+	        // Base64 인코딩으로 안전하게 전송
+	        String contentString = content.toString();
+	        String encodedContent = java.util.Base64.getEncoder().encodeToString(
+	            contentString.getBytes("UTF-8")
+	        );
+	
+	        result.put("success", true);
+	        result.put("content", encodedContent);
+	        result.put("fileName", fileVo.getOriginalFileName());
+	        result.put("encoding", "base64");
+	        
+	        return result;
+	
+	    } catch (Exception e) {
+	        System.err.println("파일 미리보기 실패: " + e.getMessage());
+	        result.put("success", false);
+	        result.put("message", "파일을 읽을 수 없습니다: " + e.getMessage());
+	        return result;
+	    } finally {
+	        try {
+	            if (inputStream != null) inputStream.close();
+	            if (s3Object != null) s3Object.close();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
 
-        try {
-            // 파일 정보 조회
-            AttVo fileVo = attService.getFileInfo(fileId);
-            if (fileVo == null) {
-                return "파일을 찾을 수 없습니다.";
-            }
-
-            // 파일 확장자 확인
-            String ext = fileVo.getFileExtension().toLowerCase();
-            if (!isTextExtension(ext)) {
-                return "텍스트 파일이 아닙니다.";
-            }
-
-            // S3에서 파일 다운로드
-            s3Object = attService.downloadFile(fileId);
-            inputStream = s3Object.getObjectContent();
-
-            // 텍스트 내용 읽기 (최대 5000자로 제한)
-            StringBuilder content = new StringBuilder();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-            String line;
-            int charCount = 0;
-            int maxChars = 5000;
-
-            while ((line = reader.readLine()) != null && charCount < maxChars) {
-                if (charCount + line.length() > maxChars) {
-                    content.append(line.substring(0, maxChars - charCount));
-                    content.append("\n\n... (파일 내용이 길어서 일부만 표시됩니다)");
-                    break;
-                }
-                content.append(line).append("\n");
-                charCount += line.length() + 1;
-            }
-
-            return content.toString();
-
-        } catch (Exception e) {
-            System.err.println("파일 미리보기 실패: " + e.getMessage());
-            return "파일을 읽을 수 없습니다: " + e.getMessage();
-        } finally {
-            try {
-                if (inputStream != null) inputStream.close();
-                if (s3Object != null) s3Object.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     /**
      * 파일 다운로드

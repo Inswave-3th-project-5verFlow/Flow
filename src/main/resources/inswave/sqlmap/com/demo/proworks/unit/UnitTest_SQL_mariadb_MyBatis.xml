@@ -1,0 +1,438 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo.proworks.unit">
+
+    <!-- 단위테스트 케이스 목록 조회 -->
+    <select id="selectUnitTestList" parameterType="map" resultType="com.demo.proworks.unit.vo.UnitTestVo">
+         SELECT /* QueryID : com.demo.proworks.unit.selectUnitTestList */
+	        testCaseId, taskId, taskName, testCaseName, testTarget, testType, priority, description, 
+	        precondition, testData, testSteps, expectedResult, actualResult, testStatus, executionDate, 
+	        duration, notes, requirements, assignee, createdAt, updatedAt, createdBy, updatedBy, 
+	        fileCount, testStatusName, testTypeName, priorityName, isDeleted
+	    FROM (
+	        SELECT S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
+	        FROM (
+	            SELECT
+	                UTC.ID as testCaseId,
+	                UTC.TASK_ID as taskId,
+	                UTC.TASK_NAME as taskName,
+	                UTC.TEST_CASE_NAME as testCaseName,
+	                UTC.TEST_TARGET as testTarget,
+	                UTC.TEST_TYPE as testType,
+	                UTC.PRIORITY as priority,
+	                UTC.DESCRIPTION as description,
+	                UTC.PRECONDITION as precondition,
+	                UTC.TEST_DATA as testData,
+	                UTC.TEST_STEPS as testSteps,
+	                UTC.EXPECTED_RESULT as expectedResult,
+	                UTC.ACTUAL_RESULT as actualResult,
+	                UTC.TEST_STATUS as testStatus,
+	                DATE_FORMAT(UTC.EXECUTION_DATE, '%Y-%m-%d %H:%i') as executionDate,
+	                UTC.DURATION as duration,
+	                UTC.NOTES as notes,
+	                UTC.REQUIREMENTS as requirements,
+	                UTC.ASSIGNEE as assignee,
+	                DATE_FORMAT(UTC.CREATED_AT, '%Y-%m-%d %H:%i') as createdAt,
+	                DATE_FORMAT(UTC.UPDATED_AT, '%Y-%m-%d %H:%i') as updatedAt,
+	                UTC.CREATED_BY as createdBy,
+	                UTC.UPDATED_BY as updatedBy,
+	                UTC.IS_DELETED as isDeleted,
+	                (SELECT COUNT(*) FROM file_attachments FA 
+	                 WHERE FA.REF_TYPE = 'UNIT_TEST' AND FA.REF_ID = UTC.ID AND FA.IS_DELETED = '0') as fileCount,
+	                CASE UTC.TEST_STATUS
+	                    WHEN 'PEN' THEN '대기'
+	                    WHEN 'RUN' THEN '진행중'
+	                    WHEN 'SUC' THEN '성공'
+	                    WHEN 'FAI' THEN '실패'
+	                    ELSE UTC.TEST_STATUS
+	                END as testStatusName,
+	                CASE UTC.TEST_TYPE
+	                    WHEN 'NORMAL' THEN '정상케이스'
+	                    WHEN 'BOUNDARY' THEN '경계값'
+	                    WHEN 'EXCEPTION' THEN '예외처리'
+	                    WHEN 'PERFORMANCE' THEN '성능'
+	                    ELSE UTC.TEST_TYPE
+	                END as testTypeName,
+	                CASE UTC.PRIORITY
+	                    WHEN 'HIGH' THEN '높음'
+	                    WHEN 'MEDIUM' THEN '보통'
+	                    WHEN 'LOW' THEN '낮음'
+	                    ELSE UTC.PRIORITY
+	                END as priorityName
+	            FROM UNIT_TEST_CASE UTC
+	            WHERE UTC.IS_DELETED = 'N'
+	            
+	          
+	            ORDER BY UTC.CREATED_AT DESC
+	        ) S, (SELECT @ROWNUM := 0) TMP
+	    ) A
+	    WHERE PAGE = #{pageIndex}
+    </select>
+
+    <!-- 단위테스트 케이스 총 개수 조회 -->
+    <select id="selectUnitTestListCount" parameterType="com.demo.proworks.unit.vo.UnitTestVo" resultType="long">
+        SELECT COUNT(*) totcnt
+        FROM UNIT_TEST_CASE
+        WHERE 1=1
+        
+        
+        <!-- <if test="searchTaskId != null and searchTaskId != ''">
+            AND UTC.TASK_ID = #{searchTaskId}
+        </if>
+        <if test="searchTestStatus != null and searchTestStatus != ''">
+            AND UTC.TEST_STATUS = #{searchTestStatus}
+        </if>
+        <if test="searchAssignee != null and searchAssignee != ''">
+            AND UTC.ASSIGNEE LIKE CONCAT('%', #{searchAssignee}, '%')
+        </if>
+        <if test="searchTestCaseName != null and searchTestCaseName != ''">
+            AND UTC.TEST_CASE_NAME LIKE CONCAT('%', #{searchTestCaseName}, '%')
+        </if> -->
+    </select>
+
+    <!-- 단위테스트 케이스 상세 조회 -->
+    <select id="selectUnitTestDetail" parameterType="map" resultType="com.demo.proworks.unit.vo.UnitTestVo">
+        SELECT 
+            UTC.ID as id,
+            UTC.TASK_ID as taskId,
+            UTC.TASK_NAME as taskName,
+            UTC.TEST_CASE_NAME as testCaseName,
+            UTC.TEST_TARGET as testTarget,
+            UTC.TEST_TYPE as testType,
+            UTC.PRIORITY as priority,
+            UTC.DESCRIPTION as description,
+            UTC.PRECONDITION as precondition,
+            UTC.TEST_DATA as testData,
+            UTC.TEST_STEPS as testSteps,
+            UTC.EXPECTED_RESULT as expectedResult,
+            UTC.ACTUAL_RESULT as actualResult,
+            UTC.TEST_STATUS as testStatus,
+            DATE_FORMAT(UTC.EXECUTION_DATE, '%Y-%m-%d %H:%i') as executionDate,
+            UTC.DURATION as duration,
+            UTC.NOTES as notes,
+            UTC.REQUIREMENTS as requirements,
+            UTC.ASSIGNEE as assignee,
+            DATE_FORMAT(UTC.CREATED_AT, '%Y-%m-%d %H:%i') as createdAt,
+            DATE_FORMAT(UTC.UPDATED_AT, '%Y-%m-%d %H:%i') as updatedAt,
+            UTC.CREATED_BY as createdBy,
+            UTC.UPDATED_BY as updatedBy
+        FROM UNIT_TEST_CASE UTC
+        WHERE UTC.ID = #{id}
+          AND UTC.IS_DELETED = 'N'
+    </select>
+
+    <!-- 단위테스트 케이스 등록 -->
+    <insert id="insertUnitTest" parameterType="map" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO UNIT_TEST_CASE (
+            TASK_ID,
+            TASK_NAME,
+            TEST_CASE_NAME,
+            TEST_TARGET,
+            TEST_TYPE,
+            PRIORITY,
+            DESCRIPTION,
+            PRECONDITION,
+            TEST_DATA,
+            TEST_STEPS,
+            EXPECTED_RESULT,
+            ACTUAL_RESULT,
+            TEST_STATUS,
+            EXECUTION_DATE,
+            DURATION,
+            NOTES,
+            REQUIREMENTS,
+            ASSIGNEE,
+            CREATED_BY,
+            UPDATED_BY
+        ) VALUES (
+            #{taskId},
+            #{taskName},
+            #{testCaseName},
+            #{testTarget},
+            COALESCE(#{testType}, 'NORMAL'),
+            COALESCE(#{priority}, 'MEDIUM'),
+            #{description},
+            #{precondition},
+            #{testData},
+            #{testSteps},
+            #{expectedResult},
+            #{actualResult},
+            COALESCE(#{testStatus}, 'PEN'),
+            <if test="executionDate != null and executionDate != ''">
+                STR_TO_DATE(#{executionDate}, '%Y-%m-%d %H:%i:%s'),
+            </if>
+            <if test="executionDate == null or executionDate == ''">
+                NULL,
+            </if>
+            #{duration},
+            #{notes},
+            #{requirements},
+            #{assignee},
+            #{createdBy},
+            #{updatedBy}
+        )
+    </insert>
+
+    <!-- 단위테스트 케이스 수정 -->
+    <update id="updateUnitTest" parameterType="map">
+        UPDATE UNIT_TEST_CASE SET
+            TASK_ID = #{taskId},
+            TASK_NAME = #{taskName},
+            TEST_CASE_NAME = #{testCaseName},
+            TEST_TARGET = #{testTarget},
+            TEST_TYPE = #{testType},
+            PRIORITY = #{priority},
+            DESCRIPTION = #{description},
+            PRECONDITION = #{precondition},
+            TEST_DATA = #{testData},
+            TEST_STEPS = #{testSteps},
+            EXPECTED_RESULT = #{expectedResult},
+            ACTUAL_RESULT = #{actualResult},
+            TEST_STATUS = #{testStatus},
+            EXECUTION_DATE = <if test="executionDate != null and executionDate != ''">
+                                STR_TO_DATE(#{executionDate}, '%Y-%m-%d %H:%i:%s'),
+                             </if>
+                             <if test="executionDate == null or executionDate == ''">
+                                NULL,
+                             </if>
+            DURATION = #{duration},
+            NOTES = #{notes},
+            REQUIREMENTS = #{requirements},
+            ASSIGNEE = #{assignee},
+            UPDATED_BY = #{updatedBy},
+            UPDATED_AT = CURRENT_TIMESTAMP
+        WHERE ID = #{id}
+          AND IS_DELETED = 'N'
+    </update>
+
+    <!-- 단위테스트 케이스 삭제 (논리삭제) -->
+    <update id="deleteUnitTest" parameterType="map">
+        UPDATE UNIT_TEST_CASE SET
+            IS_DELETED = 'Y',
+            UPDATED_BY = #{updatedBy},
+            UPDATED_AT = CURRENT_TIMESTAMP
+        WHERE ID = #{id}
+    </update>
+
+    <!-- 단위테스트 케이스 첨부파일 목록 조회 -->
+    <!-- <select id="selectUnitTestFileList" parameterType="map" resultType="com.demo.proworks.unit.vo.UnitTestAttachmentVo">
+        SELECT 
+            UTA.FILE_ID as fileId,
+            UTA.TEST_CASE_ID as testCaseId,
+            UTA.ORIGINAL_FILE_NAME as originalFileName,
+            UTA.STORED_FILE_NAME as storedFileName,
+            UTA.FILE_PATH as filePath,
+            UTA.FILE_SIZE as fileSize,
+            UTA.FILE_EXTENSION as fileExtension,
+            UTA.CONTENT_TYPE as contentType,
+            DATE_FORMAT(UTA.UPLOADED_AT, '%Y-%m-%d') as uploadedAt,
+            DATE_FORMAT(UTA.UPLOADED_AT, '%Y-%m-%d') as attachedAt,
+            UTA.UPLOADED_BY as uploadedBy,
+            CASE 
+                WHEN UTA.FILE_SIZE >= 1073741824 THEN CONCAT(ROUND(UTA.FILE_SIZE / 1073741824, 2), 'GB')
+                WHEN UTA.FILE_SIZE >= 1048576 THEN CONCAT(ROUND(UTA.FILE_SIZE / 1048576, 2), 'MB')
+                WHEN UTA.FILE_SIZE >= 1024 THEN CONCAT(ROUND(UTA.FILE_SIZE / 1024, 2), 'KB')
+                ELSE CONCAT(UTA.FILE_SIZE, 'B')
+            END as fileSizeFormatted
+        FROM UNIT_TEST_ATTACHMENT UTA
+        WHERE UTA.TEST_CASE_ID = #{id}
+          AND UTA.IS_DELETED = 'N'
+        ORDER BY UTA.UPLOADED_AT DESC
+    </select>
+ 	-->
+    <!-- 단위테스트 케이스 첨부파일 상세 조회 -->
+    <!-- <select id="selectUnitTestFileDetail" parameterType="map" resultType="com.demo.proworks.unit.vo.UnitTestAttachmentVo">
+        SELECT 
+            UTA.FILE_ID as fileId,
+            UTA.TEST_CASE_ID as testCaseId,
+            UTA.ORIGINAL_FILE_NAME as originalFileName,
+            UTA.STORED_FILE_NAME as storedFileName,
+            UTA.FILE_PATH as filePath,
+            UTA.FILE_SIZE as fileSize,
+            UTA.FILE_EXTENSION as fileExtension,
+            UTA.CONTENT_TYPE as contentType,
+            UTA.UPLOADED_AT as uploadedAt,
+            UTA.UPLOADED_BY as uploadedBy
+        FROM UNIT_TEST_ATTACHMENT UTA
+        WHERE UTA.FILE_ID = #{fileId}
+          AND UTA.IS_DELETED = 'N'
+    </select>
+     -->
+
+    <!-- 단위테스트 케이스 첨부파일 등록 -->
+    <insert id="insertUnitTestFile" parameterType="map">
+        INSERT INTO UNIT_TEST_ATTACHMENT (
+            TEST_CASE_ID,
+            ORIGINAL_FILE_NAME,
+            STORED_FILE_NAME,
+            FILE_PATH,
+            FILE_SIZE,
+            FILE_EXTENSION,
+            CONTENT_TYPE,
+            UPLOADED_BY
+        ) VALUES (
+            #{testCaseId},
+            #{originalFileName},
+            #{storedFileName},
+            #{filePath},
+            #{fileSize},
+            #{fileExtension},
+            #{contentType},
+            #{uploadedBy}
+        )
+    </insert>
+
+    <!-- 단위테스트 케이스 첨부파일 삭제 (논리삭제) -->
+    <update id="deleteUnitTestFile" parameterType="map">
+        UPDATE UNIT_TEST_ATTACHMENT SET
+            IS_DELETED = 'Y'
+        WHERE FILE_ID = #{fileId}
+    </update>
+
+    <!-- 단위테스트 케이스의 모든 첨부파일 삭제 (논리삭제) -->
+    <update id="deleteUnitTestFiles" parameterType="map">
+        UPDATE UNIT_TEST_ATTACHMENT SET
+            IS_DELETED = 'Y'
+        WHERE TEST_CASE_ID = #{id}
+    </update>
+
+    <!-- 테스트 상태별 통계 조회 -->
+    <select id="selectUnitTestStatistics" parameterType="map" resultType="map">
+        SELECT 
+            TEST_STATUS as testStatus,
+            COUNT(*) as cnt
+        FROM UNIT_TEST_CASE
+        WHERE IS_DELETED = 'N'
+        <if test="taskId != null and taskId != ''">
+            AND TASK_ID = #{taskId}
+        </if>
+        <if test="assignee != null and assignee != ''">
+            AND ASSIGNEE = #{assignee}
+        </if>
+        GROUP BY TEST_STATUS
+        ORDER BY TEST_STATUS
+    </select>
+
+    <!-- 테스트 실행 상태 업데이트 -->
+    <update id="updateTestStatus" parameterType="map">
+        UPDATE UNIT_TEST_CASE SET
+            TEST_STATUS = #{testStatus},
+            <if test="testStatus == 'RUN'">
+                EXECUTION_DATE = CURRENT_TIMESTAMP,
+            </if>
+            UPDATED_BY = #{updatedBy},
+            UPDATED_AT = CURRENT_TIMESTAMP
+        WHERE ID = #{id}
+          AND IS_DELETED = 'N'
+    </update>
+
+    <!-- 테스트 결과 업데이트 -->
+    <update id="updateTestResult" parameterType="map">
+        UPDATE UNIT_TEST_CASE SET
+            ACTUAL_RESULT = #{actualResult},
+            TEST_STATUS = #{testStatus},
+            DURATION = #{duration},
+            NOTES = #{notes},
+            UPDATED_BY = #{updatedBy},
+            UPDATED_AT = CURRENT_TIMESTAMP
+        WHERE ID = #{id}
+          AND IS_DELETED = 'N'
+    </update>
+
+    <!-- 담당자별 테스트 케이스 개수 조회 -->
+    <select id="selectTestCountByAssignee" parameterType="map" resultType="map">
+        SELECT 
+            ASSIGNEE as assignee,
+            COUNT(*) as totalCount,
+            SUM(CASE WHEN TEST_STATUS = 'PEN' THEN 1 ELSE 0 END) as pendingCount,
+            SUM(CASE WHEN TEST_STATUS = 'RUN' THEN 1 ELSE 0 END) as runningCount,
+            SUM(CASE WHEN TEST_STATUS = 'SUC' THEN 1 ELSE 0 END) as successCount,
+            SUM(CASE WHEN TEST_STATUS = 'FAI' THEN 1 ELSE 0 END) as failCount
+        FROM UNIT_TEST_CASE
+        WHERE IS_DELETED = 'N'
+        <if test="taskId != null and taskId != ''">
+            AND TASK_ID = #{taskId}
+        </if>
+        GROUP BY ASSIGNEE
+        ORDER BY totalCount DESC, ASSIGNEE
+    </select>
+
+    <!-- 우선순위별 테스트 케이스 개수 조회 -->
+    <select id="selectTestCountByPriority" parameterType="map" resultType="map">
+        SELECT 
+            PRIORITY as priority,
+            COUNT(*) as cnt,
+            CASE PRIORITY
+                WHEN 'HIGH' THEN '높음'
+                WHEN 'MEDIUM' THEN '보통'
+                WHEN 'LOW' THEN '낮음'
+                ELSE PRIORITY
+            END as priorityName
+        FROM UNIT_TEST_CASE
+        WHERE IS_DELETED = 'N'
+        <if test="taskId != null and taskId != ''">
+            AND TASK_ID = #{taskId}
+        </if>
+        GROUP BY PRIORITY
+        ORDER BY 
+            CASE PRIORITY
+                WHEN 'HIGH' THEN 1
+                WHEN 'MEDIUM' THEN 2
+                WHEN 'LOW' THEN 3
+                ELSE 4
+            END
+    </select>
+
+    <!-- 테스트 타입별 테스트 케이스 개수 조회 -->
+    <select id="selectTestCountByType" parameterType="map" resultType="map">
+        SELECT 
+            TEST_TYPE as testType,
+            COUNT(*) as cnt,
+            CASE TEST_TYPE
+                WHEN 'NORMAL' THEN '정상케이스'
+                WHEN 'BOUNDARY' THEN '경계값'
+                WHEN 'EXCEPTION' THEN '예외처리'
+                WHEN 'PERFORMANCE' THEN '성능'
+                ELSE TEST_TYPE
+            END as testTypeName
+        FROM UNIT_TEST_CASE
+        WHERE IS_DELETED = 'N'
+        <if test="taskId != null and taskId != ''">
+            AND TASK_ID = #{taskId}
+        </if>
+        GROUP BY TEST_TYPE
+        ORDER BY cnt DESC
+    </select>
+
+    <!-- 최근 테스트 실행 이력 조회 -->
+    <select id="selectRecentTestExecution" parameterType="map" resultType="map">
+        SELECT 
+            UTC.ID as id,
+            UTC.TEST_CASE_NAME as testCaseName,
+            UTC.TEST_TARGET as testTarget,
+            UTC.TEST_STATUS as testStatus,
+            UTC.ASSIGNEE as assignee,
+            DATE_FORMAT(UTC.EXECUTION_DATE, '%Y-%m-%d %H:%i') as executionDate,
+            UTC.DURATION as duration,
+            CASE UTC.TEST_STATUS
+                WHEN 'PEN' THEN '대기'
+                WHEN 'RUN' THEN '진행중'
+                WHEN 'SUC' THEN '성공'
+                WHEN 'FAI' THEN '실패'
+                ELSE UTC.TEST_STATUS
+            END as testStatusName
+        FROM UNIT_TEST_CASE UTC
+        WHERE UTC.IS_DELETED = 'N'
+          AND UTC.EXECUTION_DATE IS NOT NULL
+        <if test="assignee != null and assignee != ''">
+            AND UTC.ASSIGNEE = #{assignee}
+        </if>
+        <if test="taskId != null and taskId != ''">
+            AND UTC.TASK_ID = #{taskId}
+        </if>
+        ORDER BY UTC.EXECUTION_DATE DESC
+        LIMIT 0, 10
+    </select>
+
+</mapper>
