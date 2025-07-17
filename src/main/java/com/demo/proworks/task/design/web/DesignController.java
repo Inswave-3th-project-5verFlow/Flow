@@ -250,6 +250,31 @@ public class DesignController {
 	}
 
 	/**
+	 * 트리 구조로 보여주기 위해서 필요한 모든 업무 정보를 depth별로 정렬된 상태로 조회한다.
+	 *
+	 * @param designVo  업무 정보
+	 * @return 목록조회 결과
+	 * @throws Exception
+	 */
+	@ElService(key = "TASK001Tree")
+	@RequestMapping(value = "TASK001Tree")
+	@ElDescription(sub = "트리 구조로 모든 업무를 조회", desc = "트리 구조로 모든 업무를 조회한다.")
+	public DesignListVo selectTreeList(DesignVo designVo) throws Exception {
+		System.out.println("DESIGN001Tree 컨트롤러");
+
+		designVo.setPageSize(9999);
+		designVo.setPageUnit(9999);
+		System.out.println("조회 전 Param: " + designVo);
+		List<DesignVo> designList = designService.selectTreeList(designVo);
+		System.out.println("조회 결과 개수: " + designList.size());
+		System.out.println(designList);
+		DesignListVo retDesignList = new DesignListVo();
+		retDesignList.setDesignVoList(designList);
+		System.out.println(retDesignList);
+		return retDesignList;
+	}
+
+	/**
 	 * 트리 구조로 보여주기 위해서 필요한 개발 업무 depth별로 정렬된 상태로 조회한다.
 	 *
 	 * @param designVo 설계 업무 정보

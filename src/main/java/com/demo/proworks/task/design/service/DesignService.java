@@ -117,6 +117,15 @@ public interface DesignService {
 	public List<DesignVo> selectTreeListDevelop(DesignVo designVo) throws Exception;
 
 	/**
+	 * 트리 구조로 모든 업무를 조회한다
+	 *
+	 * @param designVo  업무 정보 DesignVo
+	 * @return 설계 업무 정보 목록 List<DesignVo>
+	 * @throws Exception
+	 */
+	public List<DesignVo> selectTreeList(DesignVo designVo) throws Exception;
+
+	/**
 	 * 모든 단계의 업무를 정렬된 형태로 조회한다.
 	 *
 	 * @param designVo 설계 업무 정보 DesignVo

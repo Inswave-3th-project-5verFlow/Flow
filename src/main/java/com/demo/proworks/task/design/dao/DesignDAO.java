@@ -166,6 +166,17 @@ public class DesignDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstrac
 	}
 
 	/**
+	 * 트리 구조에 맞게 모든 업무 목록을 조회한다.
+	 * 
+	 * @param DesignVo 설계 업무 정보
+	 * @return List<DesignVo> 설계 업무 정보
+	 * @throws ElException
+	 */
+	public List<DesignVo> selectTreeList(DesignVo vo) throws ElException {
+		return (List<DesignVo>) list("com.demo.proworks.task.design.selectTreeList", vo);
+	}
+
+	/**
 	 * 모든 단계의 업무를 정렬된 형태로 조회한다.
 	 * 
 	 * @param DesignVo 업무 정보
