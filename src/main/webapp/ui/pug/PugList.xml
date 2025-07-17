@@ -76,8 +76,10 @@ scwin.PJT_ID = "";
  * scwin.onpageload();
  */
 scwin.onpageload = function () {
-    scwin.LOGIN_USER_ID = "1";
-    scwin.PJT_ID = "1";
+    var usrId = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_ID; // 헤더에서 조회
+    var selPjtId = $p.getParentWindow().scwin.SEL_PJT_ID; // 메인 페이지에서 조회
+    scwin.LOGIN_USER_ID = usrId;
+    scwin.PJT_ID = selPjtId;
 
     // 검색 조건 초기화
     dmp_pugVo.set("pjtId", scwin.PJT_ID);

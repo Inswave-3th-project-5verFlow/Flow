@@ -137,14 +137,14 @@ scwin.onpageload = function () {
     scwin.PJT_ID = popupData.pjtId;
     if (popupType !== undefined && popupType === "detail") { // 상세 보기 팝업
         // 받아온 데이터로 값 세팅해야함
-        console.log("상세 보기 팝업으로 로드");
+
         tbx_title.setValue("업무 상세 팝업");
         dmp_taskDetail.set("pjtId", scwin.PJT_ID);
         dmp_taskDetail.setJSON(popupData.rowData);
         btn_save.setValue("수정");
     }
     else if (popupType !== undefined && popupType === "new") { // 신규 생성 팝업
-        console.log("신규 생성 팝업으로 로드");
+
         tbx_title.setValue("신규 업무 생성 팝업");
         dmp_taskDetail.set("pjtId", scwin.PJT_ID);
         dmp_taskDetail.set("userId",popupData.userId);

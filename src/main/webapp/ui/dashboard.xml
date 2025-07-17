@@ -50,58 +50,62 @@
                     </w2:columnInfo>
                 </w2:dataList>
             </w2:dataCollection>
-            <!-- 개별 서브미션 정의 -->
+            <!-- [주석 처리됨 - 통합 API로 대체] 개별 서브미션 정의 -->
+            <!--
             <xf:submission id="sbm_getDashboardSummary" ref="" target="data:json,{'id':'dmp_projectSummary','key':'elData'}" action="/InsWebApp/DashboardSummary.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace="" customHandler="" ev:submitdone="scwin.sbm_getDashboardSummary_submitdone" ev:submiterror="" mode="asynchronous"></xf:submission>
             <xf:submission id="sbm_getProjectChartData" ref="" target="data:json,{'id':'dlt_projectChartData','key':'elData.chartVoList'}" action="/InsWebApp/ProjectStatusChart.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace="" customHandler="" ev:submitdone="scwin.sbm_getChartData_submitdone" ev:submiterror="" mode="asynchronous"></xf:submission>
             <xf:submission id="sbm_getTaskChartData" ref="" target="data:json,{'id':'dlt_taskChartData','key':'elData.chartVoList'}" action="/InsWebApp/TaskStatusChart.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace="" customHandler="" ev:submitdone="scwin.sbm_getChartData_submitdone" ev:submiterror="" abortTrigger="true" mode="asynchronous"></xf:submission>
             <xf:submission id="sbm_getIssueChartData" ref="" target="data:json,{'id':'dlt_issueChartData','key':'elData.chartVoList'}" action="/InsWebApp/IssueStatusChart.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace="" customHandler="" ev:submitdone="scwin.sbm_getChartData_submitdone" ev:submiterror="" mode="asynchronous"></xf:submission>
+            -->
+
+            <!-- 신규 통합 서브미션 -->
+            <xf:submission id="sbm_getDashboardData"
+                ref=""
+                target=""
+                action="/InsWebApp/DashboardData.pwkjson"
+                method="post"
+                mediatype="application/json"
+                encoding="UTF-8"
+                ev:submitdone="scwin.sbm_getDashboardData_submitdone" mode="asynchronous">
+            </xf:submission>
         </xf:model>
         <w2:layoutInfo/>
         <w2:publicInfo method=""/>
-        <script lazy="false" type="text/javascript"><![CDATA[scwin.onpageload = function () {
+        <script lazy="false" type="text/javascript"><![CDATA[
+scwin.onpageload = function () {
     var usrId = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_ID;
-    let reqObj = {
-        "elData": { "userId": usrId }
-    };
-    // 각 대시보드 데이터 로드
-    $c.sbm.execute(sbm_getDashboardSummary, reqObj);
-    $c.sbm.execute(sbm_getProjectChartData, reqObj);
-    $c.sbm.execute(sbm_getTaskChartData, reqObj);
-    $c.sbm.execute(sbm_getIssueChartData, reqObj);
-
+    var pjtVo = { "userId": usrId };
+    console.log("pjtVo : ", pjtVo); // {"userId": 1}
+    // 단일 submission 실행
+    $c.sbm.execute(sbm_getDashboardData, { "pjtVo": pjtVo });
 };
 
 /**
- * 대시보드 요약 데이터 로드 성공 시 처리
- * @param {Object} e - submission 이벤트 객체
+ * 통합 대시보드 데이터 조회 완료 시 처리
  */
-scwin.sbm_getDashboardSummary_submitdone = function (e) {
-    scwin.checkAllDataLoaded();
-};
+scwin.sbm_getDashboardData_submitdone = function (e) {
 
-/**
- * 차트 데이터 로드 성공 시 처리
- * @param {Object} e - submission 이벤트 객체
- */
-scwin.sbm_getChartData_submitdone = function (e) {
-    scwin.checkAllDataLoaded();
-};
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
 
-// 모든 데이터 로드 여부를 추적하기 위한 변수
-scwin.loadedCount = 0;
-scwin.totalSubmissions = 4; // 요약 + 3개 차트 데이터
-
-/**
- * 모든 데이터 로드가 완료되었는지 확인하고 차트를 초기화하는 함수
- */
-scwin.checkAllDataLoaded = function () {
-    scwin.loadedCount++;
-    if (scwin.loadedCount === scwin.totalSubmissions) {
-        // 모든 데이터 로드가 완료되면 차트 초기화 및 렌더링
-        scwin.initFusionChart(projectPieChart, "프로젝트 현황", { "showPercentValues": "1" });
-        scwin.initFusionChart(taskPieChart, "업무 단계별 현황", { "yAxisName": "업무 수" });
-        scwin.initFusionChart(issuePieChart, "이슈/리스크 현황", { "yAxisName": "이슈 수" });
+    if (elHeader == null || elHeader === "" || elHeader === "undefined" || elHeader.resSuc === false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
     }
+
+
+    // 응답받은 통합 데이터를 각 DataMap과 DataList에 분배
+    dmp_projectSummary.setJSON(elData.dashboardVo);
+    dlt_projectChartData.setJSON(elData.pjtChartVo);
+    dlt_taskChartData.setJSON(elData.taskChartVo);
+    dlt_issueChartData.setJSON(elData.irrChartVo);
+   
+
+    // 모든 데이터가 준비되었으므로 차트를 한 번에 렌더링
+    scwin.initFusionChart(projectPieChart, "프로젝트 현황", { "showPercentValues": "1" });
+    scwin.initFusionChart(taskPieChart, "업무 단계별 현황", { "yAxisName": "업무 수" });
+    scwin.initFusionChart(issuePieChart, "이슈/리스크 현황", { "yAxisName": "이슈 수" });
+
 };
 
 /**
@@ -111,6 +115,7 @@ scwin.checkAllDataLoaded = function () {
  * @param {Object} customAttrs - 차트별 커스텀 속성
  */
 scwin.initFusionChart = function (chartObj, captionText, customAttrs) {
+
     let baseAttrs = {
         "caption": captionText,
         "captionFontSize": "16",
@@ -128,8 +133,10 @@ scwin.initFusionChart = function (chartObj, captionText, customAttrs) {
 
     chartObj.setChartAttribute(finalAttrs);
     chartObj.draw();
+
 };
-]]></script>
+]]>
+        </script>
     </head>
     <body ev:onpageload="scwin.onpageload" style="background-color:#f0f2f5;">
         <xf:group style="padding: 24px; display: flex; flex-direction: column; gap: 24px;">
