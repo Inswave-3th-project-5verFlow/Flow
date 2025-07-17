@@ -15,7 +15,7 @@
 						<w2:key dataType="text" id="taskDes" name="업무상세"></w2:key>
 						<w2:key dataType="text" id="taskStatus" name="업무상태" defaultValue="대기"></w2:key>
 						<w2:key dataType="text" id="isTest" name="테스트여부" defaultValue="N"></w2:key>
-						<w2:key dataType="text" id="taskDepth" name="뎁스"></w2:key>
+						<w2:key dataType="text" id="taskDepth" name="뎁스" defaultValue="1"></w2:key>
 						<w2:key dataType="text" id="stgId" name="단계ID"></w2:key>
 						<w2:key dataType="text" id="ptTaskId" name="상위업무ID"></w2:key>
 						<w2:key dataType="text" id="ptTaskName" name="상위업무명"></w2:key>

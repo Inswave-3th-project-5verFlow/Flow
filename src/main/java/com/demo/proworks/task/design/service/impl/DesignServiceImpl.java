@@ -145,20 +145,20 @@ public class DesignServiceImpl implements DesignService {
 		if (currentData == null) {
 			throw new RuntimeException("존재하지 않는 업무입니다. taskId: " + designVo.getTaskId());
 		}
-		
+
 		// 상위업무 변경 여부 체크
 		boolean isParentChanged = isParentTaskChanged(currentData, designVo);
-		
+
 		if (isParentChanged) {
-			System.out.println("상위업무 변경 감지 : taskName=" + designVo.getTaskName() + ", taskId=" + designVo.getTaskId() + 
-					", 이전상위=" + currentData.getPtTaskId() + ", 새상위=" + designVo.getPtTaskId());
-			
+			System.out.println("상위업무 변경 감지 : taskName=" + designVo.getTaskName() + ", taskId=" + designVo.getTaskId()
+					+ ", 이전상위=" + currentData.getPtTaskId() + ", 새상위=" + designVo.getPtTaskId());
+
 			// 1) 자신의 업무 정보 + depth 업데이트
 			int result1 = designDAO.updateDesign(designVo);
-			
+
 			// 2) 자신의 하위 업무들의 depth 연쇄 업데이트
 			int result2 = updateChildTasksDepth(designVo);
-			
+
 			System.out.println("기본업데이트=" + result1 + ", 하위업데이트=" + result2);
 			return result1;
 		} else {
@@ -166,18 +166,17 @@ public class DesignServiceImpl implements DesignService {
 			return designDAO.updateDesign(designVo);
 		}
 	}
-	
+
 	/**
-	 * 하위 업무들의 depth를 연쇄적으로 업데이트합니다.
-	 * 기존 XML의 selectChildTasks 쿼리를 활용합니다.
+	 * 하위 업무들의 depth를 연쇄적으로 업데이트합니다. 기존 XML의 selectChildTasks 쿼리를 활용합니다.
 	 */
 	private int updateChildTasksDepth(DesignVo designVo) throws Exception {
 		try {
 			// 기존 XML의 selectChildTasks 쿼리로 하위 업무들의 새로운 depth 계산
 			List<DesignVo> childTasks = designDAO.selectChildTasks(designVo);
-			
+
 			int updatedCount = 0;
-			
+
 			// 각 하위 업무의 depth 업데이트
 			for (DesignVo childTask : childTasks) {
 				DesignVo updateChild = new DesignVo();
@@ -185,33 +184,33 @@ public class DesignServiceImpl implements DesignService {
 				updateChild.setTaskDepth(childTask.getTaskDepth()); // 새로 계산된 depth
 				updateChild.setStgId(designVo.getStgId()); // 상위 업무와 동일한 stgId
 				updateChild.setPjtId(designVo.getPjtId());
-				
+
 				int result = designDAO.updateDesign(updateChild);
 				updatedCount += result;
 			}
-			
+
 			System.out.println("하위 업무 depth 업데이트 완료: " + updatedCount + "건");
 			return updatedCount;
-			
+
 		} catch (Exception e) {
 			System.err.println("하위 업무 depth 업데이트 중 오류: " + e.getMessage());
 			throw e;
 		}
 	}
-	
+
 	/**
 	 * 상위업무 변경 여부를 체크합니다.
 	 */
 	private boolean isParentTaskChanged(DesignVo current, DesignVo updated) {
 		String currentPtTaskId = (current.getPtTaskId() != null) ? current.getPtTaskId() : "0";
 		String updatedPtTaskId = (updated.getPtTaskId() != null) ? updated.getPtTaskId() : "0";
-		
+
 		boolean changed = !currentPtTaskId.equals(updatedPtTaskId);
-		
+
 		if (changed) {
 			System.out.println("상위업무 변경 감지: " + currentPtTaskId + " → " + updatedPtTaskId);
 		}
-		
+
 		return changed;
 	}
 
@@ -254,6 +253,21 @@ public class DesignServiceImpl implements DesignService {
 	 */
 	public List<DesignVo> selectTreeListDevelop(DesignVo designVo) throws Exception {
 		List<DesignVo> list = designDAO.selectTreeListDevelop(designVo);
+
+		return list;
+	}
+
+	/**
+	 * 트리 구조에 맞게 모든 업무 목록을 조회한다.
+	 *
+	 * @process 1. 개발 업무 정보 페이징 처리하여 목록을 조회한다. 2. 결과 List<DesignVo>을(를) 리턴한다.
+	 * 
+	 * @param designVo 설계 업무 정보 DesignVo
+	 * @return 설계 업무 정보 목록 List<DesignVo>
+	 * @throws Exception
+	 */
+	public List<DesignVo> selectTreeList(DesignVo designVo) throws Exception {
+		List<DesignVo> list = designDAO.selectTreeList(designVo);
 
 		return list;
 	}

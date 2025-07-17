@@ -485,7 +485,7 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 					style="">
 					<xf:group class="rt" id="" style="">
 						<xf:trigger class="btn_cm" id="btn_add" style="" type="button" ev:onclick="scwin.btn_add_onclick">
-							<xf:label><![CDATA[행 추가]]></xf:label>
+							<xf:label><![CDATA[업무 추가]]></xf:label>
 						</xf:trigger>
 						<xf:trigger class="btn_cm" id="btn_excel_download" style="" type="button" ev:onclick="scwin.btn_excel_download_onclick">
 							<xf:label><![CDATA[엑셀 다운로드]]></xf:label>
