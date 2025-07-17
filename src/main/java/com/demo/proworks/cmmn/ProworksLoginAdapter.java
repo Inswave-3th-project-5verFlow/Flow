@@ -15,6 +15,9 @@ import com.inswave.elfw.login.LoginException;
 import com.inswave.elfw.login.LoginInfo;
 import com.inswave.elfw.util.ElBeanUtils;
 
+import com.inswave.elfw.security.ElAbstractCrypto;
+
+
 /**
  * @subject		: ProworksLoginAdapter.java 
  * @description : 프로젝트 로그인 어댑터
@@ -52,13 +55,22 @@ public class ProworksLoginAdapter extends LoginAdapter {
 	
 		// 로그인 체크를 수행  (샘플 예제)
 		try{
-		    String pw = (String)params[0];
+				
+			String pw = (String) params[0];
+			
+			// SHA256로 비밀번호 암호화
+	        ElAbstractCrypto elSha256Crypto = (ElAbstractCrypto) ElBeanUtils.getBean("elSha256Crypto"); // Bean 이름에 맞게 조정
+	        String hashedInput = elSha256Crypto.getEncrypt(null, pw);        
+	        pw = hashedInput;
+
+	        // usersVo에 입력된 id 및 암호화된 pw값 등록
 		    UsersService usersService = (UsersService)ElBeanUtils.getBean("usersServiceImpl");
 		    UsersVo usersVo = new UsersVo();
 		    usersVo.setAccountId(id);
 		    usersVo.setAccountPwd(pw);
 		    
 		    UsersVo resUsersVo = usersService.selectUsers(usersVo);
+		    
 		    if(resUsersVo == null){
 		        throw new LoginException("EL.ERROR.LOGIN.0001");
 		    }

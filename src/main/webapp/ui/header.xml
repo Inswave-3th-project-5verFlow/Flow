@@ -32,6 +32,7 @@ scwin.SERVER_TIME = "";
 scwin.USER_ID = "";
 scwin.USER_NAME = "";
 
+
 scwin.onpageload = function() {
     scwin.SERVER_TIME = $c.date.getServerDateTime("yyyy-MM-dd hh:mm:ss");
     serverTime.setValue(scwin.SERVER_TIME);
@@ -62,10 +63,9 @@ scwin.sbm_selectUsersMapping_submitdone = function (e) {
 
     selectBoxProjectName.setNodeSet("data:dlt_projectName", "pjtName", "pjtId")
     
-    // TextBox와 그룹ID Bind
-    var grpIdData = data[0].grpName;
-    textGrpId.setValue(grpIdData);
-
+    // TextBox에 그룹명 초기값 Bind
+    textGrpName.setValue("");
+    
     // TextBox와 사용자명 Bind
     var nameData = data[0].name;
     textName1.setValue(nameData);
@@ -96,12 +96,17 @@ scwin.accountImg_onclick = function (e) {
         popupName: "계정 관리"
     };
 
-    $p.openPopup("popup_test.xml", options);
+    $p.openPopup("popup_header.xml", options);
 };
 
 scwin.selectBoxProjectName_onchange = function (info) {
+
     var selectedPjtId = info.newValue; // 변경된 프로젝트 id
     var grpId = dlt_projectName.getMatchedColumnData("pjtId", selectedPjtId, "grpId"); // pjtId로 데이터 리스트에서 그룹아이디 조회
+
+    // TextBox와 선택한 프로젝트에 따른 그룹명 표시
+    var grpName = dlt_projectName.getMatchedColumnData("pjtId", selectedPjtId, "grpName"); // pjtId로 데이터 리스트에서 그룹명 조회
+    textGrpName.setValue(grpName);
 
     var parentScwin = $p.getParentWindow().scwin;
 
@@ -148,7 +153,7 @@ scwin.btn_sidebarToggle_onclick = function(e) {
     				<xf:choices></xf:choices>
     			</xf:select1>
     			<xf:group style="width:572px;height:40px;" id="" class="rt">
-    				<w2:span style="color:#000000; min-width:100px; font-weight:bold;" id="textGrpId" label="#GRP_ID#" class=""></w2:span>
+    				<w2:span style="color:#000000; min-width:100px; font-weight:bold;" id="textGrpName" label="#GRP_NAME#" class=""></w2:span>
     				<w2:span style="color:#000000; min-width:100px; font-weight:bold;" id="textName1" label="#NAME#" class=""></w2:span>
     				<w2:span style="margin-left: 50px; margin-right: 5px; font-weight:bold;" id="span6" label="접속시간 : "></w2:span>
     				<w2:span style="font-weight:bold;" id="serverTime" label="#SERVER_TIME#"></w2:span>
