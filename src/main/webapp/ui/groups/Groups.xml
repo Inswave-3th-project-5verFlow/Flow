@@ -22,7 +22,7 @@
 						<w2:column dataType="text" id="grpName" name="grp_name"></w2:column>
 						<w2:column dataType="text" id="description" name="description"></w2:column>
 
-						<w2:column id="checkBox" name="checkBox" dataType="text"></w2:column>
+						<w2:column id="checkBox" name="checkBox" dataType="text" ignoreStatus="true"></w2:column>
 					</w2:columnInfo>
 				</w2:dataList>
 				<w2:dataMap baseNode="map" id="dmp_groupsVoDetail" style="">
@@ -68,267 +68,139 @@
 		<w2:layoutInfo></w2:layoutInfo>
 		<w2:publicInfo method="" />
 		<script lazy="false" type="text/javascript"><![CDATA[
-	scwin.onpageload = function() {
-        
-        $c.sbm.execute($p, sbm_selectGroupsVoList);
-	
-    };
-
-	/************************** 이벤트 함수 *************************/
-	
-	/**
-	 * 조회 버튼 클릭 이벤트
-	 * @date
-	 * @memberOf
-	 * @param 
-	 * @returns
-	 * @author 
-	 * @example
-	 */		   
-	scwin.btn_search_onclick = function(e) {
-	
-		// PGAE번호 초기화
-		dmp_groupsVo.set("pageIndex","1");
-		pgl_groupsList.setSelectedIndex(1);
-
-		// 서버통신 - 그룹정보 조회
-		$c.sbm.execute($p, sbm_selectGroupsVoList);
-	};
-	
-
-
-    // 페이지 번호 클릭 이벤트
-	scwin.pgl_groupsList_onclick = function(idx) {
-	
-		// 페이지 번호 세팅
-		dmp_groupsVo.set("pageIndex", idx);
-		 
-		// 서버통신 - 그룹정보 조회
-		$c.sbm.execute($p, sbm_selectGroupsVoList);
-	};
-
-    // 행추가 버튼 이벤트
-    scwin.btn_insert_onclick = function (e) {
-
-        var focus = grd_list.getFocusedRowIndex();
-        dlt_groupsVoList.insertRow(focus + 1);
-    };
-
-    // 다중행삭제 버튼 클릭 시 체크한 행 일괄 제거
-    scwin.btn_deleteRows_onclick = function (e) {
-        var chkIdxArr = grd_list.getCheckedIndex("checkBox");
-        console.log(chkIdxArr);
-        dlt_groupsVoList.deleteRows(chkIdxArr);
-    };
-
-
-	scwin.sbm_groupsList_submitdone = function(e) {
-
-        // error 수신시
-        var elData = e.responseJSON.elData;
-        var elHeader = e.responseJSON.elHeader;
-        if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
-            $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
-            return false;
-        }
-
-        // 총 레코드 수 업데이트
-        spn_listCnt.setLabel(elData.totalCount);
-
-        // 페이지 네비게이터 업데이트
-        var totalPageCount = Math.ceil(elData.totalCount / dmp_groupsVo.get("pageSize"));
-        pgl_groupsList.setCount(totalPageCount);
-
-        // 페이징 정보 업데이트
-        spn_totalPageCount.setValue(totalPageCount);
-        spn_pageIndex.setValue(dmp_groupsVo.get("pageIndex"));
-        pgl_groupsList.setSelectedIndex(dmp_groupsVo.get("pageIndex"));
-
-	};
-
-
-
-	/**
-	 * 그리드 셀 클릭 이벤트
-	 * @date
-	 * @memberOf
-	 * @param 
-	 * @returns 
-	 * @author 
-	 * @example
-	 */
-	scwin.grd_list_oncellclick = function(row,col,colId) {
-
-		dmp_groupsVoDetail.setJSON(dlt_groupsVoList.getRowJSON(row));
-
-		btn_save.hide(); 		// 저장 버튼 제거
-		btn_edit.show("");      // 수정 버튼 생성
-		btn_delete.show("");    // 삭제 버튼 생성
-		
-		spn_registerFlag.setValue("수정");
-	};
-
-	/**
-	 * 저장 버튼 클릭 이벤트
-	 * @date
-	 * @memberOf
-	 * @param 
-	 * @returns
-	 * @author 
-	 * @example
-	 */	
-	scwin.btn_save_onclick = function(e) {
-		
-		// 유효성 체크
-		var valInfo = [
-			{ id: "grpId", mandatory: true }
-           
-		];
-		
-		if ($c.data.validateGroup(grp_groupsInfo, valInfo) === true) {
-			var promise = $c.win.confirm("저장하시겠습니까?");
-			promise.then(function(result) {  
-				if (result){
-					$c.sbm.execute(sbm_insertGroupsVo);
-				}
-			})
-		} 	
-	};
-
-	/**
-	 * 사원정보 등록 콜백
-	 * @date 
-	 * @memberOf
-	 * @param 
-	 * @returns 
-	 * @author 
-	 * @example
-	 */
-	scwin.sbm_insertGroupsVo_submitdone = function(e) {
-		
-		// error 수신시
-		var elHeader  = e.responseJSON.elHeader;
-		if(elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
-			$c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
-			return false;
-		}else{
-			// 등록되었습니다. msg 출력
-			$c.win.alert("등록되었습니다.");
-		}
-		
-		// 재조회
-		scwin.btn_search_onclick();
-	};
-
-	/**
-	 * 수정 버튼 클릭 이벤트
-	 * @date
-	 * @memberOf
-	 * @param 
-	 * @returns 
-	 * @author 
-	 * @example
-	 */		
-	scwin.btn_edit_onclick = function(e) {
-		
-		// 유효성 체크
-		var valInfo = [
-			{ id: "grpId", mandatory: true }
-           
-		];
-		
-		if ($c.data.validateGroup(grp_groupsInfo, valInfo) === true) {
-			var promise = $c.win.confirm("수정하시겠습니까?");
-			promise.then(function(result) {  
-				if (result){
-					$c.sbm.execute(sbm_updateGroupsVo);
-				}
-			})
-		} 
-	};
-
-	/**
-	 * 사원정보 수정 콜백
-	 * @date 
-	 * @memberOf
-	 * @param 
-	 * @returns 
-	 * @author 
-	 * @example
-	 */
-	scwin.sbm_updateGroupsVo_submitdone = function(e) {
-
-		// error 수신시
-		var elHeader  = e.responseJSON.elHeader;
-		if(elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
-			$c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
-			return false;
-		}else{
-			// 수정되었습니다. msg 출력
-			$c.win.alert("수정되었습니다.");
-		}
-		// 재조회
-		scwin.btn_search_onclick();
-	};
-
-	/**
-	 * 삭제 버튼 클릭 이벤트
-	 * @date
-	 * @memberOf
-	 * @param 
-	 * @returns 
-	 * @author 
-	 * @example
-	 */		
-	scwin.btn_delete_onclick = function(e) {
-		
-		// 유효성 체크
-		var valInfo = [
-			{ id: "grpId", mandatory: true }
-           
-		];
-		
-		if ($c.data.validateGroup(grp_groupsInfo, valInfo) === true) {
-			var promise = $c.win.confirm("삭제하시겠습니까?");
-			promise.then(function(result) {  
-				if (result){
-					$c.sbm.execute(sbm_deleteGroupsVo);
-				}
-			})
-		}	
-	};
-
-	/**
-	 * 삭제 콜백
-	 * @date 
-	 * @memberOf
-	 * @param 
-	 * @returns 
-	 * @author 
-	 * @example
-	 */
-	scwin.sbm_deleteGroupsVo_submitdone = function(e) {
-	
-		// error 수신시
-		var elHeader  = e.responseJSON.elHeader;
-		if(elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
-			$c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
-			return false;
-		}else{
-			// 삭제되었습니다. msg 출력
-			$c.win.alert("삭제되었습니다.");
-		}
-		
-		// 재조회
-		scwin.btn_search_onclick();
-	};
-
-
-
-// 등록 버튼 클릭시 등록/수정 팝업창이 뜸
-scwin.btn_reg_onclick = function (e) {
+scwin.onpageload = function() {
+    
+    $c.sbm.execute($p, sbm_selectGroupsVoList);
 
 };
+
+/************************** 이벤트 함수 *************************/
+
+/**
+ * 조회 버튼 클릭 이벤트
+ * @date
+ * @memberOf
+ * @param 
+ * @returns
+ * @author 
+ * @example
+ */		   
+scwin.btn_search_onclick = function(e) {
+
+    // PGAE번호 초기화
+    dmp_groupsVo.set("pageIndex","1");
+    pgl_groupsList.setSelectedIndex(1);
+
+    // 서버통신 - 그룹정보 조회
+    $c.sbm.execute($p, sbm_selectGroupsVoList);
+};
+
+// 페이지 번호 클릭 이벤트
+scwin.pgl_groupsList_onclick = function(idx) {
+
+    // 페이지 번호 세팅
+    dmp_groupsVo.set("pageIndex", idx);
+        
+    // 서버통신 - 그룹정보 조회
+    $c.sbm.execute($p, sbm_selectGroupsVoList);
+};
+
+// 행추가 버튼 이벤트
+scwin.btn_insert_onclick = function (e) {
+
+    var focus = grd_list.getFocusedRowIndex();
+    dlt_groupsVoList.insertRow(focus + 1);
+};
+
+// 다중행삭제 버튼 클릭 시 체크한 행 일괄 제거
+scwin.btn_deleteRows_onclick = function (e) {
+    var chkIdxArr = grd_list.getCheckedIndex("checkBox");
+    console.log(chkIdxArr);
+    dlt_groupsVoList.deleteRows(chkIdxArr);
+};
+
+
+scwin.sbm_groupsList_submitdone = function(e) {
+
+    // error 수신시
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+    if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    }
+
+    // 총 레코드 수 업데이트
+    spn_listCnt.setLabel(elData.totalCount);
+
+    // 페이지 네비게이터 업데이트
+    var totalPageCount = Math.ceil(elData.totalCount / dmp_groupsVo.get("pageSize"));
+    pgl_groupsList.setCount(totalPageCount);
+
+    // 페이징 정보 업데이트
+    spn_totalPageCount.setValue(totalPageCount);
+    spn_pageIndex.setValue(dmp_groupsVo.get("pageIndex"));
+    pgl_groupsList.setSelectedIndex(dmp_groupsVo.get("pageIndex"));
+
+    // 순번 업데이트
+    let num = Number(dmp_groupsVo.get("pageIndex"));
+    num = (num - 1) * 10;
+    grd_list.setStartRowNumber(num);
+
+};
+
+/**
+ * 저장 버튼 클릭 이벤트
+ * @date
+ * @memberOf
+ * @param 
+ * @returns
+ * @author 
+ * @example
+ */	
+scwin.btn_save_onclick = function(e) {
+    
+    // 유효성 체크
+    var valInfo = [
+        { id: "grpId", mandatory: true }
+        
+    ];
+    
+    if ($c.data.validateGroup(grp_groupsInfo, valInfo) === true) {
+        var promise = $c.win.confirm("저장하시겠습니까?");
+        promise.then(function(result) {  
+            if (result){
+                $c.sbm.execute(sbm_insertGroupsVo);
+            }
+        })
+    } 	
+};
+
+/**
+ * 사원정보 등록 콜백
+ * @date 
+ * @memberOf
+ * @param 
+ * @returns 
+ * @author 
+ * @example
+ */
+scwin.sbm_insertGroupsVo_submitdone = function(e) {
+    
+    // error 수신시
+    var elHeader  = e.responseJSON.elHeader;
+    if(elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    }else{
+        // 등록되었습니다. msg 출력
+        $c.win.alert("등록되었습니다.");
+    }
+    
+    // 재조회
+    scwin.btn_search_onclick();
+};
+
 
 // 저장 버튼클릭 시 입력값 서버로 전송
 scwin.btn_saves_onclick = function (e) {
@@ -355,94 +227,37 @@ scwin.sbm_saveGroupsVoList_submitdone = function (e) {
     } else {
         // msg 출력
         $c.win.alert("저장되었습니다.");
+        
+        // 재조회
+        scwin.btn_search_onclick();
     }
 
-    // 저장 후 페이지 재업로드
-    scwin.onpageload;
 };]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">
 		<xf:group class="sub_contents " id="" style="">
-			<xf:group class="pgtbox" id="" style="">
-				<w2:textbox class="pgt_tit" id="" label="그룹정보" style="" tagname="" />
-			</xf:group>
-			<xf:group class="schbox" id="search_box" style="">
-				<xf:group class="schbox_inner" id="" style="">
-					<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" id="" style="width:Infinity%;" tagname="table">
-						<w2:attributes>
-							<w2:summary />
-						</w2:attributes>
-						<xf:group tagname="colgroup">
-
-						</xf:group>
-						<xf:group class="" id="" style="" tagname="tr">
-							<xf:group class="" id="" style="" tagname="tr">
-
-							</xf:group>
-							<!-- 페이지 크기 설정 영역 / 웹관리자 화면 page 생성 시 주석 해제-->
-							<!--xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox id="" label="페이지 크기" localeRef="COMMON_LABEL_00001" ref="" style="" userData2=""></w2:textbox>
-								</xf:group>
-								<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:select1 allOption="" appearance="minimal" chooseOption="" direction="auto" disabled="false"
-								disabledClass="w2selectbox_disabled" id="sel_pageSize" ref="data:dmp_groupsVo.pageSize" renderType="native"
-								style="width: 80px;" submenuSize="auto" useItemLocale="false">
-								<xf:choices>
-								<xf:item>
-								<xf:label><![CDATA[5]]></xf:label>
-								<xf:value><![CDATA[5]]></xf:value>
-								</xf:item>
-								<xf:item>
-								<xf:label><![CDATA[10]]></xf:label>
-								<xf:value><![CDATA[10]]></xf:value>
-								</xf:item>
-								<xf:item>
-								<xf:label><![CDATA[20]]></xf:label>
-								<xf:value><![CDATA[20]]></xf:value>
-								</xf:item>
-								<xf:item>
-								<xf:label><![CDATA[30]]></xf:label>
-								<xf:value><![CDATA[30]]></xf:value>
-								</xf:item>
-								<xf:item>
-								<xf:label><![CDATA[50]]></xf:label>
-								<xf:value><![CDATA[50]]></xf:value>
-								</xf:item>
-								<xf:item>
-								<xf:label><![CDATA[100]]></xf:label>
-								<xf:value><![CDATA[100]]></xf:value>
-								</xf:item>
-								</xf:choices>
-								</xf:select1>
-								</xf:group-->
-						</xf:group>
-					</xf:group>
-				</xf:group>
-				<xf:group class="btn_schbox" id="" style="">
-					<xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_search" style="" type="button"
-						ev:onclick="scwin.btn_search_onclick" localeRef="COMMON_BUTTON_00001">
-						<xf:label><![CDATA[조회]]></xf:label>
-					</xf:trigger>
-				</xf:group>
+			<xf:group class="pgtbox" id="" style="margin-bottom: 50px;">
+				<w2:textbox class="pgt_tit" id="" label="그룹 정보" style="" tagname="" />
 			</xf:group>
 			<xf:group meta_snippetCategory="08_버튼" meta_snippetName="8_04 전체제어버튼" meta_snippetKeyComponent="true" style="" id=""
 				class="btnbox">
 				<xf:group style="" id="" class="rt">
 					<xf:trigger style="" id="btn_reg" type="button" class="btn_cm row_add" ev:onclick="scwin.btn_reg_onclick">
-						<xf:label><![CDATA[ 등록/수정]]></xf:label>
+						<xf:label><![CDATA[ 등록]]></xf:label>
 					</xf:trigger>
 					<xf:trigger ev:onclick="scwin.btn_insert_onclick" style="" id="btn_insert" type="button" class="btn_cm row_add">
 						<xf:label><![CDATA[ 행 추가]]></xf:label>
 					</xf:trigger>
-					<xf:trigger style="" id="btn_deleteRows" type="button" class="btn_cm row_del" ev:onclick="scwin.btn_deleteRows_onclick">
+					<xf:trigger style="" id="btn_deleteRows" type="button" class="btn_cm row_del"
+						ev:onclick="scwin.btn_deleteRows_onclick">
 						<xf:label><![CDATA[ 행 삭제]]></xf:label>
 					</xf:trigger>
 					<xf:trigger style="" id="btn_saves" type="button" class="btn_cm pt" ev:onclick="scwin.btn_saves_onclick">
 						<xf:label><![CDATA[저장]]></xf:label>
 					</xf:trigger>
 					<w2:textbox style="" id="" label="" class="bar_btndiv"></w2:textbox>
-					<xf:trigger localeRef="" style="" id="btn_reset" type="button"
-						class="btn_cm refresh" ev:onclick="scwin.btn_reset_onclick">
+					<xf:trigger localeRef="" style="" id="btn_reset" type="button" class="btn_cm refresh"
+						ev:onclick="scwin.btn_reset_onclick">
 						<xf:label><![CDATA[ 초기화]]></xf:label>
 					</xf:trigger>
 				</xf:group>
@@ -458,14 +273,14 @@ scwin.sbm_saveGroupsVoList_submitdone = function (e) {
 				<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dlt_groupsVoList"
 					defaultCellHeight="26" focusMode="row" id="grd_list" scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;"
 					visibleRowNum="15" ev:oncellclick="scwin.grd_list_oncellclick" readOnly="false" sortable="true" useFilterList="true"
-					editModeEvent="ondblclick" focusFlow="linear" rowNumWidth="20" rowStatusWidth="20" fixedColumn="1" rowStatusVisible="true"
+					editModeEvent="onclick" focusFlow="linear" rowNumWidth="20" rowStatusWidth="50" fixedColumn="1" rowStatusVisible="true"
 					rowNumVisible="true" rowNumHeaderValue="순번" rowStatusHeaderValue="상태">
 					<w2:caption style="" id="caption2" value="this is a grid caption."></w2:caption>
 					<w2:header style="" id="header2">
 						<w2:row style="" id="row3">
 							<w2:column width="30" inputType="checkbox" style="" id="column4" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="column1" value="grp_id" displayMode="label"
-								localeRef="Groups_COLNAME_00001">
+								localeRef="Groups_COLNAME_00001" hidden="false">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column2" value="grp_name" displayMode="label"
 								localeRef="Groups_COLNAME_00002">
@@ -479,7 +294,7 @@ scwin.sbm_saveGroupsVoList_submitdone = function (e) {
 					<w2:gBody style="" id="gBody2">
 						<w2:row style="" id="row4">
 							<w2:column width="30" inputType="checkbox" style="" id="checkBox" value="" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="grpId" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="grpId" value="" displayMode="label" hidden="false"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="grpName" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="description" value="" displayMode="label"></w2:column>
 
@@ -510,14 +325,6 @@ scwin.sbm_saveGroupsVoList_submitdone = function (e) {
 					<xf:trigger class="btn_cm save" id="btn_save" style="" type="button" localeRef="COMMON_BUTTON_00003"
 						ev:onclick="scwin.btn_save_onclick">
 						<xf:label><![CDATA[저장]]></xf:label>
-					</xf:trigger>
-					<xf:trigger class="btn_cm save" id="btn_edit" style="" type="button" localeRef="COMMON_BUTTON_00003"
-						ev:onclick="scwin.btn_edit_onclick">
-						<xf:label><![CDATA[저장]]></xf:label>
-					</xf:trigger>
-					<xf:trigger class="btn_cm delete" ev:onclick="scwin.btn_delete_onclick" id="btn_delete" localeRef="COMMON_BUTTON_00004"
-						style="" type="button">
-						<xf:label><![CDATA[삭제]]></xf:label>
 					</xf:trigger>
 				</xf:group>
 			</xf:group>
