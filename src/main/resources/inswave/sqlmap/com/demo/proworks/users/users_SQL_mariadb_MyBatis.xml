@@ -16,14 +16,14 @@
 -->
 <mapper namespace="com.demo.proworks.users">
 	<insert id="insertUsers" parameterType="com.demo.proworks.users.vo.UsersVo">
-		<!-- 사용자정보를 등록한다. -->
+<!-- 사용자정보를 등록한다. -->
 		INSERT INTO USERS /* QueryID : com.demo.proworks.users.insertUsers */ (
 		<if test="name       != null"> NAME        </if>
 		<if test="position   != null"> , POSITION    </if>
 		<if test="email      != null"> , EMAIL       </if>
 		<if test="phone      != null"> , PHONE       </if>
 		<if test="accountId != null"> , ACCOUNT_ID  </if>
-		, ACCOUNT_PWD
+		<if test="accountPwd != null">, ACCOUNT_PWD </if>
 		<if test="image      != null"> , IMAGE       </if>
 		<if test="isDeleted != null"> , IS_DELETED  </if>
 		<if test="isAdmin   != null"> , IS_ADMIN    </if>
@@ -34,13 +34,13 @@
 		<if test="email      != null"> , #{email}       </if>
 		<if test="phone      != null"> , #{phone}       </if>
 		<if test="accountId != null"> , #{accountId}  </if>
-		, "1234"
+		<if test="accountPwd != null">, #{accountPwd} </if>
 		<if test="image      != null"> , #{image}       </if>
 		<if test="isDeleted != null"> , #{isDeleted}  </if>
 		<if test="isAdmin   != null"> , #{isAdmin}    </if>
 		<if test="isCreate  != null"> , #{isCreate}   </if>
 		)
-	</insert>
+</insert>
 
 	<update id="updateUsers" parameterType="com.demo.proworks.users.vo.UsersVo">
 		<!-- 사용자정보를 갱신한다. -->
@@ -67,15 +67,14 @@
 	</delete>
 
 	<select id="selectUsers" parameterType="com.demo.proworks.users.vo.UsersVo" resultType="com.demo.proworks.users.vo.UsersVo">
-		<!-- 사용자정보를 상세 조회한다. -->
+<!-- 사용자정보를 상세 조회한다. -->
 		SELECT /* QueryID : com.demo.proworks.users.selectUsers */
 		USER_ID as userId, NAME as name, POSITION as position, EMAIL as email, PHONE as phone, ACCOUNT_ID as accountId, ACCOUNT_PWD as accountPwd, IMAGE
-		as image, IS_DELETED as isDeleted
+		as image, IS_DELETED as isDeleted, IS_ADMIN as isAdmin, IS_CREATE as isCreate
 		FROM USERS
 		WHERE
 		ACCOUNT_ID = #{accountId}
-
-	</select>
+</select>
 
 	<select id="selectListUsers" parameterType="com.demo.proworks.users.vo.UsersVo" resultType="com.demo.proworks.users.vo.UsersVo">
 		<!-- 사용자정보 목록을 조회한다. -->

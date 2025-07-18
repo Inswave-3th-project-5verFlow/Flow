@@ -31,7 +31,8 @@
 scwin.SERVER_TIME = "";
 scwin.USER_ID = "";
 scwin.USER_NAME = "";
-
+scwin.IS_ADMIN = "";
+scwin.IS_CREATE = "";
 
 scwin.onpageload = function() {
     scwin.SERVER_TIME = $c.date.getServerDateTime("yyyy-MM-dd hh:mm:ss");
@@ -48,8 +49,11 @@ scwin.onpageload = function() {
 scwin.sbm_selectUsersMapping_submitdone = function (e) {
     var data  = e.responseJSON.elData.usersVoList;
     var header = e.responseJSON.userHeader;
+    debugger;
     scwin.USER_ID = header.usrId;
-    scwin.USER_NAME = header.userName; 
+    scwin.USER_NAME = header.userName;
+    scwin.IS_ADMIN = header.isAdmin;
+    scwin.IS_CREATE = header.isCreate;
 
     // SelectBox와 프로젝트명 Bind
     var projectNameData = data.map(item => ({

@@ -61,6 +61,12 @@ public class ProworksUserHeader extends com.inswave.elfw.core.UserHeader {
     @ElDtoField(logicalName = "유저이름", physicalName = "userName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String userName;
 
+    @ElDtoField(logicalName = "관리자여부", physicalName = "isAdmin", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String isAdmin;
+
+    @ElDtoField(logicalName = "생성권한", physicalName = "isCreate", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String isCreate;
+
     @ElVoField(physicalName = "fldLen")
     public int getFldLen(){
         return fldLen;
@@ -192,6 +198,28 @@ public class ProworksUserHeader extends com.inswave.elfw.core.UserHeader {
         this.userName = userName;
     }
 
+    @ElVoField(physicalName = "isAdmin")
+    public String getIsAdmin(){
+        String ret = this.isAdmin;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "isAdmin")
+    public void setIsAdmin(String isAdmin){
+        this.isAdmin = isAdmin;
+    }
+
+    @ElVoField(physicalName = "isCreate")
+    public String getIsCreate(){
+        String ret = this.isCreate;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "isCreate")
+    public void setIsCreate(String isCreate){
+        this.isCreate = isCreate;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -207,7 +235,9 @@ public class ProworksUserHeader extends com.inswave.elfw.core.UserHeader {
         sb.append("accountId").append("=").append(accountId).append(",");
         sb.append("accountPwd").append("=").append(accountPwd).append(",");
         sb.append("usrId").append("=").append(usrId).append(",");
-        sb.append("userName").append("=").append(userName);
+        sb.append("userName").append("=").append(userName).append(",");
+        sb.append("isAdmin").append("=").append(isAdmin).append(",");
+        sb.append("isCreate").append("=").append(isCreate);
         sb.append("]");
         return sb.toString();
 

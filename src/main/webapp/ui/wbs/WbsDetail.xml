@@ -182,7 +182,7 @@ scwin.btn_ptTaskName_onclick = function (e) {
         dataObject: jsnPopupData
     };
 
-    $p.openPopup("/InsWebApp/ui/task/design/DesignTaskTree.xml", options);
+    $p.openPopup("/InsWebApp/ui/task/allTask/AllTaskTree.xml", options);
 };
 
 scwin.receiveTaskData = function (returnData) {
