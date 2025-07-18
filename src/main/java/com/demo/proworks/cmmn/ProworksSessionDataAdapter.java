@@ -60,12 +60,16 @@ public class ProworksSessionDataAdapter extends SessionDataAdapter {
 
 			usersVo.setAccountId(id); // pmkim
 			UsersVo resUsersVo = usersService.selectUsers(usersVo);
-			
+
 			userHeader.setUsrId(resUsersVo.getUserId());
-			System.out.println(resUsersVo.getName());
 			userHeader.setUserName(resUsersVo.getName());
-			System.out.println(userHeader.getUserName());
-			
+			userHeader.setIsAdmin(resUsersVo.getIsAdmin());
+			userHeader.setIsCreate(resUsersVo.getIsCreate());
+
+			System.out.println("=============================================");
+			System.out.println(resUsersVo.getIsAdmin());
+			System.out.println(resUsersVo.getIsCreate());
+
 			if (resUsersVo == null) {
 				throw new AdapterException("EL.ERROR.LOGIN.0004", new String[] { id });
 			}

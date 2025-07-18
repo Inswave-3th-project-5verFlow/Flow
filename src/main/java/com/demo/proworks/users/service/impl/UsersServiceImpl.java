@@ -9,6 +9,8 @@ import org.springframework.stereotype.Service;
 
 import com.demo.proworks.users.service.UsersService;
 import com.demo.proworks.users.vo.UsersVo;
+import com.inswave.elfw.security.ElAbstractCrypto;
+import com.inswave.elfw.util.ElBeanUtils;
 import com.demo.proworks.users.dao.UsersDAO;
 
 /**
@@ -84,6 +86,11 @@ public class UsersServiceImpl implements UsersService {
 	 * @throws Exception
 	 */
 	public int insertUsers(UsersVo usersVo) throws Exception {
+		String defaultPwd = "1234";		
+		// SHA256로 비밀번호 암호화
+		ElAbstractCrypto elSha256Crypto = (ElAbstractCrypto) ElBeanUtils.getBean("elSha256Crypto");
+		String hashedPwd = elSha256Crypto.getEncrypt(null, defaultPwd);
+		usersVo.setAccountPwd(hashedPwd);
 		return usersDAO.insertUsers(usersVo);
 	}
 
@@ -97,6 +104,8 @@ public class UsersServiceImpl implements UsersService {
 	 * @throws Exception
 	 */
 	public int updateUsers(UsersVo usersVo) throws Exception {
+		// 사용자 관리 기능에서 사용하는 기본 수정 메서드 입니다.
+		// 마이페이지에서의 사용자 정보 수정은 별도로 구현이 필요해 보입니다.
 		return usersDAO.updateUsers(usersVo);
 	}
 
