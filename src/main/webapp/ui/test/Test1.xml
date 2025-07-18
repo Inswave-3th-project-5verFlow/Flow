@@ -810,13 +810,16 @@ scwin.updateCountLabels = function(total, pending, running, success, fail) {
 /**
  * 페이징 업데이트
  */
+/**
+ * 상태별 페이징 업데이트 함수 수정
+ */
 scwin.updatePagination = function() {
     try {
         // 전체 데이터 페이징
-        var totalPages = Math.ceil(scwin.allDataPageInfo.totalCount / 10);
+        var totalPages = Math.ceil(scwin.allDataPageInfo.totalCount / scwin.allDataPageInfo.pageSize);
         if (totalPages > 0) {
             pgl_testList.setCount(totalPages);
-            pgl_testList.setSelectedIndex(1);
+            pgl_testList.setSelectedIndex(scwin.allDataPageInfo.currentPage);
         }
         
         // 상태별 페이징 (4개)
@@ -835,10 +838,19 @@ scwin.updatePagination = function() {
  * 상태별 페이징 업데이트
  */
 scwin.updateStatePagination = function(pageInfo, paginationComponent) {
-    var totalPages = Math.ceil(pageInfo.totalCount / pageInfo.pageSize);
-    if (totalPages > 0) {
-        paginationComponent.setCount(totalPages);
-        paginationComponent.setSelectedIndex(pageInfo.currentPage);
+    try {
+        var totalPages = Math.ceil(pageInfo.totalCount / pageInfo.pageSize);
+        console.log("페이징 업데이트:", pageInfo.totalCount, pageInfo.pageSize, totalPages);
+        
+        if (totalPages > 0) {
+            paginationComponent.setCount(totalPages);
+            paginationComponent.setSelectedIndex(pageInfo.currentPage);
+        } else {
+            // 데이터가 없을 때는 페이징 숨기기
+            paginationComponent.setCount(0);
+        }
+    } catch (e) {
+        console.error("상태별 페이징 업데이트 오류:", e);
     }
 };
 
@@ -1058,6 +1070,56 @@ scwin.pgl_completed_onclick = function(idx) {
     var pageData = scwin.getPageData(scwin.completedPageInfo.data, scwin.completedPageInfo);
     dlt_completedList.setJSON(pageData);
     pgl_completed.setSelectedIndex(idx);
+};
+
+/**
+ * 성공 페이지 번호 클릭 이벤트 (누락된 함수)
+ */
+scwin.pgl_success_onclick = function(idx) {
+    console.log("성공 페이지 클릭:", idx);
+    
+    scwin.successPageInfo.currentPage = idx;
+    var pageData = scwin.getPageData(scwin.successPageInfo.data, scwin.successPageInfo);
+    dlt_successList.setJSON(pageData);
+    pgl_success.setSelectedIndex(idx);
+};
+
+/**
+ * 실패 페이지 번호 클릭 이벤트 (누락된 함수)
+ */
+scwin.pgl_fail_onclick = function(idx) {
+    console.log("실패 페이지 클릭:", idx);
+    
+    scwin.failPageInfo.currentPage = idx;
+    var pageData = scwin.getPageData(scwin.failPageInfo.data, scwin.failPageInfo);
+    dlt_failList.setJSON(pageData);
+    pgl_fail.setSelectedIndex(idx);
+};
+scwin.pgl_fail_onclick = function(idx) {
+    console.log("실패 페이지 클릭:", idx);
+    
+    scwin.failPageInfo.currentPage = idx;
+    var pageData = scwin.getPageData(scwin.failPageInfo.data, scwin.failPageInfo);
+    dlt_failList.setJSON(pageData);
+    pgl_fail.setSelectedIndex(idx);
+};
+
+/**
+ * 성공 그리드 더블클릭
+ */
+scwin.success_grd_oncelldblclick = function(row, col, colId) {
+    var selectedData = dlt_successList.getRowJSON(row);
+    dmp_unitTestDetail.setJSON(selectedData);
+    scwin.showDetailPopup("view");
+};
+
+/**
+ * 실패 그리드 더블클릭
+ */
+scwin.fail_grd_oncelldblclick = function(row, col, colId) {
+    var selectedData = dlt_failList.getRowJSON(row);
+    dmp_unitTestDetail.setJSON(selectedData);
+    scwin.showDetailPopup("view");
 };
 
 /**
