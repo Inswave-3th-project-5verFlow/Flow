@@ -85,6 +85,36 @@ public class UnitTestVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElDtoField(logicalName = "수정자", physicalName = "updatedBy", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String updatedBy;
 
+    @ElDtoField(logicalName = "프로젝트ID", physicalName = "pjtId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String pjtId;
+
+    @ElDtoField(logicalName = "검색_업무ID", physicalName = "searchTaskId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String searchTaskId;
+
+    @ElDtoField(logicalName = "검색_테스트상태", physicalName = "searchTestStatus", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String searchTestStatus;
+
+    @ElDtoField(logicalName = "검색_담당자", physicalName = "searchAssignee", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String searchAssignee;
+
+    @ElDtoField(logicalName = "검색_업무이름", physicalName = "searchTestCaseName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String searchTestCaseName;
+
+    @ElDtoField(logicalName = "", physicalName = "searchTestTarget", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String searchTestTarget;
+
+    @ElDtoField(logicalName = "", physicalName = "searchTestType", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String searchTestType;
+
+    @ElDtoField(logicalName = "", physicalName = "searchPriority", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String searchPriority;
+
+    @ElDtoField(logicalName = "", physicalName = "dateFrom", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String dateFrom;
+
+    @ElDtoField(logicalName = "", physicalName = "dateTo", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String dateTo;
+
     @ElVoField(physicalName = "testCaseId")
     public String getTestCaseId(){
         String ret = this.testCaseId;
@@ -349,6 +379,116 @@ public class UnitTestVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.updatedBy = updatedBy;
     }
 
+    @ElVoField(physicalName = "pjtId")
+    public String getPjtId(){
+        String ret = this.pjtId;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "pjtId")
+    public void setPjtId(String pjtId){
+        this.pjtId = pjtId;
+    }
+
+    @ElVoField(physicalName = "searchTaskId")
+    public String getSearchTaskId(){
+        String ret = this.searchTaskId;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "searchTaskId")
+    public void setSearchTaskId(String searchTaskId){
+        this.searchTaskId = searchTaskId;
+    }
+
+    @ElVoField(physicalName = "searchTestStatus")
+    public String getSearchTestStatus(){
+        String ret = this.searchTestStatus;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "searchTestStatus")
+    public void setSearchTestStatus(String searchTestStatus){
+        this.searchTestStatus = searchTestStatus;
+    }
+
+    @ElVoField(physicalName = "searchAssignee")
+    public String getSearchAssignee(){
+        String ret = this.searchAssignee;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "searchAssignee")
+    public void setSearchAssignee(String searchAssignee){
+        this.searchAssignee = searchAssignee;
+    }
+
+    @ElVoField(physicalName = "searchTestCaseName")
+    public String getSearchTestCaseName(){
+        String ret = this.searchTestCaseName;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "searchTestCaseName")
+    public void setSearchTestCaseName(String searchTestCaseName){
+        this.searchTestCaseName = searchTestCaseName;
+    }
+
+    @ElVoField(physicalName = "searchTestTarget")
+    public String getSearchTestTarget(){
+        String ret = this.searchTestTarget;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "searchTestTarget")
+    public void setSearchTestTarget(String searchTestTarget){
+        this.searchTestTarget = searchTestTarget;
+    }
+
+    @ElVoField(physicalName = "searchTestType")
+    public String getSearchTestType(){
+        String ret = this.searchTestType;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "searchTestType")
+    public void setSearchTestType(String searchTestType){
+        this.searchTestType = searchTestType;
+    }
+
+    @ElVoField(physicalName = "searchPriority")
+    public String getSearchPriority(){
+        String ret = this.searchPriority;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "searchPriority")
+    public void setSearchPriority(String searchPriority){
+        this.searchPriority = searchPriority;
+    }
+
+    @ElVoField(physicalName = "dateFrom")
+    public String getDateFrom(){
+        String ret = this.dateFrom;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "dateFrom")
+    public void setDateFrom(String dateFrom){
+        this.dateFrom = dateFrom;
+    }
+
+    @ElVoField(physicalName = "dateTo")
+    public String getDateTo(){
+        String ret = this.dateTo;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "dateTo")
+    public void setDateTo(String dateTo){
+        this.dateTo = dateTo;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -376,7 +516,17 @@ public class UnitTestVo extends com.demo.proworks.cmmn.ProworksCommVO {
         sb.append("createdAt").append("=").append(createdAt).append(",");
         sb.append("updatedAt").append("=").append(updatedAt).append(",");
         sb.append("createdBy").append("=").append(createdBy).append(",");
-        sb.append("updatedBy").append("=").append(updatedBy);
+        sb.append("updatedBy").append("=").append(updatedBy).append(",");
+        sb.append("pjtId").append("=").append(pjtId).append(",");
+        sb.append("searchTaskId").append("=").append(searchTaskId).append(",");
+        sb.append("searchTestStatus").append("=").append(searchTestStatus).append(",");
+        sb.append("searchAssignee").append("=").append(searchAssignee).append(",");
+        sb.append("searchTestCaseName").append("=").append(searchTestCaseName).append(",");
+        sb.append("searchTestTarget").append("=").append(searchTestTarget).append(",");
+        sb.append("searchTestType").append("=").append(searchTestType).append(",");
+        sb.append("searchPriority").append("=").append(searchPriority).append(",");
+        sb.append("dateFrom").append("=").append(dateFrom).append(",");
+        sb.append("dateTo").append("=").append(dateTo);
         sb.append("]");
         return sb.toString();
 

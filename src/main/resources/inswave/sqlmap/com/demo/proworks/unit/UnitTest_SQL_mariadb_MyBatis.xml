@@ -5,70 +5,87 @@
 
     <!-- 단위테스트 케이스 목록 조회 -->
     <select id="selectUnitTestList" parameterType="map" resultType="com.demo.proworks.unit.vo.UnitTestVo">
-         SELECT /* QueryID : com.demo.proworks.unit.selectUnitTestList */
-	        testCaseId, taskId, taskName, testCaseName, testTarget, testType, priority, description, 
-	        precondition, testData, testSteps, expectedResult, actualResult, testStatus, executionDate, 
-	        duration, notes, requirements, assignee, createdAt, updatedAt, createdBy, updatedBy, 
-	        fileCount, testStatusName, testTypeName, priorityName, isDeleted
-	    FROM (
-	        SELECT S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
-	        FROM (
-	            SELECT
-	                UTC.ID as testCaseId,
-	                UTC.TASK_ID as taskId,
-	                UTC.TASK_NAME as taskName,
-	                UTC.TEST_CASE_NAME as testCaseName,
-	                UTC.TEST_TARGET as testTarget,
-	                UTC.TEST_TYPE as testType,
-	                UTC.PRIORITY as priority,
-	                UTC.DESCRIPTION as description,
-	                UTC.PRECONDITION as precondition,
-	                UTC.TEST_DATA as testData,
-	                UTC.TEST_STEPS as testSteps,
-	                UTC.EXPECTED_RESULT as expectedResult,
-	                UTC.ACTUAL_RESULT as actualResult,
-	                UTC.TEST_STATUS as testStatus,
-	                DATE_FORMAT(UTC.EXECUTION_DATE, '%Y-%m-%d %H:%i') as executionDate,
-	                UTC.DURATION as duration,
-	                UTC.NOTES as notes,
-	                UTC.REQUIREMENTS as requirements,
-	                UTC.ASSIGNEE as assignee,
-	                DATE_FORMAT(UTC.CREATED_AT, '%Y-%m-%d %H:%i') as createdAt,
-	                DATE_FORMAT(UTC.UPDATED_AT, '%Y-%m-%d %H:%i') as updatedAt,
-	                UTC.CREATED_BY as createdBy,
-	                UTC.UPDATED_BY as updatedBy,
-	                UTC.IS_DELETED as isDeleted,
-	                (SELECT COUNT(*) FROM file_attachments FA 
-	                 WHERE FA.REF_TYPE = 'UNIT_TEST' AND FA.REF_ID = UTC.ID AND FA.IS_DELETED = '0') as fileCount,
-	                CASE UTC.TEST_STATUS
-	                    WHEN 'PEN' THEN '대기'
-	                    WHEN 'RUN' THEN '진행중'
-	                    WHEN 'SUC' THEN '성공'
-	                    WHEN 'FAI' THEN '실패'
-	                    ELSE UTC.TEST_STATUS
-	                END as testStatusName,
-	                CASE UTC.TEST_TYPE
-	                    WHEN 'NORMAL' THEN '정상케이스'
-	                    WHEN 'BOUNDARY' THEN '경계값'
-	                    WHEN 'EXCEPTION' THEN '예외처리'
-	                    WHEN 'PERFORMANCE' THEN '성능'
-	                    ELSE UTC.TEST_TYPE
-	                END as testTypeName,
-	                CASE UTC.PRIORITY
-	                    WHEN 'HIGH' THEN '높음'
-	                    WHEN 'MEDIUM' THEN '보통'
-	                    WHEN 'LOW' THEN '낮음'
-	                    ELSE UTC.PRIORITY
-	                END as priorityName
-	            FROM UNIT_TEST_CASE UTC
-	            WHERE UTC.IS_DELETED = 'N'
-	            
-	          
-	            ORDER BY UTC.CREATED_AT DESC
-	        ) S, (SELECT @ROWNUM := 0) TMP
-	    ) A
-	    WHERE PAGE = #{pageIndex}
+           SELECT 
+        id as testCaseId,
+        task_id as taskId,
+        task_name as taskName,
+        test_case_name as testCaseName,
+        test_target as testTarget,
+        test_type as testType,
+        priority,
+        description,
+        precondition,
+        test_data as testData,
+        test_steps as testSteps,
+        expected_result as expectedResult,
+        actual_result as actualResult,
+        test_status as testStatus,
+        execution_date as executionDate,
+        duration,
+        notes,
+        requirements,
+        assignee,
+        created_at as createdAt,
+        updated_at as updatedAt,
+        created_by as createdBy,
+        updated_by as updatedBy
+    FROM UNIT_TEST_CASE
+    WHERE is_deleted = 'N'
+    <if test="pjtId != null and pjtId != ''">
+        AND pjt_id = #{pjtId}
+    </if>
+    <if test="searchTestStatus != null and searchTestStatus != ''">
+        AND test_status = #{searchTestStatus}
+    </if>
+    <if test="searchAssignee != null and searchAssignee != ''">
+        AND assignee LIKE CONCAT('%', #{searchAssignee}, '%')
+    </if>
+    <if test="searchTestCaseName != null and searchTestCaseName != ''">
+        AND test_case_name LIKE CONCAT('%', #{searchTestCaseName}, '%')
+    </if>
+    <if test="searchTestTarget != null and searchTestTarget != ''">
+        AND test_target LIKE CONCAT('%', #{searchTestTarget}, '%')
+    </if>
+    ORDER BY created_at DESC
+    LIMIT #{pageSize} OFFSET #{pageIndex}
     </select>
+    
+    <!-- 프로젝트별 단위테스트 케이스 총 개수 조회 -->
+	<select id="selectUnitTestListCountByProject" parameterType="com.demo.proworks.unit.vo.UnitTestVo" resultType="long">
+	    SELECT COUNT(*) totcnt
+	    FROM UNIT_TEST_CASE UTC
+	    WHERE UTC.IS_DELETED = 'N'
+	    AND UTC.PJT_ID = #{pjt_id}
+	    
+	    <!-- 추가 검색 조건들 -->
+	    <if test="searchTaskId != null and searchTaskId != ''">
+	        AND UTC.TASK_ID = #{searchTaskId}
+	    </if>
+	    <if test="searchTestStatus != null and searchTestStatus != ''">
+	        AND UTC.TEST_STATUS = #{searchTestStatus}
+	    </if>
+	    <if test="searchAssignee != null and searchAssignee != ''">
+	        AND UTC.ASSIGNEE LIKE CONCAT('%', #{searchAssignee}, '%')
+	    </if>
+	    <if test="searchTestCaseName != null and searchTestCaseName != ''">
+	        AND UTC.TEST_CASE_NAME LIKE CONCAT('%', #{searchTestCaseName}, '%')
+	    </if>
+	    <if test="searchTestTarget != null and searchTestTarget != ''">
+	        AND UTC.TEST_TARGET LIKE CONCAT('%', #{searchTestTarget}, '%')
+	    </if>
+	    <if test="searchTestType != null and searchTestType != ''">
+	        AND UTC.TEST_TYPE = #{searchTestType}
+	    </if>
+	    <if test="searchPriority != null and searchPriority != ''">
+	        AND UTC.PRIORITY = #{searchPriority}
+	    </if>
+	    <if test="dateFrom != null and dateFrom != ''">
+	        AND DATE(UTC.CREATED_AT) >= #{dateFrom}
+	    </if>
+		<if test="dateTo != null and dateTo != ''">
+		    AND <![CDATA[DATE(UTC.CREATED_AT) <= #{dateTo}]]>
+		</if>
+	</select>
 
     <!-- 단위테스트 케이스 총 개수 조회 -->
     <select id="selectUnitTestListCount" parameterType="com.demo.proworks.unit.vo.UnitTestVo" resultType="long">
@@ -297,22 +314,93 @@
         WHERE TEST_CASE_ID = #{id}
     </update>
 
-    <!-- 테스트 상태별 통계 조회 -->
-    <select id="selectUnitTestStatistics" parameterType="map" resultType="map">
-        SELECT 
-            TEST_STATUS as testStatus,
-            COUNT(*) as cnt
-        FROM UNIT_TEST_CASE
-        WHERE IS_DELETED = 'N'
-        <if test="taskId != null and taskId != ''">
-            AND TASK_ID = #{taskId}
-        </if>
-        <if test="assignee != null and assignee != ''">
-            AND ASSIGNEE = #{assignee}
-        </if>
-        GROUP BY TEST_STATUS
-        ORDER BY TEST_STATUS
-    </select>
+    <!-- 기존 통계 쿼리 업데이트 - 프로젝트 필터링 추가 -->
+	<select id="selectUnitTestStatistics" parameterType="map" resultType="map">
+	    SELECT 
+	        TEST_STATUS as testStatus,
+	        COUNT(*) as cnt
+	    FROM UNIT_TEST_CASE
+	    WHERE IS_DELETED = 'N'
+	    <if test="pjtId != null and pjtId != ''">
+	        AND PJT_ID = #{pjtId}
+	    </if>
+	    <if test="taskId != null and taskId != ''">
+	        AND TASK_ID = #{taskId}
+	    </if>
+	    <if test="assignee != null and assignee != ''">
+	        AND ASSIGNEE = #{assignee}
+	    </if>
+	    GROUP BY TEST_STATUS
+	    ORDER BY TEST_STATUS
+	</select>	
+
+	<!-- 프로젝트별 담당자별 테스트 케이스 개수 조회 -->
+	<select id="selectTestCountByAssigneeByProject" parameterType="map" resultType="map">
+	    SELECT 
+	        ASSIGNEE as assignee,
+	        COUNT(*) as totalCount,
+	        SUM(CASE WHEN TEST_STATUS = 'PEN' THEN 1 ELSE 0 END) as pendingCount,
+	        SUM(CASE WHEN TEST_STATUS = 'RUN' THEN 1 ELSE 0 END) as runningCount,
+	        SUM(CASE WHEN TEST_STATUS = 'SUC' THEN 1 ELSE 0 END) as successCount,
+	        SUM(CASE WHEN TEST_STATUS = 'FAI' THEN 1 ELSE 0 END) as failCount
+	    FROM UNIT_TEST_CASE
+	    WHERE IS_DELETED = 'N'
+	    AND PJT_ID = #{pjtId}
+	    <if test="taskId != null and taskId != ''">
+	        AND TASK_ID = #{taskId}
+	    </if>
+	    GROUP BY ASSIGNEE
+	    ORDER BY totalCount DESC, ASSIGNEE
+	</select>
+	
+	<!-- 프로젝트별 테스트 타입별 개수 조회 -->
+	<select id="selectTestCountByTypeByProject" parameterType="map" resultType="map">
+	    SELECT 
+	        TEST_TYPE as testType,
+	        COUNT(*) as cnt,
+	        CASE TEST_TYPE
+	            WHEN 'NORMAL' THEN '정상케이스'
+	            WHEN 'BOUNDARY' THEN '경계값'
+	            WHEN 'EXCEPTION' THEN '예외처리'
+	            WHEN 'PERFORMANCE' THEN '성능'
+	            ELSE TEST_TYPE
+	        END as testTypeName
+	    FROM UNIT_TEST_CASE
+	    WHERE IS_DELETED = 'N'
+	    AND PJT_ID = #{pjtId}
+	    <if test="taskId != null and taskId != ''">
+	        AND TASK_ID = #{taskId}
+	    </if>
+	    GROUP BY TEST_TYPE
+	    ORDER BY cnt DESC
+	</select>
+	
+	<!-- 프로젝트별 우선순위별 테스트 케이스 개수 조회 -->
+	<select id="selectTestCountByPriorityByProject" parameterType="map" resultType="map">
+	    SELECT 
+	        PRIORITY as priority,
+	        COUNT(*) as cnt,
+	        CASE PRIORITY
+	            WHEN 'HIGH' THEN '높음'
+	            WHEN 'MEDIUM' THEN '보통'
+	            WHEN 'LOW' THEN '낮음'
+	            ELSE PRIORITY
+	        END as priorityName
+	    FROM UNIT_TEST_CASE
+	    WHERE IS_DELETED = 'N'
+	    AND PJT_ID = #{pjtId}
+	    <if test="taskId != null and taskId != ''">
+	        AND TASK_ID = #{taskId}
+	    </if>
+	    GROUP BY PRIORITY
+	    ORDER BY 
+	        CASE PRIORITY
+	            WHEN 'HIGH' THEN 1
+	            WHEN 'MEDIUM' THEN 2
+	            WHEN 'LOW' THEN 3
+	            ELSE 4
+	        END
+	</select>
 
     <!-- 테스트 실행 상태 업데이트 -->
     <update id="updateTestStatus" parameterType="map">
