@@ -33,13 +33,16 @@
 				</w2:dataMap>
 
 				<w2:dataMap baseNode="map" id="dmp_issVo" style="">
-					<w2:keyInfo>
-						<w2:key dataType="text" id="pageIndex" name="페이지번호" defaultValue="1"></w2:key>
-						<w2:key dataType="text" id="pageSize" name="페이지사이즈" defaultValue="10"></w2:key>
-						<w2:key dataType="text" id="totalPageCount" name="페이지건수"></w2:key>
-					</w2:keyInfo>
-					<w2:data use="false"></w2:data>
-				</w2:dataMap>
+                    <w2:keyInfo>
+                        <w2:key dataType="text" id="pageIndex" name="페이지번호" defaultValue="1"></w2:key>
+                        <w2:key dataType="text" id="pageSize" name="페이지사이즈" defaultValue="10"></w2:key>
+                        <w2:key dataType="text" id="totalPageCount" name="페이지건수"></w2:key>
+                        <!-- 이 두 필드를 추가해야 함 -->
+                        <w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
+                        <w2:key dataType="text" id="userId" name="사용자ID"></w2:key>
+                    </w2:keyInfo>
+                    <w2:data use="false"></w2:data>
+                </w2:dataMap>
 				<w2:dataList baseNode="list" id="dlt_issVoList" repeatNode="map" saveRemovedData="true" style="">
 					<w2:columnInfo>
 						<w2:column dataType="text" id="pjtId" name="프로젝트 ID"></w2:column>
@@ -275,6 +278,12 @@
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler=""
 				ev:submit="scwin.sbm_getIssFileList_submit" ev:submitdone="scwin.sbm_getIssFileList_submitdone">
 			</xf:submission>
+
+            <xf:submission id="sbm_selectIssVoListForExcel" ref='data:json,{"id":"dmp_issVo","key":"issVo"}'
+                target='data:json,{"id":"dlt_issVoList","key":"elData.issVoList"}' action="/InsWebApp/ISS001List.pwkjson" method="post"
+                mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
+                processMsg="엑셀 다운로드용 데이터를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectIssVoListForExcel_submitdone" ev:submiterror="" abortTrigger="">
+            </xf:submission>
 			<!-- submission 설정 -->
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
@@ -300,27 +309,13 @@ scwin.SELECTED_PROJECT_NAME = "";
  * 페이지 로드 시 초기화
  */
 scwin.onpageload = function () {
-    // 헤더에서 사용자 정보 가져오기
+    console.log("=== 이슈 페이지 로드 ===");
+    
+    // 헤더에서 사용자 정보만 한 번 가져오기
     var headerWindow = $p.getComponentById("mf_pg_header");
     if (headerWindow) {
         scwin.USER_ID = headerWindow.getWindow().scwin.USER_ID;
         scwin.USER_NAME = headerWindow.getWindow().scwin.USER_NAME;
-    }
-    
-    // 부모 window에서 프로젝트 정보 가져오기
-    var parentWindow = $p.getParentWindow();
-    if (parentWindow && parentWindow.scwin) {
-        scwin.SELECTED_PROJECT_ID = parentWindow.scwin.SEL_PJT_ID;
-        scwin.GROUP_ID = parentWindow.scwin.GRP_ID;
-        
-        // 프로젝트명 가져오기
-        if (parentWindow.scwin.SEL_PJT_ID) {
-            var projectList = parentWindow.$p.getComponentById("mf_pg_header").getWindow().dlt_projectName;
-            if (projectList) {
-                var projectName = projectList.getMatchedColumnData("pjtId", scwin.SELECTED_PROJECT_ID, "pjtName");
-                scwin.SELECTED_PROJECT_NAME = projectName || "선택된 프로젝트";
-            }
-        }
     }
     
     // 버튼 초기화
@@ -331,26 +326,22 @@ scwin.onpageload = function () {
     // 페이지 정보 초기화
     scwin.initPaginationInfo();
 
-    // 검색 조건 설정
-    dmp_issVo.set("pageIndex", "1");
-    dmp_issVo.set("pageSize", "1000");
-    dmp_issVo.set("pjtId", scwin.SELECTED_PROJECT_ID);
-    dmp_issVo.set("userId", scwin.USER_ID);
-
     // 검색박스 표시/숨김 처리
     var cptIbxName = $p.getComponentById("searchComp_1");
     if (cptIbxName == undefined) {
         search_box.hide();
     }
 
-    // 프로젝트가 선택된 경우에만 데이터 조회
-    if (scwin.SELECTED_PROJECT_ID) {
-        scwin.btn_search_onclick();
-    } else {
-        // 프로젝트가 선택되지 않은 경우 빈 데이터 표시
-        scwin.updateCountLabels(0, 0, 0, 0);
-        scwin.updateGridData(); // 빈 그리드 표시
-    }
+    // 초기 데이터 조회 (이때 최신 프로젝트 정보 가져옴)
+    scwin.btn_search_onclick();
+};
+
+/**
+ * 새로고침 버튼에도 동일 로직 적용
+ */
+scwin.btn_refresh_project_onclick = function(e) {
+    console.log("=== 프로젝트 새로고침 ===");
+    scwin.btn_search_onclick(); // 최신 프로젝트 정보로 다시 조회
 };
 
 /**
@@ -483,16 +474,59 @@ scwin.stripHtmlTags = function(htmlString) {
  * 조회 버튼 클릭 이벤트
  */
 scwin.btn_search_onclick = function (e) {
-    if (!scwin.allDataPageInfo) {
+    console.log("=== 검색 시작 ===");
+    
+    // 헤더에서 직접 현재 선택된 값 가져오기
+    var headerWindow = $p.getComponentById("mf_pg_header");
+    if (headerWindow) {
+        var headerScwin = headerWindow.getWindow();
+        if (headerScwin && headerScwin.selectBoxProjectName) {
+            var currentSelectedProject = headerScwin.selectBoxProjectName.getValue();
+            console.log("헤더에서 직접 가져온 프로젝트 ID:", currentSelectedProject);
+            
+            if (currentSelectedProject) {
+                scwin.SELECTED_PROJECT_ID = currentSelectedProject;
+                
+                // 프로젝트명도 가져오기
+                var projectList = headerScwin.dlt_projectName;
+                if (projectList) {
+                    var projectName = projectList.getMatchedColumnData("pjtId", currentSelectedProject, "pjtName");
+                    scwin.SELECTED_PROJECT_NAME = projectName;
+                    console.log("프로젝트명:", scwin.SELECTED_PROJECT_NAME);
+                }
+            }
+        }
+    }
+    // 부모 윈도우 정보와 비교
+    var parentWindow = $p.getParentWindow();
+    if (parentWindow && parentWindow.scwin) {
+        console.log("부모 윈도우 프로젝트 ID:", parentWindow.scwin.SEL_PJT_ID);
+        console.log("헤더에서 가져온 프로젝트 ID:", scwin.SELECTED_PROJECT_ID);
+        
+        // 둘 중 더 최신 정보 사용 (헤더가 더 정확할 가능성 높음)
+        if (!scwin.SELECTED_PROJECT_ID && parentWindow.scwin.SEL_PJT_ID) {
+            scwin.SELECTED_PROJECT_ID = parentWindow.scwin.SEL_PJT_ID;
+        }
+    }
+    
+    console.log("최종 사용할 프로젝트 ID:", scwin.SELECTED_PROJECT_ID);
+    
+    if (!scwin.waitingPageInfo) {
         scwin.initPaginationInfo();
     }
 
-    // 프로젝트가 선택되지 않은 경우 조회하지 않음
+    // 프로젝트가 선택되지 않은 경우
     if (!scwin.SELECTED_PROJECT_ID) {
         console.log("프로젝트가 선택되지 않았습니다.");
+        // 데이터 초기화
+        dlt_waitingList.setJSON([]);
+        dlt_processingList.setJSON([]);
+        dlt_completedList.setJSON([]);
+        scwin.updateCountLabels(0, 0, 0, 0);
         return;
     }
 
+    // 검색 조건 설정 (최신 프로젝트 정보로)
     dmp_issVo.set("pageIndex", "1");
     dmp_issVo.set("pageSize", "1000");
     dmp_issVo.set("pjtId", scwin.SELECTED_PROJECT_ID);
@@ -500,7 +534,9 @@ scwin.btn_search_onclick = function (e) {
     
     console.log("검색 조건:", {
         pjtId: scwin.SELECTED_PROJECT_ID,
-        userId: scwin.USER_ID
+        userId: scwin.USER_ID,
+        pageIndex: "1",
+        pageSize: "1000"
     });
 
     $c.sbm.execute($p, sbm_selectIssVoList);
@@ -2143,6 +2179,330 @@ scwin.sbm_getFileList_submiterror = function(e) {
     $c.win.alert("파일 목록 조회 중 네트워크 오류가 발생했습니다.");
 };
 
+
+/**
+ * 엑셀 다운로드 버튼 클릭 이벤트
+ */
+scwin.btn_excel_download_onclick = function(e) {
+    // 프로젝트가 선택되지 않은 경우
+    if (!scwin.SELECTED_PROJECT_ID) {
+        $c.win.alert("프로젝트를 선택해주세요.");
+        return;
+    }
+    
+    // 데이터가 없는 경우
+    var totalCount = (scwin.waitingPageInfo ? scwin.waitingPageInfo.totalCount : 0) +
+                    (scwin.processingPageInfo ? scwin.processingPageInfo.totalCount : 0) +
+                    (scwin.completedPageInfo ? scwin.completedPageInfo.totalCount : 0);
+    
+    if (totalCount === 0) {
+        $c.win.alert("다운로드할 데이터가 없습니다.");
+        return;
+    }
+    
+    // 엑셀 다운로드 실행
+    scwin.downloadExcel();
+};
+
+/**
+ * 엑셀 다운로드 실행
+ */
+scwin.downloadExcel = function() {
+    try {
+        console.log("=== 엑셀 다운로드 시작 ===");
+        
+        // 모든 데이터 합치기
+        var allData = [];
+        
+        // 대기 데이터 추가
+        if (scwin.waitingPageInfo && scwin.waitingPageInfo.data) {
+            allData = allData.concat(scwin.waitingPageInfo.data);
+        }
+        
+        // 진행중 데이터 추가
+        if (scwin.processingPageInfo && scwin.processingPageInfo.data) {
+            allData = allData.concat(scwin.processingPageInfo.data);
+        }
+        
+        // 완료 데이터 추가
+        if (scwin.completedPageInfo && scwin.completedPageInfo.data) {
+            allData = allData.concat(scwin.completedPageInfo.data);
+        }
+        
+        console.log("총 다운로드 데이터 수:", allData.length);
+        
+        if (allData.length === 0) {
+            $c.win.alert("다운로드할 데이터가 없습니다.");
+            return;
+        }
+        
+        // 엑셀 데이터 변환
+        var excelData = scwin.convertToExcelData(allData);
+        
+        // 파일명 생성
+        var fileName = scwin.generateExcelFileName();
+        
+        // 엑셀 다운로드 실행
+        scwin.executeExcelDownload(excelData, fileName);
+        
+        console.log("=== 엑셀 다운로드 완료 ===");
+        
+    } catch (error) {
+        console.error("엑셀 다운로드 실패:", error);
+        $c.win.alert("엑셀 다운로드 중 오류가 발생했습니다.");
+    }
+};
+
+/**
+ * 데이터를 엑셀 형식으로 변환
+ * @param {Array} data - 원본 데이터
+ * @returns {Array} 엑셀용 데이터
+ */
+scwin.convertToExcelData = function(data) {
+    var excelData = [];
+    
+    // 헤더 추가
+    var headers = [
+        "번호",
+        "프로젝트명", 
+        "이슈/리스크명",
+        "작성자",
+        "상태",
+        "우선순위",
+        "완료예정일",
+        "해결일",
+        "등록일시",
+        "수정일시"
+    ];
+    excelData.push(headers);
+    
+    // 데이터 추가
+    for (var i = 0; i < data.length; i++) {
+        var item = data[i];
+        var row = [
+            i + 1, // 번호
+            item.pjtName || "", // 프로젝트명
+            item.name || "", // 이슈/리스크명
+            item.userName || "", // 작성자
+            scwin.getStatusText(item.status), // 상태
+            scwin.getPriorityText(item.priority), // 우선순위
+            scwin.formatDate(item.dueDate), // 완료예정일
+            scwin.formatDate(item.resolvedDate), // 해결일
+            scwin.formatDateTime(item.createdAt), // 등록일시
+            scwin.formatDateTime(item.updatedAt) // 수정일시
+        ];
+        excelData.push(row);
+    }
+    
+    return excelData;
+};
+
+/**
+ * 상태 코드를 텍스트로 변환
+ * @param {string} status - 상태 코드
+ * @returns {string} 상태 텍스트
+ */
+scwin.getStatusText = function(status) {
+    switch(status) {
+        case "PEN": return "대기";
+        case "IPR": return "진행중";
+        case "COM": return "완료";
+        default: return status || "";
+    }
+};
+
+/**
+ * 우선순위 코드를 텍스트로 변환
+ * @param {string} priority - 우선순위 코드
+ * @returns {string} 우선순위 텍스트
+ */
+scwin.getPriorityText = function(priority) {
+    switch(priority) {
+        case "CR": return "우선";
+        case "HI": return "높음";
+        case "MD": return "중간";
+        case "LO": return "낮음";
+        default: return priority || "";
+    }
+};
+
+/**
+ * 날짜 포맷팅 (YYYY-MM-DD)
+ * @param {string} dateString - 날짜 문자열
+ * @returns {string} 포맷된 날짜
+ */
+scwin.formatDate = function(dateString) {
+    if (!dateString) return "";
+    
+    try {
+        // 이미 YYYY-MM-DD 형식이면 그대로 반환
+        if (dateString.match(/^\d{4}-\d{2}-\d{2}$/)) {
+            return dateString;
+        }
+        
+        // 다른 형식이면 Date 객체로 변환 후 포맷팅
+        var date = new Date(dateString);
+        if (isNaN(date.getTime())) return dateString;
+        
+        var year = date.getFullYear();
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var day = String(date.getDate()).padStart(2, '0');
+        
+        return year + '-' + month + '-' + day;
+    } catch (e) {
+        return dateString;
+    }
+};
+
+/**
+ * 날짜시간 포맷팅 (YYYY-MM-DD HH:mm:ss)
+ * @param {string} dateTimeString - 날짜시간 문자열
+ * @returns {string} 포맷된 날짜시간
+ */
+scwin.formatDateTime = function(dateTimeString) {
+    if (!dateTimeString) return "";
+    
+    try {
+        // 이미 YYYY-MM-DD HH:mm:ss 형식이면 그대로 반환
+        if (dateTimeString.match(/^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$/)) {
+            return dateTimeString;
+        }
+        
+        // 다른 형식이면 Date 객체로 변환 후 포맷팅
+        var date = new Date(dateTimeString);
+        if (isNaN(date.getTime())) return dateTimeString;
+        
+        var year = date.getFullYear();
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var day = String(date.getDate()).padStart(2, '0');
+        var hours = String(date.getHours()).padStart(2, '0');
+        var minutes = String(date.getMinutes()).padStart(2, '0');
+        var seconds = String(date.getSeconds()).padStart(2, '0');
+        
+        return year + '-' + month + '-' + day + ' ' + hours + ':' + minutes + ':' + seconds;
+    } catch (e) {
+        return dateTimeString;
+    }
+};
+
+/**
+ * 엑셀 파일명 생성
+ * @returns {string} 파일명
+ */
+scwin.generateExcelFileName = function() {
+    var now = new Date();
+    var year = now.getFullYear();
+    var month = String(now.getMonth() + 1).padStart(2, '0');
+    var day = String(now.getDate()).padStart(2, '0');
+    var hours = String(now.getHours()).padStart(2, '0');
+    var minutes = String(now.getMinutes()).padStart(2, '0');
+    
+    var dateTimeStr = year + month + day + '_' + hours + minutes;
+    var projectName = scwin.SELECTED_PROJECT_NAME || "프로젝트";
+    
+    // 파일명에 사용할 수 없는 문자 제거
+    projectName = projectName.replace(/[<>:"/\\|?*]/g, '');
+    
+    return "이슈리스크관리_" + projectName + "_" + dateTimeStr + ".xlsx";
+};
+
+/**
+ * 실제 엑셀 다운로드 실행
+ * @param {Array} data - 엑셀 데이터
+ * @param {string} fileName - 파일명
+ */
+scwin.executeExcelDownload = function(data, fileName) {
+    try {
+        // WebSquare의 유틸리티 함수 사용 (만약 있다면)
+        if (typeof $c.util.exportExcel === 'function') {
+            $c.util.exportExcel(data, fileName);
+            return;
+        }
+        
+        // 대체 방법: CSV 형식으로 다운로드
+        scwin.downloadAsCSV(data, fileName.replace('.xlsx', '.csv'));
+        
+    } catch (error) {
+        console.error("엑셀 다운로드 실행 실패:", error);
+        // 마지막 대안: JSON 형태로 다운로드
+        scwin.downloadAsJSON(data, fileName.replace('.xlsx', '.json'));
+    }
+};
+
+/**
+ * CSV 형식으로 다운로드
+ * @param {Array} data - 데이터
+ * @param {string} fileName - 파일명
+ */
+scwin.downloadAsCSV = function(data, fileName) {
+    var csvContent = '';
+    
+    for (var i = 0; i < data.length; i++) {
+        var row = data[i];
+        var csvRow = '';
+        
+        for (var j = 0; j < row.length; j++) {
+            var cell = String(row[j] || '');
+            // CSV에서 특수문자 처리
+            if (cell.indexOf(',') !== -1 || cell.indexOf('"') !== -1 || cell.indexOf('\n') !== -1) {
+                cell = '"' + cell.replace(/"/g, '""') + '"';
+            }
+            csvRow += cell;
+            if (j < row.length - 1) csvRow += ',';
+        }
+        
+        csvContent += csvRow + '\n';
+    }
+    
+    // BOM 추가 (한글 깨짐 방지)
+    var bom = '\uFEFF';
+    var blob = new Blob([bom + csvContent], { type: 'text/csv;charset=utf-8;' });
+    
+    scwin.downloadBlob(blob, fileName);
+};
+
+/**
+ * JSON 형식으로 다운로드
+ * @param {Array} data - 데이터
+ * @param {string} fileName - 파일명
+ */
+scwin.downloadAsJSON = function(data, fileName) {
+    var jsonContent = JSON.stringify(data, null, 2);
+    var blob = new Blob([jsonContent], { type: 'application/json;charset=utf-8;' });
+    
+    scwin.downloadBlob(blob, fileName);
+};
+
+/**
+ * Blob 파일 다운로드
+ * @param {Blob} blob - 다운로드할 Blob
+ * @param {string} fileName - 파일명
+ */
+scwin.downloadBlob = function(blob, fileName) {
+    try {
+        if (window.navigator && window.navigator.msSaveOrOpenBlob) {
+            // IE 지원
+            window.navigator.msSaveOrOpenBlob(blob, fileName);
+        } else {
+            // 다른 브라우저
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = fileName;
+            link.style.display = 'none';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(link.href);
+        }
+        
+        console.log("파일 다운로드 완료:", fileName);
+        
+    } catch (error) {
+        console.error("파일 다운로드 실패:", error);
+        $c.win.alert("파일 다운로드에 실패했습니다.");
+    }
+};
+
 /************************** 스크립트 끝 **************************/]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">
@@ -2203,21 +2563,27 @@ scwin.sbm_getFileList_submiterror = function(e) {
 					</xf:group>
 				</xf:group>
 				<xf:group class="btn_schbox" id="" style="">
-					<xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_search" style="" type="button"
-						ev:onclick="scwin.btn_search_onclick" localeRef="COMMON_BUTTON_00001">
-						<xf:label><![CDATA[조회]]></xf:label>
-					</xf:trigger>
-                     <xf:trigger class="btn_cm" disabled="" escape="false" id="btn_refresh_project" 
+                    <xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_search" style="" type="button"
+                        ev:onclick="scwin.btn_search_onclick" localeRef="COMMON_BUTTON_00001">
+                        <xf:label><![CDATA[조회]]></xf:label>
+                    </xf:trigger>
+                    <xf:trigger class="btn_cm" disabled="" escape="false" id="btn_refresh_project" 
                         style="background: #17a2b8; color: white; border: 1px solid #17a2b8;" type="button"
                         ev:onclick="scwin.btn_refresh_project_onclick">
                         <xf:label><![CDATA[프로젝트 새로고침]]></xf:label>
                     </xf:trigger>
-					<xf:trigger class="" disabled="" escape="false" id="reg_btn" localeRef="COMMON_BUTTON_00001"
-						style="background: linear-gradient(to bottom, #5cb85c 0%, #449d44 100%); color: white; border: 1px solid #4cae4c; padding: 8px 16px; font-size: 12px;  height: 30px; border-radius: 3px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 70px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);border-radius: 4px;"
-						type="button" ev:onclick="scwin.reg_btn_onclick">
-						<xf:label><![CDATA[등록]]></xf:label>
-					</xf:trigger>
-				</xf:group>
+                    <!-- 엑셀 다운로드 버튼 추가 -->
+                    <xf:trigger class="btn_cm" disabled="" escape="false" id="btn_excel_download" 
+                        style="background: #28a745; color: white; border: 1px solid #28a745;" type="button"
+                        ev:onclick="scwin.btn_excel_download_onclick">
+                        <xf:label><![CDATA[엑셀 다운로드]]></xf:label>
+                    </xf:trigger>
+                    <xf:trigger class="" disabled="" escape="false" id="reg_btn" localeRef="COMMON_BUTTON_00001"
+                        style="background: linear-gradient(to bottom, #5cb85c 0%, #449d44 100%); color: white; border: 1px solid #4cae4c; padding: 8px 16px; font-size: 12px;  height: 30px; border-radius: 3px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 70px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);border-radius: 4px;"
+                        type="button" ev:onclick="scwin.reg_btn_onclick">
+                        <xf:label><![CDATA[등록]]></xf:label>
+                    </xf:trigger>
+                </xf:group>
 			</xf:group>
 			<xf:group style="margin-bottom:10px;">
 				<xf:trigger id="btn_register"
@@ -2230,7 +2596,7 @@ scwin.sbm_getFileList_submiterror = function(e) {
 				</xf:trigger>
 			</xf:group>
 
-			<xf:group class="titbox" id="all_count" style="display: none;">
+			<xf:group class="titbox" id="all_count" style="">
 				<xf:group class="count" id="">
 					<w2:span id="" label="총" localeRef="COMMON_LABEL_00002" style=""></w2:span>
 					<w2:span class="num" id="spn_listCnt" label="0" ref="" style=""></w2:span>
@@ -2238,7 +2604,7 @@ scwin.sbm_getFileList_submiterror = function(e) {
 				</xf:group>
 			</xf:group>
 
-			<xf:group adaptiveThreshold="" class="gvwbox" id="" style="display: none;">
+			<xf:group adaptiveThreshold="" class="gvwbox" id="" style="">
 				<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dlt_issVoList"
 					defaultCellHeight="26" focusMode="row" id="grd_list" scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;"
 					visibleRowNum="10" ev:oncellclick="scwin.grd_list_oncellclick" readOnly="true" ev:oncelldblclick="scwin.grd_list_oncelldblclick">
@@ -2292,7 +2658,7 @@ scwin.sbm_getFileList_submiterror = function(e) {
 					</w2:gBody>
 				</w2:gridView>
 			</xf:group>
-			<xf:group class="pglbox" id="all_pgl" style="display:none;">
+			<xf:group class="pglbox" id="all_pgl" style="">
 				<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_issList" pageSize="5" pagingType="0" style=""
 					ev:onclick="scwin.pgl_issList_onclick">
 				</w2:pageList>

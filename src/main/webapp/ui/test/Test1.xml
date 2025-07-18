@@ -8,22 +8,55 @@
 		<w2:MSA />
 		<xf:model>
 			<w2:dataCollection baseNode="map">
-				<!-- 검색 조건 -->
-				<w2:dataMap baseNode="map" id="dmp_search" style="">
-					<w2:keyInfo>
-						<w2:key dataType="text" id="searchTaskId" name="업무ID"></w2:key>
-						<w2:key dataType="text" id="searchTestStatus" name="테스트상태"></w2:key>
-						<w2:key dataType="text" id="searchAssignee" name="담당자"></w2:key>
-						<w2:key dataType="text" id="searchTestCaseName" name="테스트케이스명"></w2:key>
-						<w2:key dataType="text" id="searchTestTarget" name="테스트대상"></w2:key>
-						<w2:key dataType="text" id="searchTestType" name="테스트타입"></w2:key>
-						<w2:key dataType="text" id="searchPriority" name="우선순위"></w2:key>
-						<w2:key dataType="text" id="dateFrom" name="시작일"></w2:key>
-						<w2:key dataType="text" id="dateTo" name="종료일"></w2:key>
-						<w2:key dataType="text" id="pageIndex" name="페이지번호" defaultValue="1"></w2:key>
-						<w2:key dataType="text" id="pageSize" name="페이지사이즈" defaultValue="10"></w2:key>
-					</w2:keyInfo>
-				</w2:dataMap>
+                <w2:dataList baseNode="list" id="dlt_successList" repeatNode="map" saveRemovedData="true">
+                    <w2:columnInfo>
+                        <w2:column dataType="text" id="testCaseId" name="테스트케이스ID"></w2:column>
+                        <w2:column dataType="text" id="taskId" name="업무ID"></w2:column>
+                        <w2:column dataType="text" id="taskName" name="업무명"></w2:column>
+                        <w2:column dataType="text" id="testCaseName" name="테스트케이스명"></w2:column>
+                        <w2:column dataType="text" id="testTarget" name="테스트대상"></w2:column>
+                        <w2:column dataType="text" id="testType" name="테스트타입"></w2:column>
+                        <w2:column dataType="text" id="priority" name="우선순위"></w2:column>
+                        <w2:column dataType="text" id="assignee" name="담당자"></w2:column>
+                        <w2:column dataType="text" id="executionDate" name="실행일시"></w2:column>
+                        <w2:column dataType="text" id="duration" name="소요시간"></w2:column>
+                        <w2:column dataType="text" id="testTypeName" name="테스트타입명"></w2:column>
+                        <w2:column dataType="text" id="priorityName" name="우선순위명"></w2:column>
+                    </w2:columnInfo>
+                </w2:dataList>
+
+                <w2:dataList baseNode="list" id="dlt_failList" repeatNode="map" saveRemovedData="true">
+                    <w2:columnInfo>
+                        <w2:column dataType="text" id="testCaseId" name="테스트케이스ID"></w2:column>
+                        <w2:column dataType="text" id="taskId" name="업무ID"></w2:column>
+                        <w2:column dataType="text" id="taskName" name="업무명"></w2:column>
+                        <w2:column dataType="text" id="testCaseName" name="테스트케이스명"></w2:column>
+                        <w2:column dataType="text" id="testTarget" name="테스트대상"></w2:column>
+                        <w2:column dataType="text" id="testType" name="테스트타입"></w2:column>
+                        <w2:column dataType="text" id="priority" name="우선순위"></w2:column>
+                        <w2:column dataType="text" id="assignee" name="담당자"></w2:column>
+                        <w2:column dataType="text" id="executionDate" name="실행일시"></w2:column>
+                        <w2:column dataType="text" id="duration" name="소요시간"></w2:column>
+                        <w2:column dataType="text" id="testTypeName" name="테스트타입명"></w2:column>
+                        <w2:column dataType="text" id="priorityName" name="우선순위명"></w2:column>
+                    </w2:columnInfo>
+                </w2:dataList>
+                <w2:dataMap baseNode="map" id="dmp_search" style="">
+                    <w2:keyInfo>
+                        <w2:key dataType="text" id="searchTaskId" name="업무ID"></w2:key>
+                        <w2:key dataType="text" id="searchTestStatus" name="테스트상태"></w2:key>
+                        <w2:key dataType="text" id="searchAssignee" name="담당자"></w2:key>
+                        <w2:key dataType="text" id="searchTestCaseName" name="테스트케이스명"></w2:key>
+                        <w2:key dataType="text" id="searchTestTarget" name="테스트대상"></w2:key>
+                        <w2:key dataType="text" id="searchTestType" name="테스트타입"></w2:key>
+                        <w2:key dataType="text" id="searchPriority" name="우선순위"></w2:key>
+                        <w2:key dataType="text" id="dateFrom" name="시작일"></w2:key>
+                        <w2:key dataType="text" id="dateTo" name="종료일"></w2:key>
+                        <w2:key dataType="text" id="pageIndex" name="페이지번호" defaultValue="1"></w2:key>
+                        <w2:key dataType="text" id="pageSize" name="페이지사이즈" defaultValue="10"></w2:key>
+                        <w2:key dataType="text" id="pjt_id" name="프로젝트ID"></w2:key>
+                    </w2:keyInfo>
+                </w2:dataMap>
 
 				<!-- 메인 테스트 목록 -->
 				<w2:dataList baseNode="list" id="dlt_unitTestVoList" repeatNode="map" saveRemovedData="true">
@@ -57,33 +90,34 @@
 
 				<!-- 테스트 케이스 상세 정보 -->
 				<w2:dataMap baseNode="map" id="dmp_unitTestDetail" style="">
-					<w2:keyInfo>
-						<w2:key dataType="text" id="testCaseId" name="테스트케이스ID"></w2:key>
-						<w2:key dataType="text" id="taskId" name="업무ID" defaultValue="1"></w2:key>
-						<w2:key dataType="text" id="taskName" name="업무명" defaultValue="ERP 시스템 고도화 프로젝트"></w2:key>
-						<w2:key dataType="text" id="testCaseName" name="테스트케이스명"></w2:key>
-						<w2:key dataType="text" id="testTarget" name="테스트대상"></w2:key>
-						<w2:key dataType="text" id="testType" name="테스트타입" defaultValue="NORMAL"></w2:key>
-						<w2:key dataType="text" id="priority" name="우선순위" defaultValue="MEDIUM"></w2:key>
-						<w2:key dataType="text" id="description" name="테스트설명"></w2:key>
-						<w2:key dataType="text" id="precondition" name="전제조건"></w2:key>
-						<w2:key dataType="text" id="testData" name="테스트데이터"></w2:key>
-						<w2:key dataType="text" id="testSteps" name="실행단계"></w2:key>
-						<w2:key dataType="text" id="expectedResult" name="예상결과"></w2:key>
-						<w2:key dataType="text" id="actualResult" name="실제결과"></w2:key>
-						<w2:key dataType="text" id="testStatus" name="테스트상태" defaultValue="PEN"></w2:key>
-						<w2:key dataType="text" id="executionDate" name="실행일시"></w2:key>
-						<w2:key dataType="text" id="duration" name="소요시간"></w2:key>
-						<w2:key dataType="text" id="notes" name="비고"></w2:key>
-						<w2:key dataType="text" id="requirements" name="연관요구사항"></w2:key>
-						<w2:key dataType="text" id="assignee" name="담당자" defaultValue="김개발"></w2:key>
-						<w2:key dataType="text" id="isDeleted" name="삭제여부"></w2:key>
-						<w2:key dataType="text" id="createdAt" name="생성일시"></w2:key>
-						<w2:key dataType="text" id="updatedAt" name="수정일시"></w2:key>
-						<w2:key dataType="text" id="createdBy" name="생성자"></w2:key>
-						<w2:key dataType="text" id="updatedBy" name="수정자"></w2:key>
-					</w2:keyInfo>
-				</w2:dataMap>
+                    <w2:keyInfo>    
+                        <w2:key dataType="text" id="testCaseId" name="테스트케이스ID"></w2:key>
+                        <w2:key dataType="text" id="taskId" name="업무ID" defaultValue="1"></w2:key>
+                        <w2:key dataType="text" id="taskName" name="업무명" defaultValue="ERP 시스템 고도화 프로젝트"></w2:key>
+                        <w2:key dataType="text" id="testCaseName" name="테스트케이스명"></w2:key>
+                        <w2:key dataType="text" id="testTarget" name="테스트대상"></w2:key>
+                        <w2:key dataType="text" id="testType" name="테스트타입" defaultValue="NORMAL"></w2:key>
+                        <w2:key dataType="text" id="priority" name="우선순위" defaultValue="MEDIUM"></w2:key>
+                        <w2:key dataType="text" id="description" name="테스트설명"></w2:key>
+                        <w2:key dataType="text" id="precondition" name="전제조건"></w2:key>
+                        <w2:key dataType="text" id="testData" name="테스트데이터"></w2:key>
+                        <w2:key dataType="text" id="testSteps" name="실행단계"></w2:key>
+                        <w2:key dataType="text" id="expectedResult" name="예상결과"></w2:key>
+                        <w2:key dataType="text" id="actualResult" name="실제결과"></w2:key>
+                        <w2:key dataType="text" id="testStatus" name="테스트상태" defaultValue="PEN"></w2:key>
+                        <w2:key dataType="text" id="executionDate" name="실행일시"></w2:key>
+                        <w2:key dataType="text" id="duration" name="소요시간"></w2:key>
+                        <w2:key dataType="text" id="notes" name="비고"></w2:key>
+                        <w2:key dataType="text" id="requirements" name="연관요구사항"></w2:key>
+                        <w2:key dataType="text" id="assignee" name="담당자" defaultValue="1"></w2:key>
+                        <w2:key dataType="text" id="isDeleted" name="삭제여부"></w2:key>
+                        <w2:key dataType="text" id="createdAt" name="생성일시"></w2:key>
+                        <w2:key dataType="text" id="updatedAt" name="수정일시"></w2:key>
+                        <w2:key dataType="text" id="createdBy" name="생성자"></w2:key>
+                        <w2:key dataType="text" id="updatedBy" name="수정자"></w2:key>
+                        <w2:key dataType="text" id="pjt_id" name="프로젝트ID"></w2:key>
+                    </w2:keyInfo>
+                </w2:dataMap>
 
 				<!-- 파일 관리 관련 dataMap -->
 				<w2:dataList baseNode="list" repeatNode="map" id="dlt_attVoList" saveRemovedData="true">
@@ -338,21 +372,267 @@
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
 				processMsg="결과를 업데이트 중입니다." ev:submit="" ev:submitdone="scwin.sbm_updateTestResult_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
+
+            <xf:submission id="sbm_selectUnitTestListByProject" 
+                ref='data:json,{"id":"dmp_search","key":"unitTestVo"}'
+                target='data:json,{"id":"dlt_unitTestVoList","key":"unitTestVoList"}' 
+                action="/InsWebApp/UNIT001ListByProject.pwkjson" 
+                method="post"
+                mediatype="application/json" 
+                encoding="UTF-8" 
+                mode="asynchronous"
+                processMsg="프로젝트별 단위테스트 케이스 리스트를 조회 중입니다." 
+                ev:submitdone="scwin.sbm_selectUnitTestListByProject_submitdone">
+            </xf:submission>
+
+            <xf:submission id="sbm_selectUnitTestStatisticsByProject" 
+                ref='data:json,{"id":"dmp_search","key":"searchCondition"}'
+                target='data:json,{"id":"dmp_statistics","key":"elData"}' 
+                action="/InsWebApp/UNIT001StatisticsByProject.pwkjson" 
+                method="post"
+                mediatype="application/json" 
+                encoding="UTF-8" 
+                mode="asynchronous"
+                processMsg="프로젝트별 통계를 조회 중입니다." 
+                ev:submitdone="scwin.sbm_selectUnitTestStatisticsByProject_submitdone">
+            </xf:submission>
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
 		<w2:publicInfo method="" />
-		<script lazy="false" type="text/javascript"><![CDATA[
+		<script lazy="false" type="text/javascript"><![CDATA[scwin.CURRENT_PROJECT_ID = "";
+scwin.CURRENT_USER_ID = "";
+
+
 scwin.onpageload = function() {
     // 초기화
     scwin.initializeData();
     
-    // 기본 데이터 조회
-    scwin.searchUnitTests();
-    console.log("시시시작")
-    // 통계 조회
-    scwin.loadStatistics();
-
+    // 사용자 ID 가져오기
+    scwin.getCurrentUserId();
     
+    // 부모 창에서 프로젝트 ID 가져오기
+    scwin.getProjectIdFromParent();
+    
+    console.log("시시시작")
+};
+
+/**
+ * 현재 사용자 ID 가져오기
+ */
+scwin.getCurrentUserId = function() {
+    try {
+        // 쿠키에서 사용자 ID 가져오기
+        scwin.CURRENT_USER_ID = WebSquare.cookie.getCookie("usrId");
+        
+        // 쿠키가 없으면 헤더에서 가져오기
+        if (!scwin.CURRENT_USER_ID) {
+            var headerWindow = $p.getParentWindow();
+            if (headerWindow && headerWindow.scwin && headerWindow.scwin.USER_ID) {
+                scwin.CURRENT_USER_ID = headerWindow.scwin.USER_ID;
+            }
+        }
+        
+        // 그래도 없으면 기본값 설정
+        if (!scwin.CURRENT_USER_ID) {
+            scwin.CURRENT_USER_ID = "1"; // 기본값
+        }
+        
+        console.log("현재 사용자 ID:", scwin.CURRENT_USER_ID);
+        return scwin.CURRENT_USER_ID;
+    } catch (e) {
+        console.error("사용자 ID 가져오기 실패:", e);
+        scwin.CURRENT_USER_ID = "1"; // 기본값
+        return scwin.CURRENT_USER_ID;
+    }
+};
+
+/**
+ * 부모 창에서 프로젝트 ID 가져오기
+ */
+scwin.getProjectIdFromParent = function() {
+    try {
+        var parentWindow = $p.getParentWindow();
+        if (parentWindow && parentWindow.scwin && parentWindow.scwin.SEL_PJT_ID) {
+            scwin.CURRENT_PROJECT_ID = parentWindow.scwin.SEL_PJT_ID;
+            console.log("현재 선택된 프로젝트 ID: " + scwin.CURRENT_PROJECT_ID);
+            
+            // 프로젝트가 선택되어 있으면 해당 프로젝트 테스트 조회
+            if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+                scwin.searchUnitTestsByProject();
+                scwin.loadStatisticsByProject();
+            }
+        } else {
+            console.log("부모 창에서 프로젝트 ID를 찾을 수 없습니다.");
+        }
+    } catch (e) {
+        console.error("부모 창에서 프로젝트 ID 가져오기 실패:", e);
+    }
+};
+
+/**
+ * 프로젝트별 단위테스트 목록 조회
+ */
+scwin.searchUnitTestsByProject = function() {
+    if (!scwin.CURRENT_PROJECT_ID || scwin.CURRENT_PROJECT_ID === "") {
+        console.log("프로젝트 ID가 없어 일반 조회를 실행합니다.");
+        scwin.searchUnitTests();
+        return;
+    }
+    
+    console.log("프로젝트별 단위테스트 목록 조회 시작: " + scwin.CURRENT_PROJECT_ID);
+    
+    // 프로젝트 ID 설정 - 중요: pjt_id로 설정
+    dmp_search.set("pjt_id", scwin.CURRENT_PROJECT_ID);
+    dmp_search.set("pageIndex", "1");
+    dmp_search.set("pageSize", "1000");
+    
+    // 디버깅을 위한 로그 추가
+    console.log("검색 조건:", dmp_search.getJSON());
+    
+    // 서버 통신
+    $c.sbm.execute($p, sbm_selectUnitTestListByProject);
+};
+
+/**
+ * 프로젝트별 단위테스트 목록 조회 완료
+ */
+scwin.sbm_selectUnitTestListByProject_submitdone = function(e) {
+    console.log("프로젝트별 단위테스트 목록 조회 완료", e);
+    
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+    
+    // 에러 처리
+    if (!elHeader || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드: ${elHeader.resCode}\n에러메시지: ${elHeader.resMsg}`);
+        return false;
+    }
+    
+    // 데이터 처리
+    var allData = elData.unitTestList || [];
+    var totalCount = elData.totalCount || 0;
+    
+    console.log("프로젝트별 전체 데이터:", allData.length, "개");
+    console.log("프로젝트별 총 개수:", totalCount);
+    
+    // 데이터 분류 및 그리드 업데이트
+    scwin.processTestData(allData, totalCount);
+};
+
+/**
+ * 테스트 데이터 처리 (4개 그리드용)
+ */
+scwin.processTestData = function(allData, totalCount) {
+    // 데이터 저장
+    scwin.allDataPageInfo.data = allData;
+    scwin.allDataPageInfo.totalCount = totalCount;
+    
+    // 상태별 데이터 필터링 (4개로 분리)
+    var pendingData = [];
+    var runningData = [];
+    var successData = [];
+    var failData = [];
+    
+    for (var i = 0; i < allData.length; i++) {
+        var item = allData[i];
+        
+        // 테스트 타입명, 우선순위명 추가
+        item.testTypeName = scwin.getTestTypeName(item.testType);
+        item.priorityName = scwin.getPriorityName(item.priority);
+        
+        // 상태별 분류
+        if (item.testStatus === "PEN") {
+            pendingData.push(item);
+        } else if (item.testStatus === "RUN") {
+            runningData.push(item);
+        } else if (item.testStatus === "SUC") {
+            successData.push(item);
+        } else if (item.testStatus === "FAI") {
+            failData.push(item);
+        }
+    }
+    
+    // 상태별 데이터 저장
+    scwin.pendingPageInfo.data = pendingData;
+    scwin.pendingPageInfo.totalCount = pendingData.length;
+    scwin.runningPageInfo.data = runningData;
+    scwin.runningPageInfo.totalCount = runningData.length;
+    scwin.successPageInfo.data = successData;
+    scwin.successPageInfo.totalCount = successData.length;
+    scwin.failPageInfo.data = failData;
+    scwin.failPageInfo.totalCount = failData.length;
+    
+    // 그리드 데이터 업데이트
+    scwin.updateGridData();
+    
+    // 카운트 업데이트
+    scwin.updateCountLabels(totalCount, pendingData.length, runningData.length, successData.length, failData.length);
+    
+    // 페이징 업데이트
+    scwin.updatePagination();
+};
+
+/**
+ * 테스트 타입명 변환
+ */
+scwin.getTestTypeName = function(testType) {
+    switch(testType) {
+        case "NORMAL": return "정상케이스";
+        case "BOUNDARY": return "경계값";
+        case "EXCEPTION": return "예외처리";
+        case "PERFORMANCE": return "성능";
+        default: return testType;
+    }
+};
+
+/**
+ * 우선순위명 변환
+ */
+scwin.getPriorityName = function(priority) {
+    switch(priority) {
+        case "HIGH": return "높음";
+        case "MEDIUM": return "보통";
+        case "LOW": return "낮음";
+        default: return priority;
+    }
+};
+
+
+/**
+ * 프로젝트별 통계 조회
+ */
+scwin.loadStatisticsByProject = function() {
+    if (!scwin.CURRENT_PROJECT_ID || scwin.CURRENT_PROJECT_ID === "") {
+        console.log("프로젝트 ID가 없어 일반 통계 조회를 실행합니다.");
+        scwin.loadStatistics();
+        return;
+    }
+    
+    console.log("프로젝트별 통계 조회 시작: " + scwin.CURRENT_PROJECT_ID);
+    
+    // 프로젝트 검색 조건 설정
+    dmp_search.set("pjtId", scwin.CURRENT_PROJECT_ID);
+    $c.sbm.execute($p, sbm_selectUnitTestStatisticsByProject);
+};
+
+/**
+ * 프로젝트별 통계 조회 완료
+ */
+scwin.sbm_selectUnitTestStatisticsByProject_submitdone = function(e) {
+    console.log("프로젝트별 통계 조회 완료", e);
+    
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+    
+    if (!elHeader || elHeader.resSuc == false) {
+        console.error("프로젝트별 통계 조회 실패:", elHeader ? elHeader.resMsg : "알 수 없는 오류");
+        return;
+    }
+    
+    // 통계 데이터 설정
+    dmp_statistics.setJSON(elData);
+    
+    console.log("프로젝트별 통계 정보:", elData);
 };
 
 /**
@@ -365,34 +645,12 @@ scwin.initializeData = function() {
     dmp_search.set("pageIndex", "1");
     dmp_search.set("pageSize", "10");
     
-    // 페이징 정보 초기화
-    scwin.allDataPageInfo = {
-        currentPage: 1,
-        pageSize: 10,
-        totalCount: 0,
-        data: []
-    };
-    
-    scwin.pendingPageInfo = {
-        currentPage: 1,
-        pageSize: 10,
-        totalCount: 0,
-        data: []
-    };
-    
-    scwin.runningPageInfo = {
-        currentPage: 1,
-        pageSize: 10,
-        totalCount: 0,
-        data: []
-    };
-    
-    scwin.completedPageInfo = {
-        currentPage: 1,
-        pageSize: 10,
-        totalCount: 0,
-        data: []
-    };
+    // 페이징 정보 초기화 (4개 그리드용)
+    scwin.allDataPageInfo = { currentPage: 1, pageSize: 10, totalCount: 0, data: [] };
+    scwin.pendingPageInfo = { currentPage: 1, pageSize: 10, totalCount: 0, data: [] };
+    scwin.runningPageInfo = { currentPage: 1, pageSize: 10, totalCount: 0, data: [] };
+    scwin.successPageInfo = { currentPage: 1, pageSize: 10, totalCount: 0, data: [] };
+    scwin.failPageInfo = { currentPage: 1, pageSize: 10, totalCount: 0, data: [] };
     
     // 검색 박스 표시 여부
     var searchComp = $p.getComponentById("searchComp_1");
@@ -403,19 +661,33 @@ scwin.initializeData = function() {
     console.log("데이터 초기화 완료");
 };
 
+
 /**
  * 단위테스트 목록 조회
  */
-scwin.searchUnitTests = function() {
-    console.log("단위테스트 목록 조회 시작");
+scwin.sbm_selectUnitTestList_submitdone = function(e) {
+    console.log("단위테스트 목록 조회 완료", e);
     
-    // 검색 조건 설정
-    dmp_search.set("pageIndex", "1");
-    dmp_search.set("pageSize", "1000"); // 전체 데이터 조회
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
     
-    // 서버 통신
-    $c.sbm.execute($p, sbm_selectUnitTestList);
+    // 에러 처리
+    if (!elHeader || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드: ${elHeader.resCode}\n에러메시지: ${elHeader.resMsg}`);
+        return false;
+    }
+    
+    // 데이터 처리
+    var allData = elData.unitTestList || [];
+    var totalCount = elData.totalCount || 0;
+    
+    console.log("전체 데이터:", allData.length, "개");
+    console.log("총 개수:", totalCount);
+    
+    // 데이터 분류 및 그리드 업데이트
+    scwin.processTestData(allData, totalCount);
 };
+
 
 /**
  * 단위테스트 목록 조회 완료
@@ -484,19 +756,22 @@ scwin.updateGridData = function() {
     console.log("그리드 데이터 업데이트 시작");
     
     try {
-        // 전체 데이터 그리드 (첫 페이지)
+        // 전체 데이터 그리드
         var allPageData = scwin.getPageData(scwin.allDataPageInfo.data, scwin.allDataPageInfo);
         dlt_unitTestVoList.setJSON(allPageData);
         
-        // 상태별 그리드
+        // 상태별 그리드 (4개)
         var pendingPageData = scwin.getPageData(scwin.pendingPageInfo.data, scwin.pendingPageInfo);
         dlt_pendingList.setJSON(pendingPageData);
         
         var runningPageData = scwin.getPageData(scwin.runningPageInfo.data, scwin.runningPageInfo);
         dlt_runningList.setJSON(runningPageData);
         
-        var completedPageData = scwin.getPageData(scwin.completedPageInfo.data, scwin.completedPageInfo);
-        dlt_completedList.setJSON(completedPageData);
+        var successPageData = scwin.getPageData(scwin.successPageInfo.data, scwin.successPageInfo);
+        dlt_successList.setJSON(successPageData);
+        
+        var failPageData = scwin.getPageData(scwin.failPageInfo.data, scwin.failPageInfo);
+        dlt_failList.setJSON(failPageData);
         
         console.log("그리드 데이터 업데이트 완료");
     } catch (err) {
@@ -520,12 +795,13 @@ scwin.getPageData = function(data, pageInfo) {
 /**
  * 카운트 라벨 업데이트
  */
-scwin.updateCountLabels = function(total, pending, running, completed) {
+scwin.updateCountLabels = function(total, pending, running, success, fail) {
     try {
         spn_listCnt.setLabel(total);
         spn_pendingListCnt.setLabel(pending);
         spn_runningListCnt.setLabel(running);
-        spn_completedListCnt.setLabel(completed);
+        spn_successListCnt.setLabel(success);
+        spn_failListCnt.setLabel(fail);
     } catch (e) {
         console.error("카운트 라벨 업데이트 오류:", e);
     }
@@ -543,15 +819,17 @@ scwin.updatePagination = function() {
             pgl_testList.setSelectedIndex(1);
         }
         
-        // 상태별 페이징
+        // 상태별 페이징 (4개)
         scwin.updateStatePagination(scwin.pendingPageInfo, pgl_pending);
         scwin.updateStatePagination(scwin.runningPageInfo, pgl_running);
-        scwin.updateStatePagination(scwin.completedPageInfo, pgl_completed);
+        scwin.updateStatePagination(scwin.successPageInfo, pgl_success);
+        scwin.updateStatePagination(scwin.failPageInfo, pgl_fail);
         
     } catch (e) {
         console.error("페이징 업데이트 오류:", e);
     }
 };
+
 
 /**
  * 상태별 페이징 업데이트
@@ -593,7 +871,7 @@ scwin.sbm_selectUnitTestStatistics_submitdone = function(e) {
 };
 
 /**
- * 조회 버튼 클릭
+ * 조회 버튼 클릭 (프로젝트 필터링 적용)
  */
 scwin.btn_search_onclick = function(e) {
     console.log("조회 버튼 클릭");
@@ -604,12 +882,19 @@ scwin.btn_search_onclick = function(e) {
     scwin.runningPageInfo.currentPage = 1;
     scwin.completedPageInfo.currentPage = 1;
     
-    // 검색 실행
-    scwin.searchUnitTests();
+    // 프로젝트가 선택되어 있으면 프로젝트별 검색, 아니면 일반 검색
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        scwin.searchUnitTestsByProject();
+    } else {
+        scwin.searchUnitTests();
+    }
 };
 
 /**
  * 등록 버튼 클릭
+ */
+/**
+ * 등록 버튼 클릭 (assignee를 userId로 설정)
  */
 scwin.btn_register_onclick = function(e) {
     console.log("등록 버튼 클릭");
@@ -617,13 +902,18 @@ scwin.btn_register_onclick = function(e) {
     // 데이터 초기화
     dmp_unitTestDetail.setEmptyValue();
     
-    // 기본값 설정
+    // 기본값 설정 (assignee를 현재 사용자 ID로 설정)
     dmp_unitTestDetail.set("testStatus", "PEN");
     dmp_unitTestDetail.set("priority", "MEDIUM");
     dmp_unitTestDetail.set("testType", "NORMAL");
     dmp_unitTestDetail.set("taskId", "1");
     dmp_unitTestDetail.set("taskName", "ERP 시스템 고도화 프로젝트");
-    dmp_unitTestDetail.set("assignee", "김개발");
+    dmp_unitTestDetail.set("assignee", scwin.CURRENT_USER_ID); // 현재 사용자 ID로 설정
+    
+    // 프로젝트 ID 설정
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        dmp_unitTestDetail.set("pjt_id", scwin.CURRENT_PROJECT_ID);
+    }
     
     // 파일 목록 초기화
     dlt_upload.setJSON([]);
@@ -885,7 +1175,13 @@ scwin.sbm_insertUnitTest_submitdone = function(e) {
     
     $c.win.alert("등록되었습니다.");
     pop_overlay.hide();
-    scwin.searchUnitTests();
+    
+    // 프로젝트가 선택되어 있으면 프로젝트별 조회, 아니면 일반 조회
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        scwin.searchUnitTestsByProject();
+    } else {
+        scwin.searchUnitTests();
+    }
 };
 
 /**
@@ -929,7 +1225,13 @@ scwin.sbm_updateUnitTest_submitdone = function(e) {
     
     $c.win.alert("수정되었습니다.");
     scwin.setFormMode("view");
-    scwin.searchUnitTests();
+    
+    // 프로젝트가 선택되어 있으면 프로젝트별 조회, 아니면 일반 조회
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        scwin.searchUnitTestsByProject();
+    } else {
+        scwin.searchUnitTests();
+    }
 };
 
 /**
@@ -968,7 +1270,13 @@ scwin.sbm_deleteUnitTest_submitdone = function(e) {
     
     $c.win.alert("삭제되었습니다.");
     pop_overlay.hide();
-    scwin.searchUnitTests();
+    
+    // 프로젝트가 선택되어 있으면 프로젝트별 조회, 아니면 일반 조회
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        scwin.searchUnitTestsByProject();
+    } else {
+        scwin.searchUnitTests();
+    }
 };
 
 /**
@@ -1626,7 +1934,13 @@ scwin.sbm_updateTestStatus_submitdone = function(e) {
     }
     
     $c.win.alert("상태가 업데이트되었습니다.");
-    scwin.searchUnitTests();
+    
+    // 프로젝트가 선택되어 있으면 프로젝트별 조회, 아니면 일반 조회
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        scwin.searchUnitTestsByProject();
+    } else {
+        scwin.searchUnitTests();
+    }
 };
 
 /**
@@ -1658,7 +1972,32 @@ scwin.sbm_updateTestResult_submitdone = function(e) {
     }
     
     $c.win.alert("결과가 업데이트되었습니다.");
-    scwin.searchUnitTests();
+    
+    // 프로젝트가 선택되어 있으면 프로젝트별 조회, 아니면 일반 조회
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        scwin.searchUnitTestsByProject();
+    } else {
+        scwin.searchUnitTests();
+    }
+};
+
+/**
+ * 프로젝트 변경 시 호출되는 함수 (부모 창에서 호출)
+ */
+scwin.onProjectChange = function(projectId) {
+    console.log("프로젝트 변경 이벤트 수신:", projectId);
+    
+    scwin.CURRENT_PROJECT_ID = projectId;
+    
+    if (projectId && projectId !== "") {
+        // 프로젝트가 선택되면 해당 프로젝트의 테스트 조회
+        scwin.searchUnitTestsByProject();
+        scwin.loadStatisticsByProject();
+    } else {
+        // 프로젝트가 선택 해제되면 일반 조회
+        scwin.searchUnitTests();
+        scwin.loadStatistics();
+    }
 };
 
 /**
@@ -1926,151 +2265,205 @@ console.log("Test1.xml 스크립트 로드 완료");
 				</w2:pageList>
 			</xf:group>
 
-			<!-- 상태별 그리드 섹션 -->
-			<xf:group class="titbox" id="" style="">
-				<w2:textbox class="" id="" label="대기 중인 테스트" style="padding: 5px;" tagname="h4"></w2:textbox>
-				<xf:group class="count" id="">
-					<w2:span id="" label="총" style=""></w2:span>
-					<w2:span class="num" id="spn_pendingListCnt" label="0" ref="" style=""></w2:span>
-					<w2:span id="" label="건" style=""></w2:span>
-				</xf:group>
-			</xf:group>
-			
-			<xf:group class="gvwbox" id="" style="">
-				<w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_pendingList"
-					defaultCellHeight="26" focusMode="row" id="pending_grd" readOnly="true" scrollByColumn="false" 
-					style="height: 150px;" visibleRowNum="10" ev:oncelldblclick="scwin.pending_grd_oncelldblclick">
-					<w2:caption id="caption2" style="" value="대기 중인 테스트 목록"></w2:caption>
-					<w2:header id="header2" style="">
-						<w2:row id="row3" style="">
-							<w2:column width="100" inputType="text" id="column13" value="테스트 ID" displayMode="label"></w2:column>
-							<w2:column width="150" inputType="text" id="column14" value="업무명" displayMode="label"></w2:column>
-							<w2:column width="250" inputType="text" id="column15" value="테스트케이스명" displayMode="label"></w2:column>
-							<w2:column width="180" inputType="text" id="column16" value="테스트 대상" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="column17" value="테스트 타입" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="column18" value="우선순위" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="column19" value="담당자" displayMode="label"></w2:column>
-							<w2:column width="120" inputType="text" id="column20" value="등록일시" displayMode="label"></w2:column>
-						</w2:row>
-					</w2:header>
-					<w2:gBody id="gBody2" style="">
-						<w2:row id="row4" style="">
-							<w2:column width="100" inputType="text" id="testCaseId" displayMode="label"></w2:column>
-							<w2:column width="150" inputType="text" id="taskName" displayMode="label"></w2:column>
-							<w2:column width="250" inputType="text" id="testCaseName" displayMode="label"></w2:column>
-							<w2:column width="180" inputType="text" id="testTarget" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="testTypeName" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="priorityName" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="assignee" displayMode="label"></w2:column>
-							<w2:column width="120" inputType="text" id="createdAt" displayMode="label"></w2:column>
-						</w2:row>
-					</w2:gBody>
-				</w2:gridView>
-			</xf:group>
-			
-			<xf:group class="pglbox" id="" style="">
-				<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_pending" 
-					pageSize="5" pagingType="0" style="" ev:onclick="scwin.pgl_pending_onclick">
-				</w2:pageList>
-			</xf:group>
+            <xf:group class="titbox" id="" style="">
+                <w2:textbox class="" id="" label="대기 중인 테스트" style="padding: 5px;" tagname="h4"></w2:textbox>
+                <xf:group class="count" id="">
+                    <w2:span id="" label="총" style=""></w2:span>
+                    <w2:span class="num" id="spn_pendingListCnt" label="0" ref="" style=""></w2:span>
+                    <w2:span id="" label="건" style=""></w2:span>
+                </xf:group>
+            </xf:group>
 
-			<xf:group class="titbox" id="" style="">
-				<w2:textbox class="" id="" label="진행 중인 테스트" style="padding: 5px;" tagname="h4"></w2:textbox>
-				<xf:group class="count" id="">
-					<w2:span id="" label="총" style=""></w2:span>
-					<w2:span class="num" id="spn_runningListCnt" label="0" ref="" style=""></w2:span>
-					<w2:span id="" label="건" style=""></w2:span>
-				</xf:group>
-			</xf:group>
-			
-			<xf:group class="gvwbox" id="" style="">
-				<w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_runningList"
-					defaultCellHeight="26" focusMode="row" id="running_grd" readOnly="true" scrollByColumn="false" 
-					style="height: 150px;" visibleRowNum="10" ev:oncelldblclick="scwin.running_grd_oncelldblclick">
-					<w2:caption id="caption3" style="" value="진행 중인 테스트 목록"></w2:caption>
-					<w2:header id="header3" style="">
-						<w2:row id="row5" style="">
-							<w2:column width="100" inputType="text" id="column21" value="테스트 ID" displayMode="label"></w2:column>
-							<w2:column width="150" inputType="text" id="column22" value="업무명" displayMode="label"></w2:column>
-							<w2:column width="250" inputType="text" id="column23" value="테스트케이스명" displayMode="label"></w2:column>
-							<w2:column width="180" inputType="text" id="column24" value="테스트 대상" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="column25" value="테스트 타입" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="column26" value="우선순위" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="column27" value="담당자" displayMode="label"></w2:column>
-							<w2:column width="120" inputType="text" id="column28" value="실행일시" displayMode="label"></w2:column>
-						</w2:row>
-					</w2:header>
-					<w2:gBody id="gBody3" style="">
-						<w2:row id="row6" style="">
-							<w2:column width="100" inputType="text" id="testCaseId" displayMode="label"></w2:column>
-							<w2:column width="150" inputType="text" id="taskName" displayMode="label"></w2:column>
-							<w2:column width="250" inputType="text" id="testCaseName" displayMode="label"></w2:column>
-							<w2:column width="180" inputType="text" id="testTarget" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="testTypeName" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="priorityName" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="assignee" displayMode="label"></w2:column>
-							<w2:column width="120" inputType="text" id="executionDate" displayMode="label"></w2:column>
-						</w2:row>
-					</w2:gBody>
-				</w2:gridView>
-			</xf:group>
-			
-			<xf:group class="pglbox" id="" style="">
-				<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_running" 
-					pageSize="5" pagingType="0" style="" ev:onclick="scwin.pgl_running_onclick">
-				</w2:pageList>
-			</xf:group>
+            <xf:group class="gvwbox" id="" style="">
+                <w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_pendingList"
+                    defaultCellHeight="26" focusMode="row" id="pending_grd" readOnly="true" scrollByColumn="false" 
+                    style="height: 150px;" visibleRowNum="10" ev:oncelldblclick="scwin.pending_grd_oncelldblclick">
+                    <w2:caption id="caption2" style="" value="대기 중인 테스트 목록"></w2:caption>
+                    <w2:header id="header2" style="">
+                        <w2:row id="row3" style="">
+                            <w2:column width="100" inputType="text" id="column13" value="테스트 ID" displayMode="label"></w2:column>
+                            <w2:column width="150" inputType="text" id="column14" value="업무명" displayMode="label"></w2:column>
+                            <w2:column width="250" inputType="text" id="column15" value="테스트케이스명" displayMode="label"></w2:column>
+                            <w2:column width="180" inputType="text" id="column16" value="테스트 대상" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="column17" value="테스트 타입" displayMode="label"></w2:column>
+                            <w2:column width="80" inputType="text" id="column18" value="우선순위" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="column19" value="담당자" displayMode="label"></w2:column>
+                            <w2:column width="120" inputType="text" id="column20" value="등록일시" displayMode="label"></w2:column>
+                        </w2:row>
+                    </w2:header>
+                    <w2:gBody id="gBody2" style="">
+                        <w2:row id="row4" style="">
+                            <w2:column width="100" inputType="text" id="testCaseId" displayMode="label"></w2:column>
+                            <w2:column width="150" inputType="text" id="taskName" displayMode="label"></w2:column>
+                            <w2:column width="250" inputType="text" id="testCaseName" displayMode="label"></w2:column>
+                            <w2:column width="180" inputType="text" id="testTarget" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="testTypeName" displayMode="label"></w2:column>
+                            <w2:column width="80" inputType="text" id="priorityName" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="assignee" displayMode="label"></w2:column>
+                            <w2:column width="120" inputType="text" id="createdAt" displayMode="label"></w2:column>
+                        </w2:row>
+                    </w2:gBody>
+                </w2:gridView>
+            </xf:group>
 
-			<xf:group class="titbox" id="" style="">
-				<w2:textbox class="" id="" label="완료된 테스트" style="padding: 5px;" tagname="h4"></w2:textbox>
-				<xf:group class="count" id="">
-					<w2:span id="" label="총" style=""></w2:span>
-					<w2:span class="num" id="spn_completedListCnt" label="0" ref="" style=""></w2:span>
-					<w2:span id="" label="건" style=""></w2:span>
-				</xf:group>
-			</xf:group>
+            <xf:group class="pglbox" id="" style="">
+                <w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_pending" 
+                    pageSize="5" pagingType="0" style="" ev:onclick="scwin.pgl_pending_onclick">
+                </w2:pageList>
+            </xf:group>
+
+            <xf:group class="titbox" id="" style="">
+                <w2:textbox class="" id="" label="진행 중인 테스트" style="padding: 5px;" tagname="h4"></w2:textbox>
+                <xf:group class="count" id="">
+                    <w2:span id="" label="총" style=""></w2:span>
+                    <w2:span class="num" id="spn_runningListCnt" label="0" ref="" style=""></w2:span>
+                    <w2:span id="" label="건" style=""></w2:span>
+                </xf:group>
+            </xf:group>
+
+            <xf:group class="gvwbox" id="" style="">
+                <w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_runningList"
+                    defaultCellHeight="26" focusMode="row" id="running_grd" readOnly="true" scrollByColumn="false" 
+                    style="height: 150px;" visibleRowNum="10" ev:oncelldblclick="scwin.running_grd_oncelldblclick">
+                    <w2:caption id="caption3" style="" value="진행 중인 테스트 목록"></w2:caption>
+                    <w2:header id="header3" style="">
+                        <w2:row id="row5" style="">
+                            <w2:column width="100" inputType="text" id="column21" value="테스트 ID" displayMode="label"></w2:column>
+                            <w2:column width="150" inputType="text" id="column22" value="업무명" displayMode="label"></w2:column>
+                            <w2:column width="250" inputType="text" id="column23" value="테스트케이스명" displayMode="label"></w2:column>
+                            <w2:column width="180" inputType="text" id="column24" value="테스트 대상" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="column25" value="테스트 타입" displayMode="label"></w2:column>
+                            <w2:column width="80" inputType="text" id="column26" value="우선순위" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="column27" value="담당자" displayMode="label"></w2:column>
+                            <w2:column width="120" inputType="text" id="column28" value="실행일시" displayMode="label"></w2:column>
+                        </w2:row>
+                    </w2:header>
+                    <w2:gBody id="gBody3" style="">
+                        <w2:row id="row6" style="">
+                            <w2:column width="100" inputType="text" id="testCaseId" displayMode="label"></w2:column>
+                            <w2:column width="150" inputType="text" id="taskName" displayMode="label"></w2:column>
+                            <w2:column width="250" inputType="text" id="testCaseName" displayMode="label"></w2:column>
+                            <w2:column width="180" inputType="text" id="testTarget" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="testTypeName" displayMode="label"></w2:column>
+                            <w2:column width="80" inputType="text" id="priorityName" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="assignee" displayMode="label"></w2:column>
+                            <w2:column width="120" inputType="text" id="executionDate" displayMode="label"></w2:column>
+                        </w2:row>
+                    </w2:gBody>
+                </w2:gridView>
+            </xf:group>
+
+            <xf:group class="pglbox" id="" style="">
+                <w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_running" 
+                    pageSize="5" pagingType="0" style="" ev:onclick="scwin.pgl_running_onclick">
+                </w2:pageList>
+            </xf:group>
+
+            <xf:group class="titbox" id="" style="">
+                <w2:textbox class="" id="" label="성공한 테스트" style="padding: 5px;" tagname="h4"></w2:textbox>
+                <xf:group class="count" id="">
+                    <w2:span id="" label="총" style=""></w2:span>
+                    <w2:span class="num" id="spn_successListCnt" label="0" ref="" style=""></w2:span>
+                    <w2:span id="" label="건" style=""></w2:span>
+                </xf:group>
+            </xf:group>
+
+            <xf:group class="gvwbox" id="" style="">
+                <w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_successList"
+                    defaultCellHeight="26" focusMode="row" id="success_grd" readOnly="true" scrollByColumn="false" 
+                    style="height: 150px;" visibleRowNum="10" ev:oncelldblclick="scwin.success_grd_oncelldblclick">
+                    <w2:caption id="caption4" style="" value="성공한 테스트 목록"></w2:caption>
+                    <w2:header id="header4" style="">
+                        <w2:row id="row7" style="">
+                            <w2:column width="100" inputType="text" id="column29" value="테스트 ID" displayMode="label"></w2:column>
+                            <w2:column width="150" inputType="text" id="column30" value="업무명" displayMode="label"></w2:column>
+                            <w2:column width="200" inputType="text" id="column31" value="테스트케이스명" displayMode="label"></w2:column>
+                            <w2:column width="150" inputType="text" id="column32" value="테스트 대상" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="column33" value="테스트 타입" displayMode="label"></w2:column>
+                            <w2:column width="80" inputType="text" id="column34" value="우선순위" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="column35" value="담당자" displayMode="label"></w2:column>
+                            <w2:column width="120" inputType="text" id="column36" value="실행일시" displayMode="label"></w2:column>
+                            <w2:column width="80" inputType="text" id="column37" value="소요시간" displayMode="label"></w2:column>
+                        </w2:row>
+                    </w2:header>
+                    <w2:gBody id="gBody4" style="">
+                        <w2:row id="row8" style="">
+                            <w2:column width="100" inputType="text" id="testCaseId" displayMode="label"></w2:column>
+                            <w2:column width="150" inputType="text" id="taskName" displayMode="label"></w2:column>
+                            <w2:column width="200" inputType="text" id="testCaseName" displayMode="label"></w2:column>
+                            <w2:column width="150" inputType="text" id="testTarget" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="testTypeName" displayMode="label"></w2:column>
+                            <w2:column width="80" inputType="text" id="priorityName" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="assignee" displayMode="label"></w2:column>
+                            <w2:column width="120" inputType="text" id="executionDate" displayMode="label"></w2:column>
+                            <w2:column width="80" inputType="text" id="duration" displayMode="label"></w2:column>
+                        </w2:row>
+                    </w2:gBody>
+                </w2:gridView>
+            </xf:group>
+
+            <xf:group class="pglbox" id="" style="">
+                <w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_success" 
+                    pageSize="5" pagingType="0" style="" ev:onclick="scwin.pgl_success_onclick">
+                </w2:pageList>
+            </xf:group>
+
+            <xf:group class="titbox" id="" style="">
+                <w2:textbox class="" id="" label="실패한 테스트" style="padding: 5px;" tagname="h4"></w2:textbox>
+                <xf:group class="count" id="">
+                    <w2:span id="" label="총" style=""></w2:span>
+                    <w2:span class="num" id="spn_failListCnt" label="0" ref="" style=""></w2:span>
+                    <w2:span id="" label="건" style=""></w2:span>
+                </xf:group>
+            </xf:group>
+
+            <xf:group class="gvwbox" id="" style="">
+                <w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_failList"
+                    defaultCellHeight="26" focusMode="row" id="fail_grd" readOnly="true" scrollByColumn="false" 
+                    style="height: 150px;" visibleRowNum="10" ev:oncelldblclick="scwin.fail_grd_oncelldblclick">
+                    <w2:caption id="caption5" style="" value="실패한 테스트 목록"></w2:caption>
+                    <w2:header id="header5" style="">
+                        <w2:row id="row9" style="">
+                            <w2:column width="100" inputType="text" id="column38" value="테스트 ID" displayMode="label"></w2:column>
+                            <w2:column width="150" inputType="text" id="column39" value="업무명" displayMode="label"></w2:column>
+                            <w2:column width="200" inputType="text" id="column40" value="테스트케이스명" displayMode="label"></w2:column>
+                            <w2:column width="150" inputType="text" id="column41" value="테스트 대상" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="column42" value="테스트 타입" displayMode="label"></w2:column>
+                            <w2:column width="80" inputType="text" id="column43" value="우선순위" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="column44" value="담당자" displayMode="label"></w2:column>
+                            <w2:column width="120" inputType="text" id="column45" value="실행일시" displayMode="label"></w2:column>
+                            <w2:column width="80" inputType="text" id="column46" value="소요시간" displayMode="label"></w2:column>
+                        </w2:row>
+                    </w2:header>
+                    <w2:gBody id="gBody5" style="">
+                        <w2:row id="row10" style="">
+                            <w2:column width="100" inputType="text" id="testCaseId" displayMode="label"></w2:column>
+                            <w2:column width="150" inputType="text" id="taskName" displayMode="label"></w2:column>
+                            <w2:column width="200" inputType="text" id="testCaseName" displayMode="label"></w2:column>
+                            <w2:column width="150" inputType="text" id="testTarget" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="testTypeName" displayMode="label"></w2:column>
+                            <w2:column width="80" inputType="text" id="priorityName" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" id="assignee" displayMode="label"></w2:column>
+                            <w2:column width="120" inputType="text" id="executionDate" displayMode="label"></w2:column>
+                            <w2:column width="80" inputType="text" id="duration" displayMode="label"></w2:column>
+                        </w2:row>
+                    </w2:gBody>
+                </w2:gridView>
+            </xf:group>
+
+            <xf:group class="pglbox" id="" style="">
+                <w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_fail" 
+                    pageSize="5" pagingType="0" style="" ev:onclick="scwin.pgl_fail_onclick">
+                </w2:pageList>
+            </xf:group>
 			
-			<xf:group class="gvwbox" id="" style="">
-				<w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_completedList"
-					defaultCellHeight="26" focusMode="row" id="completed_grd" readOnly="true" scrollByColumn="false" 
-					style="height: 150px;" visibleRowNum="10" ev:oncelldblclick="scwin.completed_grd_oncelldblclick">
-					<w2:caption id="caption4" style="" value="완료된 테스트 목록"></w2:caption>
-					<w2:header id="header4" style="">
-						<w2:row id="row7" style="">
-							<w2:column width="100" inputType="text" id="column29" value="테스트 ID" displayMode="label"></w2:column>
-							<w2:column width="150" inputType="text" id="column30" value="업무명" displayMode="label"></w2:column>
-							<w2:column width="200" inputType="text" id="column31" value="테스트케이스명" displayMode="label"></w2:column>
-							<w2:column width="150" inputType="text" id="column32" value="테스트 대상" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="column33" value="테스트 타입" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="column34" value="상태" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="column35" value="우선순위" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="column36" value="담당자" displayMode="label"></w2:column>
-							<w2:column width="120" inputType="text" id="column37" value="실행일시" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="column38" value="소요시간" displayMode="label"></w2:column>
-						</w2:row>
-					</w2:header>
-					<w2:gBody id="gBody4" style="">
-						<w2:row id="row8" style="">
-							<w2:column width="100" inputType="text" id="testCaseId" displayMode="label"></w2:column>
-							<w2:column width="150" inputType="text" id="taskName" displayMode="label"></w2:column>
-							<w2:column width="200" inputType="text" id="testCaseName" displayMode="label"></w2:column>
-							<w2:column width="150" inputType="text" id="testTarget" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="testTypeName" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="testStatusName" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="priorityName" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="assignee" displayMode="label"></w2:column>
-							<w2:column width="120" inputType="text" id="executionDate" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="duration" displayMode="label"></w2:column>
-						</w2:row>
-					</w2:gBody>
-				</w2:gridView>
-			</xf:group>
-			
-			<xf:group class="pglbox" id="" style="">
-				<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_completed" 
-					pageSize="5" pagingType="0" style="" ev:onclick="scwin.pgl_completed_onclick">
-				</w2:pageList>
-			</xf:group>
+
+
+
+
+
+
+
 
 			<!-- 단위테스트 케이스 등록/수정 팝업 -->
 			<xf:group class="pop_contents" id="pop_overlay"

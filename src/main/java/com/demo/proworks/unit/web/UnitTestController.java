@@ -45,7 +45,7 @@ public class UnitTestController {
     private UnitTestService unitTestService;
     
     /**
-     * 단위테스트 케이스 목록 조회
+     * 단위테스트 케이스 목록 조회z
      * @throws Exception 
      */
     @ElService(key = "UNIT001List")
@@ -71,6 +71,27 @@ public class UnitTestController {
 		return retList;
     }
     
+    /**
+ * 프로젝트별 단위테스트 케이스 목록 조회 (기존 메서드 재사용)
+ */
+@ElService(key = "UNIT001ListByProject")
+@RequestMapping(value = "UNIT001ListByProject")
+@ElDescription(sub = "프로젝트별 단위테스트 케이스 목록 조회", desc = "특정 프로젝트의 단위테스트 케이스 목록을 조회한다.")
+public UnitTestListVo selectUnitTestListByProject(UnitTestVo unitTestVo) throws Exception {
+    // 기존 메서드와 동일한 로직
+    return selectUnitTestList(unitTestVo);
+}
+
+/**
+ * 프로젝트별 테스트 상태별 통계 조회 (기존 메서드 재사용)
+ */
+@ElService(key = "UNIT001StatisticsByProject")
+@RequestMapping(value = "UNIT001StatisticsByProject")
+@ElDescription(sub = "프로젝트별 테스트 상태별 통계 조회", desc = "특정 프로젝트의 테스트 상태별 통계를 조회한다.")
+public Map<String, Object> selectUnitTestStatisticsByProject(Map<String, Object> searchCondition) throws Exception {
+    // 기존 메서드와 동일한 로직
+    return selectUnitTestStatistics(searchCondition);
+}
     
     
     /**
