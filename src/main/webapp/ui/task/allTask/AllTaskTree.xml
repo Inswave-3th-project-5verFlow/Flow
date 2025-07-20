@@ -24,8 +24,6 @@
         				<w2:column dataType="text" name="pt_task_id" id="ptTaskId"></w2:column>
         				<w2:column dataType="text" name="task_depth" id="taskDepth"></w2:column>
         				<w2:column dataType="text" name="original_depth" id="originalDepth"></w2:column>
-        				<w2:column dataType="text" name="task_seq" id="taskSeq"></w2:column>
-        				<w2:column dataType="text" name="stg_id" id="stgId"></w2:column>
         				<w2:column dataType="text" name="pjt_id" id="pjtId"></w2:column>
         			</w2:columnInfo>
         		</w2:dataList>
@@ -75,17 +73,6 @@ scwin.sbm_designTaskTreeList_submitdone = function (e) {
     scwin.buildTreeView(elData.designVoList);
 };
 
-function getStgName(stgId) {
-    var stgNames = {
-        "1": "[ 1단계 ] 리서치",
-        "2": "[ 2단계 ] 분석",
-        "3": "[ 3단계 ] 기획",
-        "4": "[ 4단계 ] 디자인",
-        "5": "[ 5단계 ] 퍼블리싱",
-        "6": "[ 6단계 ] 개발"
-    };
-    return stgNames[stgId] || "[ " + stgId + "단계 ]";
-}
 
 scwin.buildTreeView = function (originalData) {
     var currentStgId = "";
@@ -93,16 +80,16 @@ scwin.buildTreeView = function (originalData) {
 
     // 부모 페이지에서 클릭한 업무
     var taskData = $p.getParameter("taskData");
-    var currentTaskId = taskData ? taskData.currentTaskId : null;
+    // var currentTaskId = taskData ? taskData.currentTaskId : null;
     var treeData = [];
 
     for (var i = 0; i < originalData.length; i++) {
         var rowData = originalData[i];
 
         // 자기 자신의 업무는 표시 X
-        if (currentTaskId && rowData.taskId === currentTaskId) {
-            continue;
-        }
+        // if (currentTaskId && rowData.taskId === currentTaskId) {
+        //     continue;
+        // }
 
         var stgId = rowData.stgId;
 
@@ -112,7 +99,7 @@ scwin.buildTreeView = function (originalData) {
 
             treeData.push({
                 taskId: "STG_" + stgId,
-                taskName: getStgName(stgId),
+                taskName: rowData.taskName,
                 ptTaskId: "0",
                 taskDepth: "1",
                 taskSeq: stgHeaderIndex,
