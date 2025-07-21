@@ -182,29 +182,10 @@ scwin.sbm_selectPjtVo_submitdone = function (e) {
 				<w2:textbox tagname="" style="" id="" label="프로젝트 상세" class="pgt_tit"></w2:textbox>
 				<xf:group style="" id="" class="breadcrumb">
 					<xf:group tagname="ul" style="" id="">
-						<xf:group tagname="li" style="" id="" class="home">
-							<w2:anchor outerDiv="false" style="" id="">
-								<xf:label><![CDATA[Home]]></xf:label>
-							</w2:anchor>
-						</xf:group>
 						<xf:group tagname="li" style="" id="">
-							<w2:anchor outerDiv="false" style="" id="">
-								<xf:label><![CDATA[1Depth Menu]]></xf:label>
-							</w2:anchor>
-						</xf:group>
-						<xf:group tagname="li" style="" id="">
-							<w2:anchor outerDiv="false" style="" id="">
-								<xf:label><![CDATA[2Depth Menu]]></xf:label>
-							</w2:anchor>
-						</xf:group>
-						<xf:group tagname="li" style="" id="">
-							<w2:span style="" id="" label="3Depth Menu"></w2:span>
 						</xf:group>
 					</xf:group>
 				</xf:group>
-				<xf:trigger style="" id="" type="button" class="btn_fav">
-					<xf:label></xf:label>
-				</xf:trigger>
 			</xf:group>
 			<xf:group class="tblbox" id="grp_pjtInfo" style="">
 				<xf:group adaptive="layout" adaptiveThreshold="600" class="w2tb tbl" tagname="table">

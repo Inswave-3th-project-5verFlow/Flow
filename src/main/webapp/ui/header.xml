@@ -49,7 +49,7 @@ scwin.onpageload = function() {
 scwin.sbm_selectUsersMapping_submitdone = function (e) {
     var data  = e.responseJSON.elData.usersVoList;
     var header = e.responseJSON.userHeader;
-    debugger;
+
     scwin.USER_ID = header.usrId;
     scwin.USER_NAME = header.userName;
     scwin.IS_ADMIN = header.isAdmin;

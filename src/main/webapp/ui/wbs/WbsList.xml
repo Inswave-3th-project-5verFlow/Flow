@@ -12,7 +12,6 @@
 						<w2:key dataType="text" id="scTaskId" name="search_업무ID"></w2:key>
 						<w2:key dataType="text" id="scTaskName" name="search_업무명"></w2:key>
 						<w2:key dataType="text" id="scTaskStatus" name="search_업무상태"></w2:key>
-						<w2:key dataType="text" id="scStgId" name="search_단계ID"></w2:key>
 						<w2:key dataType="text" id="scTaskAsi" name="search_업무담당자"></w2:key>
 						<w2:key dataType="text" id="scTaskRate" name="search_진척률"></w2:key>
 
@@ -30,8 +29,6 @@
 						<w2:column dataType="text" id="taskStatus" name="업무상태"></w2:column>
 						<w2:column dataType="text" id="isTest" name="테스트여부"></w2:column>
 						<w2:column dataType="text" id="taskDepth" name="뎁스"></w2:column>
-						<w2:column dataType="text" id="stgId" name="단계ID"></w2:column>
-						<w2:column dataType="text" id="stgName" name="단계명"></w2:column>
 						<w2:column dataType="text" id="ptTaskId" name="상위업무ID"></w2:column>
 						<w2:column dataType="text" id="taskSeq" name="순서"></w2:column>
 						<w2:column dataType="text" id="taskSt" name="시작예정일"></w2:column>
@@ -48,6 +45,8 @@
 						<w2:column dataType="text" name="지연여부코드" id="delayStatusCode"></w2:column>
 						<w2:column dataType="text" name="테스트여부UI" id="isTestDisplay"></w2:column>
 						<w2:column dataType="text" name="사용자ID" id="userId"></w2:column>
+						<w2:column dataType="text" name="업무구분" id="isDesign"></w2:column>
+						<w2:column dataType="text" name="업무구분명" id="taskTypeName"></w2:column>
 					</w2:columnInfo>
 				</w2:dataList>
 				<w2:dataMap baseNode="map" id="dmp_wbsVoDetail" style="">
@@ -71,11 +70,21 @@
 						</w2:row>
 					</w2:data>
 				</w2:dataList>
-				<w2:dataList baseNode="list" repeatNode="map" id="dlt_wbsStgList" saveRemovedData="true">
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_wbsDesignList" saveRemovedData="true">
 					<w2:columnInfo>
-						<w2:column dataType="text" name="단계ID" id="stgId"></w2:column>
-						<w2:column dataType="text" name="단계명" id="stgName"></w2:column>
+						<w2:column dataType="text" name="라벨" id="label"></w2:column>
+						<w2:column dataType="text" name="값" id="value"></w2:column>
 					</w2:columnInfo>
+					<w2:data use="true">
+						<w2:row>
+							<label><![CDATA[설계]]></label>
+							<value><![CDATA[1]]></value>
+						</w2:row>
+						<w2:row>
+							<label><![CDATA[개발]]></label>
+							<value><![CDATA[0]]></value>
+						</w2:row>
+					</w2:data>
 				</w2:dataList>
 			</w2:dataCollection>
 			<w2:workflowCollection></w2:workflowCollection>
@@ -85,10 +94,6 @@
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
 				processMsg="WBS 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_wbsList_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
-			<xf:submission id="sbm_selectWbsStgVoList" action="/InsWebApp/WbsStgList.pwkjson" method="post" mediatype="application/json"
-				ref="" target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit=""
-				ev:submitdone="scwin.sbm_selectWbsStgVoList_submitdone" ev:submiterror="" abortTrigger="">
-			</xf:submission>
 			<xf:submission id="sbm_saveWbsVoList" action="/InsWebApp/WbsSave.pwkjson" method="post" mediatype="application/json" ref=""
 				target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit=""
 				ev:submitdone="scwin.sbm_saveWbsVoList_submitdone" ev:submiterror="" abortTrigger="">
@@ -96,7 +101,8 @@
 			<xf:submission id="sbm_selectWbsVoListForExcel" ref='data:json,{"id":"dmp_wbsVo","key":"wbsVo"}'
 				target='data:json,{"id":"dlt_wbsVoList","key":"elData.wbsVoList"}' action="/InsWebApp/WbsList.pwkjson" method="post"
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-				processMsg="엑셀 다운로드용 전체 데이터를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectWbsVoListForExcel_submitdone" ev:submiterror="" abortTrigger="">
+				processMsg="엑셀 다운로드용 전체 데이터를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectWbsVoListForExcel_submitdone" ev:submiterror=""
+				abortTrigger="">
 			</xf:submission>
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
@@ -122,11 +128,6 @@ scwin.onpageload = function () {
 
     // 검색 조건 초기화
     dmp_wbsVo.set("pjtId", scwin.PJT_ID);
-    // 단계 목록 조회 서브미션 호출
-    $c.sbm.execute(sbm_selectWbsStgVoList, {
-        elData: {}
-    });
-
     // WBS 조회
     scwin.btn_search_onclick();
 };
@@ -168,8 +169,23 @@ scwin.pgl_wbsList_onclick = function (idx) {
 };
 
 /**
+ * 업무 구분명 반환 함수
+ * @param {string} isDesign - 업무 구분 (0: 개발, 1: 설계)
+ * @returns {string} 업무 구분명
+ */
+scwin.getTaskTypeName = function (isDesign) {
+    if (isDesign === "1" || isDesign === 1) {
+        return "설계";
+    } else if (isDesign === "0" || isDesign === 0) {
+        return "개발";
+    } else {
+        return "미분류";
+    }
+};
+
+/**
  * 기존 서브미션 완료 함수 수정
- * 데이터 로드 완료 후 자동으로 단계별 그룹핑 적용
+ * 데이터 로드 완료 후 자동으로 업무 구분별 그룹핑 적용
  */
 scwin.sbm_wbsList_submitdone = function (e) {
     // error 수신시
@@ -186,14 +202,14 @@ scwin.sbm_wbsList_submitdone = function (e) {
     // 총 레코드 수 업데이트
     spn_listCnt.setLabel(elData.totalCount);
 
-    // // 데이터에 단계명 추가 및 그룹핑을 위한 단계 순서 필드 추가
-    var wbsDataWithStgName = elData.wbsVoList.map(function (item) {
+    // 데이터에 업무 구분명 추가 및 그룹핑을 위한 필드 추가
+    var wbsDataWithTaskType = elData.wbsVoList.map(function (item) {
 
-        // 단계ID로 단계명 조회하여 추가
-        item.stgName = scwin.getStgNameByStgId(item.stgId);
+        // 업무 구분으로 업무 구분명 조회하여 추가
+        item.taskTypeName = scwin.getTaskTypeName(item.isDesign);
 
-        // 그룹핑을 위한 단계정보 필드 (순서를 위해 stgId 사용, 표시를 위해 stgName 사용)
-        item.stgForGrouping = item.stgId + '|' + item.stgName; // 'STG001|분석단계' 같은 형태
+        // 그룹핑을 위한 업무 구분 정보 필드 (순서를 위해 isDesign 사용, 표시를 위해 taskTypeName 사용)
+        item.taskTypeForGrouping = item.isDesign + '|' + item.taskTypeName; // '1|설계업무' 같은 형태
 
         // 지연여부 계산 추가
         const delayStatus = scwin.calculateDelayStatus(item.taskEt, item.taskRet, item.taskStatus);
@@ -204,11 +220,14 @@ scwin.sbm_wbsList_submitdone = function (e) {
         item.isTestDisplay = scwin.getTestStatusDisplay(item.isTest);
         item.isTestCode = item.isTest; // 스타일링용
 
+        // 업무 구분 표시용 데이터 생성
+        item.isDesignDisplay = scwin.getTaskTypeDisplay(item.isDesign);
+        item.isDesignCode = item.isDesign; // 스타일링용
+
         return item;
     });
 
-    dlt_wbsVoList.setJSON(wbsDataWithStgName);
-    // dlt_wbsVoList.setJSON(elData.wbsVoList);
+    dlt_wbsVoList.setJSON(wbsDataWithTaskType);
 
     // 페이지 네비게이터 업데이트
     var totalPageCount = Math.ceil(elData.totalCount / dmp_wbsVo.get("pageSize"));
@@ -236,20 +255,22 @@ scwin.sbm_wbsList_submitdone = function (e) {
     // 지연여부 컬럼 스타일 적용
     scwin.setDelayStatusStyle();
 
+    // 업무 구분 컬럼 스타일 적용
+    scwin.setTaskTypeStyle();
 };
 
 /**
- * 단계별 그룹핑 함수
+ * 업무 구분별 그룹핑 함수
  */
-scwin.initGroupBy = function () {
+scwin.groupByTaskType = function () {
     var options = {
-        sortIndex: [1],     // stgName(1) - 단계명으로 정렬
-        sortOrder: [-1],      // 오름차순
+        sortIndex: ["taskTypeName"],     // taskTypeName으로 정렬
+        sortOrder: [1],      // 오름차순 (설계업무 -> 개발업무)
         closeGroup: false,
         groupbyHeader: [
             {
                 inputType: "expression",
-                // 단계별 그룹 헤더 - 단계명으로 표시
+                // 업무 구분별 그룹 헤더 - 업무 구분명으로 표시
                 expression: 'toggle() + depthStr() + " (" + count() + " 건) "',
                 align: "left",
                 colSpan: "18"
@@ -275,7 +296,7 @@ scwin.groupByTaskStatus = function () {
                 inputType: "expression",
                 expression: 'toggle() + depthStr() + " (" + count() + " 건) "',
                 align: "left",
-                colSpan: "18" // Adjust colSpan as needed based on your grid columns
+                colSpan: "18"
             }
         ],
         hideFooter: true
@@ -296,7 +317,7 @@ scwin.groupByDelayStatus = function () {
                 inputType: "expression",
                 expression: 'toggle() + depthStr() + " (" + count() + " 건) "',
                 align: "left",
-                colSpan: "18" // Adjust colSpan as needed
+                colSpan: "18"
             }
         ],
         hideFooter: true
@@ -304,46 +325,17 @@ scwin.groupByDelayStatus = function () {
     grd_list.groupby(options);
 };
 
-scwin.sbm_selectWbsStgVoList_submitdone = function (e) {
-    var elData = e.responseJSON.elData;
-    var elHeader = e.responseJSON.elHeader;
-    if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
-        return false;
-    }
-
-    dlt_wbsStgList.setJSON(elData.wbsStgVoList);
-};
-
-// stgId로 단계명 조회
-scwin.getStgNameByStgId = function (value) {
-    /*
-    Parameters:
-    matchColumnInfo - Number||String:Y - 데이터를 검사할 컬럼의 인덱스 또는 아이디
-    data - String:Y - 비교 데이터
-    targetColumn - Number||String:Y - 꺼내올 데이터의 컬럼 인덱스 또는 컬럼 아이디
-
-    Return:
-    Array - targetCol에 해당하는 데이터가 담긴 1차원 배열
-    var tmpRsData = dlt_dataList1.getMatchedColumnData("dept","인사","name");
-    반환 값 예시 )["손예진" , "류승룡"]
-    */
-    var _stgName = dlt_wbsStgList.getMatchedColumnData("stgId", value, "stgName");
-    return _stgName[0];
-}
-
-// 그룹바이
-scwin.btn_groupby_onclick = function (e) {
-    // 단계별 그룹핑 함수 호출
-    scwin.initGroupBy();
-};
-
 // 그룹바이 초기화
 scwin.btn_clearGroupby_onclick = function (e) {
     grd_list.clearGroupby();
+
+    // 검색 조건 초기화
+    dmp_wbsVo.setEmptyValue();    
+    dmp_wbsVo.set("pjtId", scwin.PJT_ID);
+    // WBS 조회
+    scwin.btn_search_onclick();
 };
 
-// 등록 버튼
 /**
  * 팝업을 화면 중앙에 위치시키기 위한 좌표를 계산합니다.
  * @param {number} popupWidth - 팝업의 너비 (px)
@@ -462,7 +454,7 @@ scwin.btn_save_onclick = function (e) {
 /**
  * @method
  * @name scwin.setProgressStyle
- * @description 진행률 컬럼(pjtProgress)에 동적으로 배경 스타일 및 정렬 등을 적용한다.
+ * @description 진행률 컬럼(taskRate)에 동적으로 배경 스타일 및 정렬 등을 적용한다.
  * @memberOf scwin
  * @date 2025.07.06
  */
@@ -510,7 +502,6 @@ scwin.sbm_saveWbsVoList_submitdone = function (e) {
 scwin.btn_down_onclick = function (e) {
     // 전체 건수 확인
     var totalCount = spn_listCnt.getLabel();
-    console.log("전체 데이터 건수:", totalCount);
 
     if (totalCount === "0") {
         $c.win.alert("다운로드할 데이터가 없습니다.");
@@ -551,9 +542,9 @@ scwin.sbm_selectWbsVoListForExcel_submitdone = function (e) {
 
     // 임시로 그리드에 전체 데이터 설정
     var originalData = dlt_wbsVoList.getAllJSON();
-    // 데이터에 단계명 추가                                                                                                                                                             
+    // 데이터에 업무 구분명 추가                                                                                                                                                             
     var wbsDataForExcel = elData.wbsVoList.map(function (item) {
-        item.stgName = scwin.getStgNameByStgId(item.stgId);
+        item.taskTypeName = scwin.getTaskTypeName(item.isDesign);
         return item;
     });
     dlt_wbsVoList.setJSON(wbsDataForExcel);
@@ -566,7 +557,7 @@ scwin.sbm_selectWbsVoListForExcel_submitdone = function (e) {
         bodyFontBold: false,
         type: 1, // inputType이 "select", "autoComplete", 혹은 "checkcombobox"인 경우 >> label 값 다운
         trim: 1,
-        removeColumns: "2,5,7,15,16,19",
+        removeColumns: "0,1,2,4,7,9,14,17,18,21,22",
         processMsg: "엑셀 파일을 생성하고 있습니다...",
         timeout: 60000,
         checkInterval: 1000,
@@ -585,15 +576,14 @@ scwin.sbm_selectWbsVoListForExcel_submitdone = function (e) {
     };
 
     grd_list.advancedExcelDownload(options);
-
 };
 
 /**
- * 지연여부 계산 함수
+ * 개선된 지연여부 계산 함수 (실제완료일 우선 처리)
  * @param {String} taskEt - 완료예정일 (YYYY-MM-DD 형식)
  * @param {String} taskRet - 실제완료일 (YYYY-MM-DD 형식)  
  * @param {String} taskStatus - 업무상태 (진행중, 대기, 완료)
- * @returns {Number} 지연여부 (-1: 없음, 0: 완료, 1: 지연중, 2: 진행중)
+ * @returns {Number} 지연여부 (-1: 없음, 0: 완료, 1: 지연완료, 2: 지연중, 3: 진행중)
  */
 scwin.calculateDelayStatus = function (taskEt, taskRet, taskStatus) {
     // 1. 완료예정일이 없는 경우
@@ -601,53 +591,55 @@ scwin.calculateDelayStatus = function (taskEt, taskRet, taskStatus) {
         return -1; // 없음
     }
 
-    // 2. 업무상태가 '완료'가 아닌 경우
-    if (taskStatus !== '완료') {
-        // 실제완료일이 없고 현재 진행중인 업무
-        if (!taskRet || taskRet.trim() === '') {
-            const today = new Date();
-            const expectedDate = new Date(taskEt);
+    const today = new Date();
+    const expectedDate = new Date(taskEt);
+    
+    // 시간 부분 제거 (날짜만 비교)
+    today.setHours(0, 0, 0, 0);
+    expectedDate.setHours(0, 0, 0, 0);
 
-            // 완료예정일이 지났는지 확인
-            if (today > expectedDate) {
-                return 1; // 지연중 (완료예정일이 지났는데 아직 완료되지 않음)
-            } else {
-                return 2; // 진행중 (아직 완료예정일 전)
-            }
+    // 2. 실제완료일이 있는 경우 (업무상태와 관계없이 완료된 것으로 처리)
+    if (taskRet && taskRet.trim() !== '') {
+        const actualDate = new Date(taskRet);
+        actualDate.setHours(0, 0, 0, 0);
+        
+        if (actualDate > expectedDate) {
+            return 1; // 지연완료 (실제완료일이 완료예정일보다 늦음)
+        } else {
+            return 0; // 완료 (실제완료일이 완료예정일과 같거나 빠름)
         }
     }
 
-    // 3. 실제완료일이 없는 경우
-    if (!taskRet || taskRet.trim() === '') {
-        return -1; // 없음
+    // 3. 실제완료일이 없고 업무상태가 '완료'인 경우
+    if (taskStatus === '완료') {
+        // 완료 상태인데 실제완료일이 없는 경우
+        return 0; // 완료로 처리
     }
 
-    // 4. 완료예정일과 실제완료일 비교
-    const expectedDate = new Date(taskEt);
-    const actualDate = new Date(taskRet);
-
-    if (actualDate > expectedDate) {
-        return 1; // 지연중 (실제완료일이 완료예정일보다 늦음)
+    // 4. 실제완료일이 없고 업무상태가 '완료'가 아닌 경우 (진행중, 대기)
+    if (today > expectedDate) {
+        return 2; // 지연중 (현재날짜가 완료예정일을 지났는데 아직 완료되지 않음)
     } else {
-        return 0; // 완료 (실제완료일이 완료예정일과 같거나 빠름)
+        return 3; // 진행중 (아직 완료예정일 전이므로 정상 진행)
     }
 };
 
 /**
- * 지연여부 텍스트 반환
+ * 개선된 지연여부 텍스트 반환
  */
 scwin.getDelayStatusText = function (delayStatus) {
     switch (delayStatus) {
         case -1: return '없음';
         case 0: return '완료';
-        case 1: return '지연중';
-        case 2: return '진행중';
+        case 1: return '지연완료';
+        case 2: return '지연중';
+        case 3: return '진행중';
         default: return '없음';
     }
 };
 
 /**
- * 지연여부 컬럼 스타일 적용
+ * 개선된 지연여부 컬럼 스타일 적용
  */
 scwin.setDelayStatusStyle = function () {
     const rowCount = dlt_wbsVoList.getRowCount();
@@ -665,14 +657,16 @@ scwin.setDelayStatusStyle = function () {
 
         let textColor = "#6c757d"; // 기본 색상
 
-        // 엄격한 비교 사용
+        // 개선된 색상 분류
         if (delayStatusCode === -1) {
             textColor = "#6c757d"; // 회색 - 없음
         } else if (delayStatusCode === 0) {
             textColor = "#155724"; // 녹색 - 완료
         } else if (delayStatusCode === 1) {
-            textColor = "#dc3545"; // 빨간색 - 지연중 (더 진한 빨간색으로 변경)
+            textColor = "#721c24"; // 진한 빨간색 - 지연완료 (가장 심각)
         } else if (delayStatusCode === 2) {
+            textColor = "#dc3545"; // 빨간색 - 지연중
+        } else if (delayStatusCode === 3) {
             textColor = "#0c5460"; // 파란색 - 진행중
         }
 
@@ -771,6 +765,66 @@ scwin.setTestStatusStyle = function () {
 
         styles.forEach(style => grd_list.setStyleAll(style));
     }
+};
+
+/**
+ * 업무 구분 표시 텍스트 반환
+ */
+scwin.getTaskTypeDisplay = function (isDesign) {
+    if (isDesign === "1" || isDesign === 1) {
+        return "설계"; // 설계업무
+    } else if (isDesign === "0" || isDesign === 0) {
+        return "개발"; // 개발업무
+    } else {
+        return "미분류";
+    }
+};
+
+/**
+ * 업무 구분 컬럼 스타일 적용
+ */
+scwin.setTaskTypeStyle = function () {
+    const rowCount = dlt_wbsVoList.getRowCount();
+    const colIndex = grd_list.getColumnIndex("isDesignDisplay");
+
+    if (colIndex === -1) {
+        console.error("isDesignDisplay 컬럼을 찾을 수 없습니다.");
+        return;
+    }
+
+    for (let i = 0; i < rowCount; i++) {
+        const isDesignCode = dlt_wbsVoList.getCellData(i, "isDesign") || ""; // 원본 값 사용
+
+        let textColor = "#6c757d";
+        let backgroundColor = "#f8f9fa";
+
+        if (isDesignCode === "1" || isDesignCode === 1) {
+            textColor = "#0c5460"; // 파란색 - 설계업무
+            backgroundColor = "#e1f5fe";
+        } else if (isDesignCode === "0" || isDesignCode === 0) {
+            textColor = "#155724"; // 녹색 - 개발업무
+            backgroundColor = "#e8f5e8";
+        } else {
+            textColor = "#6c757d"; // 회색 - 미분류
+            backgroundColor = "#f8f9fa";
+        }
+
+        const styles = [
+            { type: "cell", rowIndex: i, colIndex, styleName: "color", styleValue: textColor },
+            { type: "cell", rowIndex: i, colIndex, styleName: "background-color", styleValue: backgroundColor },
+            { type: "cell", rowIndex: i, colIndex, styleName: "text-align", styleValue: "center" },
+            { type: "cell", rowIndex: i, colIndex, styleName: "font-weight", styleValue: "bold" },
+            { type: "cell", rowIndex: i, colIndex, styleName: "border-radius", styleValue: "4px" }
+        ];
+
+        styles.forEach(style => {
+            try {
+                grd_list.setStyleAll(style);
+            } catch (e) {
+                console.error("업무 구분 스타일 적용 실패:", e, style);
+            }
+        });
+    }
 };]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">
@@ -815,8 +869,8 @@ scwin.setTestStatusStyle = function () {
 								<w2:textbox localeRef="Wbs_SEARCH_00003" label="업무상태" />
 							</xf:group>
 							<xf:group tagname="td" class="w2tb_td">
-								<xf:select1 id="" chooseOption="true" style="width: 100%;height: 30px;" submenuSize="auto" allOption=""
-									disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" ref="data:dmp_wbsVo.scTaskStatus"
+								<xf:select1 id="" chooseOption="true" style="width: 100%;height: 30px;" submenuSize="auto" allOption="" disabled="false"
+									direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" ref="data:dmp_wbsVo.scTaskStatus"
 									chooseOptionLabel="$blank">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_wbsStatusList">
@@ -831,33 +885,18 @@ scwin.setTestStatusStyle = function () {
 						<!-- 두 번째 행 -->
 						<xf:group tagname="tr">
 							<xf:group tagname="th" class="w2tb_th">
-								<w2:textbox localeRef="Wbs_SEARCH_00004" label="단계ID" />
+								<w2:textbox label="업무담당자" localeRef="Wbs_SEARCH_00005" style=""></w2:textbox>
 							</xf:group>
 							<xf:group tagname="td" class="w2tb_td">
-								<xf:select1 id="" chooseOption="true" style="width: 100%;height: 30px;" submenuSize="auto" allOption=""
-									disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" ref="data:dmp_wbsVo.scStgId"
-									chooseOptionLabel="$blank">
-									<xf:choices>
-										<xf:itemset nodeset="data:dlt_wbsStgList">
-											<xf:label ref="stgName"></xf:label>
-											<xf:value ref="stgId"></xf:value>
-										</xf:itemset>
-									</xf:choices>
-								</xf:select1>
+								<xf:input ref="data:dmp_wbsVo.scTaskAsi" style="width:100%;"></xf:input>
 							</xf:group>
 
-							<xf:group tagname="th" class="w2tb_th">
-								<w2:textbox localeRef="Wbs_SEARCH_00005" label="업무담당자" />
-							</xf:group>
-							<xf:group tagname="td" class="w2tb_td">
-								<xf:input ref="data:dmp_wbsVo.scTaskAsi" style="width:100%;" />
-							</xf:group>
+							<xf:group tagname="th" class="w2tb_th"></xf:group>
+							<xf:group tagname="td" class="w2tb_td"></xf:group>
 
 							<xf:group tagname="th" class="w2tb_th">
-								<w2:textbox localeRef="Wbs_SEARCH_00006" label="진척률" />
 							</xf:group>
 							<xf:group tagname="td" class="w2tb_td">
-								<xf:input ref="data:dmp_wbsVo.scTaskRate" style="width:100%;" />
 							</xf:group>
 						</xf:group>
 					</xf:group>
@@ -880,14 +919,14 @@ scwin.setTestStatusStyle = function () {
 			<xf:group class="titbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_02 서브타이틀(h3)"
 				style="">
 				<xf:group class="rt" id="" style="">
-					<xf:trigger class="btn_cm" id="btn_groupby" style="" type="button" ev:onclick="scwin.btn_groupby_onclick">
-						<xf:label><![CDATA[단계별 보기]]></xf:label>
+					<xf:trigger class="btn_cm" id="btn_groupby_taskType" style="" type="button" ev:onclick="scwin.groupByTaskType">
+						<xf:label><![CDATA[업무구분별]]></xf:label>
 					</xf:trigger>
 					<xf:trigger class="btn_cm" id="btn_groupby_taskStatus" style="" type="button" ev:onclick="scwin.groupByTaskStatus">
-						<xf:label><![CDATA[업무상태별 보기]]></xf:label>
+						<xf:label><![CDATA[업무상태별]]></xf:label>
 					</xf:trigger>
 					<xf:trigger class="btn_cm" id="btn_groupby_delayStatus" style="" type="button" ev:onclick="scwin.groupByDelayStatus">
-						<xf:label><![CDATA[지연여부별 보기]]></xf:label>
+						<xf:label><![CDATA[지연여부별]]></xf:label>
 					</xf:trigger>
 
 					<xf:trigger class="btn_cm row_add" id="btn_new" style="" type="button" ev:onclick="scwin.btn_new_onclick">
@@ -899,9 +938,6 @@ scwin.setTestStatusStyle = function () {
 					<xf:trigger class="btn_cm  save" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
 						<xf:label><![CDATA[저장]]></xf:label>
 					</xf:trigger>
-					<xf:trigger class="btn_cm  upload" id="" style="" type="button">
-						<xf:label><![CDATA[업로드]]></xf:label>
-					</xf:trigger>
 					<xf:trigger class="btn_cm download" id="btn_down" style="" type="button" ev:onclick="scwin.btn_down_onclick">
 						<xf:label><![CDATA[다운로드]]></xf:label>
 					</xf:trigger>
@@ -910,6 +946,7 @@ scwin.setTestStatusStyle = function () {
 					<xf:trigger class="btn_cm" id="btn_clearGroupby" style="" type="button" ev:onclick="scwin.btn_clearGroupby_onclick">
 						<xf:label><![CDATA[초기화]]></xf:label>
 					</xf:trigger>
+
 				</xf:group>
 			</xf:group>
 			<xf:group adaptiveThreshold="" class="gvwbox" id="" style="">
@@ -925,8 +962,10 @@ scwin.setTestStatusStyle = function () {
 								displayMode="label" useFilter="true" sortable="true" hideCustomFilter="true" hidden="true">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column18" value="단계명" displayMode="label" useFilter="true"
-								sortable="true" hideCustomFilter="true">
+								sortable="true" hideCustomFilter="true" hidden="true">
 							</w2:column>
+							<w2:column width="70" inputType="text" style="" id="column23" value="isDesign" displayMode="label" hidden="true"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column25" value="업무 구분" displayMode="label"></w2:column>
 							<w2:column width="50" inputType="checkbox" style="" id="column17" value="" displayMode="label"></w2:column>
 							<w2:column width="50" inputType="text" style="" id="column1" value="업무ID" displayMode="label"
 								localeRef="Wbs_COLNAME_00001">
@@ -987,6 +1026,16 @@ scwin.setTestStatusStyle = function () {
 							<w2:column width="70" inputType="text" style="" id="stgName" value="" displayMode="label"
 								hideCustomFilter="true" useFilter="true" embeddedInput="text" readOnly="true">
 							</w2:column>
+							<w2:column width="70" inputType="text" style="" id="isDesign" value="" displayMode="label" allOption=""
+								chooseOption="" ref="">
+								<w2:choices>
+									<w2:itemset nodeset="data:dlt_wbsDesignList">
+										<w2:label ref="label"></w2:label>
+										<w2:value ref="value"></w2:value>
+									</w2:itemset>
+								</w2:choices>
+							</w2:column>
+							<w2:column width="70" inputType="text" style="" id="taskTypeName" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="checkbox" style="" id="chk" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="taskId" value="" displayMode="label" embeddedInput="text"
 								readOnly="true">
@@ -1004,7 +1053,9 @@ scwin.setTestStatusStyle = function () {
 									</w2:itemset>
 								</w2:choices>
 							</w2:column>
-							<w2:column width="70" inputType="text" style="" id="isTestDisplay" value="" displayMode="label" readOnly="true"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="isTestDisplay" value="" displayMode="label"
+								readOnly="true">
+							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="isTest" value="" displayMode="label" readOnly="true"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="taskDepth" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="ptTaskId" value="" displayMode="label" readOnly="true"></w2:column>

@@ -49,7 +49,7 @@
 				target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit=""
 				ev:submitdone="scwin.sbm_selectGrpVoList_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
-			<xf:submission id="sbm_insertPugVo" action="/InsWebApp/PugIns.pwkjson" method="post" mediatype="application/json" ref=""
+			<xf:submission id="sbm_insertPugVo" action="/InsWebApp/PugSave.pwkjson" method="post" mediatype="application/json" ref=""
 				target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit=""
 				ev:submitdone="scwin.sbm_insertPugVo_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
@@ -142,15 +142,20 @@ scwin.pgl_pjtList_onclick = function (idx) {
  * @param {Event} e - 클릭 이벤트 객체
  * @example
  * <w2:trigger id="btn_new" onClick="scwin.btn_new_onclick" />
+ * 
  */
 scwin.btn_new_onclick = function (e) {
+    // 다건 처리로 통합
     let reqObj = {
         "elData": {
-            "pjtId": scwin.PJT_ID,
-            "userId": ipt_userId.getValue(),
-            "grpId": slt_grp.getValue()
+            "pugVoList": [{
+                "pjtId": scwin.PJT_ID,
+                "userId": ipt_userId.getValue(),
+                "grpId": slt_grp.getValue(),
+                "rowStatus" : "C"
+            }]
         }
-    };
+    };    
     $c.sbm.execute(sbm_insertPugVo, reqObj);
 };
 
@@ -212,7 +217,7 @@ scwin.btn_close_onclick = function (e) {
 			meta_snippetName="0_02 팝업페이지시작">
 			<xf:group class="titbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_02 서브타이틀(h3)"
 				style="">
-				<w2:textbox class="" id="" label="사용자 조회" style="" tagname="h3"></w2:textbox>
+				<w2:textbox class="" id="" label="전체 사용자 조회" style="" tagname="h3"></w2:textbox>
 				<xf:group class="rt" id="" style=""></xf:group>
 			</xf:group>
 			<xf:group class="schbox" id="" meta_snippetCategory="03_조회영역" meta_snippetKeyComponent="true" meta_snippetName="3_01 조회조건1행"
@@ -324,7 +329,7 @@ scwin.btn_close_onclick = function (e) {
 			</xf:group>
 			<xf:group meta_snippetCategory="02_타이틀" meta_snippetName="2_02 서브타이틀(h3)" meta_snippetKeyComponent="true" style="" id=""
 				class="titbox">
-				<w2:textbox tagname="h3" style="" id="" label="인력 관리 상세" class=""></w2:textbox>
+				<w2:textbox tagname="h3" style="" id="" label="투입 인력 상세" class=""></w2:textbox>
 				<xf:group style="" id="" class="rt"></xf:group>
 			</xf:group>
 			<xf:group class="tblbox" id="" meta_snippetCategory="05_입출력테이블" meta_snippetKeyComponent="true" meta_snippetName="5_01 1단테이블"
@@ -342,7 +347,7 @@ scwin.btn_close_onclick = function (e) {
 							<w2:textbox class="" id="" label="사용자ID" ref="" style="" userData2=""></w2:textbox>
 						</xf:group>
 						<xf:group class="w2tb_td" style="" tagname="td" id="">
-							<xf:input id="ipt_userId" style="width: 144px;height: 21px;" ref="data:dlt_userVoList.userId"></xf:input>
+							<xf:input id="ipt_userId" style="width: 144px;height: 21px;" ref="data:dlt_userVoList.userId" disabled="true"></xf:input>
 						</xf:group>
 					</xf:group>
 					<xf:group tagname="tr">
@@ -357,7 +362,7 @@ scwin.btn_close_onclick = function (e) {
 								<w2:colspan>1</w2:colspan>
 								<w2:rowspan>1</w2:rowspan>
 							</w2:attributes>
-							<xf:input id="" style="width: 144px;height: 21px;" ref="data:dlt_userVoList.name"></xf:input>
+							<xf:input id="" style="width: 144px;height: 21px;" ref="data:dlt_userVoList.name" disabled="true"></xf:input>
 						</xf:group>
 					</xf:group>
 					<xf:group tagname="tr">
@@ -386,7 +391,7 @@ scwin.btn_close_onclick = function (e) {
 				style="">
 				<xf:group class="rt" id="" style="">
 					<xf:trigger class="btn_cm pt" id="btn_new" style="" type="button" ev:onclick="scwin.btn_new_onclick">
-						<xf:label><![CDATA[확인]]></xf:label>
+						<xf:label><![CDATA[등록]]></xf:label>
 					</xf:trigger>
 					<xf:trigger class="btn_cm " id="btn_close" style="" type="button" ev:onclick="scwin.btn_close_onclick">
 						<xf:label><![CDATA[닫기]]></xf:label>

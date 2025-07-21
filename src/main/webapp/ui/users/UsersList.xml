@@ -417,7 +417,7 @@ scwin.sbm_resetPassword_submitdone = function (e) {
 								localeRef="Users_COLNAME_00006">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column7" value="비밀번호" displayMode="label"
-								localeRef="Users_COLNAME_00007" hidden="false">
+								localeRef="Users_COLNAME_00007" hidden="true">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column9" value="삭제여부" displayMode="label"
 								localeRef="Users_COLNAME_00009">

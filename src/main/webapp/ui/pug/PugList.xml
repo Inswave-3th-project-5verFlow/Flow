@@ -21,7 +21,8 @@
 					</w2:keyInfo>
 					<w2:data use="false"></w2:data>
 				</w2:dataMap>
-				<w2:dataList baseNode="list" id="dlt_pugVoList" repeatNode="map" saveRemovedData="true" style="" ev:oncelldatachange="scwin.dlt_pugVoList_oncelldatachange">
+				<w2:dataList baseNode="list" id="dlt_pugVoList" repeatNode="map" saveRemovedData="true" style=""
+					ev:oncelldatachange="scwin.dlt_pugVoList_oncelldatachange">
 					<w2:columnInfo>
 						<w2:column dataType="text" id="pugId" name="pug_id"></w2:column>
 						<w2:column dataType="text" id="pjtId" name="프로젝트ID"></w2:column>
@@ -298,42 +299,34 @@ scwin.popup_closeAction = function (argRuntimeID, argJsnInfo) {
 			<xf:group class="pgtbox" id="" style="">
 				<w2:textbox class="pgt_tit" id="" label="인력 관리" style="" tagname="" />
 			</xf:group>
-			<xf:group class="schbox" id="search_box" style="">
-				<xf:group class="schbox_inner" id="" style="">
-					<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" id="" style="width:Infinity%;" tagname="table">
+
+			<xf:group class="schbox" id="search_box">
+				<xf:group class="schbox_inner">
+					<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" style="width:100%;" tagname="table">
 						<w2:attributes>
-							<w2:summary />
+							<w2:summary>사용자 검색 조건</w2:summary>
 						</w2:attributes>
 						<xf:group tagname="colgroup">
-							<xf:group tagname="col" style="width:100px;" id="searchComp_1"></xf:group>
-							<xf:group tagname="col" style="" id="searchComp_2"></xf:group>
-							<xf:group tagname="col" style="width:100px;" id="searchComp_3"></xf:group>
-							<xf:group tagname="col" style="" id="searchComp_4"></xf:group>
-							<xf:group tagname="col" style="width:100px;" id="searchComp_5"></xf:group>
-							<xf:group tagname="col" style="" id="searchComp_6"></xf:group>
-							<xf:group tagname="col" style="width:100px;" id="searchComp_7"></xf:group>
-							<xf:group tagname="col" style="" id="searchComp_8"></xf:group>
+							<xf:group tagname="col" style="width:100px;"></xf:group>
+							<xf:group tagname="col" style="width:180px;"></xf:group>
+							<xf:group tagname="col" style="width:100px;"></xf:group>
+							<xf:group tagname="col" style="width:180px;"></xf:group>
+							<xf:group tagname="col" style="width:100px;"></xf:group>
+							<xf:group tagname="col" style="width:180px;"></xf:group>
 						</xf:group>
-						<xf:group tagname="tr" style="" id="" class="">
-							<xf:group tagname="th" style="" class="w2tb_th">
-								<w2:textbox class="" id="" label="사용자ID" localeRef="Pug_SEARCH_00002" style=""></w2:textbox>
+						<xf:group tagname="tr" class="">
+							<xf:group tagname="th" class="w2tb_th">
+								<w2:textbox localeRef="Pug_SEARCH_00002" label="이름" class=""></w2:textbox>
 							</xf:group>
-							<xf:group tagname="td" style="" id="" class="w2tb_td">
-								<xf:input ref="data:dmp_pugVo.scUserId" style="width:100px;" id="" placeholder="" class=""></xf:input>
+							<xf:group tagname="td" class="w2tb_td">
+								<xf:input ref="data:dmp_pugVo.scUserName" style="width:150px;" placeholder="" class=""></xf:input>
 							</xf:group>
-							<xf:group tagname="th" style="" class="w2tb_th">
-								<w2:textbox localeRef="Pug_SEARCH_00002" style="" id="" label="이름" class=""></w2:textbox>
+							<xf:group tagname="th" class="w2tb_th">
+								<w2:textbox localeRef="Pug_SEARCH_00003" label="메뉴 그룹" class=""></w2:textbox>
 							</xf:group>
-							<xf:group tagname="td" style="" id="" class="w2tb_td">
-								<xf:input ref="data:dmp_pugVo.scUserName" style="width:100px;" id="" placeholder="" class=""></xf:input>
-							</xf:group>
-							<xf:group tagname="th" style="" class="w2tb_th">
-								<w2:textbox localeRef="Pug_SEARCH_00003" style="" id="" label="메뉴 그룹" class=""></w2:textbox>
-							</xf:group>
-							<xf:group tagname="td" style="" id="" class="w2tb_td">
-								<xf:select1 id="" chooseOption="true" style="width: 148px;height: 30px;" submenuSize="auto" allOption="" disabled="false"
-									direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" chooseOptionLabel="$blank"
-									ref="data:dmp_pugVo.scGrpName">
+							<xf:group tagname="td" class="w2tb_td">
+								<xf:select1 chooseOption="true" style="width:150px;height:30px;" submenuSize="auto" direction="auto"
+									appearance="minimal" disabledClass="w2selectbox_disabled" chooseOptionLabel="$blank" ref="data:dmp_pugVo.scGrpName" allOption="">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_grpVoList">
 											<xf:label ref="grpName"></xf:label>
@@ -342,22 +335,23 @@ scwin.popup_closeAction = function (argRuntimeID, argJsnInfo) {
 									</xf:choices>
 								</xf:select1>
 							</xf:group>
-							<xf:group tagname="th" style="" class="w2tb_th">
-								<w2:textbox localeRef="Pug_SEARCH_00004" style="" id="" label="직책" class=""></w2:textbox>
+							<xf:group tagname="th" class="w2tb_th">
+								<w2:textbox localeRef="Pug_SEARCH_00004" label="직책" class=""></w2:textbox>
 							</xf:group>
-							<xf:group tagname="td" style="" id="" class="w2tb_td">
-								<xf:input ref="data:dmp_pugVo.scUserPosition" style="width:100px;" id="" placeholder="" class=""></xf:input>
+							<xf:group tagname="td" class="w2tb_td">
+								<xf:input ref="data:dmp_pugVo.scUserPosition" style="width:150px;" placeholder="" class=""></xf:input>
 							</xf:group>
 						</xf:group>
 					</xf:group>
 				</xf:group>
-				<xf:group class="btn_schbox" id="" style="">
-					<xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_search" style="" type="button"
-						ev:onclick="scwin.btn_search_onclick" localeRef="COMMON_BUTTON_00001">
+				<xf:group class="btn_schbox">
+					<xf:trigger class="btn_cm sch" escape="false" id="btn_search" type="button" ev:onclick="scwin.btn_search_onclick"
+						localeRef="COMMON_BUTTON_00001">
 						<xf:label><![CDATA[조회]]></xf:label>
 					</xf:trigger>
 				</xf:group>
 			</xf:group>
+
 			<xf:group class="titbox" id="" style="">
 				<xf:group class="count rt" id="">
 					<w2:span id="" label="총" localeRef="COMMON_LABEL_00002" style=""></w2:span>
@@ -379,7 +373,7 @@ scwin.popup_closeAction = function (argRuntimeID, argJsnInfo) {
 						<xf:label><![CDATA[저장]]></xf:label>
 					</xf:trigger>
 				</xf:group>
-				
+
 			</xf:group>
 			<xf:group adaptiveThreshold="" class="gvwbox" id="" style="">
 				<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dlt_pugVoList"
@@ -397,7 +391,7 @@ scwin.popup_closeAction = function (argRuntimeID, argJsnInfo) {
 								localeRef="Pug_COLNAME_00002" hidden="true">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column3" value="사용자ID" displayMode="label"
-								localeRef="Pug_COLNAME_00003" hidden="false">
+								localeRef="Pug_COLNAME_00003" hidden="true">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column4" value="그룹ID" displayMode="label" localeRef="Pug_COLNAME_00004"
 								hidden="true">
@@ -413,7 +407,8 @@ scwin.popup_closeAction = function (argRuntimeID, argJsnInfo) {
 							<w2:column width="20" inputType="checkbox" style="" id="chk" value="" displayMode="label" readOnly="false"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="pugId" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="pjtId" value="" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="userId" value="" displayMode="label" readOnly="true" editModeEvent="onclick"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="userId" value="" displayMode="label" readOnly="true"
+								editModeEvent="onclick"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="grpId" value="" displayMode="label"></w2:column>
 
 							<w2:column width="70" inputType="text" style="" id="userName" value="" displayMode="label" readOnly="true"></w2:column>

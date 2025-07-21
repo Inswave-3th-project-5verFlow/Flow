@@ -28,17 +28,14 @@ public class WbsVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElDtoField(logicalName = "테스트여부", physicalName = "isTest", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String isTest;
 
+    @ElDtoField(logicalName = "업무타입", physicalName = "isDesign", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String isDesign;
+
     @ElDtoField(logicalName = "뎁스", physicalName = "taskDepth", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String taskDepth;
 
-    @ElDtoField(logicalName = "단계ID", physicalName = "stgId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String stgId;
-
     @ElDtoField(logicalName = "상위업무ID", physicalName = "ptTaskId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String ptTaskId;
-
-    @ElDtoField(logicalName = "순서", physicalName = "taskSeq", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String taskSeq;
 
     @ElDtoField(logicalName = "시작예정일", physicalName = "taskSt", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String taskSt;
@@ -70,9 +67,6 @@ public class WbsVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElDtoField(logicalName = "search_업무상태", physicalName = "scTaskStatus", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String scTaskStatus;
 
-    @ElDtoField(logicalName = "search_단계ID", physicalName = "scStgId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String scStgId;
-
     @ElDtoField(logicalName = "search_업무담당자", physicalName = "scTaskAsi", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String scTaskAsi;
 
@@ -87,6 +81,9 @@ public class WbsVo extends com.demo.proworks.cmmn.ProworksCommVO {
 
     @ElDtoField(logicalName = "유저ID", physicalName = "userId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String userId;
+
+    @ElDtoField(logicalName = "설계업무아이디", physicalName = "deTaskId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String deTaskId;
 
     @ElVoField(physicalName = "taskId")
     public String getTaskId(){
@@ -143,6 +140,17 @@ public class WbsVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.isTest = isTest;
     }
 
+    @ElVoField(physicalName = "isDesign")
+    public String getIsDesign(){
+        String ret = this.isDesign;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "isDesign")
+    public void setIsDesign(String isDesign){
+        this.isDesign = isDesign;
+    }
+
     @ElVoField(physicalName = "taskDepth")
     public String getTaskDepth(){
         String ret = this.taskDepth;
@@ -154,17 +162,6 @@ public class WbsVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.taskDepth = taskDepth;
     }
 
-    @ElVoField(physicalName = "stgId")
-    public String getStgId(){
-        String ret = this.stgId;
-        return ret;
-    }
-
-    @ElVoField(physicalName = "stgId")
-    public void setStgId(String stgId){
-        this.stgId = stgId;
-    }
-
     @ElVoField(physicalName = "ptTaskId")
     public String getPtTaskId(){
         String ret = this.ptTaskId;
@@ -174,17 +171,6 @@ public class WbsVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElVoField(physicalName = "ptTaskId")
     public void setPtTaskId(String ptTaskId){
         this.ptTaskId = ptTaskId;
-    }
-
-    @ElVoField(physicalName = "taskSeq")
-    public String getTaskSeq(){
-        String ret = this.taskSeq;
-        return ret;
-    }
-
-    @ElVoField(physicalName = "taskSeq")
-    public void setTaskSeq(String taskSeq){
-        this.taskSeq = taskSeq;
     }
 
     @ElVoField(physicalName = "taskSt")
@@ -297,17 +283,6 @@ public class WbsVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.scTaskStatus = scTaskStatus;
     }
 
-    @ElVoField(physicalName = "scStgId")
-    public String getScStgId(){
-        String ret = this.scStgId;
-        return ret;
-    }
-
-    @ElVoField(physicalName = "scStgId")
-    public void setScStgId(String scStgId){
-        this.scStgId = scStgId;
-    }
-
     @ElVoField(physicalName = "scTaskAsi")
     public String getScTaskAsi(){
         String ret = this.scTaskAsi;
@@ -363,6 +338,17 @@ public class WbsVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.userId = userId;
     }
 
+    @ElVoField(physicalName = "deTaskId")
+    public String getDeTaskId(){
+        String ret = this.deTaskId;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "deTaskId")
+    public void setDeTaskId(String deTaskId){
+        this.deTaskId = deTaskId;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -372,10 +358,9 @@ public class WbsVo extends com.demo.proworks.cmmn.ProworksCommVO {
         sb.append("taskDes").append("=").append(taskDes).append(",");
         sb.append("taskStatus").append("=").append(taskStatus).append(",");
         sb.append("isTest").append("=").append(isTest).append(",");
+        sb.append("isDesign").append("=").append(isDesign).append(",");
         sb.append("taskDepth").append("=").append(taskDepth).append(",");
-        sb.append("stgId").append("=").append(stgId).append(",");
         sb.append("ptTaskId").append("=").append(ptTaskId).append(",");
-        sb.append("taskSeq").append("=").append(taskSeq).append(",");
         sb.append("taskSt").append("=").append(taskSt).append(",");
         sb.append("taskEt").append("=").append(taskEt).append(",");
         sb.append("taskRst").append("=").append(taskRst).append(",");
@@ -386,12 +371,12 @@ public class WbsVo extends com.demo.proworks.cmmn.ProworksCommVO {
         sb.append("scTaskId").append("=").append(scTaskId).append(",");
         sb.append("scTaskName").append("=").append(scTaskName).append(",");
         sb.append("scTaskStatus").append("=").append(scTaskStatus).append(",");
-        sb.append("scStgId").append("=").append(scStgId).append(",");
         sb.append("scTaskAsi").append("=").append(scTaskAsi).append(",");
         sb.append("scTaskRate").append("=").append(scTaskRate).append(",");
         sb.append("ptTaskName").append("=").append(ptTaskName).append(",");
         sb.append("rowStatus").append("=").append(rowStatus).append(",");
-        sb.append("userId").append("=").append(userId);
+        sb.append("userId").append("=").append(userId).append(",");
+        sb.append("deTaskId").append("=").append(deTaskId);
         sb.append("]");
         return sb.toString();
 

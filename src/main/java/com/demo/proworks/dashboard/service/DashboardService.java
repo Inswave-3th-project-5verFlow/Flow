@@ -22,42 +22,6 @@ import com.demo.proworks.pjt.vo.PjtVo;
 public interface DashboardService {
 
     /**
-     * 대시보드 요약 정보를 조회한다.
-     *
-     * @param pjtVo 프로젝트 정보 PjtVo (userId를 포함)
-     * @return DashboardVo 대시보드 요약 정보
-     * @throws Exception
-     */
-    public DashboardVo selectDashboardSummary(PjtVo pjtVo) throws Exception;
-
-    /**
-     * 프로젝트 현황 차트 데이터를 조회한다.
-     *
-     * @param pjtVo 프로젝트 정보 PjtVo (userId를 포함)
-     * @return List<ChartVo> 프로젝트 현황 차트 데이터
-     * @throws Exception
-     */
-    public List<ChartVo> selectProjectStatusChart(PjtVo pjtVo) throws Exception;
-
-    /**
-     * 업무 단계별 현황 차트 데이터를 조회한다.
-     *
-     * @param pjtVo 프로젝트 정보 PjtVo (userId를 포함)
-     * @return List<ChartVo> 업무 단계별 현황 차트 데이터
-     * @throws Exception
-     */
-    public List<ChartVo> selectTaskStatusChart(PjtVo pjtVo) throws Exception;
-
-    /**
-     * 이슈/리스크 현황 차트 데이터를 조회한다.
-     *
-     * @param pjtVo 프로젝트 정보 PjtVo (userId를 포함)
-     * @return List<ChartVo> 이슈/리스크 현황 차트 데이터
-     * @throws Exception
-     */
-    public List<ChartVo> selectIssueStatusChart(PjtVo pjtVo) throws Exception;
-
-    /**
      * 대시보드 전체 데이터를 조회한다. (통합)
      *
      * @param pjtVo 프로젝트 정보 PjtVo (userId를 포함)
