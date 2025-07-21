@@ -12,12 +12,12 @@
 						<w2:key dataType="text" id="scTaskName" name="search_업무명"></w2:key>
 						<w2:key dataType="text" id="scTaskStatus" name="search_업무상태"></w2:key>
 						<w2:key dataType="text" id="scIsTest" name="search_테스트여부"></w2:key>
-						<w2:key dataType="text" id="scStgId" name="search_단계ID"></w2:key>
 
 						<w2:key dataType="text" id="pageIndex" name="페이지_번호" defaultValue="1"></w2:key>
 						<w2:key dataType="text" id="pageSize" name="페이지_건수" defaultValue="15"></w2:key>
 						<w2:key id="pjtId" name="프로젝트 ID" dataType="text" defaultValue="1"></w2:key>
 						<w2:key dataType="text" name="사용자 ID" id="userId"></w2:key>
+						<w2:key id="scTaskId" name="search_업무ID" dataType="text"></w2:key>
 					</w2:keyInfo>
 					<w2:data use="false"></w2:data>
 				</w2:dataMap>
@@ -28,10 +28,10 @@
 						<w2:column dataType="text" id="taskDes" name="업무상세"></w2:column>
 						<w2:column dataType="text" id="taskStatus" name="업무상태"></w2:column>
 						<w2:column dataType="text" id="isTest" name="테스트여부" defaultValue="0"></w2:column>
-						<w2:column dataType="text" id="taskDepth" name="뎁스" defaultValue="1"></w2:column>
-						<w2:column dataType="text" id="stgId" name="단계ID" defaultValue="1"></w2:column>
+						<w2:column dataType="text" id="isDesign" name="설계업무여부" defaultValue="1"></w2:column>
 						<w2:column dataType="text" id="ptTaskId" name="상위업무ID" defaultValue="0"></w2:column>
-						<w2:column dataType="text" id="taskSeq" name="순서" defaultValue="1"></w2:column>
+						<w2:column dataType="text" id="deTaskId" name="소속설계업무ID"></w2:column>
+						<w2:column dataType="text" id="taskDepth" name="뎁스" defaultValue="1"></w2:column>
 						<w2:column dataType="text" id="taskSt" name="시작예정일"></w2:column>
 						<w2:column dataType="text" id="taskEt" name="완료예정일"></w2:column>
 						<w2:column dataType="text" id="taskRst" name="실제시작일"></w2:column>
@@ -39,11 +39,10 @@
 						<w2:column dataType="text" id="taskAsi" name="업무담당자"></w2:column>
 						<w2:column dataType="text" id="taskRate" name="진척률" defaultValue="0"></w2:column>
 						<w2:column dataType="text" id="pjtId" name="프로젝트ID" defaultValue=""></w2:column>
+						<w2:column dataType="text" id="userId" name="사용자ID"></w2:column>
 
 						<w2:column id="chk" name="chk" dataType="text" ignoreStatus="true"></w2:column>
 						<w2:column id="ptTaskName" name="상위업무명" dataType="text"></w2:column>
-						<w2:column id="stgName" name="단계명" dataType="text"></w2:column>
-						<w2:column id="userId" name="사용자 ID" dataType="text"></w2:column>
 					</w2:columnInfo>
 				</w2:dataList>
 				<w2:dataList baseNode="list" repeatNode="map" id="dlt_taskStatus" saveRemovedData="true">
@@ -78,45 +77,6 @@
 						</w2:row>
 					</w2:data>
 				</w2:dataList>
-				<w2:dataList baseNode="list" repeatNode="map" id="dlt_stgId" saveRemovedData="true">
-					<w2:columnInfo>
-						<w2:column dataType="text" name="단계" id="label"></w2:column>
-						<w2:column dataType="text" name="stgId" id="value"></w2:column>
-					</w2:columnInfo>
-					<w2:data use="true">
-						<w2:row>
-							<label><![CDATA[리서치]]></label>
-							<value><![CDATA[1]]></value>
-						</w2:row>
-						<w2:row>
-							<value><![CDATA[2]]></value>
-							<label><![CDATA[분석]]></label>
-						</w2:row>
-						<w2:row>
-							<value><![CDATA[3]]></value>
-							<label><![CDATA[기획]]></label>
-						</w2:row>
-						<w2:row>
-							<value><![CDATA[4]]></value>
-							<label><![CDATA[디자인]]></label>
-						</w2:row>
-						<w2:row>
-							<value><![CDATA[5]]></value>
-							<label><![CDATA[퍼블리싱]]></label>
-						</w2:row>
-					</w2:data>
-				</w2:dataList>
-				<!-- 상위업무 매칭을 위한 전체 데이터 저장용 -->
-				<w2:dataList baseNode="list" id="dlt_allDesignForMapping" repeatNode="map" saveRemovedData="true">
-					<w2:columnInfo>
-						<w2:column dataType="text" id="taskId" name="업무ID"></w2:column>
-						<w2:column dataType="text" id="taskName" name="업무명"></w2:column>
-						<w2:column dataType="text" id="taskDepth" name="뎁스"></w2:column>
-						<w2:column dataType="text" id="stgId" name="단계ID"></w2:column>
-						<w2:column dataType="text" id="ptTaskId" name="상위업무ID"></w2:column>
-						<w2:column dataType="text" id="ptTaskName" name="상위업무명"></w2:column>
-					</w2:columnInfo>
-				</w2:dataList>
 			</w2:dataCollection>
 			<w2:workflowCollection></w2:workflowCollection>
 
@@ -134,11 +94,6 @@
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
 				processMsg="엑셀 다운로드용 전체 데이터를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectDesignVoListForExcel_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
-			<xf:submission id="sbm_selectAllDesignForMapping" ref='data:json,{"id":"dmp_designVo","key":"designVo"}'
-				target='data:json,{"id":"dlt_allDesignForMapping","key":"elData.designVoList"}' action="/InsWebApp/DESIGN001Tree.pwkjson" method="post"
-				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-				processMsg="상위업무 매칭을 위한 전체 데이터를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectAllDesignForMapping_submitdone" ev:submiterror="" abortTrigger="">
-			</xf:submission>
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
 		<w2:publicInfo method="" />
@@ -152,7 +107,6 @@ scwin.onpageload = function () {
     console.log('현재 pjtID : ', scwin.pjtId);
     dmp_designVo.set("userId", scwin.userId);
     dmp_designVo.set("pjtId", scwin.pjtId);
-
 
     var cptIbxName = $p.getComponentById("searchComp_1");
     if (cptIbxName == undefined) {
@@ -179,26 +133,6 @@ scwin.sbm_designList_submitdone = function (e) {
         return false;
     }
 
-    // 자동화 모드인지 확인
-    if (scwin.isCompleteAutoMappingMode) {
-        console.log("2단계: 전체 업무 데이터 조회 완료, 자동화 매핑 시작");
-        scwin.isCompleteAutoMappingMode = false; // 플래그 리셋
-
-        // 전체 업무 데이터 (상위업무 검색용)
-        var allTasksData = elData.designVoList;
-        console.log("전체 업무 데이터 건수:", allTasksData.length);
-
-        // 현재 그리드의 데이터 (ptTaskName이 있는 실제 매핑 대상)
-        var currentGridData = dlt_designVoList.getAllJSON();
-        console.log("현재 그리드 데이터 건수:", currentGridData.length);
-
-        // 매핑 실행 (그리드 데이터 + 전체 데이터)
-        scwin.performCompleteAutoMappingWithFullData(currentGridData, allTasksData);
-
-        return; // 일반 그리드 업데이트는 하지 않음
-    }
-
-    // 일반 조회 모드일 때만 그리드 업데이트
     spn_listCnt.setLabel(elData.totalCount);
     dlt_designVoList.setJSON(elData.designVoList);
 
@@ -218,7 +152,8 @@ scwin.btn_reset_onclick = function (e) {
     dmp_designVo.setEmptyValue();
     dmp_designVo.set("pageIndex", "1");
     pgl_designList.setSelectedIndex(1);
-
+    dmp_designVo.set("userId", scwin.userId);
+    dmp_designVo.set("pjtId", scwin.pjtId);
     $c.sbm.execute($p, sbm_selectDesignVoList);
 };
 
@@ -232,14 +167,12 @@ scwin.btn_delete_onclick = function (e) {
 };
 
 scwin.btn_save_onclick = function (e) {
-
-
-
     let modifiedData = dlt_designVoList.getModifiedJSON();
 
     modifiedData.forEach(function (item) {
         item.userId = scwin.userId;
         item.pjtId = scwin.pjtId;
+        item.isDesign = 1; // 설계업무로 설정
     });
 
     let reqObj = {
@@ -256,23 +189,33 @@ scwin.sbm_saveDesignVoList_submitdone = function (e) {
         $c.win.alert($p, `에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
         return false;
     } else {
-        if (scwin.isAutoMappingUpdate) {
-            // 자동 매핑 업데이트 완료
-            scwin.isAutoMappingUpdate = false;
-            $c.win.alert($p, "자동 매핑이 완료되었습니다!");
-        } else {
-            // 일반 저장 완료
-            $c.win.alert($p, "저장되었습니다.");
-        }
+        $c.win.alert($p, "저장되었습니다.");
     }
     scwin.btn_search_onclick();
 };
-
 
 scwin.grd_list_oncellclick = function (row, col, colId) {
     if (colId === "ptTaskName") {
         scwin.openParentTaskPopup(row);
     }
+    if (colId === "taskId") {
+        console.log("업무ID 클릭..");
+        $p.parent().scwin.openTab("task/develop/DevelopList2.xml", "개발 업무");
+        // $p.url("/InsWebApp/ui/task/develop/DevelopList2.xml");
+    }
+
+    /* 
+    var param1 = { "name":"WebSquare", "ID":"tmpVal1" };
+    $p.url("/bar.xml", {"spa" : true, "replaceHistory" : true, "param" : param1}); // bar.xml을 SPA로 페이지 이동하면서 name,ID 매개 변수 전달
+
+    //bar.xml에서 param1의 값을 꺼내오는 방법
+    $p.getParameter("name");
+    //반환 값 예시 ) WebSquare
+
+    $p.url("/bar.xml", {"spa" : true, "forceReload" : true, "param" : param1}); // bar.xml을 SPA로 이동하면서 브라우저를 재로딩하고 name,ID 매개 변수 전달
+
+
+     */
 };
 
 scwin.openDetailPopup = function (rowIndex) {
@@ -307,8 +250,7 @@ scwin.openParentTaskPopup = function (rowIndex) {
         currentTaskId: rowData.taskId,
         currentTaskName: rowData.taskName,
         currentRowIndex: rowIndex,
-        currentStgId: rowData.stgId,
-        currentPjtId : rowData.pjtId
+        currentPjtId: rowData.pjtId
     };
 
     var jsnPopupData = {
@@ -342,7 +284,6 @@ scwin.receiveTaskData = function (returnData) {
         if (currentRowIndex !== null && currentRowIndex >= 0) {
             dlt_designVoList.setCellData(currentRowIndex, "ptTaskId", selectedTask.taskId);
             dlt_designVoList.setCellData(currentRowIndex, "ptTaskName", selectedTask.taskName);
-            dlt_designVoList.setCellData(currentRowIndex, "stgId", selectedTask.stgId);
             dlt_designVoList.setCellData(currentRowIndex, "taskDepth", parseInt(selectedTask.taskDepth) + 1);
 
             console.log(`상위업무 선택 완료: [${selectedTask.taskName}] (원본 depth: ${selectedTask.taskDepth}, 설정될 depth: ${parseInt(selectedTask.taskDepth) + 1})`);
@@ -410,7 +351,7 @@ scwin.sbm_selectDesignVoListForExcel_submitdone = function (e) {
         bodyFontBold: false,
         type: 1, // inputType이 "select", "autoComplete", 혹은 "checkcombobox"인 경우 >> label 값 다운
         trim: 1,
-        removeColumns: "0, 12", // 첫 번째 컬럼(체크박스)이랑 hidden 처리된 13번째 컬럼(프로젝트 ID) 제외
+        removeColumns: "0", // 체크박스는 다운로드 안함.
         processMsg: "엑셀 파일을 생성하고 있습니다...",
         timeout: 60000,
         checkInterval: 1000,
@@ -427,333 +368,6 @@ scwin.sbm_selectDesignVoListForExcel_submitdone = function (e) {
     };
 
     grd_list.advancedExcelDownload(options);
-};
-
-/**
- * 상위업무 자동설정 버튼 클릭 이벤트 
- * 저장된 모든 업무 데이터에서 상위업무명을 기반으로 자동으로 상위업무 관계를 설정
- */
-scwin.btn_auto_set_parent_onclick = function (e) {
-    console.log("===  완전 자동화 시작 ===");
-
-    // 미저장 데이터가 있는지 체크
-    var hasUnsavedData = false;
-    for (var i = 0; i < dlt_designVoList.getRowCount(); i++) {
-        var rowStatus = dlt_designVoList.getRowStatus(i);
-        if (rowStatus === "C" || rowStatus === "U") {
-            hasUnsavedData = true;
-            break;
-        }
-    }
-
-    if (hasUnsavedData) {
-        $c.win.alert($p, "저장되지 않은 데이터가 있습니다.\n먼저 저장 버튼을 클릭해주세요.");
-        return;
-    }
-
-    // 저장된 데이터에 대해 완전 자동설정 실행
-    scwin.executeCompleteAutoMapping();
-};
-
-/**
- * 완전 자동화 실행 (모든 관계 설정)
- */
-scwin.executeCompleteAutoMapping = function () {
-    console.log("완전 자동화 실행 시작...");
-
-    // 완전 자동화 모드 플래그 설정
-    scwin.isCompleteAutoMappingMode = true;
-
-    console.log("1단계: 전체 업무 데이터 조회 (상위업무 검색용)");
-
-    // 전체 업무 데이터를 먼저 조회해서 상위업무 검색에 사용
-    var originalPageIndex = dmp_designVo.get("pageIndex");
-    var originalPageSize = dmp_designVo.get("pageSize");
-
-    // 전체 데이터 조회를 위한 조건 설정
-    dmp_designVo.set("pageSize", "99999");
-    dmp_designVo.set("pageIndex", "1");
-
-    var reqObj = {
-        "elData": {
-            "designVo": dmp_designVo.getJSON()
-        }
-    };
-
-    // 전체 업무 데이터 조회 (상위업무 검색용)
-    $c.sbm.execute($p, sbm_selectDesignVoList, reqObj);
-
-    // 원래 페이징 조건 복원
-    dmp_designVo.set("pageIndex", originalPageIndex);
-    dmp_designVo.set("pageSize", originalPageSize);
-};
-
-
-// 더 이상 사용하지 않는 함수 (현재 그리드 데이터를 직접 사용)
-// scwin.sbm_selectAllDesignForMapping_submitdone = function (e) { ... }
-
-/**
- * 완전 자동화 매핑 실행 (그리드 데이터 + 전체 데이터 사용)
- * @param {Array} currentGridData 현재 그리드 데이터 (ptTaskName 포함)
- * @param {Array} allTasksData 전체 업무 데이터 (상위업무 검색용)
- */
-scwin.performCompleteAutoMappingWithFullData = function (currentGridData, allTasksData) {
-    console.log("===  완전 자동화 매핑 실행 (개선된 버전) ===");
-    console.log("현재 그리드 데이터 개수:", currentGridData.length);
-    console.log("전체 업무 데이터 개수:", allTasksData.length);
-
-    var mappingCount = 0;
-    var errorCount = 0;
-    var updateList = []; // 업데이트할 데이터 목록
-
-    // 먼저 매핑할 대상들을 수집 (현재 그리드 데이터에서)
-    var mappingTargets = [];
-
-    console.log("=== 현재 그리드 데이터에서 매핑 대상 찾기 ===");
-    for (var i = 0; i < currentGridData.length; i++) {
-        var task = currentGridData[i];
-        var taskId = task.taskId;
-        var taskName = task.taskName;
-        var ptTaskName = task.ptTaskName;
-        var ptTaskId = task.ptTaskId;
-
-        console.log(`업무 ${i + 1}: [${taskName}] ptTaskName="${ptTaskName}" ptTaskId="${ptTaskId}"`);
-
-        // ptTaskName이 있고 ptTaskId가 0인 업무만 매핑 대상으로 설정
-        if (ptTaskName && ptTaskName.trim() !== "" &&
-            (!ptTaskId || ptTaskId === "0")) {
-
-            console.log(`  → 매핑 대상 발견: [${taskName}] 상위업무명: "${ptTaskName}"`);
-
-            // 전체 데이터에서 상위업무 검색
-            var parentTask = scwin.findParentTaskInAllData(allTasksData, ptTaskName.trim(), taskId);
-            if (parentTask) {
-                console.log(`  → 상위업무 찾기 성공: [${parentTask.taskName}] (ID: ${parentTask.taskId})`);
-                mappingTargets.push({
-                    task: task,
-                    parentTask: parentTask
-                });
-            } else {
-                console.warn(`  → 상위업무를 찾을 수 없음: [${taskName}] → [${ptTaskName}]`);
-                errorCount++;
-            }
-        } else {
-            if (!ptTaskName || ptTaskName.trim() === "") {
-                console.log(`  → 상위업무명 없음 (최상위 업무)`);
-            } else if (ptTaskId && ptTaskId !== "0") {
-                console.log(`  → 이미 관계 설정됨 (ptTaskId: ${ptTaskId})`);
-            }
-        }
-    }
-
-    console.log(`매핑 대상: ${mappingTargets.length}건, 에러: ${errorCount}건`);
-
-    if (mappingTargets.length === 0) {
-        $c.win.alert($p, "자동 매핑할 데이터가 없습니다.\n상위업무명이 설정된 업무가 없거나 이미 모두 매핑되어 있습니다.");
-        return;
-    }
-
-    // 순서대로 매핑 처리
-    for (var j = 0; j < mappingTargets.length; j++) {
-        var target = mappingTargets[j];
-        var currentTask = target.task;
-        var parentTask = target.parentTask;
-        var currentTaskId = currentTask.taskId;
-        var currentTaskName = currentTask.taskName;
-
-        console.log(`매핑 처리: [${currentTaskName}] → [${parentTask.taskName}]`);
-
-        // 순환 참조 체크 (전체 데이터 기준)
-        if (scwin.checkCircularReference(allTasksData, currentTaskId, parentTask.taskId)) {
-            console.error(`순환 참조 발견: [${currentTaskName}] → [${parentTask.taskName}] 건너뜀`);
-            errorCount++;
-            continue;
-        }
-
-        // 상위업무의 실제 depth 계산 (전체 데이터 기준)
-        var actualParentDepth = scwin.calculateActualDepth(allTasksData, parentTask.taskId);
-        var newDepth = actualParentDepth + 1;
-
-        // 업데이트할 데이터에 추가
-        updateList.push({
-            taskId: currentTaskId,
-            ptTaskId: parentTask.taskId,
-            stgId: parentTask.stgId,  // 상위업무와 동일한 stgId 설정
-            taskDepth: newDepth
-        });
-
-        mappingCount++;
-        console.log(`✅ 매핑 성공: [${currentTaskName}] → [${parentTask.taskName}] (ptTaskId: ${parentTask.taskId}, stgId: ${parentTask.stgId}, depth: ${newDepth})`);
-    }
-
-    console.log(`자동 매핑 완료: ${mappingCount}건 성공, ${errorCount}건 실패`);
-
-    if (updateList.length > 0) {
-        // 현재 그리드에 매핑된 결과 반영
-        scwin.applyMappingToGrid(updateList);
-
-        // 서버에 업데이트 요청
-        scwin.executeAutoMappingUpdate(updateList);
-    } else {
-        $c.win.alert($p, "자동 매핑할 데이터가 없습니다.");
-    }
-};
-
-/**
- * 업무의 실제 depth를 재귀적으로 계산
- * @param {Array} allTasksData 전체 업무 데이터
- * @param {string} taskId 계산할 업무 ID
- * @return {number} 실제 depth (1부터 시작)
- */
-scwin.calculateActualDepth = function (allTasksData, taskId) {
-    var task = scwin.findTaskById(allTasksData, taskId);
-    if (!task) {
-        console.warn(`calculateActualDepth: 업무 ${taskId}를 찾을 수 없음, depth=1 반환`);
-        return 1; // 업무를 찾을 수 없으면 기본 depth
-    }
-
-    console.log(`calculateActualDepth: [${task.taskName}] taskId=${taskId}, ptTaskId=${task.ptTaskId}, 현재DB_depth=${task.taskDepth}`);
-
-    // 상위 업무가 없으면 (최상위) depth = 1
-    if (!task.ptTaskId || task.ptTaskId === "0") {
-        console.log(`calculateActualDepth: [${task.taskName}] 최상위 업무, depth=1 (DB값=${task.taskDepth})`);
-        return 1; // 최상위는 항상 1
-    }
-
-    // 상위 업무의 depth를 재귀적으로 계산하고 +1
-    var parentDepth = scwin.calculateActualDepth(allTasksData, task.ptTaskId);
-    var myDepth = parentDepth + 1;
-    console.log(`calculateActualDepth: [${task.taskName}] 상위depth=${parentDepth}, 계산된depth=${myDepth} (DB값=${task.taskDepth})`);
-    return myDepth;
-};
-
-/**
- * 순환 참조 체크
- * @param {Array} allTasksData 전체 업무 데이터
- * @param {string} currentTaskId 현재 업무 ID
- * @param {string} targetParentId 설정하려는 상위업무 ID
- * @return {boolean} 순환 참조 여부
- */
-scwin.checkCircularReference = function (allTasksData, currentTaskId, targetParentId) {
-    var visited = {};
-    var checkId = targetParentId;
-    var maxDepth = 10; // 무한루프 방지
-    var depth = 0;
-
-    while (checkId && checkId !== "0" && depth < maxDepth) {
-        if (visited[checkId]) {
-            return true; // 순환 참조 발견
-        }
-        if (checkId === currentTaskId) {
-            return true; // 자기 자신을 상위로 설정하려고 함
-        }
-
-        visited[checkId] = true;
-
-        // 다음 상위 업무 찾기
-        var parentTask = scwin.findTaskById(allTasksData, checkId);
-        checkId = parentTask ? parentTask.ptTaskId : null;
-        depth++;
-    }
-
-    return false; // 순환 참조 없음
-};
-
-/**
- * ID로 업무 찾기
- * @param {Array} allTasksData 전체 업무 데이터
- * @param {string} taskId 찾을 업무 ID
- * @return {Object|null} 찾은 업무 객체
- */
-scwin.findTaskById = function (allTasksData, taskId) {
-    for (var i = 0; i < allTasksData.length; i++) {
-        if (allTasksData[i].taskId === taskId) {
-            return allTasksData[i];
-        }
-    }
-    return null;
-};
-
-/**
- * 전체 데이터에서 상위 업무 찾기 (자기 자신 제외)
- * @param {Array} allTasksData 전체 업무 데이터 배열
- * @param {string} ptTaskName 찾을 상위업무명
- * @param {string} currentTaskId 현재 업무 ID (자기 자신 제외용)
- * @return {Object|null} 찾은 상위 업무 객체, 없으면 null 반환
- */
-scwin.findParentTaskInAllData = function (allTasksData, ptTaskName, currentTaskId) {
-    for (var i = 0; i < allTasksData.length; i++) {
-        var task = allTasksData[i];
-        if (task.taskId !== currentTaskId && task.taskName && task.taskName.trim() === ptTaskName) {
-            return {
-                taskId: task.taskId,
-                taskName: task.taskName,
-                stgId: task.stgId,
-                taskDepth: task.taskDepth
-            };
-        }
-    }
-    return null;
-};
-
-/**
- * 매핑 결과를 현재 그리드에 반영
- * @param {Array} updateList 업데이트할 데이터 목록
- */
-scwin.applyMappingToGrid = function (updateList) {
-    console.log("그리드에 매핑 결과 반영 중...");
-
-    for (var i = 0; i < updateList.length; i++) {
-        var updateData = updateList[i];
-
-        // 현재 그리드에서 해당 업무 찾기
-        for (var j = 0; j < dlt_designVoList.getRowCount(); j++) {
-            var gridTaskId = dlt_designVoList.getCellData(j, "taskId");
-            if (gridTaskId === updateData.taskId) {
-                // 그리드에 관계 정보 업데이트
-                dlt_designVoList.setCellData(j, "ptTaskId", updateData.ptTaskId);
-                dlt_designVoList.setCellData(j, "stgId", updateData.stgId);
-                dlt_designVoList.setCellData(j, "taskDepth", updateData.taskDepth);
-
-                var taskName = dlt_designVoList.getCellData(j, "taskName");
-                console.log(`그리드 업데이트: [${taskName}] → ptTaskId: ${updateData.ptTaskId}, stgId: ${updateData.stgId}, depth: ${updateData.taskDepth}`);
-                break;
-            }
-        }
-    }
-};
-
-/**
- * 자동 매핑 결과를 서버에 업데이트
- * @param {Array} updateList 업데이트할 데이터 목록
- */
-scwin.executeAutoMappingUpdate = function (updateList) {
-    console.log("서버에 자동 매핑 결과 저장 중...");
-    console.log("업데이트할 데이터:", updateList);
-
-    // updateList의 각 항목에 rowStatus 추가
-    var designVoListWithStatus = [];
-    for (var i = 0; i < updateList.length; i++) {
-        var updateData = updateList[i];
-        designVoListWithStatus.push({
-            taskId: updateData.taskId,
-            ptTaskId: updateData.ptTaskId,
-            stgId: updateData.stgId,
-            taskDepth: updateData.taskDepth,
-            rowStatus: "U"  // 업데이트 상태로 설정
-        });
-    }
-
-    let reqObj = {
-        "elData": {
-            "designVoList": designVoListWithStatus
-        }
-    };
-
-    // 자동 매핑 업데이트 플래그 설정
-    scwin.isAutoMappingUpdate = true;
-
-    $c.sbm.execute($p, sbm_saveDesignVoList, reqObj);
 };
 
 scwin.taskTreePopup_closeAction = function () {
@@ -789,7 +403,6 @@ scwin.btn_excel_upload_onclick = function (e) {
     console.log("업로드 이후 데이터리스트 : ", dlt_designVoList);
 };
 
-
 /**
  * 엑셀 업로드 템플릿 다운로드
  * 사용자가 쉽게 엑셀을 작성할 수 있도록 샘플 데이터와 가이드가 포함된 템플릿 제공
@@ -808,7 +421,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             ptTaskName: "=== 상위업무명 입력 (정확한 업무명 입력) ===",
             taskStatus: "대기",
             isTest: "0",
-            stgId: "1",
             taskSt: "2025-01-15",
             taskEt: "2025-01-20",
             taskAsi: "담당자명",
@@ -820,7 +432,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             ptTaskName: "",
             taskStatus: "대기",
             isTest: "0",
-            stgId: "3",
             taskSt: "2025-01-15",
             taskEt: "2025-01-20",
             taskAsi: "기획자",
@@ -832,7 +443,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             ptTaskName: "메인페이지 기획",
             taskStatus: "대기",
             isTest: "0",
-            stgId: "3",
             taskSt: "2025-01-21",
             taskEt: "2025-01-25",
             taskAsi: "기획자",
@@ -844,7 +454,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             ptTaskName: "메인페이지 기획",
             taskStatus: "대기",
             isTest: "0",
-            stgId: "4",
             taskSt: "2025-01-26",
             taskEt: "2025-01-30",
             taskAsi: "디자이너",
@@ -856,7 +465,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             ptTaskName: "",
             taskStatus: "대기",
             isTest: "0",
-            stgId: "3",
             taskSt: "2025-02-01",
             taskEt: "2025-02-05",
             taskAsi: "개발자",
@@ -868,7 +476,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             ptTaskName: "사용자 관리",
             taskStatus: "대기",
             isTest: "1",
-            stgId: "5",
             taskSt: "2025-02-06",
             taskEt: "2025-02-10",
             taskAsi: "개발자",
@@ -895,18 +502,7 @@ scwin.btn_excel_template_download_onclick = function (e) {
             // 원래 데이터로 복원
             dlt_designVoList.setJSON(originalData);
 
-            var guideMessage = "템플릿 다운로드가 완료되었습니다.\n\n";
-            guideMessage += "<<사용법>>:\n";
-            guideMessage += "\n1. 엑셀에 업무 정보 작성\n";
-            guideMessage += "\n2. 상위업무명 컬럼에 정확한 업무명 입력\n";
-            guideMessage += "\n3. 엑셀 업로드\n";
-            guideMessage += "\n4. 저장 버튼 클릭 (자동 매핑됨)\n\n";
-            guideMessage += "<<주의사항>>:\n";
-            guideMessage += "\n• 상위업무명은 기존 업무명과 정확히 일치해야 함\n";
-            guideMessage += "\n• 최상위 업무는 상위업무명을 비워두세요\n";
-            guideMessage += "\n• 저장 시 자동으로 관계가 설정됩니다\n";
-
-            $c.win.alert(guideMessage);
+            $c.win.alert("템플릿 다운로드가 완료되었습니다.");
         },
         onFailureCallback: function () {
             // 원래 데이터로 복원
@@ -917,10 +513,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
 
     grd_list.advancedExcelDownload(options);
 };
-
-
-
-
 
 ]]></script>
 	</head>
@@ -938,16 +530,21 @@ scwin.btn_excel_template_download_onclick = function (e) {
 							<w2:summary />
 						</w2:attributes>
 						<xf:group tagname="colgroup">
-							<xf:group tagname="col" style="width:63px;" id="searchComp_1"></xf:group>
+							<xf:group tagname="col" style="width:87px;" id="group9"></xf:group><xf:group tagname="col" style="width:100px;" id="group8"></xf:group><xf:group tagname="col" style="width:63px;" id="searchComp_1"></xf:group>
 							<xf:group tagname="col" style="" id="searchComp_2"></xf:group>
 							<xf:group tagname="col" style="width:75px;" id="searchComp_3"></xf:group>
 							<xf:group tagname="col" style="" id="searchComp_4"></xf:group>
 							<xf:group tagname="col" style="width:92px;" id="searchComp_5"></xf:group>
 							<xf:group tagname="col" style="" id="searchComp_6"></xf:group>
-							<xf:group tagname="col" style="width:60px;" id="searchComp_7"></xf:group>
-							<xf:group tagname="col" style="" id="searchComp_8"></xf:group>
 						</xf:group>
 						<xf:group tagname="tr" style="" id="" class="">
+							<xf:group tagname="th" class="w2tb_th">설계업무ID<w2:attributes><w2:scope>row</w2:scope></w2:attributes></xf:group>
+							<xf:group tagname="th" class="w2tb_th">
+								<w2:attributes>
+									<w2:scope>row</w2:scope>
+								</w2:attributes>
+								<xf:input id="" style="width: 100%;height: 21px;" ref="data:dmp_designVo.scTaskId"></xf:input>
+							</xf:group>
 							<xf:group tagname="th" style="" class="w2tb_th">
 								<w2:textbox localeRef="Design_SEARCH_00001" style="" id="" label="업무명" class=""></w2:textbox>
 							</xf:group>
@@ -959,7 +556,7 @@ scwin.btn_excel_template_download_onclick = function (e) {
 							</xf:group>
 							<xf:group tagname="td" style="" id="" class="w2tb_td">
 								<xf:select1 submenuSize="auto" ref="data:dmp_designVo.scTaskStatus" chooseOptionLabel=""
-									appearance="minimal" disabledClass="w2selectbox_disabled" chooseOption="true" style="width:100%;height: 21px;" disabled="false"
+									appearance="minimal" disabledClass="w2selectbox_disabled" chooseOption="true" style="width:100%;height:21px;" disabled="false"
 									id="" allOption="" direction="auto">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_taskStatus">
@@ -974,25 +571,10 @@ scwin.btn_excel_template_download_onclick = function (e) {
 							</xf:group>
 							<xf:group tagname="td" style="" id="" class="w2tb_td">
 								<xf:select1 submenuSize="auto" ref="data:dmp_designVo.scIsTest" chooseOptionLabel="" appearance="minimal"
-									disabledClass="w2selectbox_disabled" chooseOption="true" style="width:100%;height: 21px;" disabled="false" id="" allOption=""
+									disabledClass="w2selectbox_disabled" chooseOption="true" style="width:100%;height:21px;" disabled="false" id="" allOption=""
 									direction="auto">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_isTest">
-											<xf:label ref="label"></xf:label>
-											<xf:value ref="value"></xf:value>
-										</xf:itemset>
-									</xf:choices>
-								</xf:select1>
-							</xf:group>
-							<xf:group tagname="th" style="" class="w2tb_th">
-								<w2:textbox localeRef="Design_SEARCH_00004" style="" id="" label="단계" class=""></w2:textbox>
-							</xf:group>
-							<xf:group tagname="td" style="" id="" class="w2tb_td">
-								<xf:select1 submenuSize="auto" ref="data:dmp_designVo.scStgId" chooseOptionLabel="" appearance="minimal"
-									disabledClass="w2selectbox_disabled" chooseOption="true" style="width:100%;height: 21px;" disabled="false" id="" allOption=""
-									direction="auto">
-									<xf:choices>
-										<xf:itemset nodeset="data:dlt_stgId">
 											<xf:label ref="label"></xf:label>
 											<xf:value ref="value"></xf:value>
 										</xf:itemset>
@@ -1026,7 +608,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
 							<xf:label><![CDATA[업무 추가]]></xf:label>
 						</xf:trigger>
 
-						<!-- 상위업무 자동설정 버튼 추가 -->
 						<xf:trigger class="btn_cm" id="btn_excel_template" style="background-color:;color:;" type="button"
 							ev:onclick="scwin.btn_excel_template_download_onclick">
 							<xf:label><![CDATA[템플릿 다운로드]]></xf:label>
@@ -1040,10 +621,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
 							<xf:label><![CDATA[엑셀 다운로드]]></xf:label>
 						</xf:trigger>
 						<w2:textbox class="bar_btndiv" id="" label="" style=""></w2:textbox>
-						<xf:trigger class="btn_cm" id="btn_auto_set_parent" style="background-color:;color:;" type="button"
-							ev:onclick="scwin.btn_auto_set_parent_onclick">
-							<xf:label><![CDATA[자동화]]></xf:label>			
-                        </xf:trigger>
 						<xf:trigger class="btn_cm pt" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
 							<xf:label><![CDATA[저장]]></xf:label>
 						</xf:trigger>
@@ -1064,6 +641,9 @@ scwin.btn_excel_template_download_onclick = function (e) {
 					<w2:header style="" id="header2">
 						<w2:row style="" id="row3">
 							<w2:column width="70" inputType="checkbox" style="" id="column17" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column1" value="업무ID" displayMode="label"
+								localeRef="Design_COLNAME_00001">
+							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column2" value="업무명" displayMode="label"
 								localeRef="Design_COLNAME_00002">
 							</w2:column>
@@ -1072,9 +652,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column5" value="테스트여부" displayMode="label"
 								localeRef="Design_COLNAME_00005">
-							</w2:column>
-							<w2:column width="70" inputType="text" style="" id="column7" value="단계" displayMode="label"
-								localeRef="Design_COLNAME_00007">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column18" value="상위 업무명" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="column10" value="시작예정일" displayMode="label"
@@ -1104,6 +681,7 @@ scwin.btn_excel_template_download_onclick = function (e) {
 					<w2:gBody style="" id="gBody2">
 						<w2:row style="" id="row4">
 							<w2:column width="70" inputType="checkbox" style="" id="chk" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="taskId" value="" displayMode="label" readOnly="true"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="taskName" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="select" style="" id="taskStatus" value="" displayMode="label" allOption=""
 								chooseOption="" ref="">
@@ -1118,15 +696,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
 								chooseOption="" ref="">
 								<w2:choices>
 									<w2:itemset nodeset="data:dlt_isTest">
-										<w2:label ref="label"></w2:label>
-										<w2:value ref="value"></w2:value>
-									</w2:itemset>
-								</w2:choices>
-							</w2:column>
-							<w2:column width="70" inputType="select" style="" id="stgId" value="" displayMode="label" allOption=""
-								chooseOption="" ref="">
-								<w2:choices>
-									<w2:itemset nodeset="data:dlt_stgId">
 										<w2:label ref="label"></w2:label>
 										<w2:value ref="value"></w2:value>
 									</w2:itemset>

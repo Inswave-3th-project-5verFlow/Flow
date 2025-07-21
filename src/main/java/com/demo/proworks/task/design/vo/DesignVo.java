@@ -31,14 +31,14 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElDtoField(logicalName = "뎁스", physicalName = "taskDepth", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String taskDepth;
 
-    @ElDtoField(logicalName = "단계ID", physicalName = "stgId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String stgId;
+    @ElDtoField(logicalName = "설계업무여부", physicalName = "isDesign", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String isDesign;
 
     @ElDtoField(logicalName = "상위업무ID", physicalName = "ptTaskId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String ptTaskId;
 
-    @ElDtoField(logicalName = "순서", physicalName = "taskSeq", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String taskSeq;
+    @ElDtoField(logicalName = "설계업무ID", physicalName = "deTaskId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String deTaskId;
 
     @ElDtoField(logicalName = "시작예정일", physicalName = "taskSt", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String taskSt;
@@ -76,14 +76,17 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElDtoField(logicalName = "진행상태", physicalName = "rowStatus", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String rowStatus;
 
+    @ElDtoField(logicalName = "search_상위업무ID", physicalName = "scPtTaskId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String scPtTaskId;
+
     @ElDtoField(logicalName = "상위업무명", physicalName = "ptTaskName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String ptTaskName;
 
-    @ElDtoField(logicalName = "단계명", physicalName = "stgName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String stgName;
-
     @ElDtoField(logicalName = "사용자ID", physicalName = "userId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String userId;
+
+    @ElDtoField(logicalName = "search_업무ID", physicalName = "scTaskId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String scTaskId;
 
     @ElVoField(physicalName = "taskId")
     public String getTaskId(){
@@ -151,15 +154,15 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.taskDepth = taskDepth;
     }
 
-    @ElVoField(physicalName = "stgId")
-    public String getStgId(){
-        String ret = this.stgId;
+    @ElVoField(physicalName = "isDesign")
+    public String getIsDesign(){
+        String ret = this.isDesign;
         return ret;
     }
 
-    @ElVoField(physicalName = "stgId")
-    public void setStgId(String stgId){
-        this.stgId = stgId;
+    @ElVoField(physicalName = "isDesign")
+    public void setIsDesign(String isDesign){
+        this.isDesign = isDesign;
     }
 
     @ElVoField(physicalName = "ptTaskId")
@@ -173,15 +176,15 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.ptTaskId = ptTaskId;
     }
 
-    @ElVoField(physicalName = "taskSeq")
-    public String getTaskSeq(){
-        String ret = this.taskSeq;
+    @ElVoField(physicalName = "deTaskId")
+    public String getDeTaskId(){
+        String ret = this.deTaskId;
         return ret;
     }
 
-    @ElVoField(physicalName = "taskSeq")
-    public void setTaskSeq(String taskSeq){
-        this.taskSeq = taskSeq;
+    @ElVoField(physicalName = "deTaskId")
+    public void setDeTaskId(String deTaskId){
+        this.deTaskId = deTaskId;
     }
 
     @ElVoField(physicalName = "taskSt")
@@ -316,6 +319,17 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.rowStatus = rowStatus;
     }
 
+    @ElVoField(physicalName = "scPtTaskId")
+    public String getScPtTaskId(){
+        String ret = this.scPtTaskId;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "scPtTaskId")
+    public void setScPtTaskId(String scPtTaskId){
+        this.scPtTaskId = scPtTaskId;
+    }
+
     @ElVoField(physicalName = "ptTaskName")
     public String getPtTaskName(){
         String ret = this.ptTaskName;
@@ -325,17 +339,6 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElVoField(physicalName = "ptTaskName")
     public void setPtTaskName(String ptTaskName){
         this.ptTaskName = ptTaskName;
-    }
-
-    @ElVoField(physicalName = "stgName")
-    public String getStgName(){
-        String ret = this.stgName;
-        return ret;
-    }
-
-    @ElVoField(physicalName = "stgName")
-    public void setStgName(String stgName){
-        this.stgName = stgName;
     }
 
     @ElVoField(physicalName = "userId")
@@ -349,6 +352,17 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.userId = userId;
     }
 
+    @ElVoField(physicalName = "scTaskId")
+    public String getScTaskId(){
+        String ret = this.scTaskId;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "scTaskId")
+    public void setScTaskId(String scTaskId){
+        this.scTaskId = scTaskId;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -359,9 +373,9 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
         sb.append("taskStatus").append("=").append(taskStatus).append(",");
         sb.append("isTest").append("=").append(isTest).append(",");
         sb.append("taskDepth").append("=").append(taskDepth).append(",");
-        sb.append("stgId").append("=").append(stgId).append(",");
+        sb.append("isDesign").append("=").append(isDesign).append(",");
         sb.append("ptTaskId").append("=").append(ptTaskId).append(",");
-        sb.append("taskSeq").append("=").append(taskSeq).append(",");
+        sb.append("deTaskId").append("=").append(deTaskId).append(",");
         sb.append("taskSt").append("=").append(taskSt).append(",");
         sb.append("taskEt").append("=").append(taskEt).append(",");
         sb.append("taskRst").append("=").append(taskRst).append(",");
@@ -374,9 +388,10 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
         sb.append("scIsTest").append("=").append(scIsTest).append(",");
         sb.append("scStgId").append("=").append(scStgId).append(",");
         sb.append("rowStatus").append("=").append(rowStatus).append(",");
+        sb.append("scPtTaskId").append("=").append(scPtTaskId).append(",");
         sb.append("ptTaskName").append("=").append(ptTaskName).append(",");
-        sb.append("stgName").append("=").append(stgName).append(",");
-        sb.append("userId").append("=").append(userId);
+        sb.append("userId").append("=").append(userId).append(",");
+        sb.append("scTaskId").append("=").append(scTaskId);
         sb.append("]");
         return sb.toString();
 

@@ -229,14 +229,13 @@
 						<w2:column dataType="text" id="taskId" name="업무ID"></w2:column>
 						<w2:column dataType="text" id="taskName" name="업무명"></w2:column>
 						<w2:column dataType="text" id="taskStatus" name="업무상태"></w2:column>
-						<w2:column dataType="text" id="stgId" name="단계ID" defaultValue="0"></w2:column>
-						<w2:column dataType="text" id="stgName" name="단계명"></w2:column>
 						<w2:column dataType="text" id="taskSt" name="시작예정일"></w2:column>
 						<w2:column dataType="text" id="taskEt" name="완료예정일"></w2:column>
 						<w2:column dataType="text" id="taskRst" name="실제시작일"></w2:column>
 						<w2:column dataType="text" id="taskRet" name="실제완료일"></w2:column>
 						<w2:column dataType="text" id="taskAsi" name="업무담당자"></w2:column>
 						<w2:column dataType="text" id="taskRate" name="진척률" defaultValue="0"></w2:column>
+						<w2:column id="taskType" name="업무타입" dataType="text"></w2:column>
 					</w2:columnInfo>
 				</w2:dataList>
 			</w2:dataCollection>
@@ -542,7 +541,7 @@ scwin.createPlanActualGanttChart = function () {
         taskData.forEach(function (task, index) {
             var taskId = task.taskId || String(index + 1);
             var taskName = task.taskName || ("업무 " + (index + 1));
-            var stageName = task.stgName || "기타";
+            var taskType = task.taskType || "기타";
             var taskStatus = task.taskStatus || "대기";
             var assignee = task.taskAsi || "미지정";
             var progress = parseFloat(task.taskRate || "0") / 100;
@@ -556,7 +555,7 @@ scwin.createPlanActualGanttChart = function () {
                     end_date: task.taskEt,
                     duration: gantt.calculateDuration(new Date(task.taskSt), new Date(task.taskEt)),
                     progress: progress,
-                    stage: stageName,
+                    stage: taskType,
                     status: taskStatus,
                     assignee: assignee,
                     task_type: "planned",
@@ -578,7 +577,7 @@ scwin.createPlanActualGanttChart = function () {
                         end_date: task.taskRet,
                         duration: gantt.calculateDuration(new Date(task.taskRst), new Date(task.taskRet)),
                         progress: progress,
-                        stage: stageName,
+                        stage: taskType,
                         status: taskStatus,
                         assignee: assignee,
                         task_type: "actual",
@@ -600,7 +599,7 @@ scwin.createPlanActualGanttChart = function () {
                     end_date: task.taskRet,
                     duration: gantt.calculateDuration(new Date(task.taskRst), new Date(task.taskRet)),
                     progress: progress,
-                    stage: stageName,
+                    stage: taskType,
                     status: taskStatus,
                     assignee: assignee,
                     task_type: "actual",

@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 
 import com.demo.proworks.task.design.service.DesignService;
 import com.demo.proworks.task.design.vo.DesignVo;
+import com.inswave.elfw.log.AppLog;
+import com.inswave.elfw.util.ControllerContextUtil;
+import com.inswave.elfw.util.ElBeanUtils;
+import com.inswave.elfw.view.ElMappingJacksonObjectMapper;
 import com.demo.proworks.task.design.dao.DesignDAO;
 
 /**
@@ -162,7 +166,6 @@ public class DesignServiceImpl implements DesignService {
 			System.out.println("기본업데이트=" + result1 + ", 하위업데이트=" + result2);
 			return result1;
 		} else {
-			// 일반 업데이트
 			return designDAO.updateDesign(designVo);
 		}
 	}
@@ -182,7 +185,6 @@ public class DesignServiceImpl implements DesignService {
 				DesignVo updateChild = new DesignVo();
 				updateChild.setTaskId(childTask.getTaskId());
 				updateChild.setTaskDepth(childTask.getTaskDepth()); // 새로 계산된 depth
-				updateChild.setStgId(designVo.getStgId()); // 상위 업무와 동일한 stgId
 				updateChild.setPjtId(designVo.getPjtId());
 
 				int result = designDAO.updateDesign(updateChild);

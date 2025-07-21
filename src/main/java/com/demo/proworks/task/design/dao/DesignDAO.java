@@ -184,7 +184,7 @@ public class DesignDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstrac
 	 * @throws ElException
 	 */
 	public List<DesignVo> selectListTask(DesignVo vo) throws ElException {
-		return (List<DesignVo>) list("com.demo.proworks.task.design.selectListTask", vo);
+		return (List<DesignVo>) list("com.demo.proworks.task.design.selectTreeList", vo);
 	}
 
 }
