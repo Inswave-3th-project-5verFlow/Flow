@@ -76,11 +76,17 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElDtoField(logicalName = "진행상태", physicalName = "rowStatus", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String rowStatus;
 
+    @ElDtoField(logicalName = "search_상위업무ID", physicalName = "scPtTaskId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String scPtTaskId;
+
     @ElDtoField(logicalName = "상위업무명", physicalName = "ptTaskName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String ptTaskName;
 
     @ElDtoField(logicalName = "사용자ID", physicalName = "userId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String userId;
+
+    @ElDtoField(logicalName = "search_업무ID", physicalName = "scTaskId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String scTaskId;
 
     @ElVoField(physicalName = "taskId")
     public String getTaskId(){
@@ -313,6 +319,17 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.rowStatus = rowStatus;
     }
 
+    @ElVoField(physicalName = "scPtTaskId")
+    public String getScPtTaskId(){
+        String ret = this.scPtTaskId;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "scPtTaskId")
+    public void setScPtTaskId(String scPtTaskId){
+        this.scPtTaskId = scPtTaskId;
+    }
+
     @ElVoField(physicalName = "ptTaskName")
     public String getPtTaskName(){
         String ret = this.ptTaskName;
@@ -333,6 +350,17 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElVoField(physicalName = "userId")
     public void setUserId(String userId){
         this.userId = userId;
+    }
+
+    @ElVoField(physicalName = "scTaskId")
+    public String getScTaskId(){
+        String ret = this.scTaskId;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "scTaskId")
+    public void setScTaskId(String scTaskId){
+        this.scTaskId = scTaskId;
     }
 
     @Override
@@ -360,8 +388,10 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
         sb.append("scIsTest").append("=").append(scIsTest).append(",");
         sb.append("scStgId").append("=").append(scStgId).append(",");
         sb.append("rowStatus").append("=").append(rowStatus).append(",");
+        sb.append("scPtTaskId").append("=").append(scPtTaskId).append(",");
         sb.append("ptTaskName").append("=").append(ptTaskName).append(",");
-        sb.append("userId").append("=").append(userId);
+        sb.append("userId").append("=").append(userId).append(",");
+        sb.append("scTaskId").append("=").append(scTaskId);
         sb.append("]");
         return sb.toString();
 

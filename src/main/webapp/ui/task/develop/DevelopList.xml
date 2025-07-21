@@ -12,12 +12,13 @@
 						<w2:key dataType="text" id="scTaskName" name="search_업무명"></w2:key>
 						<w2:key dataType="text" id="scTaskStatus" name="search_업무상태"></w2:key>
 						<w2:key dataType="text" id="scIsTest" name="search_테스트여부"></w2:key>
-						<w2:key dataType="text" id="scStgId" name="search_단계ID"></w2:key>
 
 						<w2:key dataType="text" id="pageIndex" name="페이지_번호" defaultValue="1"></w2:key>
 						<w2:key dataType="text" id="pageSize" name="페이지_건수" defaultValue="15"></w2:key>
 						<w2:key id="pjtId" name="프로젝트 ID" dataType="text" defaultValue="1"></w2:key>
-						<w2:key id="userId" name="사용자 ID" dataType="text"></w2:key>
+						<w2:key dataType="text" name="사용자 ID" id="userId"></w2:key>
+						<w2:key id="scTaskId" name="search_개발업무ID" dataType="text"></w2:key>
+						<w2:key id="scPtTaskId" name="search_상위업무ID" dataType="text"></w2:key>
 					</w2:keyInfo>
 					<w2:data use="false"></w2:data>
 				</w2:dataMap>
@@ -28,10 +29,10 @@
 						<w2:column dataType="text" id="taskDes" name="업무상세"></w2:column>
 						<w2:column dataType="text" id="taskStatus" name="업무상태"></w2:column>
 						<w2:column dataType="text" id="isTest" name="테스트여부" defaultValue="0"></w2:column>
-						<w2:column dataType="text" id="taskDepth" name="뎁스" defaultValue="1"></w2:column>
-						<w2:column dataType="text" id="stgId" name="단계ID" defaultValue="6"></w2:column>
+						<w2:column dataType="text" id="isDesign" name="설계업무여부" defaultValue="1"></w2:column>
 						<w2:column dataType="text" id="ptTaskId" name="상위업무ID" defaultValue="0"></w2:column>
-						<w2:column dataType="text" id="taskSeq" name="순서" defaultValue="1"></w2:column>
+						<w2:column dataType="text" id="deTaskId" name="소속설계업무ID"></w2:column>
+						<w2:column dataType="text" id="taskDepth" name="뎁스" defaultValue="1"></w2:column>
 						<w2:column dataType="text" id="taskSt" name="시작예정일"></w2:column>
 						<w2:column dataType="text" id="taskEt" name="완료예정일"></w2:column>
 						<w2:column dataType="text" id="taskRst" name="실제시작일"></w2:column>
@@ -39,11 +40,10 @@
 						<w2:column dataType="text" id="taskAsi" name="업무담당자"></w2:column>
 						<w2:column dataType="text" id="taskRate" name="진척률" defaultValue="0"></w2:column>
 						<w2:column dataType="text" id="pjtId" name="프로젝트ID" defaultValue=""></w2:column>
+						<w2:column dataType="text" id="userId" name="사용자ID"></w2:column>
 
 						<w2:column id="chk" name="chk" dataType="text" ignoreStatus="true"></w2:column>
 						<w2:column id="ptTaskName" name="상위업무명" dataType="text"></w2:column>
-						<w2:column id="stgName" name="단계명" dataType="text"></w2:column>
-						<w2:column id="userId" name="사용자 ID" dataType="text"></w2:column>
 					</w2:columnInfo>
 				</w2:dataList>
 				<w2:dataList baseNode="list" repeatNode="map" id="dlt_taskStatus" saveRemovedData="true">
@@ -78,42 +78,22 @@
 						</w2:row>
 					</w2:data>
 				</w2:dataList>
-				<w2:dataList baseNode="list" repeatNode="map" id="dlt_stgId" saveRemovedData="true">
-					<w2:columnInfo>
-						<w2:column dataType="text" name="단계명" id="label"></w2:column>
-						<w2:column dataType="text" name="stgId" id="value"></w2:column>
-					</w2:columnInfo>
-					<w2:data use="true">
-						<w2:row>
-							<value><![CDATA[6]]></value>
-							<label><![CDATA[개발]]></label>
-						</w2:row>
-					</w2:data>
-				</w2:dataList>
-				<w2:dataMap baseNode="map" id="dmp_stgId">
-					<w2:keyInfo>
-						<w2:key dataType="text" name="name1" id="stgId"></w2:key>
-					</w2:keyInfo>
-					<w2:data use="true">
-						<stgId><![CDATA[개발]]></stgId>
-					</w2:data>
-				</w2:dataMap>
 			</w2:dataCollection>
 			<w2:workflowCollection></w2:workflowCollection>
 
-			<xf:submission id="sbm_selectDevelopVoList" ref='data:json,{"id":"dmp_designVo","key":"designVo"}'
+			<xf:submission id="sbm_selectDesignVoList" ref='data:json,{"id":"dmp_designVo","key":"designVo"}'
 				target='data:json,{"id":"dlt_designVoList","key":"elData.designVoList"}' action="/InsWebApp/DEVELOP001List.pwkjson" method="post"
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-				processMsg="설계 업무 정보 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_developList_submitdone" ev:submiterror="" abortTrigger="">
+				processMsg="설계 업무 정보 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_designList_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
-			<xf:submission id="sbm_saveDevelopVoList" action="/InsWebApp/DESIGN001Save.pwkjson" method="post" mediatype="application/json"
+			<xf:submission id="sbm_saveDesignVoList" action="/InsWebApp/DESIGN001Save.pwkjson" method="post" mediatype="application/json"
 				ref="" target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="설계 업무들 통합 저장중입니다." ev:submit=""
-				ev:submitdone="scwin.sbm_saveDevelopVoList_submitdone" ev:submiterror="" abortTrigger="">
+				ev:submitdone="scwin.sbm_saveDesignVoList_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
-			<xf:submission id="sbm_selectDevelopVoListForExcel" ref='data:json,{"id":"dmp_designVo","key":"designVo"}'
+			<xf:submission id="sbm_selectDesignVoListForExcel" ref='data:json,{"id":"dmp_designVo","key":"designVo"}'
 				target='data:json,{"id":"dlt_designVoList","key":"elData.designVoList"}' action="/InsWebApp/DEVELOP001List.pwkjson" method="post"
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-				processMsg="엑셀 다운로드용 전체 데이터를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectDevelopVoListForExcel_submitdone" ev:submiterror="" abortTrigger="">
+				processMsg="엑셀 다운로드용 전체 데이터를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectDesignVoListForExcel_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
@@ -139,10 +119,10 @@ scwin.onpageload = function () {
 scwin.btn_search_onclick = function (e) {
     dmp_designVo.set("pageIndex", "1");
     pgl_designList.setSelectedIndex(1);
-    $c.sbm.execute($p, sbm_selectDevelopVoList);
+    $c.sbm.execute($p, sbm_selectDesignVoList);
 };
 
-scwin.sbm_developList_submitdone = function (e) {
+scwin.sbm_designList_submitdone = function (e) {
     scwin.globalElData = e.responseJSON.elData; // 엑셀 다운로드를 위한 totalCount를 가지는 globalElData 전역변수 저장
     var elData = e.responseJSON.elData;
     var elHeader = e.responseJSON.elHeader;
@@ -166,15 +146,16 @@ scwin.sbm_developList_submitdone = function (e) {
 
 scwin.pgl_designList_onclick = function (idx) {
     dmp_designVo.set("pageIndex", idx);
-    $c.sbm.execute($p, sbm_selectDevelopVoList);
+    $c.sbm.execute($p, sbm_selectDesignVoList);
 };
 
 scwin.btn_reset_onclick = function (e) {
     dmp_designVo.setEmptyValue();
     dmp_designVo.set("pageIndex", "1");
     pgl_designList.setSelectedIndex(1);
-
-    $c.sbm.execute($p, sbm_selectDevelopVoList);
+    dmp_designVo.set("userId", scwin.userId);
+    dmp_designVo.set("pjtId", scwin.pjtId);
+    $c.sbm.execute($p, sbm_selectDesignVoList);
 };
 
 scwin.btn_add_onclick = function (e) {
@@ -187,12 +168,12 @@ scwin.btn_delete_onclick = function (e) {
 };
 
 scwin.btn_save_onclick = function (e) {
-
     let modifiedData = dlt_designVoList.getModifiedJSON();
 
     modifiedData.forEach(function (item) {
         item.userId = scwin.userId;
         item.pjtId = scwin.pjtId;
+        item.isDesign = 1; // 설계업무로 설정
     });
 
     let reqObj = {
@@ -200,16 +181,16 @@ scwin.btn_save_onclick = function (e) {
             "designVoList": modifiedData
         }
     };
-    $c.sbm.execute(sbm_saveDevelopVoList, reqObj);
+    $c.sbm.execute($p, sbm_saveDesignVoList, reqObj);
 };
 
-scwin.sbm_saveDevelopVoList_submitdone = function (e) {
+scwin.sbm_saveDesignVoList_submitdone = function (e) {
     var elHeader = e.responseJSON.elHeader;
     if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        $c.win.alert($p, `에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
         return false;
     } else {
-        $c.win.alert("저장되었습니다.");
+        $c.win.alert($p, "저장되었습니다.");
     }
     scwin.btn_search_onclick();
 };
@@ -242,7 +223,7 @@ scwin.openDetailPopup = function (rowIndex) {
         dataObject: jsnPopupData
     };
 
-    $p.openPopup("/InsWebApp/ui/task/develop/DevelopPopup.xml", options);
+    $p.openPopup("/InsWebApp/ui/task/design/DesignPopup.xml", options);
 };
 
 scwin.openParentTaskPopup = function (rowIndex) {
@@ -252,7 +233,6 @@ scwin.openParentTaskPopup = function (rowIndex) {
         currentTaskId: rowData.taskId,
         currentTaskName: rowData.taskName,
         currentRowIndex: rowIndex,
-        currentStgId: rowData.stgId,
         currentPjtId : rowData.pjtId
     };
 
@@ -275,7 +255,7 @@ scwin.openParentTaskPopup = function (rowIndex) {
         dataObject: jsnPopupData
     };
 
-    $p.openPopup("/InsWebApp/ui/task/develop/DevelopTaskTree.xml", options);
+    $p.openPopup("/InsWebApp/ui/task/design/DesignTaskTree.xml", options);
 };
 
 // TaskTree.xml (상위 업무 선택을 위한 업무 트리) 팝업에서 받아온 데이터
@@ -287,26 +267,12 @@ scwin.receiveTaskData = function (returnData) {
         if (currentRowIndex !== null && currentRowIndex >= 0) {
             dlt_designVoList.setCellData(currentRowIndex, "ptTaskId", selectedTask.taskId);
             dlt_designVoList.setCellData(currentRowIndex, "ptTaskName", selectedTask.taskName);
-            dlt_designVoList.setCellData(currentRowIndex, "stgId", selectedTask.stgId);
             dlt_designVoList.setCellData(currentRowIndex, "taskDepth", parseInt(selectedTask.taskDepth) + 1);
 
+            console.log(`상위업무 선택 완료: [${selectedTask.taskName}] (원본 depth: ${selectedTask.taskDepth}, 설정될 depth: ${parseInt(selectedTask.taskDepth) + 1})`);
             $c.win.alert("선택된 업무: " + selectedTask.taskName);
-
         }
     }
-};
-
-
-scwin.taskTreePopup_closeAction = function () {
-    return true;
-};
-
-scwin.detailPopup_closeAction = function () {
-    return true;
-};
-
-scwin.grd_list_oncelldblclick = function (rowIndex, columnIndex, columnId) {
-    scwin.openDetailPopup(rowIndex);
 };
 
 // 엑셀 다운로드
@@ -330,7 +296,7 @@ scwin.btn_excel_download_onclick = function (e) {
     dmp_designVo.set("pageSize", totalCount.toString()); // 전체 건수만큼 설정
 
     // 전체 데이터 조회 실행
-    $c.sbm.execute($p, sbm_selectDevelopVoListForExcel);
+    $c.sbm.execute($p, sbm_selectDesignVoListForExcel);
 
     // 원래 페이징 조건 복원
     dmp_designVo.set("pageIndex", originalPageIndex);
@@ -338,7 +304,7 @@ scwin.btn_excel_download_onclick = function (e) {
 };
 
 // 엑셀 다운로드용 전체 데이터 조회 완료 후 처리
-scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
+scwin.sbm_selectDesignVoListForExcel_submitdone = function (e) {
     var elData = e.responseJSON.elData;
     var elHeader = e.responseJSON.elHeader;
 
@@ -361,14 +327,14 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 
     // 엑셀 다운로드 실행
     var options = {
-        fileName: "개발_업무_목록_" + new Date().toISOString().slice(0, 10).replace(/-/g, ""),
+        fileName: "설계_업무_목록_" + new Date().toISOString().slice(0, 10).replace(/-/g, ""),
         // useStyle 및 headerFontBold 설정을 이용하여 GridView를 Excel 파일로 다운로드할 때 헤더 폰트를 굵게 표시
         useStyle: true,
         headerFontBold: true,
         bodyFontBold: false,
         type: 1, // inputType이 "select", "autoComplete", 혹은 "checkcombobox"인 경우 >> label 값 다운
         trim: 1,
-        removeColumns: "0, 12", // 첫 번째 컬럼(체크박스)이랑 hidden 처리된 13번째 컬럼(프로젝트 ID) 제외
+        removeColumns: "0", // 체크박스는 다운로드 안함.
         processMsg: "엑셀 파일을 생성하고 있습니다...",
         timeout: 60000,
         checkInterval: 1000,
@@ -386,6 +352,151 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 
     grd_list.advancedExcelDownload(options);
 };
+
+scwin.taskTreePopup_closeAction = function () {
+    return true;
+};
+
+scwin.detailPopup_closeAction = function () {
+    return true;
+};
+
+scwin.grd_list_oncelldblclick = function (rowIndex, columnIndex, columnId) {
+    scwin.openDetailPopup(rowIndex);
+};
+
+// 엑셀 업로드
+scwin.btn_excel_upload_onclick = function (e) {
+    console.log("=== 엑셀 업로드 시작 ===");
+
+    var options = {
+        headerExist: "1",              // 첫 번째 행을 헤더로 사용
+        type: "1",                     // label 값으로 업로드 (select 컬럼의 표시값 사용)
+        trim: "1",                     // 공백 제거
+        status: "C",                   // 업로드된 데이터를 신규 추가 상태로 설정
+        readUntilEmptyRow: "1",        // 빈 행 만나면 읽기 중단
+        dateFormat: "yyyy-MM-dd",      // inputType이 캘린더인 컬럼 형식 지정
+        append: "0",                   // 기존 데이터 삭제 후 새 데이터 추가 (이 옵션이 removeAll() 역할)
+        frameModal: true,
+        processMsg: "엑셀 파일을 업로드하고 있습니다..."
+    };
+
+    grd_list.advancedExcelUpload(options);
+
+    console.log("업로드 이후 데이터리스트 : ", dlt_designVoList);
+};
+
+/**
+ * 엑셀 업로드 템플릿 다운로드
+ * 사용자가 쉽게 엑셀을 작성할 수 있도록 샘플 데이터와 가이드가 포함된 템플릿 제공
+ */
+scwin.btn_excel_template_download_onclick = function (e) {
+    console.log("=== 엑셀 템플릿 다운로드 시작 ===");
+
+    // 기존 데이터 백업
+    var originalData = dlt_designVoList.getAllJSON();
+
+    // 샘플 데이터와 가이드 생성
+    var sampleData = [
+        {
+            chk: "",
+            taskName: "=== 업무명 작성 가이드 ===",
+            ptTaskName: "=== 상위업무명 입력 (정확한 업무명 입력) ===",
+            taskStatus: "대기",
+            isTest: "0",
+            taskSt: "2025-01-15",
+            taskEt: "2025-01-20",
+            taskAsi: "담당자명",
+            taskRate: "0"
+        },
+        {
+            chk: "",
+            taskName: "메인페이지 기획",
+            ptTaskName: "",
+            taskStatus: "대기",
+            isTest: "0",
+            taskSt: "2025-01-15",
+            taskEt: "2025-01-20",
+            taskAsi: "기획자",
+            taskRate: "0"
+        },
+        {
+            chk: "",
+            taskName: "메인페이지 와이어프레임",
+            ptTaskName: "메인페이지 기획",
+            taskStatus: "대기",
+            isTest: "0",
+            taskSt: "2025-01-21",
+            taskEt: "2025-01-25",
+            taskAsi: "기획자",
+            taskRate: "0"
+        },
+        {
+            chk: "",
+            taskName: "메인페이지 상세설계",
+            ptTaskName: "메인페이지 기획",
+            taskStatus: "대기",
+            isTest: "0",
+            taskSt: "2025-01-26",
+            taskEt: "2025-01-30",
+            taskAsi: "디자이너",
+            taskRate: "0"
+        },
+        {
+            chk: "",
+            taskName: "사용자 관리",
+            ptTaskName: "",
+            taskStatus: "대기",
+            isTest: "0",
+            taskSt: "2025-02-01",
+            taskEt: "2025-02-05",
+            taskAsi: "개발자",
+            taskRate: "0"
+        },
+        {
+            chk: "",
+            taskName: "로그인 기능",
+            ptTaskName: "사용자 관리",
+            taskStatus: "대기",
+            isTest: "1",
+            taskSt: "2025-02-06",
+            taskEt: "2025-02-10",
+            taskAsi: "개발자",
+            taskRate: "0"
+        }
+    ];
+
+    // 임시로 샘플 데이터 설정
+    dlt_designVoList.setJSON(sampleData);
+
+    // 엑셀 다운로드 실행
+    var options = {
+        fileName: "설계업무_업로드_템플릿_" + new Date().toISOString().slice(0, 10).replace(/-/g, ""),
+        useStyle: true,
+        headerFontBold: true,
+        bodyFontBold: false,
+        type: 1,
+        trim: 1,
+        removeColumns: "12", //프로젝트ID 컬럼 제외
+        processMsg: "템플릿 파일을 생성하고 있습니다...",
+        timeout: 60000,
+        checkInterval: 1000,
+        onSuccessCallback: function () {
+            // 원래 데이터로 복원
+            dlt_designVoList.setJSON(originalData);
+
+            $c.win.alert("템플릿 다운로드가 완료되었습니다.");
+        },
+        onFailureCallback: function () {
+            // 원래 데이터로 복원
+            dlt_designVoList.setJSON(originalData);
+            $c.win.alert("템플릿 다운로드에 실패했습니다.");
+        }
+    };
+
+    grd_list.advancedExcelDownload(options);
+};
+
 ]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">
@@ -393,6 +504,8 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 			<xf:group class="pgtbox" id="" style="">
 				<w2:textbox class="pgt_tit" id="" label="개발 업무 정보" style="" tagname="" />
 			</xf:group>
+			<xf:group style="" id="" class="btn_schbox">
+					</xf:group>
 			<xf:group class="schbox" id="search_box" style="">
 				<xf:group class="schbox_inner" id="" style="">
 					<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" id="" style="width:Infinity%;" tagname="table">
@@ -400,28 +513,37 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 							<w2:summary />
 						</w2:attributes>
 						<xf:group tagname="colgroup">
-							<xf:group tagname="col" style="width:63px;" id="searchComp_1"></xf:group>
+							<xf:group tagname="col" style="width:96px;" id="searchComp_1"></xf:group>
 							<xf:group tagname="col" style="" id="searchComp_2"></xf:group>
-							<xf:group tagname="col" style="width:75px;" id="searchComp_3"></xf:group>
+							<xf:group tagname="col" style="width:86px;" id="searchComp_3"></xf:group>
 							<xf:group tagname="col" style="" id="searchComp_4"></xf:group>
 							<xf:group tagname="col" style="width:92px;" id="searchComp_5"></xf:group>
 							<xf:group tagname="col" style="" id="searchComp_6"></xf:group>
-							<xf:group tagname="col" style="width:60px;" id="searchComp_7"></xf:group>
-							<xf:group tagname="col" style="" id="searchComp_8"></xf:group>
 						</xf:group>
 						<xf:group tagname="tr" style="" id="" class="">
+							<xf:group tagname="th" style="" class="w2tb_th">개발업무ID</xf:group>
+							<xf:group tagname="td" style="" id="" class="w2tb_td">
+
+								<xf:input id="" style="width: 100%;height: 21px;" ref="data:dmp_designVo.scTaskId"></xf:input>
+							</xf:group>
 							<xf:group tagname="th" style="" class="w2tb_th">
+
 								<w2:textbox localeRef="Design_SEARCH_00001" style="" id="" label="업무명" class=""></w2:textbox>
 							</xf:group>
 							<xf:group tagname="td" style="" id="" class="w2tb_td">
-								<xf:input ref="data:dmp_designVo.scTaskName" style="width:100%;height: 21px;" id="" placeholder="" class=""></xf:input>
+
+								<xf:input ref="data:dmp_designVo.scTaskName" style="width:100%;height: 21px;" id="" placeholder=""
+									class="">
+								</xf:input>
 							</xf:group>
 							<xf:group tagname="th" style="" class="w2tb_th">
+
 								<w2:textbox localeRef="Design_SEARCH_00002" style="" id="" label="업무상태" class=""></w2:textbox>
 							</xf:group>
 							<xf:group tagname="td" style="" id="" class="w2tb_td">
+
 								<xf:select1 submenuSize="auto" ref="data:dmp_designVo.scTaskStatus" chooseOptionLabel=""
-									appearance="minimal" disabledClass="w2selectbox_disabled" chooseOption="true" style="width: 100%;height: 21px;" disabled="false"
+									appearance="minimal" disabledClass="w2selectbox_disabled" chooseOption="true" style="width:100%;height: 21px;" disabled="false"
 									id="" allOption="" direction="auto">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_taskStatus">
@@ -431,46 +553,40 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 									</xf:choices>
 								</xf:select1>
 							</xf:group>
-							<xf:group tagname="th" style="" class="w2tb_th">
-								<w2:textbox localeRef="Design_SEARCH_00003" style="" id="" label="테스트여부" class=""></w2:textbox>
-							</xf:group>
-							<xf:group tagname="td" style="" id="" class="w2tb_td">
-								<xf:select1 submenuSize="auto" ref="data:dmp_designVo.scIsTest" chooseOptionLabel="" appearance="minimal"
-									disabledClass="w2selectbox_disabled" chooseOption="true" style="width: 100%;height: 21px;" disabled="false" id="" allOption=""
-									direction="auto">
-									<xf:choices>
-										<xf:itemset nodeset="data:dlt_isTest">
-											<xf:label ref="label"></xf:label>
-											<xf:value ref="value"></xf:value>
-										</xf:itemset>
-									</xf:choices>
-								</xf:select1>
-							</xf:group>
-							<xf:group tagname="th" style="" class="w2tb_th">
-								<w2:textbox localeRef="Design_SEARCH_00004" style="" id="" label="단계" class=""></w2:textbox>
-							</xf:group>
-							<xf:group tagname="td" style="" id="" class="w2tb_td">
-								<xf:select1 chooseOptionLabel="" ref="data:dmp_designVo.scStgId" submenuSize="auto" appearance="minimal"
-									disabledClass="w2selectbox_disabled" chooseOption="true" disabled="false" style="width: 100%;height: 21px;" allOption="" id=""
-									direction="auto">
-									<xf:choices>
-										<xf:itemset nodeset="data:dlt_stgId">
-											<xf:label ref="label"></xf:label>
-											<xf:value ref="value"></xf:value>
-										</xf:itemset>
-									</xf:choices>
-								</xf:select1>
-							</xf:group>
 						</xf:group>
-					</xf:group>
+					<xf:group tagname="tr" id="" style=""><xf:group tagname="th" class="w2tb_th">설계업무ID<w2:attributes><w2:scope>row</w2:scope></w2:attributes></xf:group>
+						<xf:group tagname="td" id="" class="w2tb_td">
+							<w2:attributes></w2:attributes>
+							<xf:input id="" style="width: 100%;height: 21px;" ref="data:dmp_designVo.scPtTaskId"></xf:input>
+						</xf:group>
+						<xf:group tagname="th" class="w2tb_th">
+							<w2:attributes>
+								<w2:scope>row</w2:scope>
+							</w2:attributes>
+							<w2:textbox localeRef="Design_SEARCH_00003" style="" id="" label="테스트여부" class=""></w2:textbox>
+						</xf:group>
+						<xf:group tagname="td" id="" class="w2tb_td">
+							<w2:attributes></w2:attributes>
+							<xf:select1 submenuSize="auto" ref="data:dmp_designVo.scIsTest" chooseOptionLabel="" appearance="minimal"
+								disabledClass="w2selectbox_disabled" chooseOption="true" style="width:100%;height: 21px;" disabled="false" id="" allOption=""
+								direction="auto">
+								<xf:choices>
+									<xf:itemset nodeset="data:dlt_isTest">
+										<xf:label ref="label"></xf:label>
+										<xf:value ref="value"></xf:value>
+									</xf:itemset>
+								</xf:choices>
+							</xf:select1>
+						</xf:group>
+						<xf:group tagname="th" class="w2tb_th"><w2:attributes><w2:scope>row</w2:scope></w2:attributes></xf:group><xf:group tagname="td" id="" class="w2tb_td"><w2:attributes></w2:attributes></xf:group></xf:group></xf:group>
 				</xf:group>
 				<xf:group class="btn_schbox" id="" style="">
 					<xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_search" style="" type="button"
 						ev:onclick="scwin.btn_search_onclick" localeRef="COMMON_BUTTON_00001">
 						<xf:label><![CDATA[조회]]></xf:label>
 					</xf:trigger>
-					<xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_reset"
-						localeRef="COMMON_BUTTON_00001" style="" type="button" ev:onclick="scwin.btn_reset_onclick">
+					<xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_reset" localeRef="COMMON_BUTTON_00001" style=""
+						type="button" ev:onclick="scwin.btn_reset_onclick">
 						<xf:label><![CDATA[초기화]]></xf:label>
 					</xf:trigger>
 				</xf:group>
@@ -487,16 +603,28 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 						<xf:trigger class="btn_cm" id="btn_add" style="" type="button" ev:onclick="scwin.btn_add_onclick">
 							<xf:label><![CDATA[업무 추가]]></xf:label>
 						</xf:trigger>
-						<xf:trigger class="btn_cm" id="btn_excel_download" style="" type="button" ev:onclick="scwin.btn_excel_download_onclick">
+
+						<xf:trigger class="btn_cm" id="btn_excel_template" style="background-color:;color:;" type="button"
+							ev:onclick="scwin.btn_excel_template_download_onclick">
+							<xf:label><![CDATA[템플릿 다운로드]]></xf:label>
+						</xf:trigger>
+						<xf:trigger class="btn_cm" id="btn_excel_upload" style="" type="button"
+							ev:onclick="scwin.btn_excel_upload_onclick">
+							<xf:label><![CDATA[엑셀 업로드]]></xf:label>
+						</xf:trigger>
+						<xf:trigger class="btn_cm" id="btn_excel_download" style="" type="button"
+							ev:onclick="scwin.btn_excel_download_onclick">
 							<xf:label><![CDATA[엑셀 다운로드]]></xf:label>
 						</xf:trigger>
 						<w2:textbox class="bar_btndiv" id="" label="" style=""></w2:textbox>
 						<xf:trigger class="btn_cm pt" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
 							<xf:label><![CDATA[저장]]></xf:label>
 						</xf:trigger>
-						<xf:trigger class="btn_cm " id="btn_delete" style=";background-color:#FF0000;color:#FFFFFF;" type="button" ev:onclick="scwin.btn_delete_onclick">
+						<xf:trigger class="btn_cm " id="btn_delete" style=";background-color:#FF0000;color:#FFFFFF;" type="button"
+							ev:onclick="scwin.btn_delete_onclick">
 							<xf:label><![CDATA[삭제]]></xf:label>
 						</xf:trigger>
+
 					</xf:group>
 				</xf:group>
 			</xf:group>
@@ -509,6 +637,9 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 					<w2:header style="" id="header2">
 						<w2:row style="" id="row3">
 							<w2:column width="70" inputType="checkbox" style="" id="column17" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column1" value="업무ID" displayMode="label"
+								localeRef="Design_COLNAME_00001">
+							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column2" value="업무명" displayMode="label"
 								localeRef="Design_COLNAME_00002">
 							</w2:column>
@@ -518,21 +649,19 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 							<w2:column width="70" inputType="text" style="" id="column5" value="테스트여부" displayMode="label"
 								localeRef="Design_COLNAME_00005">
 							</w2:column>
-							<w2:column width="70" inputType="text" style="" id="column7" value="단계" displayMode="label"
-								localeRef="Design_COLNAME_00007">
-							</w2:column>
-							<w2:column width="70" inputType="text" style="" id="column18" value="상위 업무명" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column19" value="설계 업무ID" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="column18" value="설계 업무명" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="column10" value="시작예정일" displayMode="label"
-								localeRef="Design_COLNAME_00010">
+								localeRef="Design_COLNAME_00010" useFilter="false">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column11" value="완료예정일" displayMode="label"
-								localeRef="Design_COLNAME_00011">
+								localeRef="Design_COLNAME_00011" useFilter="false">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column12" value="실제시작일" displayMode="label"
-								localeRef="Design_COLNAME_00012">
+								localeRef="Design_COLNAME_00012" useFilter="false">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column13" value="실제완료일" displayMode="label"
-								localeRef="Design_COLNAME_00013">
+								localeRef="Design_COLNAME_00013" useFilter="false">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column14" value="업무담당자" displayMode="label"
 								localeRef="Design_COLNAME_00014">
@@ -549,6 +678,7 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 					<w2:gBody style="" id="gBody2">
 						<w2:row style="" id="row4">
 							<w2:column width="70" inputType="checkbox" style="" id="chk" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="taskId" value="" displayMode="label" readOnly="true"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="taskName" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="select" style="" id="taskStatus" value="" displayMode="label" allOption=""
 								chooseOption="" ref="">
@@ -568,23 +698,17 @@ scwin.sbm_selectDevelopVoListForExcel_submitdone = function (e) {
 									</w2:itemset>
 								</w2:choices>
 							</w2:column>
-							<w2:column width="70" inputType="select" style="" id="stgId" value="" displayMode="label" allOption=""
-								chooseOption="" ref="" readOnly="true">
-								<w2:choices>
-									<w2:itemset nodeset="data:dlt_stgId">
-										<w2:label ref="label"></w2:label>
-										<w2:value ref="value"></w2:value>
-									</w2:itemset>
-								</w2:choices>
-							</w2:column>
+							<w2:column width="70" inputType="text" style="" id="ptTaskId" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="ptTaskName" value="" displayMode="label" readOnly="true"></w2:column>
-							<w2:column width="70" inputType="calendar" style="" id="taskSt" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="calendar" style="" id="taskSt" value="" displayMode="label"
+								useFilter="false">
+							</w2:column>
 							<w2:column width="70" inputType="calendar" style="" id="taskEt" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="calendar" style="" id="taskRst" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="calendar" style="" id="taskRet" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="taskAsi" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="taskRate" value="" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="pjtId" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="pjtId" value="" displayMode="label" hidden="true"></w2:column>
 
 						</w2:row>
 					</w2:gBody>

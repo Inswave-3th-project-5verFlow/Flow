@@ -16,10 +16,10 @@
 						<w2:key dataType="text" id="taskStatus" name="업무상태" defaultValue="대기"></w2:key>
 						<w2:key dataType="text" id="isTest" name="테스트여부" defaultValue="N"></w2:key>
 						<w2:key dataType="text" id="taskDepth" name="뎁스" defaultValue="1"></w2:key>
-						<w2:key dataType="text" id="stgId" name="단계ID"></w2:key>
+						<w2:key dataType="text" id="isDesign" name="설계업무여부" defaultValue="1"></w2:key>
+						<w2:key dataType="text" id="deTaskId" name="소속설계업무ID"></w2:key>
 						<w2:key dataType="text" id="ptTaskId" name="상위업무ID"></w2:key>
 						<w2:key dataType="text" id="ptTaskName" name="상위업무명"></w2:key>
-						<w2:key dataType="text" id="taskSeq" name="순서"></w2:key>
 						<w2:key dataType="text" id="taskSt" name="시작예정일"></w2:key>
 						<w2:key dataType="text" id="taskEt" name="완료예정일"></w2:key>
 						<w2:key dataType="text" id="taskRst" name="실제시작일"></w2:key>
@@ -66,6 +66,32 @@
 					</w2:data>
 				</w2:dataList>
 
+				<!-- 설계업무여부 목록 -->
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_isDesign" saveRemovedData="true">
+					<w2:columnInfo>
+						<w2:column dataType="text" name="name1" id="label"></w2:column>
+						<w2:column dataType="text" name="name2" id="value"></w2:column>
+					</w2:columnInfo>
+					<w2:data use="true">
+						<w2:row>
+							<label><![CDATA[설계]]></label>
+							<value><![CDATA[1]]></value>
+						</w2:row>
+						<w2:row>
+							<label><![CDATA[개발]]></label>
+							<value><![CDATA[0]]></value>
+						</w2:row>
+					</w2:data>
+				</w2:dataList>
+
+				<!-- 소속설계업무 목록 (개발업무일 때 사용) -->
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_designTasks" saveRemovedData="true">
+					<w2:columnInfo>
+						<w2:column dataType="text" name="업무명" id="label"></w2:column>
+						<w2:column dataType="text" name="업무ID" id="value"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
+
 				<!-- 단계ID 목록 -->
 				<w2:dataList baseNode="list" repeatNode="map" id="dlt_stgId" saveRemovedData="true">
 					<w2:columnInfo>
@@ -92,6 +118,10 @@
 						<w2:row>
 							<value><![CDATA[5]]></value>
 							<label><![CDATA[퍼블리싱]]></label>
+						</w2:row>
+						<w2:row>
+							<value><![CDATA[6]]></value>
+							<label><![CDATA[개발]]></label>
 						</w2:row>
 					</w2:data>
 				</w2:dataList>
@@ -136,7 +166,6 @@ scwin.btn_ptTaskName_onclick = function (e) {
     var taskData = {
         currentTaskId: currentTaskData.taskId,
         currentTaskName: currentTaskData.taskName,
-        currentStgId: currentTaskData.stgId,
         currentPjtId : currentTaskData.pjtId
     };
 
@@ -168,7 +197,6 @@ scwin.receiveTaskData = function (returnData) {
 
         dmp_taskDetail.set("ptTaskId", selectedTask.taskId);
         dmp_taskDetail.set("ptTaskName", selectedTask.taskName);
-        dmp_taskDetail.set("stgId", selectedTask.stgId);
         dmp_taskDetail.set("taskDepth", parseInt(selectedTask.taskDepth) + 1);
         
         $c.win.alert("선택된 상위업무: " + selectedTask.taskName);
@@ -261,7 +289,12 @@ scwin.btn_cancel_onclick = function (e) {
 };
 
 
-
+scwin.btn_reset_onclick = function (e) {
+    dmp_taskDetail.set("ptTaskId", null);
+    dmp_taskDetail.set("ptTaskName", null);
+    dmp_taskDetail.set("taskDepth", 1);
+    $c.win.alert("상위 업무가 초기화되었습니다.")
+};
 ]]></script>
 	</head>
 
@@ -315,16 +348,16 @@ scwin.btn_cancel_onclick = function (e) {
 							</xf:group>
 						</xf:group>
 
-						<!-- 2행: 단계, 테스트여부 -->
+						<!-- 2행: 설계업무여부, 테스트여부 -->
 						<xf:group tagname="tr">
 							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
-								<w2:textbox label="단계" style="color:#333;" />
+								<w2:textbox label="업무 타입" style="color:#333;" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
-								<xf:select1 style="width:140px;" ref="data:dmp_taskDetail.stgId" appearance="minimal" allOption="" chooseOption="true"
+								<xf:select1 style="width:140px;" ref="data:dmp_taskDetail.isDesign" appearance="minimal" allOption="" chooseOption="true"
 									chooseOptionLabel="">
 									<xf:choices>
-										<xf:itemset nodeset="data:dlt_stgId">
+										<xf:itemset nodeset="data:dlt_isDesign">
 											<xf:label ref="label"></xf:label>
 											<xf:value ref="value"></xf:value>
 										</xf:itemset>
@@ -347,12 +380,14 @@ scwin.btn_cancel_onclick = function (e) {
 							</xf:group>
 						</xf:group>
 
-						<!-- 3행: 상위업무명, 순서 -->
+						<!-- 3행: 단계 -->
+
+						<!-- 4행: 상위업무명 -->
 						<xf:group tagname="tr">
 							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
 								<w2:textbox label="상위업무명" style="color:#333;" />
 							</xf:group>
-							<xf:group class="w2tb_td" tagname="td">
+							<xf:group class="w2tb_td" tagname="td" adaptive="layout">
 								<w2:attributes>
 									<w2:colspan>3</w2:colspan>
 								</w2:attributes>
@@ -362,11 +397,15 @@ scwin.btn_cancel_onclick = function (e) {
 										ev:onclick="scwin.btn_ptTaskName_onclick">
 										<xf:label>선택</xf:label>
 									</xf:trigger>
+									<xf:trigger class="btn_cm" id="btn_reset"
+										style="margin-left:5px; padding:2px 8px;" type="button" ev:onclick="scwin.btn_reset_onclick">
+										<xf:label>초기화</xf:label>
+									</xf:trigger>
 								</xf:group>
 							</xf:group>
 						</xf:group>
 
-						<!-- 4행: 업무담당자, 진척률 -->
+						<!-- 5행: 업무담당자, 진척률 -->
 						<xf:group tagname="tr">
 							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
 								<w2:textbox label="업무담당자" style="color:#333;" />

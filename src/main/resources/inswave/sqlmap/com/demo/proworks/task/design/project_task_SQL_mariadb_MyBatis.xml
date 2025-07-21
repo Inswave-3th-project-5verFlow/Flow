@@ -90,7 +90,7 @@
         task_ret = CASE
 		    WHEN COALESCE(NULLIF(#{taskStatus}, ''), '대기') = '완료' AND (#{taskRet} IS NULL OR #{taskRet} = '')
 		    THEN CURDATE()
-  		    WHEN #{taskStatus} = '대기'
+  		    WHEN #{taskStatus} = '대기'  OR #{taskStatus} = '진행중' 
 		    THEN NULL
 		    ELSE NULLIF(#{taskRet}, '')
 		END,   
@@ -217,6 +217,9 @@
             LEFT JOIN project_task pt ON t.pt_task_id = pt.task_id  -- 상위 업무와 조인
             WHERE t.pjt_id = #{pjtId} 
               AND t.user_id = #{userId} AND t.is_design = 1
+            <if test="scTaskId != null and scTaskId != ''">
+                AND t.task_id like CONCAT('%', #{scTaskId}, '%')
+            </if>
             <if test="scTaskName != null and scTaskName != ''">
                 AND t.task_name like CONCAT('%', #{scTaskName}, '%')
             </if>
@@ -264,6 +267,12 @@
             LEFT JOIN project_task pt ON t.pt_task_id = pt.task_id  -- 상위 업무와 조인
             WHERE t.pjt_id = #{pjtId} 
               AND t.user_id = #{userId} AND t.is_design = 0
+            <if test="scTaskId != null and scTaskId != ''">
+                AND t.task_id like CONCAT('%', #{scTaskId}, '%')
+            </if>
+            <if test="scPtTaskId != null and scPtTaskId != ''">
+                AND t.pt_task_id like CONCAT('%', #{scPtTaskId}, '%')
+            </if>
             <if test="scTaskName != null and scTaskName != ''">
                 AND t.task_name like CONCAT('%', #{scTaskName}, '%')
             </if>
@@ -338,7 +347,7 @@ WITH RECURSIVE task_tree AS (
             ) AS VARCHAR(200)
         ) as tree_path
     FROM project_task
-    WHERE pt_task_id IS NULL AND pjt_id = 1 AND is_design=1
+    WHERE pt_task_id IS NULL AND pjt_id = #{pjtId} AND is_design=1
     
 
     UNION ALL
@@ -361,7 +370,7 @@ WITH RECURSIVE task_tree AS (
         ) as tree_path
     FROM project_task t
     INNER JOIN task_tree tt ON t.pt_task_id = tt.task_id
-    WHERE t.pjt_id = 1 AND t.is_design=1
+    WHERE t.pjt_id = #{pjtId} AND t.is_design=1
 )
 SELECT
     task_id as taskId,
@@ -383,6 +392,13 @@ WITH RECURSIVE task_tree AS (
     SELECT
         task_id,
         task_name,
+        task_status,
+        task_st,
+        task_et,
+        task_rst,
+        task_ret,
+        task_asi,
+        task_rate,
         pt_task_id as pt_task_id,
         task_depth,
         is_design,
@@ -395,7 +411,7 @@ WITH RECURSIVE task_tree AS (
         ) as tree_path
     FROM project_task
     WHERE pt_task_id IS NULL
-    AND pjt_id = 1
+    AND pjt_id = #{pjtId}
 
     UNION ALL
 
@@ -403,6 +419,13 @@ WITH RECURSIVE task_tree AS (
     SELECT
         t.task_id,
         t.task_name,
+        t.task_status,
+        t.task_st,
+        t.task_et,
+        t.task_rst,
+        t.task_ret,
+        t.task_asi,
+        t.task_rate,
         t.pt_task_id as pt_task_id,
         t.task_depth,
         t.is_design,
@@ -417,11 +440,18 @@ WITH RECURSIVE task_tree AS (
         ) as tree_path
     FROM project_task t
     INNER JOIN task_tree tt ON t.pt_task_id = tt.task_id
-    WHERE t.pjt_id = 1
+    WHERE t.pjt_id = #{pjtId}
 )
 SELECT
     task_id as taskId,
     task_name as taskName,
+    task_status as taskStatus,
+    task_st as taskSt,
+    task_et as taskEt,
+    task_rst as taskRst,
+    task_ret as taskRet,
+    task_asi as taskAsi,
+    task_rate as taskRate,
     pt_task_id as ptTaskId,
     task_depth as taskDepth,
     CASE WHEN is_design = 1 THEN '설계' ELSE '개발' END as taskType,

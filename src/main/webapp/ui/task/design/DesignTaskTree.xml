@@ -23,9 +23,6 @@
         				<w2:column dataType="text" name="task_name" id="taskName"></w2:column>
         				<w2:column dataType="text" name="pt_task_id" id="ptTaskId"></w2:column>
         				<w2:column dataType="text" name="task_depth" id="taskDepth"></w2:column>
-        				<w2:column dataType="text" name="original_depth" id="originalDepth"></w2:column>
-        				<w2:column dataType="text" name="task_seq" id="taskSeq"></w2:column>
-        				<w2:column dataType="text" name="stg_id" id="stgId"></w2:column>
         				<w2:column dataType="text" name="pjt_id" id="pjtId"></w2:column>
         			</w2:columnInfo>
         		</w2:dataList>
@@ -35,7 +32,6 @@
         			<w2:keyInfo>
         				<w2:key dataType="text" name="selected_task_id" id="selectedTaskId"></w2:key>
         				<w2:key dataType="text" name="selected_task_name" id="selectedTaskName"></w2:key>
-        				<w2:key dataType="text" name="selected_stg_id" id="selectedStgId"></w2:key>
         				<w2:key dataType="text" name="selected_task_depth" id="selectedTaskDepth"></w2:key>
         			</w2:keyInfo>
         		</w2:dataMap>
@@ -75,54 +71,24 @@ scwin.sbm_designTaskTreeList_submitdone = function (e) {
     scwin.buildTreeView(elData.designVoList);
 };
 
-
 scwin.buildTreeView = function (originalData) {
-    var currentStgId = "";
-    var stgHeaderIndex = 0;
-
-    // 부모 페이지에서 클릭한 업무
-    // var taskData = $p.getParameter("taskData");
-    // var currentTaskId = taskData ? taskData.currentTaskId : null;
     var treeData = [];
+    var currentTaskId = $p.getParameter("taskData").currentTaskId
+
 
     for (var i = 0; i < originalData.length; i++) {
         var rowData = originalData[i];
+        var taskName = rowData.taskName
 
-        // 자기 자신의 업무는 표시 X
-        // if (currentTaskId && rowData.taskId === currentTaskId) {
-        //     continue;
-        // }
-
-        var stgId = rowData.stgId;
-
-        if (currentStgId != stgId) {
-            currentStgId = stgId;
-            stgHeaderIndex++;
-
-            treeData.push({
-                taskId: "STG_" + stgId,
-                taskName: getStgName(stgId),
-                ptTaskId: "0",
-                taskDepth: "1",
-                taskSeq: stgHeaderIndex,
-                stgId: stgId,
-                pjtId: rowData.pjtId
-            });
+        if (rowData.taskId === currentTaskId) {
+            taskName = rowData.taskName + " [현재 업무]★";
         }
-
-        var taskDepth = rowData.taskDepth;
-        // 단계 헤더 때문에 depth 조정: 실제 업무의 원본 depth 유지
-        var adjustedDepth = parseInt(taskDepth) + 1;  // 단계 헤더로 인한 트리 구조상 +1
-        var adjustedPtTaskId = taskDepth == "1" ? "STG_" + stgId : rowData.ptTaskId;
 
         treeData.push({
             taskId: rowData.taskId,
-            taskName: rowData.taskName,
-            ptTaskId: adjustedPtTaskId,
-            taskDepth: adjustedDepth.toString(),
-            originalDepth: taskDepth,  // 원본 depth 보존
-            taskSeq: rowData.taskSeq,
-            stgId: stgId,
+            taskName: taskName,
+            ptTaskId: rowData.ptTaskId,
+            taskDepth: rowData.taskDepth,
             pjtId: rowData.pjtId
         });
     }
@@ -132,23 +98,14 @@ scwin.buildTreeView = function (originalData) {
 
 scwin.trv_taskTree_onlabelclick = function (value, node, index) {
     if (node && node.label) {
-        if (value && value.indexOf("STG_") === 0) {
-            dmp_selectedTask.set("selectedTaskId", "");
-            dmp_selectedTask.set("selectedTaskName", "");
-            dmp_selectedTask.set("selectedStgId", "");
-            dmp_selectedTask.set("selectedTaskDepth", "");
-            $c.win.alert("단계 헤더는 선택할 수 없습니다. 업무를 선택해주세요.");
-        } else {
-            dmp_selectedTask.set("selectedTaskId", value);
-            dmp_selectedTask.set("selectedTaskName", node.label);
+        dmp_selectedTask.set("selectedTaskId", value);
+        dmp_selectedTask.set("selectedTaskName", node.label);
 
-            var rowIndex = scwin.findRowIndexByTaskId(value);
-            if (rowIndex >= 0) {
-                var rowData = dlt_taskTreeList.getRowJSON(rowIndex);
-                dmp_selectedTask.set("selectedStgId", rowData.stgId);
-                // 원본 depth 사용 (트리 구조상 + 1 했던 depth 아니라 원본 depth 임)
-                dmp_selectedTask.set("selectedTaskDepth", rowData.originalDepth);
-            }
+        var rowIndex = scwin.findRowIndexByTaskId(value);
+        if (rowIndex >= 0) {
+            var rowData = dlt_taskTreeList.getRowJSON(rowIndex);
+            dmp_selectedTask.set("selectedIsDesign", rowData.isDesign);
+            dmp_selectedTask.set("selectedTaskDepth", rowData.taskDepth);
         }
     }
 };
@@ -170,32 +127,38 @@ scwin.btn_search_onclick = function (e) {
 scwin.btn_confirm_onclick = function (e) {
     var selectedTaskId = dmp_selectedTask.get("selectedTaskId");
     var selectedTaskName = dmp_selectedTask.get("selectedTaskName");
-    var selectedStgId = dmp_selectedTask.get("selectedStgId");
     var selectedTaskDepth = dmp_selectedTask.get("selectedTaskDepth");
+    var taskData = $p.getParameter("taskData");
 
     if (selectedTaskId) {
-        var taskData = $p.getParameter("taskData");
+        if (taskData.currentTaskId === selectedTaskId) {
+            $c.win.alert("자신의 업무는 상위 업무로 선택할 수 없습니다.");
+            return;
+        }
 
         var returnData = {
             selectedTask: {
                 taskId: selectedTaskId,
                 taskName: selectedTaskName,
-                stgId: selectedStgId,
-                taskDepth: selectedTaskDepth
+                taskDepth: selectedTaskDepth,
             },
             currentRowIndex: taskData ? taskData.currentRowIndex : null
         };
 
         $p.parent().scwin.receiveTaskData(returnData);
         $p.closePopup();
-    } else {
+    }
+    else {
         $c.win.alert("업무를 선택해주세요.");
     }
 };
 
 scwin.btn_cancel_onclick = function (e) {
     $p.closePopup();
-};]]></script>
+};
+
+
+]]></script>
     </head>
     
     <body ev:onpageload="scwin.onpageload">
@@ -213,6 +176,9 @@ scwin.btn_cancel_onclick = function (e) {
     		<xf:group class="selected_info" style="padding:10px; background-color:#f8f9fa; border-bottom:1px solid #ddd;">
     			<xf:output style="font-weight:bold;">선택된 업무: </xf:output>
     			<xf:output ref="data:dmp_selectedTask.selectedTaskName" style="color:#007bff;"></xf:output>
+    			<xf:output style="margin-left:10px; color:#666;"> (</xf:output>
+    			<xf:output ref="data:dmp_selectedTask.selectedTaskType" style="color:#666;"></xf:output>
+    			<xf:output style="color:#666;">)</xf:output>
     		</xf:group>
     		
     		<!-- TreeView 영역 -->

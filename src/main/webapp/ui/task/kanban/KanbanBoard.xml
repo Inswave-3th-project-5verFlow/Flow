@@ -18,14 +18,16 @@
 			padding: 15px; /* 수정: 20px → 15px로 줄임 */
 			margin-bottom: 15px; /* 수정: 20px → 15px로 줄임 */
 			box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-			text-align: center;
+			text-align:
+			center;
 			}
 
 			.kanban_title {
 			font-size: 20px; /* 수정: 24px → 20px로 줄임 */
 			font-weight: bold;
 			color: #2d3748;
-			margin-bottom: 8px; /* 수정: 10px → 8px로 줄임 */
+			margin-bottom: 8px; /* 수정: 10px → 8px로
+			줄임 */
 			}
 
 			.kanban_stats {
@@ -49,7 +51,8 @@
 			}
 
 			.stat_label {
-			font-size: 11px; /* 수정: 12px → 11px로 줄임 */
+			font-size: 11px; /* 수정: 12px →
+			11px로 줄임 */
 			color: #666;
 			}
 
@@ -58,7 +61,8 @@
 			display: flex;
 			justify-content: center;
 			gap: 10px;
-			margin-top: 10px; /* 수정: 15px → 10px로 줄임 */
+			margin-top: 10px; /* 수정:
+			15px → 10px로 줄임 */
 			}
 
 			.kanban_board {
@@ -67,13 +71,15 @@
 			gap: 20px;
 			max-width: 1200px;
 			margin: 0 auto;
-			height: 75vh; /* 수정: 70vh → 75vh로 늘림 (헤더가 줄어든 만큼 보드를 늘림) */
+			height:
+			75vh; /* 수정: 70vh → 75vh로 늘림 (헤더가 줄어든 만큼 보드를 늘림) */
 			}
 
 			.kanban_column {
 			background: white;
 			border-radius: 8px;
-			box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+			box-shadow: 0 2px 4px
+			rgba(0,0,0,0.1);
 			min-height: 0;
 			display: flex;
 			flex-direction: column;
@@ -81,7 +87,8 @@
 
 			.column_header {
 			padding: 12px; /* 수정: 15px → 12px로 줄임 */
-			text-align: center;
+			text-align:
+			center;
 			font-weight: bold;
 			color: white;
 			border-radius: 8px 8px 0 0;
@@ -103,7 +110,8 @@
 			border: 2px dashed #ddd;
 			border-radius: 6px;
 			padding: 10px;
-			transition: all 0.3s ease;
+			transition:
+			all 0.3s ease;
 			min-height: 100px; /* 추가: 최소 높이 설정 */
 			}
 
@@ -149,17 +157,29 @@
 
 			.task_assignee {
 			background: #3674B5;
-			color: white;
+			color:
+			white;
 			padding: 2px 6px;
 			border-radius: 10px;
 			font-size: 10px;
 			}
 
 			.task_stage {
-			background: #f1f1f1;
 			padding: 2px 6px;
 			border-radius: 4px;
 			font-size: 10px;
+			color: white;
+			font-weight: bold;
+			}
+
+			/* 설계 업무 - 파란색 */
+			.task_stage.design {
+			background: #3498db;
+			}
+
+			/* 개발 업무 - 주황색 */
+			.task_stage.development {
+			background: #e67e22;
 			}
 
 			.task_dates {
@@ -183,14 +203,17 @@
 			color: white;
 			}
 
-			.smart_button {
-			background: #3674B5;
+			.smart_button
+			{
+			background:
+			#3674B5;
 			color: white;
 			border: none;
 			padding: 8px 15px;
 			border-radius: 4px;
 			cursor: pointer;
-			font-size: 13px; /* 추가: 버튼 폰트 크기 설정 */
+			font-size: 13px; /* 추가: 버튼 폰트 크기 설정
+			*/
 			}
 
 			.smart_button:hover {
@@ -200,7 +223,8 @@
 			.empty_placeholder {
 			text-align: center;
 			color: #999;
-			padding: 30px 20px; /* 수정: 50px → 30px로 줄임 */
+			padding: 30px 20px; /* 수정: 50px → 30px로
+			줄임 */
 			font-style: italic;
 			}
 
@@ -210,7 +234,8 @@
 			}
 
 			.column_body::-webkit-scrollbar-track {
-			background: #f1f1f1;
+			background:
+			#f1f1f1;
 			border-radius: 4px;
 			}
 
@@ -266,7 +291,6 @@
 						<w2:column dataType="text" id="taskDepth" name="뎁스" defaultValue="1"></w2:column>
 						<w2:column dataType="text" id="stgId" name="단계ID" defaultValue="0"></w2:column>
 						<w2:column dataType="text" id="ptTaskId" name="상위업무ID" defaultValue="0"></w2:column>
-						<w2:column dataType="text" id="taskSeq" name="순서" defaultValue="1"></w2:column>
 						<w2:column dataType="text" id="taskSt" name="시작예정일"></w2:column>
 						<w2:column dataType="text" id="taskEt" name="완료예정일"></w2:column>
 						<w2:column dataType="text" id="taskRst" name="실제시작일"></w2:column>
@@ -276,7 +300,7 @@
 						<w2:column dataType="text" id="pjtId" name="프로젝트ID" defaultValue="1"></w2:column>
 						<w2:column id="chk" name="chk" dataType="text" ignoreStatus="true"></w2:column>
 						<w2:column id="ptTaskName" name="상위업무명" dataType="text"></w2:column>
-						<w2:column id="stgName" name="단계명" dataType="text"></w2:column>
+						<w2:column id="isDesign" name="설계업무여부" dataType="text"></w2:column>
 					</w2:columnInfo>
 				</w2:dataList>
 				<w2:dataMap baseNode="map" id="dmp_stats">
@@ -417,16 +441,17 @@ scwin.createTaskCard = function(task) {
     card.dataset.taskId = task.taskId;
     card.dataset.currentStatus = task.taskStatus;
     
-    var stageName = scwin.getStageName(task.stgId);
-    
+    var stageName = Number(task.isDesign) ? "설계" : "개발"
+    var stageClass = Number(task.isDesign) ? "design" : "development"; 
+
     card.innerHTML = 
         '<div class="task_name">' + (task.taskName || '제목 없음') + '</div>' +
         '<div class="task_info">' +
             '<span class="task_assignee">' + (task.taskAsi || '미지정') + '</span>' +
-            '<span class="task_stage">' + stageName + '</span>' +
+            '<span class="task_stage ' + stageClass +'">' + stageName + '</span>' +
         '</div>' +
         '<div class="task_dates">' +
-            '시작: ' + (task.taskSt || '미정') + ' | 완료: ' + (task.taskEt || '미정') +
+            '시작 예정: ' + (task.taskSt || '미정') + ' | 완료 예정: ' + (task.taskEt || '미정') +
         '</div>' +
         '<div style="margin-top:8px;">' +
             '<button class="action_btn task_detail_btn" data-task-id="' + task.taskId + '">상세</button>' +
@@ -447,16 +472,6 @@ scwin.createTaskCard = function(task) {
     return card;
 };
 
-scwin.getStageName = function(stgId) {
-    var stages = {
-        "1": "리서치",
-        "2": "분석", 
-        "3": "기획",
-        "4": "디자인",
-        "5": "퍼블리싱"
-    };
-    return stages[stgId] || "미지정";
-};
 
 // 업무 상세 팝업 열기 함수 정의
 scwin.openTaskDetailPopup = function(taskId) {
@@ -770,20 +785,20 @@ scwin.sbm_designList_submitdone = function(e) {
 			<xf:group class="kanban_header" id="grp_header">
 				<xf:group class="kanban_stats" id="grp_stats">
 					<xf:group class="stat_item" id="grp_total_stat">
-						<w2:span class="stat_number" id="spn_total" ref="data:dmp_stats.totalTasks"></w2:span>
 						<w2:span class="stat_label" id="" label="전체"></w2:span>
+						<w2:span class="stat_number" id="spn_total" ref="data:dmp_stats.totalTasks"></w2:span>
 					</xf:group>
 					<xf:group class="stat_item" id="grp_waiting_stat">
-						<w2:span class="stat_number" id="spn_waiting" ref="data:dmp_stats.waitingTasks"></w2:span>
 						<w2:span class="stat_label" id="" label="대기"></w2:span>
+						<w2:span class="stat_number" id="spn_waiting" ref="data:dmp_stats.waitingTasks"></w2:span>
 					</xf:group>
 					<xf:group class="stat_item" id="grp_progress_stat">
-						<w2:span class="stat_number" id="spn_progress" ref="data:dmp_stats.progressTasks"></w2:span>
 						<w2:span class="stat_label" id="" label="진행중"></w2:span>
+						<w2:span class="stat_number" id="spn_progress" ref="data:dmp_stats.progressTasks"></w2:span>
 					</xf:group>
 					<xf:group class="stat_item" id="grp_completed_stat">
-						<w2:span class="stat_number" id="spn_completed" ref="data:dmp_stats.completedTasks"></w2:span>
 						<w2:span class="stat_label" id="" label="완료"></w2:span>
+						<w2:span class="stat_number" id="spn_completed" ref="data:dmp_stats.completedTasks"></w2:span>
 					</xf:group>
 				</xf:group>
 				<xf:group style="margin-top:15px;" id="grp_actions">
