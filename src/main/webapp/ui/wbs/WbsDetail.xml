@@ -135,8 +135,12 @@ scwin.onpageload = function () {
         tbx_title.setValue("신규 업무 생성 팝업");
         dmp_taskDetail.set("pjtId", scwin.PJT_ID);
         dmp_taskDetail.set("userId", popupData.userId);
+        // 기본 담당자로 로그인 유저 이름 설정
+        const userName = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_NAME;
+        ipt_taskAsi.setValue(userName)
         btn_save.setValue("등록");
     }
+
 };
 
 scwin.btn_ptTaskName_onclick = function (e) {
@@ -178,7 +182,7 @@ scwin.receiveTaskData = function (returnData) {
         dmp_taskDetail.set("ptTaskName", selectedTask.taskName);
         console.log("그리드에서 넘어온 부모 뎁스 !!!!!!")
         console.log(selectedTask.taskDepth);
-        dmp_taskDetail.set("taskDepth", parseInt(selectedTask.taskDepth)+1);
+        dmp_taskDetail.set("taskDepth", parseInt(selectedTask.taskDepth) + 1);
         dmp_taskDetail.set("deTaskId", selectedTask.taskId);
         $c.win.alert("선택된 상위업무: " + selectedTask.taskName);
     }
@@ -293,7 +297,18 @@ scwin.sbm_deleteTaskDetail_submitdone = function (e) {
 
 scwin.btn_cancel_onclick = function (e) {
     $p.closePopup();
-};]]></script>
+};
+
+scwin.taskStatus_onchange = function (info) {
+    if (info.newValue === "진행중") {
+        ipt_taskRate.setValue(50);
+    } else if (info.newValue === "완료") {
+        ipt_taskRate.setValue(100);
+    } else {
+        ipt_taskRate.setValue(0);
+    }
+};
+]]></script>
 	</head>
 
 	<body ev:onpageload="scwin.onpageload">
@@ -354,7 +369,7 @@ scwin.btn_cancel_onclick = function (e) {
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<xf:select1 style="width:180px;" ref="data:dmp_taskDetail.taskStatus" appearance="minimal" allOption=""
-									chooseOption="true" chooseOptionLabel="$blank">
+									chooseOption="true" chooseOptionLabel="$blank" id="taskStatus" ev:onchange="scwin.taskStatus_onchange">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_taskStatus">
 											<xf:label ref="label"></xf:label>
@@ -404,13 +419,13 @@ scwin.btn_cancel_onclick = function (e) {
 								<w2:textbox label="업무담당자" style="color:#333;" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
-								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskAsi" />
+								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskAsi" id="ipt_taskAsi"/>
 							</xf:group>
 							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
 								<w2:textbox label="진척률(%)" style="color:#333;" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
-								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskRate" />
+								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskRate" id="ipt_taskRate"/>
 							</xf:group>
 						</xf:group>
 					</xf:group>
