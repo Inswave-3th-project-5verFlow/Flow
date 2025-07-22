@@ -27,113 +27,112 @@ public class UnitTestDao extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstr
      * 단위테스트 케이스 총 개수 조회
      */
     public long selectUnitTestListCount(UnitTestVo unitTestVo) throws ElException {
-        
         return (Long)selectByPk("com.demo.proworks.unit.selectUnitTestListCount", unitTestVo);
     }
     
     /**
      * 단위테스트 케이스 상세 조회
      */
-    public UnitTestVo selectUnitTestDetail(Map<String, Object> paramMap) throws ElException {
-        return (UnitTestVo) selectByPk("com.demo.proworks.unit.selectUnitTestDetail", paramMap);
+    public UnitTestVo selectUnitTestDetail(UnitTestVo unitTestVo) throws ElException {
+        return (UnitTestVo) selectByPk("com.demo.proworks.unit.selectUnitTestDetail", unitTestVo);
     }
     
     /**
      * 단위테스트 케이스 등록
      */
-    public int insertUnitTest(Map<String, Object> paramMap) throws ElException {
-        return insert("com.demo.proworks.unit.insertUnitTest", paramMap);
+    public int insertUnitTest(UnitTestVo unitTestVo) throws ElException {
+        return insert("com.demo.proworks.unit.insertUnitTest", unitTestVo);
     }
     
     /**
      * 단위테스트 케이스 수정
      */
-    public int updateUnitTest(Map<String, Object> paramMap) throws ElException {
-        return update("com.demo.proworks.unit.updateUnitTest", paramMap);
+    public int updateUnitTest(UnitTestVo unitTestVo) throws ElException {
+        return update("com.demo.proworks.unit.updateUnitTest", unitTestVo);
     }
     
     /**
      * 단위테스트 케이스 삭제 (논리삭제)
      */
-    public int deleteUnitTest(Map<String, Object> paramMap) throws ElException {
-        return update("com.demo.proworks.unit.deleteUnitTest", paramMap);
+    public int deleteUnitTest(UnitTestVo unitTestVo) throws ElException {
+        return update("com.demo.proworks.unit.deleteUnitTest", unitTestVo);
     }
     
     /**
      * 테스트 상태별 통계 조회
      */
     @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> selectUnitTestStatistics(Map<String, Object> paramMap) throws ElException {
-        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectUnitTestStatistics", paramMap);
+    public List<Map<String, Object>> selectUnitTestStatistics(UnitTestVo unitTestVo) throws ElException {
+        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectUnitTestStatistics", unitTestVo);
     }
     
     /**
      * 테스트 실행 상태 업데이트
      */
-    public int updateTestStatus(Map<String, Object> paramMap) throws ElException {
-        return update("com.demo.proworks.unit.updateTestStatus", paramMap);
+    public int updateTestStatus(UnitTestVo unitTestVo) throws ElException {
+        return update("com.demo.proworks.unit.updateTestStatus", unitTestVo);
     }
     
     /**
      * 테스트 결과 업데이트
      */
-    public int updateTestResult(Map<String, Object> paramMap) throws ElException {
-        return update("com.demo.proworks.unit.updateTestResult", paramMap);
+    public int updateTestResult(UnitTestVo unitTestVo) throws ElException {
+        return update("com.demo.proworks.unit.updateTestResult", unitTestVo);
     }
     
     /**
      * 담당자별 테스트 케이스 개수 조회
      */
     @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> selectTestCountByAssignee(Map<String, Object> paramMap) throws ElException {
-        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestCountByAssignee", paramMap);
+    public List<Map<String, Object>> selectTestCountByAssignee(UnitTestVo unitTestVo) throws ElException {
+        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestCountByAssignee", unitTestVo);
     }
     
     /**
      * 우선순위별 테스트 케이스 개수 조회
      */
     @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> selectTestCountByPriority(Map<String, Object> paramMap) throws ElException {
-        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestCountByPriority", paramMap);
+    public List<Map<String, Object>> selectTestCountByPriority(UnitTestVo unitTestVo) throws ElException {
+        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestCountByPriority", unitTestVo);
     }
     
     /**
      * 테스트 타입별 테스트 케이스 개수 조회
      */
     @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> selectTestCountByType(Map<String, Object> paramMap) throws ElException {
-        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestCountByType", paramMap);
+    public List<Map<String, Object>> selectTestCountByType(UnitTestVo unitTestVo) throws ElException {
+        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestCountByType", unitTestVo);
     }
     
     /**
      * 최근 테스트 실행 이력 조회
      */
     @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> selectRecentTestExecution(Map<String, Object> paramMap) throws ElException {
-        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectRecentTestExecution", paramMap);
+    public List<Map<String, Object>> selectRecentTestExecution(UnitTestVo unitTestVo) throws ElException {
+        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectRecentTestExecution", unitTestVo);
     }
     
     /**
      * 특정 기간 테스트 실행 통계 조회
      */
     @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> selectTestExecutionStatsByDate(Map<String, Object> paramMap) throws ElException {
-        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestExecutionStatsByDate", paramMap);
+    public List<Map<String, Object>> selectTestExecutionStatsByDate(UnitTestVo unitTestVo) throws ElException {
+        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestExecutionStatsByDate", unitTestVo);
     }
     
     /**
      * 테스트 커버리지 통계 조회
      */
     @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> selectTestCoverageStats(Map<String, Object> paramMap) throws ElException {
-        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestCoverageStats", paramMap);
+    public List<Map<String, Object>> selectTestCoverageStats(UnitTestVo unitTestVo) throws ElException {
+        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestCoverageStats", unitTestVo);
     }
     
     /**
      * 테스트 케이스 중복 체크
      */
-    public int checkDuplicateTestCase(Map<String, Object> paramMap) throws ElException {
-        Object result = selectByPk("com.demo.proworks.unit.checkDuplicateTestCase", paramMap);
+    public int checkDuplicateTestCase(UnitTestVo unitTestVo) throws ElException {
+        Object result = selectByPk("com.demo.proworks.unit.checkDuplicateTestCase", unitTestVo);
         return result != null ? (Integer) result : 0;
     }
     
@@ -141,7 +140,16 @@ public class UnitTestDao extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstr
      * 업무별 테스트 케이스 개수 조회
      */
     @SuppressWarnings("unchecked")
-    public List<Map<String, Object>> selectTestCountByTask(Map<String, Object> paramMap) throws ElException {
-        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestCountByTask", paramMap);
+    public List<Map<String, Object>> selectTestCountByTask(UnitTestVo unitTestVo) throws ElException {
+        return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestCountByTask", unitTestVo);
+    }
+    
+    /**
+     * 다음 테스트 케이스 시퀀스 번호 조회
+     * TC_001, TC_002, ... TC_010, ... TC_100 형태의 ID를 위한 시퀀스 번호 생성
+     */
+    public int getNextTestCaseSequence() throws ElException {
+        Object result = selectByPk("com.demo.proworks.unit.getNextTestCaseSequence", null);
+        return result != null ? (Integer) result : 1;
     }
 }
