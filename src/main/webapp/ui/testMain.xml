@@ -465,32 +465,67 @@ scwin.toggleSubMenu = function (menuObj) {
 };
 
 /**
- * 탭 열기 함수
+ * 개선된 탭 열기 함수 (데이터 전달 지원)
+ * @param {string} url - 열 페이지 URL
+ * @param {string} title - 탭 제목
+ * @param {Object} tabData - 전달할 탭 데이터 (선택사항)
  */
-scwin.openTab = function (url, title) {
+// 기존 중복 탭 확인 부분을 다음과 같이 수정:
+
+scwin.openTab = async function (url, title, tabData) {
     var tabId = "tab_" + new Date().getTime();
 
     try {
-        // 중복 탭 확인
         var tabInfo = tab_content.getTabInfo();
+        var existingTabId = null;
+        var existingTabIndex = -1;
+        
+        // 같은 URL의 탭이 이미 열려있는지 확인
         for (var i = 0; i < tabInfo.length; i++) {
             if (tabInfo[i] && tabInfo[i].src === url) {
-                // 기존 탭으로 이동
-                tab_content.setSelectedTabIndex(i);
-                return;
+                existingTabId = tabInfo[i].id;  // 기존 탭 ID 저장
+                existingTabIndex = i;
+                break;
             }
         }
 
-        // 새 탭 생성
-        tab_content.addTab(tabId, {
-            "label": title,
-            "closable": "true"
-        }, {
+        // contentOptions 설정
+        var contentOptions = {
             "src": url,
-            "frameMode": "wframe"
-        });
+            "frameMode": "wframePreload",
+            "scope": true,
+            "alwaysDraw": true
+        };
 
-        tab_content.setSelectedTabIndex(tabId);
+        if (tabData) {
+            contentOptions.dataObject = {
+                "type": "json",
+                "name": "tabData",
+                "data": tabData
+            };
+        }
+
+        if (existingTabIndex !== -1) {
+            // 기존 탭ID로 exist 옵션 사용
+            console.log("기존 탭 갱신:", existingTabId);
+            
+            var newTabId = await tab_content.addTab(existingTabId, {
+                "label": title,
+                "closable": true,
+                "openAction": "exist"  // 기존 탭 내용을 새로 고침
+            }, contentOptions);
+
+            await tab_content.setSelectedTabIndex(existingTabIndex);
+        } else {
+            // 새 탭인 경우 (기존 로직 유지)
+            var newTabId = await tab_content.addTab(tabId, {
+                "label": title,
+                "closable": true,
+                "openAction": "new"
+            }, contentOptions);
+
+            await tab_content.setSelectedTabIndex(newTabId);
+        }
 
     } catch (e) {
         console.error("탭 생성 실패:", e);

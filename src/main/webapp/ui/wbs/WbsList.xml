@@ -252,17 +252,6 @@ scwin.btn_down_onclick = function (e) {
 };
 
 /**
- * 그리드 셀 클릭 이벤트
- * @description 현재 미사용 상태입니다.
- * @param {number} rowIndex - 행 인덱스
- * @param {number} columnIndex - 컬럼 인덱스
- * @param {string} columnId - 컬럼 ID
- */
-scwin.grd_list_oncellclick = function (rowIndex, columnIndex, columnId) {
-    // 현재 구현 없음
-};
-
-/**
  * 그리드 셀 더블클릭 이벤트
  * @description WBS 상세 정보 팝업을 호출합니다.
  * @param {number} rowIndex - 행 인덱스
@@ -437,6 +426,8 @@ scwin.sbm_wbsList_submitdone = function (e) {
     scwin.setTestStatusStyle();
     scwin.setDelayStatusStyle();
     scwin.setTaskTypeStyle();
+    scwin.setTaskTypeStyle();
+    scwin.setTaskIdClickableStyle();
 };
 
 /**
@@ -596,36 +587,29 @@ scwin.getTestStatusDisplay = function (isTest) {
  * @description 진척률에 따라 그리드 셀에 프로그래스 바 스타일을 적용합니다.
  */
 scwin.setProgressStyle = function () {
-    const rowCount = dlt_wbsVoList.getTotalRow();
+    const rowCount = dlt_wbsVoList.getRowCount();
+    const colIndex = grd_list.getColumnIndex("taskRate");
+
     for (let i = 0; i < rowCount; i++) {
-        const rate = dlt_wbsVoList.getCellData(i, "taskRate");
-        if (rate) {
-            const progressValue = Math.min(Math.max(Number(rate), 0), 1);
-            const progressPercent = Math.round(progressValue * 100);
-            
-            // 프로그래스 바 색상 결정
-            let progressColor;
-            if (progressPercent < 30) {
-                progressColor = '#ff4444';  // 빨간색
-            } else if (progressPercent < 70) {
-                progressColor = '#ffaa00';  // 주황색
-            } else {
-                progressColor = '#00aa00';  // 녹색
-            }
-            
-            const progressStyle = `
-                background: linear-gradient(to right, 
-                    ${progressColor} 0%, 
-                    ${progressColor} ${progressPercent}%, 
-                    #f0f0f0 ${progressPercent}%, 
-                    #f0f0f0 100%);
-                text-align: center;
-                font-weight: bold;
-                color: #333;
-            `;
-            
-            grd_list.setCellStyle(i, "taskRate", progressStyle);
+        const percent = parseInt(dlt_wbsVoList.getCellData(i, "taskRate"), 10) || 0;
+
+        let styleValue = "#ffffff";
+        if (percent > 0) {
+            styleValue = `linear-gradient(to right,
+                #16213e 0%,
+                #16213e ${percent}%,
+                #fff ${percent}%,
+                #fff 100%)`;
         }
+
+        const styles = [
+            { type: "cell", rowIndex: i, colIndex, styleName: "background", styleValue },
+            { type: "cell", rowIndex: i, colIndex, styleName: "border-radius", styleValue: "10px" },
+            { type: "cell", rowIndex: i, colIndex, styleName: "text-align", styleValue: "center" },
+            { type: "cell", rowIndex: i, colIndex, styleName: "color", styleValue: "#e94560" }
+        ];
+
+        styles.forEach(style => grd_list.setStyleAll(style));
     }
 };
 
@@ -637,22 +621,22 @@ scwin.setTaskStatusStyle = function () {
     const rowCount = dlt_wbsVoList.getTotalRow();
     for (let i = 0; i < rowCount; i++) {
         const status = dlt_wbsVoList.getCellData(i, "taskStatus");
-        let statusStyle = "";
-        
+        let statusStyle = "font-weight: bold;";
+
         switch (status) {
             case "대기":
-                statusStyle = "background-color: #fff3cd; color: #856404;";
+                statusStyle += "color: #16213e;";
                 break;
             case "진행중":
-                statusStyle = "background-color: #d1ecf1; color: #0c5460;";
+                statusStyle += "color: #0f3460;";
                 break;
             case "완료":
-                statusStyle = "background-color: #d4edda; color: #155724;";
+                statusStyle += "color: #1a1a2e;";
                 break;
             default:
-                statusStyle = "background-color: #f8f9fa; color: #6c757d;";
+                statusStyle += "color: black;";
         }
-        
+
         grd_list.setCellStyle(i, "taskStatus", statusStyle);
     }
 };
@@ -666,15 +650,15 @@ scwin.setTestStatusStyle = function () {
     for (let i = 0; i < rowCount; i++) {
         const isTest = dlt_wbsVoList.getCellData(i, "isTest");
         let testStyle = "text-align: center; font-size: 16px; font-weight: bold;";
-        
+
         if (isTest === "1") {
-            testStyle += "color: #28a745;";  // 녹색: 테스트 완료
+            testStyle += "color: #1a1a2e;";
         } else if (isTest === "0") {
-            testStyle += "color: #dc3545;";  // 빨간색: 미테스트
+            testStyle += "color: #e94560;";
         } else {
-            testStyle += "color: #6c757d;";  // 회색: 불명
+            testStyle += "color: #16213e;";
         }
-        
+
         grd_list.setCellStyle(i, "isTestDisplay", testStyle);
     }
 };
@@ -688,27 +672,27 @@ scwin.setDelayStatusStyle = function () {
     for (let i = 0; i < rowCount; i++) {
         const delayStatusCode = dlt_wbsVoList.getCellData(i, "delayStatusCode");
         let delayStyle = "font-weight: bold;";
-        
+
         switch (delayStatusCode) {
             case "0":  // 없음
-                delayStyle += "color: #6c757d;";
+                delayStyle += "color: black;";
                 break;
             case "1":  // 완료
-                delayStyle += "color: #28a745;";
+                delayStyle += "color: #1a1a2e;";
                 break;
             case "2":  // 지연완료
-                delayStyle += "color: #fd7e14;";
+                delayStyle += "color: #16213e;";
                 break;
             case "3":  // 지연중
-                delayStyle += "color: #dc3545;";
+                delayStyle += "color: #e94560;";
                 break;
             case "4":  // 진행중
-                delayStyle += "color: #007bff;";
+                delayStyle += "color: #0f3460;";
                 break;
             default:
-                delayStyle += "color: #6c757d;";
+                delayStyle += "color: black;";
         }
-        
+
         grd_list.setCellStyle(i, "isLazy", delayStyle);
     }
 };
@@ -722,15 +706,15 @@ scwin.setTaskTypeStyle = function () {
     for (let i = 0; i < rowCount; i++) {
         const isDesign = dlt_wbsVoList.getCellData(i, "isDesign");
         let typeStyle = "text-align: center; font-weight: bold;";
-        
+
         if (isDesign === "1") {
-            typeStyle += "background-color: #e7f3ff; color: #0056b3;";  // 파란색 계열: 설계
+            typeStyle += "color: #1a1a2e;";
         } else if (isDesign === "0") {
-            typeStyle += "background-color: #fff2e7; color: #d63384;";  // 주황색 계열: 개발
+            typeStyle += "color: #0f3460;";
         } else {
-            typeStyle += "background-color: #f8f9fa; color: #6c757d;";  // 회색: 미분류
+            typeStyle += "color: black;";
         }
-        
+
         grd_list.setCellStyle(i, "taskTypeName", typeStyle);
     }
 };
@@ -750,11 +734,11 @@ scwin.setTaskTypeStyle = function () {
 scwin.calculateDelayStatus = function (taskEt, taskRet, taskStatus) {
     const today = new Date();
     today.setHours(0, 0, 0, 0);  // 시간을 00:00:00으로 설정하여 날짜만 비교
-    
+
     // 날짜 문자열을 Date 객체로 변환
     const endDate = taskEt ? new Date(taskEt) : null;
     const realEndDate = taskRet ? new Date(taskRet) : null;
-    
+
     // 완료상태인 경우
     if (taskStatus === "완료") {
         if (realEndDate && endDate) {
@@ -763,7 +747,7 @@ scwin.calculateDelayStatus = function (taskEt, taskRet, taskStatus) {
         }
         return "1";  // 완료
     }
-    
+
     // 미완료 상태인 경우 (대기, 진행중)
     if (taskStatus === "진행중") {
         if (endDate && today > endDate) {
@@ -771,7 +755,7 @@ scwin.calculateDelayStatus = function (taskEt, taskRet, taskStatus) {
         }
         return "4";  // 진행중
     }
-    
+
     return "0";  // 없음 (대기 상태 등)
 };
 
@@ -785,11 +769,11 @@ scwin.getDelayStatusText = function (delayStatusCode) {
     const delayStatusMap = {
         "0": "없음",
         "1": "완료",
-        "2": "지연완료", 
+        "2": "지연완료",
         "3": "지연중",
         "4": "진행중"
     };
-    
+
     return delayStatusMap[delayStatusCode] || "불명";
 };
 
@@ -803,18 +787,18 @@ scwin.isValidDateFormat = function (dateString) {
     if (!dateString || typeof dateString !== 'string') {
         return false;
     }
-    
+
     const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
     if (!dateRegex.test(dateString)) {
         return false;
     }
-    
+
     const date = new Date(dateString);
     const [year, month, day] = dateString.split('-').map(Number);
-    
-    return date.getFullYear() === year && 
-           date.getMonth() === month - 1 && 
-           date.getDate() === day;
+
+    return date.getFullYear() === year &&
+        date.getMonth() === month - 1 &&
+        date.getDate() === day;
 };
 
 /**
@@ -827,7 +811,7 @@ scwin.isValidProgressRate = function (rate) {
     if (rate === null || rate === undefined || rate === '') {
         return true;  // 빈 값은 허용
     }
-    
+
     const numRate = Number(rate);
     return !isNaN(numRate) && numRate >= 0 && numRate <= 1;
 };
@@ -845,74 +829,74 @@ scwin.isValidProgressRate = function (rate) {
 scwin.validateTaskData = function (taskData) {
     const errors = [];
     const result = { isValid: true, errorMessages: [] };
-    
+
     // 필수 필드 검증
     if (!taskData.taskName || taskData.taskName.trim() === '') {
         errors.push('업무명은 필수입력 항목입니다.');
     }
-    
+
     if (!taskData.taskStatus) {
         errors.push('업무상태는 필수선택 항목입니다.');
     }
-    
+
     if (!taskData.pjtId) {
         errors.push('프로젝트ID는 필수 항목입니다.');
     }
-    
+
     // 날짜 형식 검증
     if (taskData.taskSt && !scwin.isValidDateFormat(taskData.taskSt)) {
         errors.push('시작예정일의 형식이 올바르지 않습니다. (YYYY-MM-DD)');
     }
-    
+
     if (taskData.taskEt && !scwin.isValidDateFormat(taskData.taskEt)) {
         errors.push('완료예정일의 형식이 올바르지 않습니다. (YYYY-MM-DD)');
     }
-    
+
     if (taskData.taskRst && !scwin.isValidDateFormat(taskData.taskRst)) {
         errors.push('실제시작일의 형식이 올바르지 않습니다. (YYYY-MM-DD)');
     }
-    
+
     if (taskData.taskRet && !scwin.isValidDateFormat(taskData.taskRet)) {
         errors.push('실제완료일의 형식이 올바르지 않습니다. (YYYY-MM-DD)');
     }
-    
+
     // 날짜 논리 검증
     if (taskData.taskSt && taskData.taskEt) {
         if (new Date(taskData.taskSt) > new Date(taskData.taskEt)) {
             errors.push('시작예정일은 완료예정일보다 이전이어야 합니다.');
         }
     }
-    
+
     if (taskData.taskRst && taskData.taskRet) {
         if (new Date(taskData.taskRst) > new Date(taskData.taskRet)) {
             errors.push('실제시작일은 실제완료일보다 이전이어야 합니다.');
         }
     }
-    
+
     // 진척률 검증
     if (!scwin.isValidProgressRate(taskData.taskRate)) {
         errors.push('진척률은 0~100% 사이의 값이어야 합니다.');
     }
-    
+
     // 업무상태와 진척률 일관성 검증
     if (taskData.taskStatus === "완료" && taskData.taskRate !== "1") {
         errors.push('완료 상태인 업무는 진척률이 100%여야 합니다.');
     }
-    
+
     // 업무구분 검증
     if (taskData.isDesign && !["0", "1"].includes(taskData.isDesign)) {
         errors.push('업무구분 값이 올바르지 않습니다.');
     }
-    
+
     // 테스트여부 검증
     if (taskData.isTest && !["0", "1"].includes(taskData.isTest)) {
         errors.push('테스트여부 값이 올바르지 않습니다.');
     }
-    
+
     // 결과 반환
     result.isValid = errors.length === 0;
     result.errorMessages = errors;
-    
+
     return result;
 };
 
@@ -925,18 +909,18 @@ scwin.validateTaskData = function (taskData) {
  */
 scwin.isDuplicateTaskName = function (taskName, currentTaskId) {
     if (!taskName) return false;
-    
+
     const totalRows = dlt_wbsVoList.getTotalRow();
-    
+
     for (let i = 0; i < totalRows; i++) {
         const rowTaskName = dlt_wbsVoList.getCellData(i, "taskName");
         const rowTaskId = dlt_wbsVoList.getCellData(i, "taskId");
-        
+
         if (rowTaskName === taskName && rowTaskId !== currentTaskId) {
             return true;
         }
     }
-    
+
     return false;
 };
 
@@ -949,11 +933,11 @@ scwin.isDuplicateTaskName = function (taskName, currentTaskId) {
  */
 scwin.toNumber = function (value, defaultValue) {
     defaultValue = defaultValue || 0;
-    
+
     if (value === null || value === undefined || value === '') {
         return defaultValue;
     }
-    
+
     const numValue = Number(value);
     return isNaN(numValue) ? defaultValue : numValue;
 };
@@ -981,11 +965,11 @@ scwin.formatDate = function (date) {
     if (!date || !(date instanceof Date) || isNaN(date.getTime())) {
         return '';
     }
-    
+
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
-    
+
     return `${year}-${month}-${day}`;
 };
 
@@ -1005,7 +989,7 @@ scwin.getCurrentDate = function () {
 scwin.resetGridStyles = function () {
     const rowCount = dlt_wbsVoList.getTotalRow();
     const columnCount = grd_list.getColumns().length;
-    
+
     for (let i = 0; i < rowCount; i++) {
         for (let j = 0; j < columnCount; j++) {
             grd_list.setCellStyle(i, j, '');
@@ -1022,25 +1006,25 @@ scwin.validateSearchConditions = function () {
     const scTaskId = dmp_wbsVo.get("scTaskId");
     const scTaskName = dmp_wbsVo.get("scTaskName");
     const scTaskAsi = dmp_wbsVo.get("scTaskAsi");
-    
+
     // 업무ID는 숫자만 허용 (빈 값은 허용)
     if (scTaskId && !/^\d*$/.test(scTaskId)) {
         $c.win.alert("업무ID는 숫자만 입력 가능합니다.");
         return false;
     }
-    
+
     // 업무명 길이 제한 (100자)
     if (scTaskName && scTaskName.length > 100) {
         $c.win.alert("업무명은 100자를 초과할 수 없습니다.");
         return false;
     }
-    
+
     // 담당자명 길이 제한 (50자)
     if (scTaskAsi && scTaskAsi.length > 50) {
         $c.win.alert("업무담당자는 50자를 초과할 수 없습니다.");
         return false;
     }
-    
+
     return true;
 };
 
@@ -1067,13 +1051,13 @@ scwin.showLoadingIndicator = function (show) {
  */
 scwin.showErrorMessages = function (title, messages) {
     let errorText = title || "오류가 발생했습니다.";
-    
+
     if (Array.isArray(messages)) {
         errorText += "\n\n" + messages.join("\n");
     } else if (messages) {
         errorText += "\n\n" + messages;
     }
-    
+
     $c.win.alert(errorText);
 };
 
@@ -1101,7 +1085,7 @@ scwin.debugLog = function (message, data) {
  */
 scwin.navigateToPage = function (targetPage) {
     if (targetPage < 1) targetPage = 1;
-    
+
     dmp_wbsVo.set("pageIndex", String(targetPage));
     $c.sbm.execute(sbm_selectWbsVoList);
 };
@@ -1117,6 +1101,94 @@ scwin.refreshGrid = function () {
     scwin.setTestStatusStyle();
     scwin.setDelayStatusStyle();
     scwin.setTaskTypeStyle();
+};
+
+/**
+ * 업무ID 셀 클릭 시 탭 이동 처리
+ * @param {number} rowIndex - 클릭된 행 인덱스
+ */
+scwin.navigateToTaskTab = async function (rowIndex) {
+    try {
+        const rowData = dlt_wbsVoList.getRowJSON(rowIndex);
+
+        // 담당자 체크
+        if (rowData.userId !== scwin.LOGIN_USER_ID) {
+            $c.win.alert(`이 업무는 ${rowData.taskAsi}님의 업무입니다.\n본인 담당 업무만 접근할 수 있습니다.`);
+            return;
+        }
+
+        // URL과 타이틀 결정
+        let targetUrl = "";
+        let tabTitle = "";
+
+        if (rowData.isDesign === "1") {
+            targetUrl = "task/design/DesignList.xml";
+            tabTitle = `설계 업무`;
+        } else if (rowData.isDesign === "0") {
+            targetUrl = "task/develop/DevelopList.xml";
+            tabTitle = `개발 업무`;
+        } else {
+            $c.win.alert("업무 구분을 확인할 수 없습니다.");
+            return;
+        }
+
+        // 전달할 탭 데이터
+        const tabData = {
+            selectedTaskId: rowData.taskId,
+            taskName: rowData.taskName,
+            fromWbs: true,
+            timestamp: new Date().getTime(),
+            refreshKey: "wbs_" + rowData.taskId + "_" + Date.now()  // 추가: 갱신 키
+        };
+
+        // 메인페이지의 openTab 함수 호출 (수정된 방식)
+        if ($p.parent() && $p.parent().scwin && $p.parent().scwin.openTab) {
+            await $p.parent().scwin.openTab(targetUrl, tabTitle, tabData);
+        } else {
+            console.error("메인페이지의 openTab 함수를 찾을 수 없습니다.");
+            $c.win.alert("페이지 이동에 실패했습니다.");
+        }
+
+    } catch (error) {
+        console.error("업무 화면 이동 중 오류:", error);
+        $c.win.alert("화면 이동 중 오류가 발생했습니다.");
+    }
+};
+
+/**
+ * 그리드 셀 클릭 이벤트 (기존 함수 수정)
+ */
+scwin.grd_list_oncellclick = async function (rowIndex, columnIndex, columnId) {
+    // 업무ID 컬럼 클릭 시에만 처리
+    if (columnId === "taskId") {
+        await scwin.navigateToTaskTab(rowIndex);
+    }
+};
+
+/**
+ * 업무ID 컬럼 클릭 가능 스타일 적용
+ * @description 본인 담당 업무만 클릭 가능하도록 스타일 적용
+ */
+scwin.setTaskIdClickableStyle = function () {
+    const rowCount = dlt_wbsVoList.getTotalRow();
+    const taskIdColIndex = grd_list.getColumnIndex("taskId");
+
+    for (let i = 0; i < rowCount; i++) {
+        const taskAsi = dlt_wbsVoList.getCellData(i, "userId");
+        const isMyTask = (taskAsi === scwin.LOGIN_USER_ID);
+
+        let taskIdStyle = "text-align: center; font-weight: bold;";
+
+        if (isMyTask) {
+            // 클릭 가능: 파란색 + 밑줄 + 포인터 커서
+            taskIdStyle += "color: #0f3460; text-decoration: underline; cursor: pointer;";
+        } else {
+            // 클릭 불가: 회색
+            taskIdStyle += "color: #999999; cursor: default;";
+        }
+
+        grd_list.setCellStyle(i, taskIdColIndex, taskIdStyle);
+    }
 };]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">
