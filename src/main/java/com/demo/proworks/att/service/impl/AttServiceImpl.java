@@ -208,7 +208,7 @@ public class AttServiceImpl implements AttService {
      * 파일 다운로드
      */
     @Override
-    public S3Object downloadFile(String fileId) throws Exception {
+	public S3Object downloadFile(String fileId) throws Exception {
 	    System.out.println("=== AttService: 파일 다운로드 ===");
 	    System.out.println("파일 ID: " + fileId);
 	    
@@ -219,14 +219,61 @@ public class AttServiceImpl implements AttService {
 	
 	    System.out.println("S3 버킷: " + bucketName);
 	    System.out.println("S3 키: " + fileVo.getS3Key());
+	    System.out.println("원본 파일명: " + fileVo.getOriginalFileName());
+	    System.out.println("저장 파일명: " + fileVo.getStoredFileName());
+	    
+	    // S3 키가 null이거나 비어있는 경우 확인
+	    if (fileVo.getS3Key() == null || fileVo.getS3Key().trim().isEmpty()) {
+	        throw new RuntimeException("S3 키 정보가 없습니다. 파일이 손상되었을 수 있습니다.");
+	    }
 	    
 	    try {
+	        // S3에서 객체 존재 여부 확인
+	        System.out.println("S3 객체 존재 여부 확인 중...");
+	        boolean exists = amazonS3.doesObjectExist(bucketName, fileVo.getS3Key());
+	        System.out.println("S3 객체 존재 여부: " + exists);
+	        
+	        if (!exists) {
+	            // 다른 가능한 경로들 확인
+	            String[] possiblePaths = {
+	                fileVo.getS3Key(),
+	                "uploads/" + fileVo.getS3Key(),
+	                uploadPath + "/" + fileVo.getS3Key(),
+	                uploadPath + "/UNIT_TEST/" + fileVo.getStoredFileName(),
+	                "files/" + fileVo.getStoredFileName(),
+	                fileVo.getStoredFileName()
+	            };
+	            
+	            System.out.println("다른 가능한 경로들 확인:");
+	            for (String path : possiblePaths) {
+	                System.out.println("경로 확인: " + path);
+	                if (amazonS3.doesObjectExist(bucketName, path)) {
+	                    System.out.println("발견된 올바른 경로: " + path);
+	                    fileVo.setS3Key(path); // 올바른 경로로 업데이트
+	                    exists = true;
+	                    break;
+	                }
+	            }
+	            
+	            if (!exists) {
+	                throw new RuntimeException("S3에서 파일을 찾을 수 없습니다. 키: " + fileVo.getS3Key());
+	            }
+	        }
+	        
+	        System.out.println("S3에서 파일 다운로드 시작: " + fileVo.getS3Key());
 	        S3Object s3Object = amazonS3.getObject(bucketName, fileVo.getS3Key());
+	        
+	        // 파일 메타데이터 확인
+	        System.out.println("파일 크기: " + s3Object.getObjectMetadata().getContentLength());
+	        System.out.println("콘텐츠 타입: " + s3Object.getObjectMetadata().getContentType());
+	        
 	        System.out.println("S3에서 파일 다운로드 성공");
 	        return s3Object;
+	        
 	    } catch (Exception e) {
 	        System.err.println("S3 다운로드 실패: " + e.getMessage());
-	        throw e;
+	        e.printStackTrace();
+	        throw new RuntimeException("S3에서 파일 다운로드 실패: " + e.getMessage(), e);
 	    }
 	}
 

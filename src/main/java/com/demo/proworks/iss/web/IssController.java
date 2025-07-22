@@ -28,6 +28,7 @@ import com.inswave.elfw.annotation.ElDescription;
 import com.inswave.elfw.annotation.ElService;
 import com.inswave.elfw.annotation.ElValidator;
 import com.inswave.elfw.exception.ElException;
+import com.inswave.elfw.log.AppLog;
 
 /**
  * @subject : 이슈리스크관리 관련 처리를 담당하는 컨트롤러
@@ -68,6 +69,8 @@ public class IssController {
 		retIssList.setTotalCount(totCnt);
 		retIssList.setPageSize(issVo.getPageSize());
 		retIssList.setPageIndex(issVo.getPageIndex());
+
+		AppLog.info("retIssList" + retIssList.toString());
 
 		return retIssList;
 	}

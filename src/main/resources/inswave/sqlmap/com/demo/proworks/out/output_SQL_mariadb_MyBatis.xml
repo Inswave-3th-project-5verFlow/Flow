@@ -13,34 +13,29 @@
 	DATE              AUTHOR             DESC
 	===========================================================
 	2025/07/07              우민지             최초 생성
+	2025/07/22              우민지             ID 자동생성 추가
  -->
 <mapper namespace="com.demo.proworks.out">
-    <insert id="insertOut" parameterType="com.demo.proworks.out.vo.OutVo">
+    <insert id="insertOut" parameterType="com.demo.proworks.out.vo.OutVo" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
     	<!-- 산출물관리를 등록한다. -->	
     		
         INSERT INTO OUTPUT   /* QueryID : com.demo.proworks.out.insertOut */
         ( 
-            <if test="pjtId          != null"> , PJT_ID           </if>
-            <if test="name            != null"> , NAME             </if>
-            <if test="createdAt      != null"> , CREATED_AT       </if>
-            <if test="updatedAt      != null"> , UPDATED_AT       </if>
-            <if test="approvalStatus != null"> , APPROVAL_STATUS  </if>
-            <if test="approvalDate   != null"> , APPROVAL_DATE    </if>
-            <if test="approvalComment!= null"> , APPROVAL_COMMENT </if>
-            <if test="outputType     != null"> , OUTPUT_TYPE      </if>
-            <if test="isDeleted      != null"> , IS_DELETED       </if>
+            <if test="pjtId          != null and pjtId != ''"> PJT_ID </if>
+            <if test="name            != null and name != ''"> , NAME </if>
+            <if test="createdAt      != null and createdAt != ''"> , CREATED_AT </if>
+            <if test="updatedAt      != null and updatedAt != ''"> , UPDATED_AT </if>
+            <if test="outputType     != null and outputType != ''"> , OUTPUT_TYPE </if>
+            <if test="isDeleted      != null and isDeleted != ''"> , IS_DELETED </if>
         )
         VALUES  
         ( 
-            <if test="pjtId          != null"> , #{pjtId}           </if>
-            <if test="name            != null"> , #{name}             </if>
-            <if test="createdAt      != null"> , #{createdAt}       </if>
-            <if test="updatedAt      != null"> , #{updatedAt}       </if>
-            <if test="approvalStatus != null"> , #{approvalStatus}  </if>
-            <if test="approvalDate   != null"> , #{approvalDate}    </if>
-            <if test="approvalComment!= null"> , #{approvalComment} </if>
-            <if test="outputType     != null"> , #{outputType}      </if>
-            <if test="isDeleted      != null"> , #{isDeleted}       </if> 
+            <if test="pjtId          != null and pjtId != ''"> #{pjtId} </if>
+            <if test="name            != null and name != ''"> , #{name} </if>
+            <if test="createdAt      != null and createdAt != ''"> , #{createdAt} </if>
+            <if test="updatedAt      != null and updatedAt != ''"> , #{updatedAt} </if>
+            <if test="outputType     != null and outputType != ''"> , #{outputType} </if>
+            <if test="isDeleted      != null and isDeleted != ''"> , #{isDeleted} </if> 
         )          
     </insert>	
 	
@@ -49,18 +44,14 @@
     	
         UPDATE OUTPUT    /* QueryID : com.demo.proworks.out.updateOut */      
       	  SET  
-                ID               = #{id}                      	                       
-            <if test="pjtId          != null"> , PJT_ID           = #{pjtId}           </if>
-            <if test="name            != null"> , NAME             = #{name}             </if>
-            <if test="createdAt      != null"> , CREATED_AT       = #{createdAt}       </if>
-            <if test="updatedAt      != null"> , UPDATED_AT       = #{updatedAt}       </if>
-            <if test="approvalStatus != null"> , APPROVAL_STATUS  = #{approvalStatus}  </if>
-            <if test="approvalDate   != null"> , APPROVAL_DATE    = #{approvalDate}    </if>
-            <if test="approvalComment!= null"> , APPROVAL_COMMENT = #{approvalComment} </if>
-            <if test="outputType     != null"> , OUTPUT_TYPE      = #{outputType}      </if>
-            <if test="isDeleted      != null"> , IS_DELETED       = #{isDeleted}       </if>                 
+            <if test="pjtId          != null"> PJT_ID           = #{pjtId} </if>
+            <if test="name            != null"> , NAME             = #{name} </if>
+            <if test="createdAt      != null"> , CREATED_AT       = #{createdAt} </if>
+            <if test="updatedAt      != null"> , UPDATED_AT       = #{updatedAt} </if>
+            <if test="outputType     != null"> , OUTPUT_TYPE      = #{outputType} </if>
+            <if test="isDeleted      != null"> , IS_DELETED       = #{isDeleted} </if>                 
         WHERE   
-                ID               = #{id}              
+            ID = #{id}              
     </update>
 	
     <delete id="deleteOut" parameterType="com.demo.proworks.out.vo.OutVo">
@@ -68,42 +59,80 @@
     	
         DELETE FROM OUTPUT   /* QueryID : com.demo.proworks.out.deleteOut */ 
         WHERE   
-                ID               = #{id}                      
+            ID = #{id}                      
     </delete>
 	
     <select id="selectOut" parameterType="com.demo.proworks.out.vo.OutVo" resultType="com.demo.proworks.out.vo.OutVo">
     	<!-- 산출물관리를 상세 조회한다. -->	
         SELECT     /* QueryID : com.demo.proworks.out.selectOut */
-            ID as id, PJT_ID as pjtId, NAME as name, CREATED_AT as createdAt, UPDATED_AT as updatedAt, APPROVAL_STATUS as approvalStatus, APPROVAL_DATE as approvalDate, APPROVAL_COMMENT as approvalComment, OUTPUT_TYPE as outputType, IS_DELETED as isDeleted
+            ID as id, 
+            PJT_ID as pjtId, 
+            NAME as name, 
+            CREATED_AT as createdAt, 
+            UPDATED_AT as updatedAt, 
+            OUTPUT_TYPE as outputType, 
+            IS_DELETED as isDeleted
         FROM OUTPUT 
         WHERE 
-                ID               = #{id}              			
+            ID = #{id}              			
     </select>
 	
     <select id="selectListOut" parameterType="com.demo.proworks.out.vo.OutVo" resultType="com.demo.proworks.out.vo.OutVo">
     	<!-- 산출물관리 목록을 조회한다. -->
-           SELECT    /* QueryID : com.demo.proworks.out.selectListOut */
-               ID as id, PJT_ID as pjtId, NAME as name, CREATED_AT as createdAt, UPDATED_AT as updatedAt, APPROVAL_STATUS as approvalStatus, APPROVAL_DATE as approvalDate, APPROVAL_COMMENT as approvalComment, OUTPUT_TYPE as outputType, IS_DELETED as isDeleted		       
-           FROM (
-               SELECT  S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
-               FROM (				
-                   SELECT 
-                       *  		                  
-                   FROM OUTPUT
-                   WHERE  1=1    		
-	     																														
-               ) S, (SELECT @ROWNUM := 0) TMP
-           ) A
-            WHERE PAGE = #{pageIndex}
+        SELECT /* QueryID : com.demo.proworks.out.selectListOut */
+            ID as id, 
+            PJT_ID as pjtId, 
+            PJT_NAME as pjtName,
+            NAME as name, 
+            CREATED_AT as createdAt, 
+            UPDATED_AT as updatedAt, 
+            OUTPUT_TYPE as outputType, 
+            IS_DELETED as isDeleted
+        FROM (
+            SELECT S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
+            FROM (
+                SELECT 
+                    o.ID,
+                    o.PJT_ID,
+                    o.NAME,
+                    o.CREATED_AT,
+                    o.UPDATED_AT,
+                    o.APPROVAL_STATUS,
+                    o.APPROVAL_DATE,
+                    o.APPROVAL_COMMENT,
+                    o.OUTPUT_TYPE,
+                    o.IS_DELETED,
+                    pjt.PJT_NAME as PJT_NAME
+                FROM OUTPUT o
+                LEFT JOIN PJT pjt ON o.PJT_ID = pjt.PJT_ID
+                WHERE 1=1
+                <if test="pjtId != null and pjtId != ''">
+                AND o.PJT_ID = #{pjtId}
+                </if>
+                <if test="outputType != null and outputType != ''">
+                AND o.OUTPUT_TYPE = #{outputType}
+                </if>
+                AND (o.IS_DELETED IS NULL OR o.IS_DELETED = 'N')
+                ORDER BY o.CREATED_AT DESC
+            ) S, (SELECT @ROWNUM := 0) TMP
+        ) A
+        WHERE PAGE = #{pageIndex}
     </select>
 	
     <select id="selectListCountOut" parameterType="com.demo.proworks.out.vo.OutVo" resultType="long">
     <!-- 산출물관리 목록의 카운트를 조회한다. -->
     
-         SELECT    /* QueryID : com.demo.proworks.out.selectListCountOut */
-             COUNT(*) totcnt  		                  
-         FROM OUTPUT
-         WHERE  1=1    		
+        SELECT /* QueryID : com.demo.proworks.out.selectListCountOut */
+            COUNT(*) totcnt  		                  
+        FROM OUTPUT
+        WHERE 1=1
+        <if test="pjtId != null and pjtId != ''">
+        AND PJT_ID = #{pjtId}
+        </if>
+        <if test="outputType != null and outputType != ''">
+        AND OUTPUT_TYPE = #{outputType}
+        </if>
+        AND (IS_DELETED IS NULL OR IS_DELETED = 'N')
 
     </select>
 

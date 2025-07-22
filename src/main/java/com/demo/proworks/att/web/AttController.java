@@ -273,70 +273,127 @@ public class AttController {
     /**
      * 파일 다운로드
      */
-    @RequestMapping(value = "FileDownload")
+    @ElService(key = "FileDownload")
+	@RequestMapping(value = "FileDownload")
     @ElDescription(sub = "파일 다운로드", desc = "파일을 다운로드한다.")
     public void downloadFile(@RequestParam("fileId") String fileId,
-            @RequestParam(value = "preview", required = false, defaultValue = "false") boolean isPreview,
-            @RequestParam(value = "inline", required = false, defaultValue = "false") boolean isInline,
-            HttpServletResponse response) throws Exception {
+        @RequestParam(value = "preview", required = false, defaultValue = "false") boolean isPreview,
+        @RequestParam(value = "inline", required = false, defaultValue = "false") boolean isInline,
+        HttpServletResponse response) throws Exception {
 
-        S3Object s3Object = null;
-        InputStream inputStream = null;
-
-        try {
-            s3Object = attService.downloadFile(fileId);
-
-            // 파일 정보 조회
-            AttVo fileVo = attService.getFileInfo(fileId);
-            if (fileVo == null) {
-                response.sendError(HttpServletResponse.SC_NOT_FOUND, "파일을 찾을 수 없습니다.");
-                return;
-            }
-
-            // 응답 헤더 설정
-            String contentType = getContentType(fileVo.getFileExtension());
-            response.setContentType(contentType);
-
-            // 미리보기 모드인 경우
-            if (isPreview || isInline) {
-                response.setHeader("Content-Disposition",
-                        "inline; filename=\"" + URLEncoder.encode(fileVo.getOriginalFileName(), "UTF-8") + "\"");
-            } else {
-                // 일반 다운로드
-                response.setHeader("Content-Disposition",
-                        "attachment; filename=\"" + URLEncoder.encode(fileVo.getOriginalFileName(), "UTF-8") + "\"");
-            }
-
-            // 파일 크기 설정
-            try {
-                long fileSize = Long.parseLong(fileVo.getFileSize());
-                response.setContentLengthLong(fileSize);
-            } catch (NumberFormatException e) {
-                System.out.println("파일 크기 설정 실패: " + fileVo.getFileSize());
-            }
-
-            // 캐시 헤더 설정 (이미지 미리보기용)
-            if (isPreview || isInline) {
-                response.setHeader("Cache-Control", "public, max-age=3600");
-                response.setDateHeader("Expires", System.currentTimeMillis() + 3600000);
-            }
-
-            // 파일 데이터 전송
-            inputStream = s3Object.getObjectContent();
-            FileCopyUtils.copy(inputStream, response.getOutputStream());
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "파일 다운로드 중 오류가 발생했습니다: " + e.getMessage());
-        } finally {
-            try {
-                if (inputStream != null) inputStream.close();
-                if (s3Object != null) s3Object.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+	    S3Object s3Object = null;
+	    InputStream inputStream = null;
+	
+	    try {
+	        System.out.println("=== 파일 다운로드 시작 ===");
+	        System.out.println("파일 ID: " + fileId);
+	        System.out.println("미리보기 모드: " + isPreview);
+	        System.out.println("인라인 모드: " + isInline);
+	        
+	        // 파일 정보 조회
+	        AttVo fileVo = attService.getFileInfo(fileId);
+	        if (fileVo == null) {
+	            System.err.println("파일 정보를 찾을 수 없습니다: " + fileId);
+	            response.sendError(HttpServletResponse.SC_NOT_FOUND, "파일을 찾을 수 없습니다.");
+	            return;
+	        }
+	        
+	        System.out.println("파일 정보: " + fileVo.toString());
+	        
+	        // S3 키 유효성 검사
+	        if (fileVo.getS3Key() == null || fileVo.getS3Key().trim().isEmpty()) {
+	            System.err.println("S3 키가 없습니다: " + fileVo.getS3Key());
+	            response.sendError(HttpServletResponse.SC_NOT_FOUND, "파일 경로 정보가 없습니다.");
+	            return;
+	        }
+	        
+	        // S3에서 파일 다운로드
+	        System.out.println("S3에서 파일 다운로드 시작: " + fileVo.getS3Key());
+	        s3Object = attService.downloadFile(fileId);
+	        
+	        if (s3Object == null) {
+	            System.err.println("S3에서 파일을 가져올 수 없습니다.");
+	            response.sendError(HttpServletResponse.SC_NOT_FOUND, "파일을 찾을 수 없습니다.");
+	            return;
+	        }
+	        
+	        // 응답 헤더 설정
+	        String contentType = getContentType(fileVo.getFileExtension());
+	        response.setContentType(contentType);
+	        
+	        // 파일명 인코딩 (한글 지원)
+	        String encodedFileName = URLEncoder.encode(fileVo.getOriginalFileName(), "UTF-8")
+	                .replaceAll("\\+", "%20");
+	
+	        // Content-Disposition 헤더 설정
+	        if (isPreview || isInline) {
+	            response.setHeader("Content-Disposition", "inline; filename*=UTF-8''" + encodedFileName);
+	        } else {
+	            response.setHeader("Content-Disposition", "attachment; filename*=UTF-8''" + encodedFileName);
+	        }
+	
+	        // 파일 크기 설정
+	        try {
+	            if (fileVo.getFileSize() != null && !fileVo.getFileSize().isEmpty() && !fileVo.getFileSize().equals("0")) {
+	                long fileSize = Long.parseLong(fileVo.getFileSize());
+	                response.setContentLengthLong(fileSize);
+	                System.out.println("파일 크기 설정: " + fileSize);
+	            } else {
+	                // S3 객체에서 크기 가져오기
+	                long fileSize = s3Object.getObjectMetadata().getContentLength();
+	                response.setContentLengthLong(fileSize);
+	                System.out.println("S3에서 파일 크기 가져옴: " + fileSize);
+	            }
+	        } catch (NumberFormatException e) {
+	            System.out.println("파일 크기 설정 실패: " + fileVo.getFileSize());
+	        }
+	
+	        // 추가 헤더 설정
+	        response.setHeader("Accept-Ranges", "bytes");
+	        response.setHeader("Content-Transfer-Encoding", "binary");
+	        
+	        // 캐시 헤더 설정
+	        if (isPreview || isInline) {
+	            response.setHeader("Cache-Control", "public, max-age=3600");
+	            response.setDateHeader("Expires", System.currentTimeMillis() + 3600000);
+	        } else {
+	            response.setHeader("Cache-Control", "no-cache, no-store, must-revalidate");
+	            response.setHeader("Pragma", "no-cache");
+	            response.setDateHeader("Expires", 0);
+	        }
+	
+	        // 파일 데이터 전송
+	        inputStream = s3Object.getObjectContent();
+	        
+	        // 버퍼 사용하여 효율적으로 전송
+	        byte[] buffer = new byte[8192];
+	        int bytesRead;
+	        while ((bytesRead = inputStream.read(buffer)) != -1) {
+	            response.getOutputStream().write(buffer, 0, bytesRead);
+	        }
+	        
+	        response.getOutputStream().flush();
+	        
+	        System.out.println("=== 파일 다운로드 완료 ===");
+	
+	    } catch (Exception e) {
+	        System.err.println("파일 다운로드 실패: " + e.getMessage());
+	        e.printStackTrace();
+	        
+	        // 에러 응답 전송
+	        if (!response.isCommitted()) {
+	            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, 
+	                "파일 다운로드 중 오류가 발생했습니다: " + e.getMessage());
+	        }
+	    } finally {
+	        try {
+	            if (inputStream != null) inputStream.close();
+	            if (s3Object != null) s3Object.close();
+	        } catch (IOException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	}
 
     /**
      * 파일 삭제
