@@ -27,6 +27,7 @@
 						<w2:key dataType="text" id="taskAsi" name="업무담당자"></w2:key>
 						<w2:key dataType="text" id="taskRate" name="진척률"></w2:key>
 						<w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
+						<w2:key id="userId" name="사용자ID" dataType="text"></w2:key>
 					</w2:keyInfo>
 				</w2:dataMap>
 
@@ -158,6 +159,9 @@ scwin.onpageload = function () {
     if (taskData) {
         dmp_taskDetail.setJSON(taskData);
     }
+    
+    dmp_taskDetail.set("pjtId", $p.parent().scwin.pjtId);
+    dmp_taskDetail.set("userId", $p.parent().scwin.userId);
 };
 
 scwin.btn_ptTaskName_onclick = function (e) {
@@ -349,36 +353,6 @@ scwin.btn_reset_onclick = function (e) {
 						</xf:group>
 
 						<!-- 2행: 설계업무여부, 테스트여부 -->
-						<xf:group tagname="tr">
-							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
-								<w2:textbox label="업무 타입" style="color:#333;" />
-							</xf:group>
-							<xf:group class="w2tb_td" tagname="td">
-								<xf:select1 style="width:140px;" ref="data:dmp_taskDetail.isDesign" appearance="minimal" allOption="" chooseOption="true"
-									chooseOptionLabel="">
-									<xf:choices>
-										<xf:itemset nodeset="data:dlt_isDesign">
-											<xf:label ref="label"></xf:label>
-											<xf:value ref="value"></xf:value>
-										</xf:itemset>
-									</xf:choices>
-								</xf:select1>
-							</xf:group>
-							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
-								<w2:textbox label="테스트여부" style="color:#333;" />
-							</xf:group>
-							<xf:group class="w2tb_td" tagname="td">
-								<xf:select1 style="width:140px;" ref="data:dmp_taskDetail.isTest" appearance="minimal" allOption="" chooseOption="true"
-									chooseOptionLabel="">
-									<xf:choices>
-										<xf:itemset nodeset="data:dlt_isTest">
-											<xf:label ref="label"></xf:label>
-											<xf:value ref="value"></xf:value>
-										</xf:itemset>
-									</xf:choices>
-								</xf:select1>
-							</xf:group>
-						</xf:group>
 
 						<!-- 3행: 단계 -->
 
@@ -391,14 +365,14 @@ scwin.btn_reset_onclick = function (e) {
 								<w2:attributes>
 									<w2:colspan>3</w2:colspan>
 								</w2:attributes>
-								<xf:group style="display:flex; align-items:center;">
-									<xf:input style="width:420px;" ref="data:dmp_taskDetail.ptTaskName" readOnly="true" />
-									<xf:trigger class="btn_cm" id="btn_ptTaskName" style="margin-left:5px; padding:2px 8px;" type="button"
-										ev:onclick="scwin.btn_ptTaskName_onclick">
+								<xf:group style="align-items:center;">
+									<xf:input ref="data:dmp_taskDetail.ptTaskName" style="width:404px;" readOnly="true"></xf:input>
+									<xf:trigger ev:onclick="scwin.btn_ptTaskName_onclick" style="margin-left:5px; padding:2px 8px;"
+										id="btn_ptTaskName" type="button" class="btn_cm">
 										<xf:label>선택</xf:label>
 									</xf:trigger>
-									<xf:trigger class="btn_cm" id="btn_reset"
-										style="margin-left:5px; padding:2px 8px;" type="button" ev:onclick="scwin.btn_reset_onclick">
+									<xf:trigger ev:onclick="scwin.btn_reset_onclick" style="margin-left:5px; padding:2px 8px;"
+										id="btn_reset" type="button" class="btn_cm">
 										<xf:label>초기화</xf:label>
 									</xf:trigger>
 								</xf:group>

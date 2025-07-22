@@ -48,7 +48,11 @@
             THEN #{ptTaskId} 
             ELSE NULL 
         END,                                                        <!-- 상위 업무 ID -->
-        NULL,                                                       <!-- 소속 설계 업무 ID (설계업무는 NULL) -->
+        CASE 
+		    WHEN #{isDesign} = 1 THEN NULL                    <!-- 설계업무 → NULL -->
+		    WHEN #{isDesign} = 0 THEN #{ptTaskId}             <!-- 개발업무 → ptTaskId -->
+		    ELSE NULL 
+		END,                                                       <!-- 소속 설계 업무 ID (설계업무는 NULL) -->
         COALESCE(NULLIF(#{taskDepth}, ''), 1),                      <!-- 업무 뎁스 (빈값이면 1) -->
         NULLIF(#{taskSt}, ''),    
         NULLIF(#{taskEt}, ''),     
@@ -78,6 +82,10 @@
 		    WHEN #{ptTaskId} = '' OR #{ptTaskId} = '0' THEN NULL
 		    ELSE #{ptTaskId} 
 		END ,                                               <!-- 상위 업무 ID 처리 -->
+	    de_task_id = CASE 
+		    WHEN #{isDesign} = 1 THEN NULL                    <!-- de_task_id 처리 -->
+		    WHEN #{isDesign} = 0 THEN #{ptTaskId}
+		END,
 	    task_st = NULLIF(#{taskSt}, ''),     
         task_et = NULLIF(#{taskEt}, ''),    
 		task_rst = CASE
@@ -293,9 +301,12 @@
     SELECT /* QueryID : com.demo.proworks.task.design.selectListCountDesign */
         COUNT(*) totcnt
     FROM project_task
-    WHERE is_design = 1                    -- 설계 업무만 (기존 stg_id between 1 and 5 대체)
+    WHERE is_design = 1                    
       AND pjt_id = #{pjtId} 
       AND user_id = #{userId}
+     <if test="scTaskId != null and scTaskId != ''">
+         AND task_id like CONCAT('%', #{scTaskId}, '%')
+    </if>
     <if test="scTaskName != null and scTaskName != ''">
         AND task_name like CONCAT('%', #{scTaskName}, '%')
     </if>
@@ -315,6 +326,12 @@
     WHERE is_design = 0                    -- 개발 업무만 (기존 stg_id = 6 대체)
       AND pjt_id = #{pjtId} 
       AND user_id = #{userId}
+     <if test="scTaskId != null and scTaskId != ''">
+        AND task_id like CONCAT('%', #{scTaskId}, '%')
+    </if>
+    <if test="scPtTaskId != null and scPtTaskId != ''">
+        AND pt_task_id like CONCAT('%', #{scPtTaskId}, '%')
+    </if>
     <if test="scTaskName != null and scTaskName != ''">
         AND task_name like CONCAT('%', #{scTaskName}, '%')
     </if>

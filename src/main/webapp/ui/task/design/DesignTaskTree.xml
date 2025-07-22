@@ -79,9 +79,13 @@ scwin.buildTreeView = function (originalData) {
     for (var i = 0; i < originalData.length; i++) {
         var rowData = originalData[i];
         var taskName = rowData.taskName
+        var taskId = rowData.taskId
 
-        if (rowData.taskId === currentTaskId) {
-            taskName = rowData.taskName + " [현재 업무]★";
+        if (taskId === currentTaskId) {
+            taskName = `[${taskId}] ` + rowData.taskName + " [현재 업무]★";
+        }
+        else{
+            taskName = `[${taskId}] ` + rowData.taskName;
         }
 
         treeData.push({
@@ -99,7 +103,7 @@ scwin.buildTreeView = function (originalData) {
 scwin.trv_taskTree_onlabelclick = function (value, node, index) {
     if (node && node.label) {
         dmp_selectedTask.set("selectedTaskId", value);
-        dmp_selectedTask.set("selectedTaskName", node.label);
+        dmp_selectedTask.set("selectedTaskName", node.label.replace(/^\[.*?\]\s*/, ''));
 
         var rowIndex = scwin.findRowIndexByTaskId(value);
         if (rowIndex >= 0) {
