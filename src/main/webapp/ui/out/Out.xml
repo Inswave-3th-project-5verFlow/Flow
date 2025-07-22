@@ -22,9 +22,6 @@
                         <w2:column dataType="text" id="name" name="산출물명"></w2:column>
                         <w2:column dataType="text" id="createdAt" name="등록일시"></w2:column>
                         <w2:column dataType="text" id="updatedAt" name="수정일시"></w2:column>
-                        <w2:column dataType="text" id="approvalStatus" name="승인 상태 (대기/승인/반려)"></w2:column>
-                        <w2:column dataType="text" id="approvalDate" name="승인일시"></w2:column>
-                        <w2:column dataType="text" id="approvalComment" name="승인/반려 의견"></w2:column>
                         <w2:column dataType="text" id="outputType" name="산출물 유형"></w2:column>
                         <w2:column dataType="text" id="isDeleted" name="삭제 여부"></w2:column>
                         <w2:column dataType="text" id="pjtName" name="프로젝트명"></w2:column>
@@ -38,9 +35,6 @@
                         <w2:key dataType="text" id="description" name="상세 설명"></w2:key>
                         <w2:key dataType="text" id="createdAt" name="등록일시"></w2:key>
                         <w2:key dataType="text" id="updatedAt" name="수정일시"></w2:key>
-                        <w2:key dataType="text" id="approvalStatus" name="승인 상태 (대기/승인/반려)"></w2:key>
-                        <w2:key dataType="text" id="approvalDate" name="승인일시"></w2:key>
-                        <w2:key dataType="text" id="approvalComment" name="승인/반려 의견"></w2:key>
                         <w2:key dataType="text" id="outputType" name="산출물 유형"></w2:key>
                         <w2:key dataType="text" id="isDeleted" name="삭제 여부"></w2:key>
                         <w2:key dataType="text" id="pjtName" name="프로젝트명"></w2:key>
@@ -51,6 +45,8 @@
 				<w2:dataMap id="dmp_fileSearch">
 					<w2:keyInfo>
 						<w2:key id="id" name="참조ID" dataType="text"></w2:key>
+						<w2:key id="refType" name="참조타입" dataType="text" defaultValue="OUTPUT"></w2:key>
+						<w2:key id="refId" name="참조ID" dataType="text"></w2:key>
 					</w2:keyInfo>
 				</w2:dataMap>
 				<w2:dataMap id="dmp_currentFile" style="">
@@ -133,12 +129,18 @@
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg=""
 				ev:submit="" ev:submitdone="scwin.sbm_insertOutWithFiles_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
-			<xf:submission id="sbm_updateOutWithFiles" action="/InsWebApp/OUT001UpdWithFiles.pwkjson">
+			<xf:submission id="sbm_updateOutWithFiles" action="/InsWebApp/OUT001UpdWithFiles.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg=""
+				ev:submit="" ev:submitdone="scwin.sbm_updateOutWithFiles_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
-			<xf:submission id="sbm_getOutFileList" ref='data:json,["dmp_outVoDetail",{"id":"dmp_outVoDetail","key":"outVo"}]'
+			<xf:submission id="sbm_getOutFileList" ref='data:json,{"id":"dmp_outVoDetail","key":"outVo"}'
 				target='data:json,{"id":"dlt_attVoList","key":"elData.attVoList"}' action="/InsWebApp/OUT001FileList.pwkjson" method="post"
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler=""
 				ev:submit="scwin.sbm_getOutFileList_submit" ev:submitdone="scwin.sbm_getOutFileList_submitdone">
+			</xf:submission>
+			<xf:submission id="sbm_deleteOutFile" action="/InsWebApp/OUT001FileDelete.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg=""
+				ev:submit="" ev:submitdone="scwin.sbm_deleteOutFile_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
@@ -146,10 +148,6 @@
 		<script lazy="false" type="text/javascript"><![CDATA[
 	scwin.onpageload = function() {
 		// 페이지 로드 시 초기화
-		
-		// search_box는 항상 표시 (조회 버튼이 있어야 함)
-		// 특별한 검색 조건이 없더라도 조회 기능은 필요
-		
 		// 산출물관리 조회
 		scwin.btn_search_onclick();
 	};
@@ -299,6 +297,7 @@
 			// 버튼 상태 변경
 			btn_save.show();
 			btn_popup_edit.hide();
+			btn_popup_delete.show();
 			
 		} else if (mode === "view") {
 			// 조회 모드
@@ -309,6 +308,7 @@
 			// 버튼 상태 변경
 			btn_save.hide();
 			btn_popup_edit.show();
+			btn_popup_delete.show();
 		} else if (mode === "new") {
 			// 등록 모드
 			scwin.setFieldsReadOnly(false);
@@ -426,11 +426,19 @@
 			return;
 		}
 		
-		scwin.sendOutputAndFiles();
+		var outputId = dmp_outVoDetail.get("id");
+		
+		if (outputId && outputId.trim() !== "") {
+			// 수정 모드
+			scwin.sendOutputAndFilesForUpdate();
+		} else {
+			// 등록 모드
+			scwin.sendOutputAndFiles();
+		}
 	};
 
 	/**
-	 * 산출물과 파일 전송
+	 * 산출물과 파일 전송 (등록)
 	 */
 	scwin.sendOutputAndFiles = function() {
 		console.log("sendOutputAndFiles() 시작됨");
@@ -439,7 +447,7 @@
 
 		formData.append("pjtId", dmp_outVoDetail.get("pjtId"));
 		formData.append("name", dmp_outVoDetail.get("name"));
-		formData.append("description", dmp_outVoDetail.get("description"));
+		formData.append("description", dmp_outVoDetail.get("description") || "");
 		formData.append("outputType", dmp_outVoDetail.get("outputType") || "DOC");
 		
 		// 파일 추가
@@ -462,6 +470,12 @@
 		})
 		.then(function(res) { return res.json(); })
 		.then(function(res) {
+			var elHeader = res.elHeader;
+			if (!elHeader || elHeader.resSuc == false) {
+				$c.win.alert(`에러: ${elHeader ? elHeader.resMsg : "알 수 없는 오류"}`);
+				return;
+			}
+			
 			$c.win.alert("등록되었습니다.");
 			dlt_upload.removeAll();
 			if (mpd_html5Type && mpd_html5Type.removeAllFiles) {
@@ -473,6 +487,67 @@
 		.catch(function(err) {
 			console.error("전송 실패", err);
 			$c.win.alert("트랜잭션 실패");
+		});
+	};
+
+	/**
+	 * 산출물과 파일 전송 (수정)
+	 */
+	scwin.sendOutputAndFilesForUpdate = function() {
+		console.log("sendOutputAndFilesForUpdate() 시작됨");
+		
+		var formData = new FormData();
+
+		formData.append("id", dmp_outVoDetail.get("id"));
+		formData.append("pjtId", dmp_outVoDetail.get("pjtId"));
+		formData.append("name", dmp_outVoDetail.get("name"));
+		formData.append("description", dmp_outVoDetail.get("description") || "");
+		formData.append("outputType", dmp_outVoDetail.get("outputType") || "DOC");
+		
+		// 새로 추가할 파일들
+		if (mpd_html5Type && mpd_html5Type.fileArray) {
+			var fileList = mpd_html5Type.fileArray;
+			console.log("새 파일 리스트", fileList);
+			
+			if (fileList && fileList.length > 0) {
+				for (var i = 0; i < fileList.length; i++) {
+					var realFile = fileList[i].file;
+					console.log('새 파일', realFile);
+					formData.append("files", realFile);
+				}
+			}
+		}
+
+		fetch("/InsWebApp/OUT001UpdWithFiles.pwkjson", {
+			method: "POST",
+			body: formData
+		})
+		.then(function(res) { return res.json(); })
+		.then(function(res) {
+			var elHeader = res.elHeader;
+			if (!elHeader || elHeader.resSuc == false) {
+				$c.win.alert(`에러: ${elHeader ? elHeader.resMsg : "알 수 없는 오류"}`);
+				return;
+			}
+			
+			$c.win.alert("수정되었습니다.");
+			dlt_upload.removeAll();
+			if (mpd_html5Type && mpd_html5Type.removeAllFiles) {
+				mpd_html5Type.removeAllFiles();
+			}
+			
+			// 조회 모드로 전환
+			scwin.setFormMode("view");
+			
+			// 파일 목록 새로고침
+			scwin.loadFileList();
+			
+			// 목록 새로고침
+			scwin.btn_search_onclick();
+		})
+		.catch(function(err) {
+			console.error("수정 실패", err);
+			$c.win.alert("수정 중 오류가 발생했습니다.");
 		});
 	};
 
@@ -515,34 +590,29 @@
 	};
 
 	/**
-	 * 수정 버튼 클릭 이벤트 (기존 그리드에서 사용 - 사용하지 않음)
-	 */		
-	scwin.btn_edit_onclick = function(e) {
-		var outputId = dmp_outVoDetail.get("id");
-		var outputName = dmp_outVoDetail.get("name");
-		
-		if (!outputId || outputId.trim() === "") {
-			$c.win.alert("산출물 ID가 없습니다.");
-			return;
+	 * 파일 포함 산출물 수정 콜백
+	 */
+	scwin.sbm_updateOutWithFiles_submitdone = function(e) {
+		var elHeader = e.responseJSON.elHeader;
+		if (!elHeader || elHeader.resSuc == false) {
+			$c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+			return false;
 		}
 		
-		if (!outputName || outputName.trim() === "") {
-			$c.win.alert("산출물명을 입력해주세요.");
-			return;
+		$c.win.alert("수정되었습니다.");
+		dlt_upload.removeAll();
+		if (mpd_html5Type && mpd_html5Type.removeAllFiles) {
+			mpd_html5Type.removeAllFiles();
 		}
-
-		// 수정 모드로 전환
-		scwin.setFormMode("edit");
 		
-		var promise = $c.win.confirm("수정하시겠습니까?");
-		promise.then(function(result) {  
-			if (result){
-				$c.sbm.execute($p, sbm_updateOutVo);
-			} else {
-				// 취소 시 조회 모드로 복귀
-				scwin.setFormMode("view");
-			}
-		});
+		// 조회 모드로 전환
+		scwin.setFormMode("view");
+		
+		// 파일 목록 새로고침
+		scwin.loadFileList();
+		
+		// 목록 새로고침
+		scwin.btn_search_onclick();
 	};
 
 	/**
@@ -577,7 +647,7 @@
 			return;
 		}
 
-		var promise = $c.win.confirm("삭제하시겠습니까?");
+		var promise = $c.win.confirm("산출물을 삭제하시겠습니까?\n관련 파일도 함께 삭제됩니다.");
 		promise.then(function(result) {  
 			if (result){
 				$c.sbm.execute($p, sbm_deleteOutVo);
@@ -683,9 +753,6 @@
 			scwin.showNoPreview();
 			return;
 		}
-		
-		// 데이터맵에 검색 조건 설정
-		dmp_fileSearch.set("id", outputId);
 		
 		$c.sbm.execute($p, sbm_getOutFileList);
 	};
@@ -866,12 +933,20 @@
 			
 			// AttController의 FilePreview 사용
 			fetch("/InsWebApp/FilePreview.pwkjson?fileId=" + fileId)
-				.then(function(response) { return response.text(); })
-				.then(function(text) {
-					if (text.length > 5000) {
-						text = text.substring(0, 5000) + "\n\n... (파일 내용이 길어서 일부만 표시됩니다)";
+				.then(function(response) { 
+					return response.json(); 
+				})
+				.then(function(data) {
+					if (data.success && data.content) {
+						// Base64 디코딩
+						var decodedContent = atob(data.content);
+						if (decodedContent.length > 5000) {
+							decodedContent = decodedContent.substring(0, 5000) + "\n\n... (파일 내용이 길어서 일부만 표시됩니다)";
+						}
+						txt_textContent.setValue(decodedContent);
+					} else {
+						txt_textContent.setValue("텍스트 파일을 로드할 수 없습니다: " + (data.message || "알 수 없는 오류"));
 					}
-					txt_textContent.setValue(text);
 				})
 				.catch(function(error) {
 					console.error("텍스트 파일 로드 실패:", error);
@@ -988,34 +1063,37 @@
 		var promise = $c.win.confirm("파일을 삭제하시겠습니까?");
 		promise.then(function(result) {
 			if (result) {
-				$c.sbm.execute($p, {
-					id: "sbm_deleteFile",
-					action: "/InsWebApp/OUT001FileDelete.pwkjson",
-					submitData: {
-						fileId: fileId
-					},
-					isProcessMsg: false,
-					submitDone: function(e) {
-						var elHeader = e.responseJSON.elHeader;
-						if (elHeader && elHeader.resSuc === true) {
-							alert("파일이 삭제되었습니다.");
-							
-							// 현재 미리보기 중인 파일이 삭제된 경우 미리보기 초기화
-							if (dmp_currentFile.get("fileId") === fileId) {
-								scwin.hideAllPreviewPanels();
-								scwin.showNoPreview();
-								dmp_currentFile.setEmptyValue();
-							}
-							
-							scwin.loadFileList();
-						} else {
-							alert("파일 삭제 실패: " + (elHeader ? elHeader.resMsg : "알 수 없는 오류"));
+				// FormData 방식으로 전송
+				var formData = new FormData();
+				formData.append("fileId", fileId);
+				
+				fetch("/InsWebApp/OUT001FileDelete.pwkjson", {
+					method: "POST",
+					body: formData
+				})
+				.then(function(response) {
+					return response.json();
+				})
+				.then(function(data) {
+					var elHeader = data.elHeader;
+					if (elHeader && elHeader.resSuc === true) {
+						alert("파일이 삭제되었습니다.");
+						
+						// 현재 미리보기 중인 파일이 삭제된 경우 미리보기 초기화
+						if (dmp_currentFile.get("fileId") === fileId) {
+							scwin.hideAllPreviewPanels();
+							scwin.showNoPreview();
+							dmp_currentFile.setEmptyValue();
 						}
-					},
-					submitError: function(e) {
-						console.error("파일 삭제 실패:", e);
-						alert("파일 삭제 중 오류가 발생했습니다.");
+						
+						scwin.loadFileList();
+					} else {
+						alert("파일 삭제 실패: " + (elHeader ? elHeader.resMsg : "알 수 없는 오류"));
 					}
+				})
+				.catch(function(error) {
+					console.error("파일 삭제 실패:", error);
+					alert("파일 삭제 중 오류가 발생했습니다.");
 				});
 			}
 		});
@@ -1125,9 +1203,9 @@
 					<w2:header style="" id="header2">
 						<w2:row style="" id="row3">
 							<w2:column width="80" inputType="text" style="" id="column1" value="산출물 ID" displayMode="label"></w2:column>
-                            <w2:column width="150" inputType="text" style="" id="column3" value="산출물명" displayMode="label"></w2:column>
+                            <w2:column width="200" inputType="text" style="" id="column3" value="산출물명" displayMode="label"></w2:column>
                             <w2:column width="100" inputType="text" style="" id="column9" value="산출물 유형" displayMode="label"></w2:column>
-                            <w2:column width="150" inputType="text" style="" id="columnPjt" value="프로젝트명" displayMode="label"></w2:column>
+                            <w2:column width="200" inputType="text" style="" id="columnPjt" value="프로젝트명" displayMode="label"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="column4" value="등록일시" displayMode="label"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="column5" value="수정일시" displayMode="label"></w2:column>
 						</w2:row>
@@ -1135,9 +1213,9 @@
 					<w2:gBody style="" id="gBody2">
 						<w2:row style="" id="row4">
 							<w2:column width="80" inputType="text" style="" id="id" value="" displayMode="label"></w2:column>
-                            <w2:column width="150" inputType="text" style="" id="name" value="" displayMode="label"></w2:column>
+                            <w2:column width="200" inputType="text" style="" id="name" value="" displayMode="label"></w2:column>
                             <w2:column width="100" inputType="text" style="" id="outputType" value="" displayMode="label"></w2:column>
-                            <w2:column width="150" inputType="text" style="" id="pjtName" value="" displayMode="label"></w2:column>
+                            <w2:column width="200" inputType="text" style="" id="pjtName" value="" displayMode="label"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="createdAt" value="" displayMode="label"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="updatedAt" value="" displayMode="label"></w2:column>
 						</w2:row>

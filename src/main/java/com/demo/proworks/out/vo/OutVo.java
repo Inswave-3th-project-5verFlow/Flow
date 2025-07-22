@@ -43,6 +43,9 @@ public class OutVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElDtoField(logicalName = "삭제 여부", physicalName = "isDeleted", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String isDeleted;
 
+    @ElDtoField(logicalName = "프로젝트명", physicalName = "pjtName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String pjtName;
+
     @ElVoField(physicalName = "id")
     public String getId(){
         String ret = this.id;
@@ -153,6 +156,17 @@ public class OutVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.isDeleted = isDeleted;
     }
 
+    @ElVoField(physicalName = "pjtName")
+    public String getPjtName(){
+        String ret = this.pjtName;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "pjtName")
+    public void setPjtName(String pjtName){
+        this.pjtName = pjtName;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -166,7 +180,8 @@ public class OutVo extends com.demo.proworks.cmmn.ProworksCommVO {
         sb.append("approvalDate").append("=").append(approvalDate).append(",");
         sb.append("approvalComment").append("=").append(approvalComment).append(",");
         sb.append("outputType").append("=").append(outputType).append(",");
-        sb.append("isDeleted").append("=").append(isDeleted);
+        sb.append("isDeleted").append("=").append(isDeleted).append(",");
+        sb.append("pjtName").append("=").append(pjtName);
         sb.append("]");
         return sb.toString();
 
