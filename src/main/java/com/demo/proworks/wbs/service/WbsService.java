@@ -1,8 +1,6 @@
 package com.demo.proworks.wbs.service;
 
 import java.util.List;
-
-import com.demo.proworks.wbs.vo.WbsStgVo;
 import com.demo.proworks.wbs.vo.WbsVo;
 
 /**
@@ -14,30 +12,31 @@ import com.demo.proworks.wbs.vo.WbsVo;
  *               DATE AUTHOR DESC
  *               ===========================================================
  *               2025/07/09 김성민 최초 생성
+ *               2025/07/19 김성민 STG 테이블 관련 코드 제거
  * 
  */
 public interface WbsService {
-
+	
 	/**
 	 * 전체 WBS 목록을 조회한다.
 	 */
 	public List<WbsVo> selectListWbsAll(WbsVo wbsVo) throws Exception;
-
+	
 	/**
 	 * 검색 조건에 따른 WBS 목록을 조회한다.
 	 */
 	public List<WbsVo> selectListWbsSearch(WbsVo wbsVo) throws Exception;
-
+	
 	/**
 	 * 전체 WBS 카운트를 조회한다.
 	 */
 	public long selectListCountWbsAll(WbsVo wbsVo) throws Exception;
-
+	
 	/**
 	 * 검색 조건에 따른 WBS 카운트를 조회한다.
 	 */
 	public long selectListCountWbsSearch(WbsVo wbsVo) throws Exception;
-
+	
 	/**
 	 * WBS를 상세 조회한다.
 	 *
@@ -46,7 +45,7 @@ public interface WbsService {
 	 * @throws Exception
 	 */
 	public WbsVo selectWbs(WbsVo wbsVo) throws Exception;
-
+	
 	/**
 	 * WBS를 등록 처리 한다.
 	 *
@@ -55,7 +54,7 @@ public interface WbsService {
 	 * @throws Exception
 	 */
 	public int insertWbs(WbsVo wbsVo) throws Exception;
-
+	
 	/**
 	 * WBS를 갱신 처리 한다.
 	 *
@@ -64,7 +63,7 @@ public interface WbsService {
 	 * @throws Exception
 	 */
 	public int updateWbs(WbsVo wbsVo) throws Exception;
-
+	
 	/**
 	 * WBS를 삭제 처리 한다.
 	 *
@@ -73,14 +72,7 @@ public interface WbsService {
 	 * @throws Exception
 	 */
 	public int deleteWbs(WbsVo wbsVo) throws Exception;
-
-	/**
-	 * 단계 목록을 조회 한다.
-	 *
-	 * @param WbsStgVo
-	 * @return List<WbsStgVo>
-	 * @throws Exception
-	 */
-	public List<WbsStgVo> selectListStg(WbsStgVo wbsStgVo) throws Exception;
-
+	
+	// 진척률 계산
+	public void calcProgress(WbsVo wbsVo) throws Exception;
 }

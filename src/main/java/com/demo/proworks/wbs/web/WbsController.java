@@ -11,8 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.demo.proworks.wbs.service.WbsService;
 import com.demo.proworks.wbs.vo.WbsVo;
 import com.demo.proworks.wbs.vo.WbsListVo;
-import com.demo.proworks.wbs.vo.WbsStgListVo;
-import com.demo.proworks.wbs.vo.WbsStgVo;
 import com.inswave.elfw.annotation.ElDescription;
 import com.inswave.elfw.annotation.ElService;
 import com.inswave.elfw.annotation.ElValidator;
@@ -27,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  *               DATE AUTHOR DESC
  *               ===========================================================
  *               2025/07/09 김성민 최초 생성
+ *               2025/07/19 김성민 STG 테이블 관련 코드 제거
  * 
  */
 @Controller
@@ -86,67 +85,9 @@ public class WbsController {
 	}
 
 	/**
-	 * WBS를 등록 처리 한다.
-	 *
-	 * @param wbsVo WBS
-	 * @throws Exception
-	 */
-	@ElService(key = "WbsIns")
-	@RequestMapping(value = "WbsIns")
-	@ElDescription(sub = "WBS 등록처리", desc = "WBS를 등록 처리 한다.")
-	public void insertWbs(WbsVo wbsVo) throws Exception {
-		wbsService.insertWbs(wbsVo);
-	}
-
-	/**
-	 * WBS를 갱신 처리 한다.
-	 *
-	 * @param wbsVo WBS
-	 * @throws Exception
-	 */
-	@ElService(key = "WbsUpd")
-	@RequestMapping(value = "WbsUpd")
-	@ElValidator(errUrl = "/wbs/wbsRegister", errContinue = true)
-	@ElDescription(sub = "WBS 갱신처리", desc = "WBS를 갱신 처리 한다.")
-	public void updateWbs(WbsVo wbsVo) throws Exception {
-
-		wbsService.updateWbs(wbsVo);
-	}
-
-	/**
-	 * WBS를 삭제 처리한다.
-	 *
-	 * @param wbsVo WBS
-	 * @throws Exception
-	 */
-	@ElService(key = "WbsDel")
-	@RequestMapping(value = "WbsDel")
-	@ElDescription(sub = "WBS 삭제처리", desc = "WBS를 삭제 처리한다.")
-	public void deleteWbs(WbsVo wbsVo) throws Exception {
-		wbsService.deleteWbs(wbsVo);
-	}
-
-	/**
-	 * 단계 목록을조회 한다.
-	 *
-	 * @param WbsStgVo
-	 * @throws Exception
-	 */
-	@ElService(key = "WbsStgList")
-	@RequestMapping(value = "WbsStgList")
-	@ElDescription(sub = "단계 목록 조회", desc = "단계 목록을 조회한다.")
-	public WbsStgListVo selectListStg(WbsStgVo wbsStgVo) throws Exception {
-		List<WbsStgVo> stgList = wbsService.selectListStg(wbsStgVo);
-		WbsStgListVo list = new WbsStgListVo();
-		list.setWbsStgVoList(stgList);
-		return list;
-
-	}
-
-	/**
 	 * WBS 목록을 다건 처리한다.
 	 *
-	 * @param pugVo 프로젝트 유저 그룹 매핑 정보
+	 * @param wbsListVo WBS 목록 정보
 	 * @throws Exception
 	 */
 	@ElService(key = "WbsSave")
@@ -183,7 +124,6 @@ public class WbsController {
 		return (wbsVo.getScTaskId() != null && !wbsVo.getScTaskId().trim().isEmpty())
 				|| (wbsVo.getScTaskName() != null && !wbsVo.getScTaskName().trim().isEmpty())
 				|| (wbsVo.getScTaskStatus() != null && !wbsVo.getScTaskStatus().trim().isEmpty())
-				|| (wbsVo.getScStgId() != null && !wbsVo.getScStgId().trim().isEmpty())
 				|| (wbsVo.getScTaskAsi() != null && !wbsVo.getScTaskAsi().trim().isEmpty())
 				|| (wbsVo.getScTaskRate() != null && !wbsVo.getScTaskRate().trim().isEmpty());
 	}

@@ -287,17 +287,16 @@
 						<w2:column dataType="text" id="taskName" name="업무명"></w2:column>
 						<w2:column dataType="text" id="taskDes" name="업무상세"></w2:column>
 						<w2:column dataType="text" id="taskStatus" name="업무상태"></w2:column>
-						<w2:column dataType="text" id="isTest" name="테스트여부" defaultValue="0"></w2:column>
-						<w2:column dataType="text" id="taskDepth" name="뎁스" defaultValue="1"></w2:column>
-						<w2:column dataType="text" id="stgId" name="단계ID" defaultValue="0"></w2:column>
-						<w2:column dataType="text" id="ptTaskId" name="상위업무ID" defaultValue="0"></w2:column>
+						<w2:column dataType="text" id="isTest" name="테스트여부" defaultValue=""></w2:column>
+						<w2:column dataType="text" id="taskDepth" name="뎁스" defaultValue=""></w2:column>
+						<w2:column dataType="text" id="ptTaskId" name="상위업무ID" defaultValue=""></w2:column>
 						<w2:column dataType="text" id="taskSt" name="시작예정일"></w2:column>
 						<w2:column dataType="text" id="taskEt" name="완료예정일"></w2:column>
 						<w2:column dataType="text" id="taskRst" name="실제시작일"></w2:column>
 						<w2:column dataType="text" id="taskRet" name="실제완료일"></w2:column>
 						<w2:column dataType="text" id="taskAsi" name="업무담당자"></w2:column>
-						<w2:column dataType="text" id="taskRate" name="진척률" defaultValue="0"></w2:column>
-						<w2:column dataType="text" id="pjtId" name="프로젝트ID" defaultValue="1"></w2:column>
+						<w2:column dataType="text" id="taskRate" name="진척률" defaultValue=""></w2:column>
+						<w2:column dataType="text" id="pjtId" name="프로젝트ID" defaultValue=""></w2:column>
 						<w2:column id="chk" name="chk" dataType="text" ignoreStatus="true"></w2:column>
 						<w2:column id="ptTaskName" name="상위업무명" dataType="text"></w2:column>
 						<w2:column id="isDesign" name="설계업무여부" dataType="text"></w2:column>
@@ -330,7 +329,7 @@
 				ev:submitdone="scwin.sbm_selectTaskList_submitdone">
 			</xf:submission>
 			<!-- DesignList.xml과 동일한 submission 사용 -->
-			<xf:submission id="sbm_saveDesignVoList" action="/InsWebApp/DESIGN001Save.pwkjson" method="post"
+			<xf:submission id="sbm_saveDesignVoList" action="/InsWebApp/WbsSave.pwkjson" method="post"
 				mediatype="application/json" ref="" target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler=""
 				mode="asynchronous" processMsg="업무 상태를 업데이트 중입니다." ev:submit="" ev:submitdone="scwin.sbm_saveDesignVoList_submitdone" ev:submiterror=""
 				abortTrigger="">
@@ -719,7 +718,7 @@ scwin.updateTaskStatus = function(taskId, newStatus) {
     // DesignList.xml과 동일한 방식으로 서버 요청
     var reqObj = {
         "elData": {
-            "designVoList": [updatedTask]
+            "wbsVoList": [updatedTask]
         }
     };
     
