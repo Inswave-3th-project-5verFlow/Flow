@@ -33,6 +33,9 @@ scwin.USER_ID = "";
 scwin.USER_NAME = "";
 scwin.IS_ADMIN = "";
 scwin.IS_CREATE = "";
+scwin.IS_SYSTEMADMIN = "";
+scwin.POPUP = "";
+
 
 scwin.onpageload = function() {
     scwin.SERVER_TIME = $c.date.getServerDateTime("yyyy-MM-dd hh:mm:ss");
@@ -55,6 +58,11 @@ scwin.sbm_selectUsersMapping_submitdone = function (e) {
     scwin.IS_ADMIN = header.isAdmin;
     scwin.IS_CREATE = header.isCreate;
 
+    // 시스템 관리자 여부 (해당 프로젝트가 전혀 없으면 시스템 관리자)
+    if (data == ""){
+        scwin.IS_SYSTEMADMIN = 1
+    }
+
     // SelectBox와 프로젝트명 Bind
     var projectNameData = data.map(item => ({
     pjtId: item.pjtId,
@@ -69,22 +77,32 @@ scwin.sbm_selectUsersMapping_submitdone = function (e) {
     
     // TextBox에 그룹명 초기값 Bind
     textGrpName.setValue("");
-    
-    // TextBox와 사용자명 Bind
-    var nameData = data[0].name;
-    textName1.setValue(nameData);
 
+    // TextBox와 사용자명 Bind
+    if (scwin.IS_SYSTEMADMIN) {
+        textName1.setValue("관리자");
+    } else {
+        var nameData = data[0].name;
+        textName1.setValue(nameData);
+    }
+    
 };
 
-// 오른쪽 상단 아이콘 클릭 이벤트 (마이페이지, 회원탈퇴, 로그아웃 버튼 있는 팝업창 표시)
+// 오른쪽 상단 아이콘 클릭 이벤트 (마이페이지, 로그아웃 버튼 있는 팝업창 표시)
 scwin.accountImg_onclick = function (e) {
+
+    // 팝업창 열린 상태에서 중복 클릭 방지
+    if (scwin.POPUP) {
+        return;
+    }
+
     var screenWidth = window.innerWidth || document.documentElement.clientWidth;
 
     var domBtn = document.querySelector('[id$="accountImg"]'); // ID가 accountImg로 끝나는 요소
     var rect = domBtn.getBoundingClientRect();
 
     var popupWidth = 300;
-    var popupHeight = 280;
+    var popupHeight = 300;
     var paddingTop = 4;
     var rightMargin = 20;
 
@@ -97,11 +115,29 @@ scwin.accountImg_onclick = function (e) {
         left: (screenWidth - popupWidth - rightMargin) + "px",
         resizable: false,
         modal: false,
-        popupName: "계정 관리"
+        popupName: "계정 관리",
+        closeAction: "scwin.closeAction",
+        fixPosition: true
     };
 
-    $p.openPopup("popup_header.xml", options);
+    if (scwin.IS_SYSTEMADMIN){
+        $p.openPopup("popup_header_admin.xml", options); // 관리자일 경우
+        scwin.POPUP = 1;
+    } else {
+        options.height = popupHeight - 100 + "px";
+        $p.openPopup("popup_header.xml", options); // 그 외 사용자일 경우
+        scwin.POPUP = 1;
+    }
+
 };
+
+// 팝업창 닫을 때 팝업 상태 초기화
+scwin.closeAction = function(id, info) {
+
+  scwin.POPUP = 0;
+  return true;
+};
+
 
 scwin.selectBoxProjectName_onchange = function (info) {
 
@@ -142,11 +178,11 @@ scwin.btn_sidebarToggle_onclick = function(e) {
     </head>
     <body ev:onpageload="scwin.onpageload">
     	<xf:group class="sub_contents" id="sub_content1" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true"
-    		meta_snippetName="0_01 페이지시작" style="background: #EBF4FD;">
+    		meta_snippetName="0_01 페이지시작" style="background: #0f3460;">
     		<xf:group class="pgtbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_01 페이지타이틀"
     			style="">
     			<xf:trigger ev:onclick="scwin.btn_sidebarToggle_onclick"
-    				style="width: 40px; height: 40px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;"
+    				style="width: 40px; height: 40px; background-color: #979DAC; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;"
     				id="btn_sidebarToggle">
     				<xf:label>☰</xf:label>
     			</xf:trigger>
@@ -157,11 +193,11 @@ scwin.btn_sidebarToggle_onclick = function(e) {
     				<xf:choices></xf:choices>
     			</xf:select1>
     			<xf:group style="width:572px;height:40px;" id="" class="rt">
-    				<w2:span style="color:#000000; min-width:100px; font-weight:bold;" id="textGrpName" label="#GRP_NAME#" class=""></w2:span>
-    				<w2:span style="color:#000000; min-width:100px; font-weight:bold;" id="textName1" label="#NAME#" class=""></w2:span>
-    				<w2:span style="margin-left: 50px; margin-right: 5px; font-weight:bold;" id="span6" label="접속시간 : "></w2:span>
-    				<w2:span style="font-weight:bold;" id="serverTime" label="#SERVER_TIME#"></w2:span>
-    				<xf:image src="testImg.jpg" ev:onclick="scwin.accountImg_onclick" style="width: 40px;height: 40px;" id="accountImg"
+    				<w2:span style="color:#f1fafb; min-width:100px; font-weight:bold;" id="textGrpName" label="#GRP_NAME#" class=""></w2:span>
+    				<w2:span style="color:#f1fafb; min-width:100px; font-weight:bold;" id="textName1" label="#NAME#" class=""></w2:span>
+    				<w2:span style="color:#f1fafb; margin-left: 50px; margin-right: 5px; font-weight:bold;" id="span6" label="접속시간 : "></w2:span>
+    				<w2:span style="color:#f1fafb;font-weight:bold;" id="serverTime" label="#SERVER_TIME#"></w2:span>
+    				<xf:image src="user.png" ev:onclick="scwin.accountImg_onclick" style="width: 40px;height: 40px;" id="accountImg"
     					class="rt">
     				</xf:image>
     			</xf:group>

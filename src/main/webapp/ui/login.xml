@@ -50,8 +50,31 @@ scwin.btn_login_onclick = function (e) {
         return;
     }
 
+    // 유효성 실패 메시지 출력
+    var pwValid = validatePassword(plainPassword);
+    if (pwValid !== true) {
+        alert(pwValid); 
+        return;
+    }
+
+    $c.win.alert("로그인되었습니다")
     $c.sbm.execute(sbm_login);
+
 };
+
+function validatePassword(password) {
+    var lengthCheck = /^.{4,16}$/;
+    var spaceCheck = /\s/;
+
+    if (!lengthCheck.test(password)) {
+        return "비밀번호는 8~16자여야 합니다.";
+    }
+    if (spaceCheck.test(password)) {
+        return "비밀번호에 공백이 포함될 수 없습니다.";
+    }
+    return true;
+}
+
 
 // 로그인 완료 처리 후
 scwin.sbm_login_submitdone = function (e) {
@@ -73,21 +96,21 @@ scwin.sbm_login_submitdone = function (e) {
     <body ev:onpageload="scwin.onpageload">
     	<xf:image src="/InsWebApp/ui/city.png" style="width: 100%;height: 600px;" id=""></xf:image>
     	<xf:group class="sub_contents" id="" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true" meta_snippetName="0_01 페이지시작"
-    		style="display: flex;justify-content: center;align-items: center;">
+    		style="display: flex;justify-content: center;align-items: center;background: #16213e;">
     		<xf:group style="width: 400px;height: 300px;" id="">
     			<xf:group style="margin-bottom: 10px;display: flex;justify-content: center;" id="">
     			</xf:group>
     			<xf:group style="margin-bottom: 30px;display: flex;justify-content: center;" id="">
     				<w2:span meta_snippetCategory="10_입력폼" meta_snippetName="10_16 출력텍스트" meta_snippetKeyComponent="true"
-    					style="font-size: 20px;font-weight: bold;" id="" label="프로젝트 관리의 새로운 경험을 시작하세요">
+    					style="font-size: 20px;font-weight: bold;color: #f1fafb" id="" label="프로젝트 관리의 새로운 경험을 시작하세요">
     				</w2:span>
     			</xf:group>
     			<xf:group style="margin-left: 60px;" id="">
     				<w2:span meta_snippetCategory="10_입력폼" meta_snippetName="10_16 출력텍스트" meta_snippetKeyComponent="true"
-    					style="font-size: 16px;font-weight: bold;color: 	#808080;" id="" label="ID">
+    					style="font-size: 16px;font-weight: bold;color: 	#f1fafb" id="" label="ID">
     				</w2:span>
     			</xf:group>
-    			<xf:group style="display: flex;justify-content: center;" id="">
+    			<xf:group style="display: flex;justify-content: center;" id="login_info">
     				<xf:input ref="data:dma_login.id" meta_snippetCategory="10_입력폼" meta_snippetName="10_01 InputBox"
     					ev:onclick="scwin.id_input_onclick" meta_snippetKeyComponent="true"
     					style="margin-top: 10px;margin-bottom: 20px;border-radius: 8px;width: 70%;" id="id_input" placeholder="" class=""
@@ -96,10 +119,10 @@ scwin.sbm_login_submitdone = function (e) {
     			</xf:group>
     			<xf:group style="margin-left: 60px;" id="">
     				<w2:span meta_snippetCategory="10_입력폼" meta_snippetName="10_16 출력텍스트" meta_snippetKeyComponent="true"
-    					style="font-size: 16px;font-weight: bold;color: 	#808080;" id="" label="PASSWORD">
+    					style="font-size: 16px;font-weight: bold;color: 	#f1fafb;" id="" label="PASSWORD">
     				</w2:span>
     			</xf:group>
-    			
+
     			<xf:group style='display: flex;justify-content: center;' id="">
     				<xf:input ref="data:dma_login.pw" meta_snippetCategory="10_입력폼" meta_snippetName="10_01 InputBox"
     					ev:onclick="scwin.pw_input_onclick" ev:onkeydown="scwin.pw_input_onkeydown" meta_snippetKeyComponent="true"
@@ -107,8 +130,8 @@ scwin.sbm_login_submitdone = function (e) {
     					initValue="패스워드를 입력하세요">
     				</xf:input>
     			</xf:group>
-    			<xf:group meta_snippetCategory="08_버튼" meta_snippetName="8_04 전체제어버튼" meta_snippetKeyComponent="true" style="margin-left: 60px;" id=""
-    				class="btnbox lt">
+    			<xf:group meta_snippetCategory="08_버튼" meta_snippetName="8_04 전체제어버튼" meta_snippetKeyComponent="true"
+    				style="margin-left: 60px; width: 70%;" id="" class="btnbox lt">
     				<xf:trigger ev:onclick="scwin.btn_login_onclick"
     					style="width: 30%;height: 30px;border-radius: 8px;font-size: 14px;background: #f1fafb;" id="btn_login" type="button">
     					<xf:label><![CDATA[로그인]]></xf:label>
