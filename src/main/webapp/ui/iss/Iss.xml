@@ -2855,13 +2855,15 @@ scwin.downloadBlob = function(blob, fileName) {
 						</w2:row>
 					</w2:gBody>
 				</w2:gridView>
+                <w2:pageList class="pgl" displayButtonType="display" displayFormat="#" ev:onclick="scwin.pgl_com_onclick"
+					id="pgl_com" pageSize="5" pagingType="0" style="">
+				</w2:pageList>
 			</xf:group>
             
 			<xf:group class="pop_contents" id="pop_overlay"
-				style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+				style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;display:none;">
 				<xf:group class="pop_contents" id="group1"
-					style="background-color: white; position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); 
-                        background: white; padding: 20px; border-radius: 8px; max-width: 1200px; width: 95%; max-height: 90vh; overflow-y: auto; border: 1px solid grey;">
+					style="background-color: white; position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%);                         background: white; padding: 20px; border-radius: 8px; max-width: 1200px; width: 95%; max-height: 90vh; overflow-y: auto; border: 1px solid grey;display:none;">
 
 					<!-- 팝업 제목 및 버튼 영역 -->
 					<xf:group class="titbox" id="" style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">

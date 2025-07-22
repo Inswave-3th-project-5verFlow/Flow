@@ -13,21 +13,23 @@
 	DATE AUTHOR DESC
 	===========================================================
 	2025/07/09 김성민 최초 생성
+	2025/07/19 김성민 스키마 변경 반영 (TASK → PROJECT_TASK, STG_ID/TASK_SEQ 제거)
+	2025/07/19 김성민 isDesign, deTaskId 필드 추가 및 트리거 대응
 -->
 <mapper namespace="com.demo.proworks.wbs">
 	<insert id="insertWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo">
-		<!-- WBS를 등록한다. -->
-		INSERT INTO TASK /* QueryID : com.demo.proworks.wbs.insertWbs */
+		<!-- WBS를 등록한다. (트리거가 task_id 자동 생성) -->
+		INSERT INTO PROJECT_TASK /* QueryID : com.demo.proworks.wbs.insertWbs */
 		(
 		<trim prefix="" suffix="" suffixOverrides=",">
 			<if test="taskName != null">TASK_NAME,</if>
 			<if test="taskDes != null">TASK_DES,</if>
 			<if test="taskStatus != null">TASK_STATUS,</if>
 			<if test="isTest != null">IS_TEST,</if>
+			IS_DESIGN,
 			<if test="taskDepth != null">TASK_DEPTH,</if>
-			<if test="stgId != null">STG_ID,</if>
-			<if test="ptTaskId != null">PT_TASK_ID,</if>
-			<if test="taskSeq != null">TASK_SEQ,</if>
+			<if test="ptTaskId != null and ptTaskId != ''">PT_TASK_ID,</if>
+			<if test="deTaskId != null and deTaskId != ''">DE_TASK_ID,</if>
 			<if test="taskSt != null and taskSt != ''">TASK_ST,</if>
 			<if test="taskEt != null and taskEt != ''">TASK_ET,</if>
 			<if test="taskRst != null and taskRst != ''">TASK_RST,</if>
@@ -43,10 +45,10 @@
 			<if test="taskDes != null">#{taskDes},</if>
 			<if test="taskStatus != null">#{taskStatus},</if>
 			<if test="isTest != null">#{isTest},</if>
+			COALESCE(#{isDesign}, 0),
 			<if test="taskDepth != null">#{taskDepth},</if>
-			<if test="stgId != null">#{stgId},</if>
-			<if test="ptTaskId != null">#{ptTaskId},</if>
-			<if test="taskSeq != null">#{taskSeq},</if>
+			<if test="ptTaskId != null and ptTaskId != ''">#{ptTaskId},</if>
+			<if test="deTaskId != null and deTaskId != ''">#{deTaskId},</if>
 			<if test="taskSt != null and taskSt != ''">#{taskSt},</if>
 			<if test="taskEt != null and taskEt != ''">#{taskEt},</if>
 			<if test="taskRst != null and taskRst != ''">#{taskRst},</if>
@@ -61,16 +63,16 @@
 
 	<update id="updateWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo">
 		<!-- WBS를 갱신한다. -->
-		UPDATE TASK /* QueryID : com.demo.proworks.wbs.updateWbs */
+		UPDATE PROJECT_TASK /* QueryID : com.demo.proworks.wbs.updateWbs */
 		<set>
 			<if test="taskName != null">TASK_NAME = #{taskName},</if>
 			<if test="taskDes != null">TASK_DES = #{taskDes},</if>
 			<if test="taskStatus != null">TASK_STATUS = #{taskStatus},</if>
 			<if test="isTest != null">IS_TEST = #{isTest},</if>
+			<if test="isDesign != null">IS_DESIGN = #{isDesign},</if>
 			<if test="taskDepth != null">TASK_DEPTH = #{taskDepth},</if>
-			<if test="stgId != null">STG_ID = #{stgId},</if>
 			<if test="ptTaskId != null">PT_TASK_ID = #{ptTaskId},</if>
-			<if test="taskSeq != null">TASK_SEQ = #{taskSeq},</if>
+			<if test="deTaskId != null">DE_TASK_ID = #{deTaskId},</if>
 			<if test="taskSt != null and taskSt != ''">TASK_ST = #{taskSt},</if>
 			<if test="taskEt != null and taskEt != ''">TASK_ET = #{taskEt},</if>
 			<if test="taskRst != null and taskRst != ''">TASK_RST = #{taskRst},</if>
@@ -85,10 +87,8 @@
 
 	<delete id="deleteWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo">
 		<!-- WBS를 삭제한다. -->
-
-		DELETE FROM TASK /* QueryID : com.demo.proworks.wbs.deleteWbs */
-		WHERE
-		TASK_ID = #{taskId}
+		DELETE FROM PROJECT_TASK /* QueryID : com.demo.proworks.wbs.deleteWbs */
+		WHERE TASK_ID = #{taskId}
 	</delete>
 
 	<select id="selectWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
@@ -96,15 +96,15 @@
 		SELECT /* QueryID : com.demo.proworks.wbs.selectWbs */
 		t.TASK_ID as taskId, t.TASK_NAME as taskName, t.TASK_DES as taskDes,
 		t.TASK_STATUS as
-		taskStatus, t.IS_TEST as isTest, t.TASK_DEPTH as taskDepth,
-		t.STG_ID as stgId, t.PT_TASK_ID as ptTaskId, pt.TASK_NAME as ptTaskName,
-		t.TASK_SEQ as taskSeq, t.TASK_ST as taskSt, t.TASK_ET as taskEt,
+		taskStatus, t.IS_TEST as isTest, t.IS_DESIGN as isDesign,
+		t.TASK_DEPTH as taskDepth, t.PT_TASK_ID as ptTaskId, t.DE_TASK_ID as deTaskId,
+		pt.TASK_NAME as ptTaskName, t.TASK_ST as taskSt, t.TASK_ET as taskEt,
 		t.TASK_RST as taskRst, t.TASK_RET as taskRet, t.TASK_ASI as taskAsi,
-		t.TASK_RATE as taskRate, t.PJT_ID as pjtId, t.user_id as userId
-		FROM TASK t
-		LEFT JOIN TASK pt ON t.PT_TASK_ID = pt.TASK_ID
-		WHERE t.TASK_ID =
-		#{taskId}
+		t.TASK_RATE as taskRate, t.PJT_ID as pjtId, t.USER_ID as userId
+		FROM
+		PROJECT_TASK t
+		LEFT JOIN PROJECT_TASK pt ON t.PT_TASK_ID = pt.TASK_ID
+		WHERE t.TASK_ID = #{taskId}
 	</select>
 
 	<select id="selectListWbsAll" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
@@ -113,50 +113,57 @@
 		WITH RECURSIVE task_hierarchy AS (
 		SELECT
 		t.task_id, t.task_name, t.task_des,
-		t.task_status, t.is_test,
-		t.task_depth, t.stg_id, t.pt_task_id, t.task_seq,
-		t.task_st, t.task_et, t.task_rst, t.task_ret, t.task_asi,
-		t.task_rate, t.pjt_id,
-		pt.task_name as pt_task_name, t.user_id,
-		CAST(LPAD(t.task_id, 10, '0') AS CHAR(1000)) AS sort_path
-		FROM task t
-		LEFT
-		JOIN task pt ON t.pt_task_id = pt.task_id
-		WHERE t.pjt_id = #{pjtId} AND t.pt_task_id = 0
+		t.task_status, t.is_test, t.is_design,
+		t.task_depth, t.pt_task_id, t.de_task_id, t.task_st, t.task_et,
+		t.task_rst, t.task_ret, t.task_asi,
+		t.task_rate, t.pjt_id, t.user_id,
+		pt.task_name as pt_task_name,
+		CAST(t.task_id AS CHAR(1000)) AS sort_path
+		FROM
+		project_task t
+		LEFT JOIN
+		project_task pt ON t.pt_task_id = pt.task_id
+		WHERE t.pjt_id = #{pjtId} AND (t.pt_task_id IS NULL OR t.pt_task_id =
+		'')
 
 		UNION ALL
 
 		SELECT
-		t.task_id, t.task_name, t.task_des,
-		t.task_status, t.is_test,
-		t.task_depth, t.stg_id, t.pt_task_id, t.task_seq,
-		t.task_st, t.task_et, t.task_rst, t.task_ret, t.task_asi,
-		t.task_rate, t.pjt_id,
-		pt.task_name as pt_task_name, t.user_id,
-		CONCAT(th.sort_path, '-', LPAD(t.task_id, 10, '0')) AS sort_path
-		FROM task t
+		t.task_id, t.task_name, t.task_des, t.task_status, t.is_test, t.is_design,
+		t.task_depth, t.pt_task_id, t.de_task_id,
+		t.task_st, t.task_et,
+		t.task_rst, t.task_ret, t.task_asi, t.task_rate, t.pjt_id, t.user_id,
+		pt.task_name as pt_task_name,
+		CONCAT(th.sort_path, '-', t.task_id) AS
+		sort_path
+		FROM project_task t
 		INNER JOIN task_hierarchy th ON t.pt_task_id = th.task_id
-		LEFT JOIN task pt ON t.pt_task_id = pt.task_id
+		LEFT JOIN
+		project_task pt ON t.pt_task_id = pt.task_id
 		WHERE t.pjt_id = #{pjtId}
 		),
 		ranked_tasks AS (
 		SELECT *,
-		ROW_NUMBER() OVER (ORDER BY sort_path) as rn
+		ROW_NUMBER() OVER (ORDER BY sort_path) as
+		rn
 		FROM task_hierarchy
 		)
 		SELECT
-		task_id as taskId, task_name as taskName,
-		task_des as taskDes,
-		task_status as taskStatus, is_test as isTest, task_depth as taskDepth,
-		stg_id as stgId, pt_task_id as ptTaskId,
-		pt_task_name as ptTaskName,
-		task_seq as taskSeq, task_st as taskSt, task_et as taskEt, task_rst as taskRst,
-		task_ret as taskRet, task_asi as
-		taskAsi, task_rate as taskRate,
-		pjt_id as pjtId, user_id as userId
+		task_id as
+		taskId, task_name as taskName, task_des as taskDes,
+		task_status as taskStatus, is_test as isTest,
+		is_design as isDesign,
+		task_depth as
+		taskDepth, pt_task_id as ptTaskId, de_task_id as deTaskId,
+		pt_task_name as ptTaskName, task_st as taskSt, task_et as taskEt,
+		task_rst as
+		taskRst, task_ret as taskRet, task_asi as taskAsi,
+		task_rate as taskRate, pjt_id as pjtId, user_id as userId
 		FROM ranked_tasks
-		WHERE rn BETWEEN ((#{pageIndex} - 1) * #{pageSize} + 1)
-		AND (#{pageIndex} * #{pageSize})
+		WHERE rn
+		BETWEEN ((#{pageIndex} - 1) * #{pageSize} + 1)
+		AND (#{pageIndex}
+		* #{pageSize})
 		ORDER BY sort_path
 	</select>
 
@@ -166,10 +173,11 @@
 		WITH RECURSIVE
 		search_matches AS (
 		SELECT task_id, task_name, task_des,
-		task_status, is_test,
-		task_depth, stg_id, pt_task_id, task_seq,
-		task_st, task_et, task_rst, task_ret, task_asi, task_rate, pjt_id, user_id
-		FROM task
+		task_status, is_test, is_design,
+		task_depth, pt_task_id, de_task_id, task_st, task_et, task_rst,
+		task_ret, task_asi, task_rate, pjt_id,
+		user_id
+		FROM project_task
 		WHERE pjt_id = #{pjtId}
 		<if test="scTaskId != null and scTaskId != ''">
 			AND task_id like CONCAT('%', #{scTaskId}, '%')
@@ -180,9 +188,6 @@
 		<if test="scTaskStatus != null and scTaskStatus != ''">
 			AND task_status like CONCAT('%', #{scTaskStatus}, '%')
 		</if>
-		<if test="scStgId != null and scStgId != ''">
-			AND stg_id like CONCAT('%', #{scStgId}, '%')
-		</if>
 		<if test="scTaskAsi != null and scTaskAsi != ''">
 			AND task_asi like CONCAT('%', #{scTaskAsi}, '%')
 		</if>
@@ -192,42 +197,46 @@
 		),
 
 		parent_tasks AS (
-		SELECT task_id, task_name, task_des, task_status, is_test,
-		task_depth, stg_id, pt_task_id, task_seq,
-		task_st, task_et,
-		task_rst, task_ret, task_asi, task_rate, pjt_id, user_id
+		SELECT task_id, task_name, task_des, task_status, is_test, is_design,
+		task_depth, pt_task_id, de_task_id, task_st,
+		task_et, task_rst,
+		task_ret, task_asi, task_rate, pjt_id, user_id
 		FROM search_matches
 
 		UNION ALL
 
 		SELECT t.task_id, t.task_name, t.task_des,
 		t.task_status, t.is_test,
-		t.task_depth, t.stg_id, t.pt_task_id, t.task_seq,
-		t.task_st, t.task_et, t.task_rst, t.task_ret, t.task_asi,
+		t.is_design,
+		t.task_depth, t.pt_task_id, t.de_task_id, t.task_st, t.task_et, t.task_rst,
+		t.task_ret, t.task_asi,
 		t.task_rate, t.pjt_id, t.user_id
-		FROM task t
+		FROM project_task t
 		INNER JOIN parent_tasks pt ON t.task_id = pt.pt_task_id
-		WHERE t.pjt_id = #{pjtId}
+		WHERE t.pjt_id =
+		#{pjtId}
 		),
 
-		child_tasks
-		AS (
-		SELECT task_id, task_name, task_des, task_status, is_test,
-		task_depth, stg_id, pt_task_id, task_seq,
-		task_st, task_et, task_rst,
+		child_tasks AS (
+		SELECT task_id, task_name, task_des, task_status, is_test, is_design,
+		task_depth, pt_task_id, de_task_id,
+		task_st, task_et,
+		task_rst,
 		task_ret, task_asi, task_rate, pjt_id, user_id
 		FROM search_matches
 
 		UNION ALL
 
-		SELECT t.task_id, t.task_name, t.task_des, t.task_status,
-		t.is_test,
-		t.task_depth, t.stg_id, t.pt_task_id, t.task_seq,
-		t.task_st, t.task_et, t.task_rst, t.task_ret, t.task_asi, t.task_rate,
-		t.pjt_id, t.user_id
-		FROM task t
+		SELECT t.task_id, t.task_name,
+		t.task_des,
+		t.task_status, t.is_test, t.is_design,
+		t.task_depth, t.pt_task_id, t.de_task_id, t.task_st, t.task_et, t.task_rst,
+		t.task_ret, t.task_asi,
+		t.task_rate, t.pjt_id, t.user_id
+		FROM project_task t
 		INNER JOIN child_tasks ct ON t.pt_task_id = ct.task_id
-		WHERE t.pjt_id = #{pjtId}
+		WHERE t.pjt_id =
+		#{pjtId}
 		),
 
 		all_related_tasks AS (
@@ -238,66 +247,70 @@
 
 		task_hierarchy AS (
 		SELECT
-		t.task_id, t.task_name, t.task_des,
-		t.task_status, t.is_test,
-		t.task_depth, t.stg_id, t.pt_task_id, t.task_seq,
-		t.task_st, t.task_et, t.task_rst, t.task_ret, t.task_asi,
-		t.task_rate, t.pjt_id,
-		pt.task_name as pt_task_name, t.user_id,
-		CAST(LPAD(t.task_id, 10, '0') AS CHAR(1000)) AS sort_path
+		t.task_id,
+		t.task_name, t.task_des, t.task_status, t.is_test, t.is_design,
+		t.task_depth, t.pt_task_id, t.de_task_id, t.task_st, t.task_et,
+		t.task_rst,
+		t.task_ret, t.task_asi, t.task_rate, t.pjt_id, t.user_id,
+		pt.task_name as pt_task_name,
+		CAST(t.task_id AS CHAR(1000)) AS sort_path
 		FROM
 		all_related_tasks t
-		LEFT JOIN task pt ON t.pt_task_id = pt.task_id
-		WHERE t.pt_task_id = 0 OR t.pt_task_id NOT IN (SELECT task_id FROM
-		all_related_tasks)
+		LEFT JOIN project_task pt ON t.pt_task_id = pt.task_id
+		WHERE t.pt_task_id IS NULL OR t.pt_task_id = '' OR t.pt_task_id
+		NOT IN (SELECT task_id FROM all_related_tasks)
 
 		UNION ALL
 
 		SELECT
-		t.task_id, t.task_name, t.task_des, t.task_status, t.is_test,
-		t.task_depth, t.stg_id, t.pt_task_id,
-		t.task_seq,
-		t.task_st, t.task_et, t.task_rst, t.task_ret, t.task_asi, t.task_rate, t.pjt_id,
-		pt.task_name as pt_task_name, t.user_id,
-		CONCAT(th.sort_path, '-', LPAD(t.task_id, 10, '0')) AS sort_path
-		FROM all_related_tasks t
-		INNER JOIN task_hierarchy th ON t.pt_task_id =
-		th.task_id
-		LEFT JOIN task pt ON t.pt_task_id = pt.task_id
+		t.task_id, t.task_name, t.task_des, t.task_status, t.is_test, t.is_design,
+		t.task_depth, t.pt_task_id, t.de_task_id, t.task_st, t.task_et, t.task_rst,
+		t.task_ret, t.task_asi, t.task_rate, t.pjt_id, t.user_id,
+		pt.task_name as pt_task_name,
+		CONCAT(th.sort_path, '-', t.task_id) AS sort_path
+		FROM
+		all_related_tasks t
+		INNER JOIN task_hierarchy th ON
+		t.pt_task_id = th.task_id
+		LEFT JOIN project_task pt ON t.pt_task_id = pt.task_id
 		),
 		ranked_tasks AS (
 		SELECT *,
-		ROW_NUMBER() OVER (ORDER BY sort_path) as rn
-		FROM
-		task_hierarchy
+		ROW_NUMBER() OVER (ORDER BY
+		sort_path) as rn
+		FROM task_hierarchy
 		)
 		SELECT
-		task_id as taskId, task_name as taskName, task_des as taskDes,
-		task_status as taskStatus, is_test as isTest,
-		task_depth as taskDepth,
-		stg_id as stgId, pt_task_id as ptTaskId, pt_task_name as ptTaskName,
-		task_seq as taskSeq, task_st as taskSt,
-		task_et as taskEt, task_rst as taskRst,
-		task_ret as taskRet, task_asi as taskAsi, task_rate as taskRate,
-		pjt_id as pjtId, user_id as userId
+		task_id as taskId, task_name as taskName,
+		task_des as taskDes,
+		task_status as taskStatus, is_test
+		as isTest, is_design as isDesign,
+		task_depth as taskDepth, pt_task_id as ptTaskId,
+		de_task_id as deTaskId,
+		pt_task_name as ptTaskName,
+		task_st as taskSt, task_et as taskEt,
+		task_rst as taskRst, task_ret as taskRet, task_asi as taskAsi,
+		task_rate as taskRate, pjt_id as pjtId,
+		user_id as userId
 		FROM ranked_tasks
-		WHERE rn BETWEEN ((#{pageIndex} - 1) * #{pageSize} + 1) AND (#{pageIndex} * #{pageSize})
-		ORDER BY sort_path
+		WHERE rn BETWEEN ((#{pageIndex} - 1) * #{pageSize} + 1) AND (#{pageIndex}
+		* #{pageSize})
+		ORDER BY
+		sort_path
 	</select>
 
 	<select id="selectListCountWbsAll" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="long">
 		<!-- 전체 WBS 카운트를 조회한다. -->
 		/* QueryID : com.demo.proworks.wbs.selectListCountWbsAll */
 		WITH RECURSIVE task_hierarchy AS (
-		SELECT task_id, pt_task_id FROM task
-		WHERE
-		pjt_id = #{pjtId} AND pt_task_id = 0
+		SELECT task_id, pt_task_id FROM project_task
+		WHERE pjt_id = #{pjtId} AND (pt_task_id IS NULL OR pt_task_id = '')
 
 		UNION ALL
 
-		SELECT t.task_id, t.pt_task_id FROM task t
-		INNER JOIN task_hierarchy th ON t.pt_task_id =
-		th.task_id
+		SELECT t.task_id, t.pt_task_id FROM project_task t
+		INNER JOIN
+		task_hierarchy th ON t.pt_task_id = th.task_id
 		WHERE t.pjt_id = #{pjtId}
 		)
 		SELECT COUNT(*) as totcnt FROM task_hierarchy
@@ -308,9 +321,9 @@
 		/* QueryID : com.demo.proworks.wbs.selectListCountWbsSearch */
 		WITH RECURSIVE
 		search_matches AS (
-		SELECT task_id, pt_task_id FROM task
-		WHERE
-		pjt_id = #{pjtId}
+		SELECT task_id, pt_task_id FROM
+		project_task
+		WHERE pjt_id = #{pjtId}
 		<if test="scTaskId != null and scTaskId != ''">
 			AND task_id like CONCAT('%', #{scTaskId}, '%')
 		</if>
@@ -319,9 +332,6 @@
 		</if>
 		<if test="scTaskStatus != null and scTaskStatus != ''">
 			AND task_status like CONCAT('%', #{scTaskStatus}, '%')
-		</if>
-		<if test="scStgId != null and scStgId != ''">
-			AND stg_id like CONCAT('%', #{scStgId}, '%')
 		</if>
 		<if test="scTaskAsi != null and scTaskAsi != ''">
 			AND task_asi like CONCAT('%', #{scTaskAsi}, '%')
@@ -333,7 +343,7 @@
 		parent_tasks AS (
 		SELECT task_id, pt_task_id FROM search_matches
 		UNION ALL
-		SELECT t.task_id, t.pt_task_id FROM task t
+		SELECT t.task_id, t.pt_task_id FROM project_task t
 		INNER JOIN
 		parent_tasks pt ON t.task_id = pt.pt_task_id
 		WHERE t.pjt_id = #{pjtId}
@@ -341,7 +351,7 @@
 		child_tasks AS (
 		SELECT task_id, pt_task_id FROM search_matches
 		UNION ALL
-		SELECT t.task_id, t.pt_task_id FROM task t
+		SELECT t.task_id, t.pt_task_id FROM project_task t
 		INNER JOIN child_tasks ct ON t.pt_task_id = ct.task_id
 		WHERE t.pjt_id = #{pjtId}
 		),
@@ -354,8 +364,51 @@
 		all_related_tasks
 	</select>
 
-	<select id="selectListStg" parameterType="com.demo.proworks.wbs.vo.WbsStgVo" resultType="com.demo.proworks.wbs.vo.WbsStgVo">
-		<!-- 단계 목록의 조회한다. -->
-		SELECT /* QueryID : com.demo.proworks.wbs.selectListStg */ STG_ID as stgID, STG_NAME as stgNAME FROM STG
+	<!-- 하위 설계업무 조회 -->
+	<select id="selectChildDesign" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
+		SELECT TASK_ID as taskId, TASK_STATUS as taskStatus, TASK_RATE as taskRate
+		FROM PROJECT_TASK
+		WHERE PT_TASK_ID = #{taskId} AND PJT_ID = #{pjtId} AND IS_DESIGN = 1
 	</select>
+
+	<!-- 연관 개발업무 조회 -->
+	<select id="selectDevByDesign" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
+		SELECT TASK_ID as taskId, TASK_STATUS as taskStatus, TASK_RATE as taskRate
+		FROM PROJECT_TASK
+		WHERE DE_TASK_ID = #{taskId} AND PJT_ID = #{pjtId} AND IS_DESIGN = 0
+	</select>
+
+	<!-- 상위 설계업무 조회 -->
+	<select id="selectParentDesign" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
+		SELECT PT_TASK_ID as taskId, PJT_ID as pjtId
+		FROM PROJECT_TASK
+		WHERE TASK_ID = #{taskId} AND PT_TASK_ID IS NOT NULL AND PT_TASK_ID != ''
+	</select>
+
+	<!-- 연관 설계업무 조회 -->
+	<select id="selectDesignByDev" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
+		SELECT DE_TASK_ID as taskId, PJT_ID as pjtId
+		FROM PROJECT_TASK
+		WHERE TASK_ID = #{taskId} AND DE_TASK_ID IS NOT NULL AND DE_TASK_ID != ''
+	</select>
+
+	<!-- 진척률 업데이트 -->
+	<update id="updateRate" parameterType="com.demo.proworks.wbs.vo.WbsVo">
+		UPDATE PROJECT_TASK
+		SET TASK_RATE = #{taskRate}
+		WHERE TASK_ID = #{taskId}
+	</update>
+	
+	<!-- 모든 하위 업무 조회 (pt_task_id 기반, 페이징 없음) -->
+	<select id="selectAllChildrenByParent" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
+		SELECT 
+			TASK_ID as taskId, 
+			TASK_NAME as taskName, 
+			TASK_STATUS as taskStatus, 
+			IS_DESIGN as isDesign,
+			TASK_RATE as taskRate
+		FROM PROJECT_TASK
+		WHERE PT_TASK_ID = #{ptTaskId} AND PJT_ID = #{pjtId}
+	</select>
+
 </mapper>

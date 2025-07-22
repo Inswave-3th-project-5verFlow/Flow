@@ -37,7 +37,7 @@ public class PugController {
 	private PugService pugService;
 
 	/**
-	 * 프로젝트 유저 그룹 매핑 정보 목록을 조회합니다.
+	 * 프로젝트 유저 그룹 매핑 정보 목록을 조회 한다.
 	 *
 	 * @param pugVo 프로젝트 유저 그룹 매핑 정보
 	 * @return 목록조회 결과
@@ -77,48 +77,7 @@ public class PugController {
 	}
 
 	/**
-	 * 프로젝트 유저 그룹 매핑 정보를 등록 처리 한다.
-	 *
-	 * @param pugVo 프로젝트 유저 그룹 매핑 정보
-	 * @throws Exception
-	 */
-	@ElService(key = "PugIns")
-	@RequestMapping(value = "PugIns")
-	@ElDescription(sub = "프로젝트 유저 그룹 매핑 정보 등록처리", desc = "프로젝트 유저 그룹 매핑 정보를 등록 처리 한다.")
-	public void insertPug(PugVo pugVo) throws Exception {
-		pugService.insertPug(pugVo);
-	}
-
-	/**
-	 * 프로젝트 유저 그룹 매핑 정보를 갱신 처리 한다.
-	 *
-	 * @param pugVo 프로젝트 유저 그룹 매핑 정보
-	 * @throws Exception
-	 */
-	@ElService(key = "PugUpd")
-	@RequestMapping(value = "PugUpd")
-	@ElValidator(errUrl = "/pug/pugRegister", errContinue = true)
-	@ElDescription(sub = "프로젝트 유저 그룹 매핑 정보 갱신처리", desc = "프로젝트 유저 그룹 매핑 정보를 갱신 처리 한다.")
-	public void updatePug(PugVo pugVo) throws Exception {
-
-		pugService.updatePug(pugVo);
-	}
-
-	/**
-	 * 프로젝트 유저 그룹 매핑 정보를 삭제 처리한다.
-	 *
-	 * @param pugVo 프로젝트 유저 그룹 매핑 정보
-	 * @throws Exception
-	 */
-	@ElService(key = "PugDel")
-	@RequestMapping(value = "PugDel")
-	@ElDescription(sub = "프로젝트 유저 그룹 매핑 정보 삭제처리", desc = "프로젝트 유저 그룹 매핑 정보를 삭제 처리한다.")
-	public void deletePug(PugVo pugVo) throws Exception {
-		pugService.deletePug(pugVo);
-	}
-
-	/**
-	 * 프로젝트 유저 그룹 매핑 정보를 삭제 처리한다.
+	 * 메뉴 그룹 목록을 조회한다.
 	 *
 	 * @param pugVo 프로젝트 유저 그룹 매핑 정보
 	 * @throws Exception

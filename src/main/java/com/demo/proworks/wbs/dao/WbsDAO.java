@@ -1,13 +1,9 @@
 package com.demo.proworks.wbs.dao;
 
 import java.util.List;
-
 import org.springframework.stereotype.Repository;
-
 import com.inswave.elfw.exception.ElException;
-import com.demo.proworks.wbs.vo.WbsStgVo;
 import com.demo.proworks.wbs.vo.WbsVo;
-import com.demo.proworks.wbs.dao.WbsDAO;
 
 /**
  * @subject : WBS 관련 처리를 담당하는 DAO
@@ -17,7 +13,7 @@ import com.demo.proworks.wbs.dao.WbsDAO;
  * @modification ===========================================================
  *               DATE AUTHOR DESC
  *               ===========================================================
- *               2025/07/09 김성민 최초 생성
+ *               2025/07/09 김성민 최초 생성 2025/07/19 김성민 STG 테이블 관련 코드 제거
  * 
  */
 @Repository("wbsDAO")
@@ -68,17 +64,6 @@ public class WbsDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
 	}
 
 	/**
-	 * 단계 목록을 조회 한다.
-	 * 
-	 * @param WbsStgVo
-	 * @return List<WbsStgVo>
-	 * @throws ElException
-	 */
-	public List<WbsStgVo> selectListStg(WbsStgVo vo) throws ElException {
-		return (List<WbsStgVo>) list("com.demo.proworks.wbs.selectListStg", vo);
-	}
-
-	/**
 	 * 페이징을 처리하여 전체 WBS 계층 구조를 조회한다.
 	 * 
 	 * @param WbsVo WBS
@@ -120,6 +105,50 @@ public class WbsDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
 	 */
 	public long selectListCountWbsSearch(WbsVo vo) throws ElException {
 		return (Long) selectByPk("com.demo.proworks.wbs.selectListCountWbsSearch", vo);
+	}
+
+// WbsDAO.java에 추가할 메소드들
+
+	/**
+	 * 하위 설계업무 조회
+	 */
+	public List<WbsVo> selectChildDesign(WbsVo vo) throws ElException {
+		return (List<WbsVo>) list("com.demo.proworks.wbs.selectChildDesign", vo);
+	}
+
+	/**
+	 * 연관 개발업무 조회
+	 */
+	public List<WbsVo> selectDevByDesign(WbsVo vo) throws ElException {
+		return (List<WbsVo>) list("com.demo.proworks.wbs.selectDevByDesign", vo);
+	}
+
+	/**
+	 * 상위 설계업무 조회
+	 */
+	public WbsVo selectParentDesign(WbsVo vo) throws ElException {
+		return (WbsVo) selectByPk("com.demo.proworks.wbs.selectParentDesign", vo);
+	}
+
+	/**
+	 * 연관 설계업무 조회
+	 */
+	public WbsVo selectDesignByDev(WbsVo vo) throws ElException {
+		return (WbsVo) selectByPk("com.demo.proworks.wbs.selectDesignByDev", vo);
+	}
+
+	/**
+	 * 진척률 업데이트
+	 */
+	public int updateRate(WbsVo vo) throws ElException {
+		return update("com.demo.proworks.wbs.updateRate", vo);
+	}
+	
+	/**
+	 * 모든 하위 업무 조회 (pt_task_id 기반, 페이징 없음)
+	 */
+	public List<WbsVo> selectAllChildrenByParent(WbsVo vo) throws ElException {
+		return (List<WbsVo>) list("com.demo.proworks.wbs.selectAllChildrenByParent", vo);
 	}
 
 }
