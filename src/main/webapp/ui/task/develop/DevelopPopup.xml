@@ -28,6 +28,7 @@
         				<w2:key dataType="text" id="taskAsi" name="업무담당자"></w2:key>
         				<w2:key dataType="text" id="taskRate" name="진척률"></w2:key>
         				<w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
+        				<w2:key id="userId" name="사용자ID" dataType="text"></w2:key>
         			</w2:keyInfo>
         		</w2:dataMap>
 
@@ -112,6 +113,8 @@ scwin.onpageload = function () {
     if (taskData) {
         dmp_taskDetail.setJSON(taskData);
     }
+    dmp_taskDetail.set("pjtId", $p.parent().scwin.pjtId);
+    dmp_taskDetail.set("userId", $p.parent().scwin.userId);
 };
 
 scwin.btn_ptTaskName_onclick = function (e) {
@@ -245,7 +248,12 @@ scwin.btn_cancel_onclick = function (e) {
 };
 
 
-
+scwin.btn_reset_onclick = function (e) {
+    dmp_taskDetail.set("ptTaskId", null);
+    dmp_taskDetail.set("ptTaskName", null);
+    dmp_taskDetail.set("taskDepth", 1);
+    $c.win.alert("설계 업무가 초기화되었습니다.")
+};
 ]]></script>
     </head>
     
@@ -303,18 +311,10 @@ scwin.btn_cancel_onclick = function (e) {
     					<!-- 2행: 단계, 테스트여부 -->
     					<xf:group tagname="tr">
     						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
-    							<w2:textbox label="단계" style="color:#333;" />
+    							<w2:textbox label="설계업무ID" style="color:#333;" />
     						</xf:group>
     						<xf:group class="w2tb_td" tagname="td">
-    							<xf:select1 style="width:140px;" ref="data:dmp_taskDetail.stgId" appearance="minimal" allOption=""
-    								chooseOption="" chooseOptionLabel="">
-    								<xf:choices>
-    									<xf:itemset nodeset="data:dlt_stgId">
-    										<xf:label ref="label"></xf:label>
-    										<xf:value ref="value"></xf:value>
-    									</xf:itemset>
-    								</xf:choices>
-    							</xf:select1>
+    							<xf:input id="" style="width: 144px;" ref="data:dmp_taskDetail.ptTaskId" readOnly="true"></xf:input>
     						</xf:group>
     						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
     							<w2:textbox label="테스트여부" style="color:#333;" />
@@ -335,19 +335,23 @@ scwin.btn_cancel_onclick = function (e) {
     					<!-- 3행: 상위업무명, 순서 -->
     					<xf:group tagname="tr">
     						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
-    							<w2:textbox label="상위업무명" style="color:#333;" />
+    							<w2:textbox label="설계업무명" style="color:#333;" />
     						</xf:group>
     						<xf:group class="w2tb_td" tagname="td">
                                 <w2:attributes>
 									<w2:colspan>3</w2:colspan>
 								</w2:attributes>
-    							<xf:group style="display:flex; align-items:center;">
-    								<xf:input style="width:420px;" ref="data:dmp_taskDetail.ptTaskName" readOnly="true" />
-    								<xf:trigger class="btn_cm" id="btn_ptTaskName" style="margin-left:5px; padding:2px 8px;" type="button"
-    									ev:onclick="scwin.btn_ptTaskName_onclick">
-    									<xf:label>선택</xf:label>
-    								</xf:trigger>
-    							</xf:group>
+                                <xf:group style="align-items:center;">
+                                	<xf:input style="width:393px;" ref="data:dmp_taskDetail.ptTaskName" readOnly="true" />
+                                	<xf:trigger class="btn_cm" id="btn_ptTaskName" style="margin-left:5px; padding:2px 8px;" type="button"
+                                		ev:onclick="scwin.btn_ptTaskName_onclick">
+                                		<xf:label>선택</xf:label>
+                                	</xf:trigger>
+                                	<xf:trigger class="btn_cm" ev:onclick="scwin.btn_reset_onclick" id="btn_reset"
+                                		style="margin-left:5px; padding:2px 8px;" type="button">
+                                		<xf:label>초기화</xf:label>
+                                	</xf:trigger>
+                                </xf:group>
     						</xf:group>
     					</xf:group>
 
@@ -357,7 +361,7 @@ scwin.btn_cancel_onclick = function (e) {
     							<w2:textbox label="업무담당자" style="color:#333;" />
     						</xf:group>
     						<xf:group class="w2tb_td" tagname="td">
-    							<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskAsi" />
+    							<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskAsi" readOnly="true"/>
     						</xf:group>
     						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
     							<w2:textbox label="진척률(%)" style="color:#333;" />

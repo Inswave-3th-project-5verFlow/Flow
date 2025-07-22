@@ -29,8 +29,8 @@
 						<w2:column dataType="text" id="taskDes" name="업무상세"></w2:column>
 						<w2:column dataType="text" id="taskStatus" name="업무상태"></w2:column>
 						<w2:column dataType="text" id="isTest" name="테스트여부" defaultValue="0"></w2:column>
-						<w2:column dataType="text" id="isDesign" name="설계업무여부" defaultValue="1"></w2:column>
-						<w2:column dataType="text" id="ptTaskId" name="상위업무ID" defaultValue="0"></w2:column>
+						<w2:column dataType="text" id="isDesign" name="설계업무여부" defaultValue="0"></w2:column>
+						<w2:column dataType="text" id="ptTaskId" name="상위업무ID" defaultValue=""></w2:column>
 						<w2:column dataType="text" id="deTaskId" name="소속설계업무ID"></w2:column>
 						<w2:column dataType="text" id="taskDepth" name="뎁스" defaultValue="1"></w2:column>
 						<w2:column dataType="text" id="taskSt" name="시작예정일"></w2:column>
@@ -109,6 +109,14 @@ scwin.onpageload = function () {
     dmp_designVo.set("userId", scwin.userId);
     dmp_designVo.set("pjtId", scwin.pjtId);
 
+    // 설계 업무 페이지에서 넘어온 설계 업무ID 테스트
+    var paramData = $p.getParameter("tabParam");
+    if (paramData && paramData.deTaskId) {
+        console.log("선택된 설계업무ID : ", paramData.deTaskId);
+        dmp_designVo.set("scPtTaskId", paramData.deTaskId);
+    }
+
+
     var cptIbxName = $p.getComponentById("searchComp_1");
     if (cptIbxName == undefined) {
         search_box.hide();
@@ -173,7 +181,7 @@ scwin.btn_save_onclick = function (e) {
     modifiedData.forEach(function (item) {
         item.userId = scwin.userId;
         item.pjtId = scwin.pjtId;
-        item.isDesign = 1; // 설계업무로 설정
+        item.isDesign = 0; // 개발업무로 설정
     });
 
     let reqObj = {
@@ -223,7 +231,7 @@ scwin.openDetailPopup = function (rowIndex) {
         dataObject: jsnPopupData
     };
 
-    $p.openPopup("/InsWebApp/ui/task/design/DesignPopup.xml", options);
+    $p.openPopup("/InsWebApp/ui/task/develop/DevelopPopup.xml", options);
 };
 
 scwin.openParentTaskPopup = function (rowIndex) {
@@ -233,7 +241,7 @@ scwin.openParentTaskPopup = function (rowIndex) {
         currentTaskId: rowData.taskId,
         currentTaskName: rowData.taskName,
         currentRowIndex: rowIndex,
-        currentPjtId : rowData.pjtId
+        currentPjtId: scwin.pjtId,
     };
 
     var jsnPopupData = {
@@ -399,7 +407,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
     // 샘플 데이터와 가이드 생성
     var sampleData = [
         {
-            chk: "",
             taskName: "=== 업무명 작성 가이드 ===",
             ptTaskName: "=== 상위업무명 입력 (정확한 업무명 입력) ===",
             taskStatus: "대기",
@@ -410,7 +417,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             taskRate: "0"
         },
         {
-            chk: "",
             taskName: "메인페이지 기획",
             ptTaskName: "",
             taskStatus: "대기",
@@ -421,7 +427,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             taskRate: "0"
         },
         {
-            chk: "",
             taskName: "메인페이지 와이어프레임",
             ptTaskName: "메인페이지 기획",
             taskStatus: "대기",
@@ -432,7 +437,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             taskRate: "0"
         },
         {
-            chk: "",
             taskName: "메인페이지 상세설계",
             ptTaskName: "메인페이지 기획",
             taskStatus: "대기",
@@ -443,7 +447,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             taskRate: "0"
         },
         {
-            chk: "",
             taskName: "사용자 관리",
             ptTaskName: "",
             taskStatus: "대기",
@@ -454,7 +457,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             taskRate: "0"
         },
         {
-            chk: "",
             taskName: "로그인 기능",
             ptTaskName: "사용자 관리",
             taskStatus: "대기",
@@ -477,7 +479,7 @@ scwin.btn_excel_template_download_onclick = function (e) {
         bodyFontBold: false,
         type: 1,
         trim: 1,
-        removeColumns: "12", //프로젝트ID 컬럼 제외
+        removeColumns: "13", //프로젝트ID 컬럼 제외
         processMsg: "템플릿 파일을 생성하고 있습니다...",
         timeout: 60000,
         checkInterval: 1000,
@@ -698,7 +700,7 @@ scwin.btn_excel_template_download_onclick = function (e) {
 									</w2:itemset>
 								</w2:choices>
 							</w2:column>
-							<w2:column width="70" inputType="text" style="" id="ptTaskId" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="text" style="" id="ptTaskId" value="" displayMode="label" readOnly="true"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="ptTaskName" value="" displayMode="label" readOnly="true"></w2:column>
 							<w2:column width="70" inputType="calendar" style="" id="taskSt" value="" displayMode="label"
 								useFilter="false">

@@ -126,15 +126,15 @@ scwin.sbm_designList_submitdone = function (e) {
     var elData = e.responseJSON.elData;
     var elHeader = e.responseJSON.elHeader;
 
-    console.log(elData);
+    console.log("조회된 데이터 :", elData);
 
     if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
         $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
         return false;
     }
 
-    spn_listCnt.setLabel(elData.totalCount);
     dlt_designVoList.setJSON(elData.designVoList);
+    spn_listCnt.setLabel(elData.totalCount);
 
     var totalPageCount = Math.ceil(elData.totalCount / dmp_designVo.get("pageSize"));
     pgl_designList.setCount(totalPageCount);
@@ -198,24 +198,37 @@ scwin.grd_list_oncellclick = function (row, col, colId) {
     if (colId === "ptTaskName") {
         scwin.openParentTaskPopup(row);
     }
-    if (colId === "taskId") {
-        console.log("업무ID 클릭..");
-        $p.parent().scwin.openTab("task/develop/DevelopList2.xml", "개발 업무");
-        // $p.url("/InsWebApp/ui/task/develop/DevelopList2.xml");
-    }
+    if (colId === "taskId") { // 설계업무ID 클릭시, 해당 설계업무ID를 부모로 가지는 개발 업무 목록 페이지로 이동.
+        var selectedRow = dlt_designVoList.getRowJSON(row)
+  
+        var tab_content = $p.parent().tab_content;
+        var tabId = "tab_1";
+        var title = "개발 업무";
+        var url = "task/develop/DevelopList.xml";
 
-    /* 
-    var param1 = { "name":"WebSquare", "ID":"tmpVal1" };
-    $p.url("/bar.xml", {"spa" : true, "replaceHistory" : true, "param" : param1}); // bar.xml을 SPA로 페이지 이동하면서 name,ID 매개 변수 전달
+        var rowJSON = {
+        "deTaskId" : selectedRow.taskId
+        };  
 
-    //bar.xml에서 param1의 값을 꺼내오는 방법
-    $p.getParameter("name");
-    //반환 값 예시 ) WebSquare
+        // 새 탭 생성
+        tab_content.addTab(tabId, {
+            "label": title,
+            "closable": "true",
+            "openAction": "exist",
+        }, {
+            "src": url,
+            "frameMode": "wframe",
+            "dataObject":{
+                "type" : "json",
+                "name" : "tabParam",
+                "data" : rowJSON
+            }
+        });
 
-    $p.url("/bar.xml", {"spa" : true, "forceReload" : true, "param" : param1}); // bar.xml을 SPA로 이동하면서 브라우저를 재로딩하고 name,ID 매개 변수 전달
-
-
-     */
+        tab_content.setSelectedTabIndex(tabId);
+   
+    };
+ 
 };
 
 scwin.openDetailPopup = function (rowIndex) {
@@ -250,7 +263,7 @@ scwin.openParentTaskPopup = function (rowIndex) {
         currentTaskId: rowData.taskId,
         currentTaskName: rowData.taskName,
         currentRowIndex: rowIndex,
-        currentPjtId: rowData.pjtId
+        currentPjtId: scwin.pjtId
     };
 
     var jsnPopupData = {
@@ -351,7 +364,7 @@ scwin.sbm_selectDesignVoListForExcel_submitdone = function (e) {
         bodyFontBold: false,
         type: 1, // inputType이 "select", "autoComplete", 혹은 "checkcombobox"인 경우 >> label 값 다운
         trim: 1,
-        removeColumns: "0", // 체크박스는 다운로드 안함.
+        removeColumns: "0, 4", // 체크박스는 다운로드 안함.
         processMsg: "엑셀 파일을 생성하고 있습니다...",
         timeout: 60000,
         checkInterval: 1000,
@@ -416,7 +429,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
     // 샘플 데이터와 가이드 생성
     var sampleData = [
         {
-            chk: "",
             taskName: "=== 업무명 작성 가이드 ===",
             ptTaskName: "=== 상위업무명 입력 (정확한 업무명 입력) ===",
             taskStatus: "대기",
@@ -427,7 +439,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             taskRate: "0"
         },
         {
-            chk: "",
             taskName: "메인페이지 기획",
             ptTaskName: "",
             taskStatus: "대기",
@@ -438,7 +449,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             taskRate: "0"
         },
         {
-            chk: "",
             taskName: "메인페이지 와이어프레임",
             ptTaskName: "메인페이지 기획",
             taskStatus: "대기",
@@ -449,7 +459,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             taskRate: "0"
         },
         {
-            chk: "",
             taskName: "메인페이지 상세설계",
             ptTaskName: "메인페이지 기획",
             taskStatus: "대기",
@@ -460,7 +469,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             taskRate: "0"
         },
         {
-            chk: "",
             taskName: "사용자 관리",
             ptTaskName: "",
             taskStatus: "대기",
@@ -471,7 +479,6 @@ scwin.btn_excel_template_download_onclick = function (e) {
             taskRate: "0"
         },
         {
-            chk: "",
             taskName: "로그인 기능",
             ptTaskName: "사용자 관리",
             taskStatus: "대기",
@@ -651,7 +658,7 @@ scwin.btn_excel_template_download_onclick = function (e) {
 								localeRef="Design_COLNAME_00004">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column5" value="테스트여부" displayMode="label"
-								localeRef="Design_COLNAME_00005">
+								localeRef="Design_COLNAME_00005" hidden="true">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column18" value="상위 업무명" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="column10" value="시작예정일" displayMode="label"
