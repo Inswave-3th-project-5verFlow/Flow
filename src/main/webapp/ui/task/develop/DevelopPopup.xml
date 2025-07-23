@@ -29,6 +29,7 @@
         				<w2:key dataType="text" id="taskRate" name="진척률"></w2:key>
         				<w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
         				<w2:key id="userId" name="사용자ID" dataType="text"></w2:key>
+        				<w2:key id="displayTest" name="화면용 테스트 여부" dataType="text"></w2:key>
         			</w2:keyInfo>
         		</w2:dataMap>
 
@@ -112,6 +113,8 @@ scwin.onpageload = function () {
     var taskData = $p.getParameter("taskData");
     if (taskData) {
         dmp_taskDetail.setJSON(taskData);
+        if(dmp_taskDetail.get("isTest") === "1") dmp_taskDetail.set("displayTest", "Y");
+        else dmp_taskDetail.set("displayTest", "N");
     }
     dmp_taskDetail.set("pjtId", $p.parent().scwin.pjtId);
     dmp_taskDetail.set("userId", $p.parent().scwin.userId);
@@ -320,15 +323,7 @@ scwin.btn_reset_onclick = function (e) {
     							<w2:textbox label="테스트여부" style="color:#333;" />
     						</xf:group>
     						<xf:group class="w2tb_td" tagname="td">
-    							<xf:select1 style="width:140px;" ref="data:dmp_taskDetail.isTest" appearance="minimal" allOption=""
-    								chooseOption="true" chooseOptionLabel="">
-    								<xf:choices>
-    									<xf:itemset nodeset="data:dlt_isTest">
-    										<xf:label ref="label"></xf:label>
-    										<xf:value ref="value"></xf:value>
-    									</xf:itemset>
-    								</xf:choices>
-    							</xf:select1>
+    							<xf:input id="" style="width: 144px;" ref="data:dmp_taskDetail.displayTest" readOnly="true"></xf:input>
     						</xf:group>
     					</xf:group>
 

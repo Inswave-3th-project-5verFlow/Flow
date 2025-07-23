@@ -121,6 +121,7 @@ scwin.onpageload = function () {
     if (cptIbxName == undefined) {
         search_box.hide();
     }
+    scwin.handleWbsParam();
     scwin.btn_search_onclick();
 };
 
@@ -206,6 +207,41 @@ scwin.sbm_saveDesignVoList_submitdone = function (e) {
 scwin.grd_list_oncellclick = function (row, col, colId) {
     if (colId === "ptTaskName") {
         scwin.openParentTaskPopup(row);
+    }
+    if (colId === "isTest" && dlt_designVoList.getRowData(row).isTest === "1") {
+        console.log("테스트 여부 컬럼 클릭.")
+        scwin.navigateToTaskTab(row);
+    }
+};
+
+// 테스트 여부 컬럼 클리시, 개발 업무ID를 넘겨주면서 페이지 이동.
+scwin.navigateToTaskTab = function (rowIndex) {
+    try {
+        const rowData = dlt_designVoList.getRowJSON(rowIndex);
+
+        // URL과 타이틀 결정
+        let targetUrl = "test/Test1.xml";
+        let tabTitle = "테스트 내역";
+
+        // 전달할 탭 데이터
+        const tabData = {
+            selectedTaskId: rowData.taskId, // 개발 업무ID
+            taskName: rowData.taskName,
+            fromWbs: true,
+            timestamp: new Date().getTime(),
+        };
+
+        // 메인페이지의 openTab 함수 호출 (수정된 방식)
+        if ($p.parent() && $p.parent().scwin && $p.parent().scwin.openTab) {
+             $p.parent().scwin.openTab(targetUrl, tabTitle, tabData);
+        } else {
+            console.error("메인페이지의 openTab 함수를 찾을 수 없습니다.");
+            $c.win.alert("페이지 이동에 실패했습니다.");
+        }
+
+    } catch (error) {
+        console.error("테스트 화면 이동 중 오류:", error);
+        $c.win.alert("화면 이동 중 오류가 발생했습니다.");
     }
 };
 
@@ -499,7 +535,17 @@ scwin.btn_excel_template_download_onclick = function (e) {
     grd_list.advancedExcelDownload(options);
 };
 
-]]></script>
+scwin.handleWbsParam = function() {
+    try {
+        var wbsData = $p.getParameter("tabData");
+        if (wbsData && wbsData.fromWbs && wbsData.selectedTaskId) {
+            dmp_designVo.set("scTaskId", wbsData.selectedTaskId);
+            console.log("WBS에서 전달받은 업무ID:", wbsData.selectedTaskId);
+        }
+    } catch (e) {
+        console.log("WBS 파라미터 처리 생략");
+    }
+};]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">
 		<xf:group class="sub_contents " id="" style="">
@@ -692,7 +738,7 @@ scwin.btn_excel_template_download_onclick = function (e) {
 								</w2:choices>
 							</w2:column>
 							<w2:column width="70" inputType="select" style="" id="isTest" value="" displayMode="label" allOption=""
-								chooseOption="" ref="">
+								chooseOption="" ref="" readOnly="true">
 								<w2:choices>
 									<w2:itemset nodeset="data:dlt_isTest">
 										<w2:label ref="label"></w2:label>
