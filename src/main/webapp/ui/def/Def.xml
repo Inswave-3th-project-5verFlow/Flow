@@ -5,464 +5,128 @@
 		<w2:type>COMPONENT</w2:type>
 		<w2:buildDate />
 		<w2:MSA />
-		<style type="text/css">
-		/* 칸반 보드 스타일 */
-		.kanban-container {
-			background: #f5f7fa;
-			min-height: 100vh;
-			padding: 20px;
-			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-		}
-
-		.page-header {
-			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-			color: white;
-			padding: 30px;
-			border-radius: 12px;
-			margin-bottom: 25px;
-			box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-		}
-
-		.page-title {
-			font-size: 28px;
-			font-weight: 700;
-			margin: 0;
-		}
-
-		.search-section {
-			background: white;
-			padding: 25px;
-			border-radius: 12px;
-			box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-			margin-bottom: 25px;
-		}
-
-		.statistics-cards {
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-			gap: 20px;
-			margin-bottom: 30px;
-		}
-
-		.stat-card {
-			background: white;
-			padding: 25px;
-			border-radius: 12px;
-			box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-			text-align: center;
-			transition: transform 0.3s ease;
-		}
-
-		.stat-card:hover {
-			transform: translateY(-5px);
-		}
-
-		.stat-card.new { border-left: 5px solid #3498db; }
-		.stat-card.processing { border-left: 5px solid #f39c12; }
-		.stat-card.completed { border-left: 5px solid #27ae60; }
-		.stat-card.total { border-left: 5px solid #9b59b6; }
-
-		.stat-number {
-			font-size: 36px;
-			font-weight: 700;
-			margin-bottom: 8px;
-		}
-
-		.stat-number.new { color: #3498db; }
-		.stat-number.processing { color: #f39c12; }
-		.stat-number.completed { color: #27ae60; }
-		.stat-number.total { color: #9b59b6; }
-
-		.stat-label {
-			font-size: 14px;
-			color: #6c757d;
-			font-weight: 600;
-		}
-
-		.kanban-board {
-			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-			gap: 25px;
-			margin-bottom: 30px;
-		}
-
-		.kanban-column {
-			background: white;
-			border-radius: 12px;
-			box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-			overflow: hidden;
-		}
-
-		.kanban-header {
-			padding: 20px;
-			font-weight: 700;
-			font-size: 16px;
-			display: flex;
-			justify-content: space-between;
-			align-items: center;
-		}
-
-		.kanban-header.new {
-			background: linear-gradient(135deg, #3498db, #5dade2);
-			color: white;
-		}
-
-		.kanban-header.processing {
-			background: linear-gradient(135deg, #f39c12, #f7dc6f);
-			color: white;
-		}
-
-		.kanban-header.completed {
-			background: linear-gradient(135deg, #27ae60, #58d68d);
-			color: white;
-		}
-
-		.kanban-count {
-			background: rgba(255,255,255,0.3);
-			padding: 4px 12px;
-			border-radius: 20px;
-			font-size: 14px;
-			font-weight: 600;
-		}
-
-		.kanban-content {
-			padding: 20px;
-			min-height: 400px;
-		}
-
-		/* 그리드 스타일 개선 */
-		.gvw {
-			border: none !important;
-			border-radius: 8px !important;
-			overflow: hidden !important;
-		}
-
-		.gvw .w2grid_header {
-			background: #f8f9fa !important;
-			border-bottom: 2px solid #e9ecef !important;
-		}
-
-		.gvw .w2grid_header .w2grid_cell {
-			background: #f8f9fa !important;
-			color: #495057 !important;
-			font-weight: 600 !important;
-			padding: 12px 8px !important;
-			border-right: 1px solid #e9ecef !important;
-		}
-
-		.gvw .w2grid_body .w2grid_row {
-			border-bottom: 1px solid #f1f3f4 !important;
-		}
-
-		.gvw .w2grid_body .w2grid_row:hover {
-			background: #f8f9fa !important;
-		}
-
-		.gvw .w2grid_body .w2grid_cell {
-			padding: 10px 8px !important;
-			border-right: 1px solid #f1f3f4 !important;
-		}
-
-		/* 우선순위 배지 스타일 */
-		.priority-badge {
-			padding: 4px 8px;
-			border-radius: 12px;
-			font-size: 11px;
-			font-weight: 600;
-			text-transform: uppercase;
-		}
-
-		.priority-critical {
-			background: #fee;
-			color: #c53030;
-			border: 1px solid #fc8181;
-		}
-
-		.priority-high {
-			background: #fff5e6;
-			color: #d69e2e;
-			border: 1px solid #fbb04e;
-		}
-
-		.priority-medium {
-			background: #e6f3ff;
-			color: #3182ce;
-			border: 1px solid #90cdf4;
-		}
-
-		.priority-low {
-			background: #f7fafc;
-			color: #718096;
-			border: 1px solid #cbd5e0;
-		}
-
-		/* 상태 배지 스타일 */
-		.status-badge {
-			padding: 4px 8px;
-			border-radius: 12px;
-			font-size: 11px;
-			font-weight: 600;
-		}
-
-		.status-new {
-			background: #e6f3ff;
-			color: #0066cc;
-		}
-
-		.status-processing {
-			background: #fff2e6;
-			color: #cc6600;
-		}
-
-		.status-completed {
-			background: #e6ffe6;
-			color: #009900;
-		}
-
-		/* 팝업 스타일 */
-		.popup-overlay {
-			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			background: rgba(0,0,0,0.6);
-			backdrop-filter: blur(5px);
-			z-index: 1000;
-		}
-
-		.popup-content {
-			position: absolute;
-			top: 50%;
-			left: 50%;
-			transform: translate(-50%, -50%);
-			background: white;
-			border-radius: 16px;
-			max-width: 900px;
-			width: 95%;
-			max-height: 90vh;
-			overflow-y: auto;
-			box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-		}
-
-		.popup-header {
-			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-			color: white;
-			padding: 25px 30px;
-			border-radius: 16px 16px 0 0;
-		}
-
-		.popup-title {
-			font-size: 20px;
-			font-weight: 700;
-			margin: 0;
-		}
-
-		.popup-body {
-			padding: 30px;
-		}
-
-		.form-section {
-			margin-bottom: 30px;
-		}
-
-		.form-section-title {
-			font-size: 18px;
-			font-weight: 600;
-			color: #2c3e50;
-			margin-bottom: 20px;
-			padding-bottom: 10px;
-			border-bottom: 2px solid #e9ecef;
-		}
-
-		/* 반응형 디자인 */
-		@media (max-width: 768px) {
-			.kanban-board {
-				grid-template-columns: 1fr;
-			}
-			
-			.statistics-cards {
-				grid-template-columns: repeat(2, 1fr);
-			}
-		}
-
-		@media (max-width: 480px) {
-			.statistics-cards {
-				grid-template-columns: 1fr;
-			}
-		}
-		</style>
 		<xf:model>
 			<w2:dataCollection baseNode="map">
-				<w2:dataMap baseNode="map" id="dmp_defVo" style="">
+				<!-- 검색 조건 -->
+				<w2:dataMap baseNode="map" id="dmp_defSearch" style="">
 					<w2:keyInfo>
-						<w2:key dataType="text" id="pageIndex" name="페이지번호" defaultValue="1"></w2:key>
-						<w2:key dataType="text" id="pageSize" name="페이지사이즈" defaultValue="10"></w2:key>
-						<w2:key dataType="text" id="totalPageCount" name="페이지건수"></w2:key>
-						<w2:key dataType="text" id="searchName" name="검색_결함명"></w2:key>
-						<w2:key dataType="text" id="searchAssignee" name="검색_담당자"></w2:key>
 						<w2:key dataType="text" id="searchStatus" name="검색_상태"></w2:key>
 						<w2:key dataType="text" id="searchPriority" name="검색_우선순위"></w2:key>
+						<w2:key dataType="text" id="searchAssignee" name="검색_담당자"></w2:key>
+						<w2:key dataType="text" id="searchDefectName" name="검색_결함명"></w2:key>
+						<w2:key dataType="text" id="dateFrom" name="시작일"></w2:key>
+						<w2:key dataType="text" id="dateTo" name="종료일"></w2:key>
+						<w2:key dataType="text" id="pageIndex" name="페이지번호" defaultValue="1"></w2:key>
+						<w2:key dataType="text" id="pageSize" name="페이지사이즈" defaultValue="10"></w2:key>
+						<w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
 					</w2:keyInfo>
-					<w2:data use="false"></w2:data>
 				</w2:dataMap>
-				<w2:dataList baseNode="list" id="dlt_defVoList" repeatNode="map" saveRemovedData="true" style="">
+
+				<!-- 결함 목록 -->
+				<w2:dataList baseNode="list" id="dlt_defList" repeatNode="map" saveRemovedData="true">
 					<w2:columnInfo>
-						<w2:column dataType="text" id="testId" name="테스트 ID"></w2:column>
-						<w2:column dataType="text" id="id" name="결함 고유 ID"></w2:column>
+						<w2:column dataType="text" id="id" name="결함ID"></w2:column>
+						<w2:column dataType="text" id="testId" name="연결테스트ID"></w2:column>
 						<w2:column dataType="text" id="name" name="결함명"></w2:column>
-						<w2:column dataType="text" id="assignee" name="작성자 사용자 ID"></w2:column>
-						<w2:column dataType="text" id="fixDueDate" name="완료 예정일"></w2:column>
-						<w2:column dataType="text" id="status" name="상태"></w2:column>
+						<w2:column dataType="text" id="description" name="결함설명"></w2:column>
 						<w2:column dataType="text" id="priority" name="우선순위"></w2:column>
-						<w2:column dataType="text" id="description" name="상세 내용"></w2:column>
+						<w2:column dataType="text" id="status" name="상태"></w2:column>
+						<w2:column dataType="text" id="assignee" name="담당자"></w2:column>
+						<w2:column dataType="text" id="assigneeName" name="담당자명"></w2:column>
 						<w2:column dataType="text" id="createdAt" name="등록일시"></w2:column>
-						<w2:column dataType="text" id="updatedAt" name="수정일시"></w2:column>
-						<w2:column dataType="text" id="fixedDate" name="해결일"></w2:column>
-						<w2:column dataType="text" id="responsePlan" name="대응방안"></w2:column>
-						<w2:column dataType="text" id="isDeleted" name="삭제여부"></w2:column>
-						<w2:column dataType="text" name="테스트명" id="testName"></w2:column>
-						<w2:column dataType="text" name="작성자명" id="userName"></w2:column>
+						<w2:column dataType="text" id="fixDueDate" name="수정기한"></w2:column>
+						<w2:column dataType="text" id="fixedDate" name="수정완료일"></w2:column>
+						<w2:column dataType="text" id="autoGenerated" name="자동생성여부"></w2:column>
 					</w2:columnInfo>
 				</w2:dataList>
-				<w2:dataMap baseNode="map" id="dmp_defVoDetail" style="">
+
+				<!-- 결함 상세 정보 -->
+				<w2:dataMap baseNode="map" id="dmp_defDetail" style="">
 					<w2:keyInfo>
-						<w2:key dataType="text" id="testId" name="테스트ID" defaultValue="6"></w2:key>
-						<w2:key dataType="text" id="id" name="결함 고유 ID"></w2:key>
+						<w2:key dataType="text" id="id" name="결함ID"></w2:key>
+						<w2:key dataType="text" id="testId" name="연결테스트ID"></w2:key>
 						<w2:key dataType="text" id="name" name="결함명"></w2:key>
-						<w2:key dataType="text" id="assignee" name="작성자 사용자 ID" defaultValue="1"></w2:key>
-						<w2:key dataType="text" id="fixDueDate" name="완료 예정일"></w2:key>
-						<w2:key dataType="text" id="status" name="상태"></w2:key>
-						<w2:key dataType="text" id="priority" name="우선순위"></w2:key>
-						<w2:key dataType="text" id="description" name="상세 내용"></w2:key>
+						<w2:key dataType="text" id="description" name="결함설명"></w2:key>
+						<w2:key dataType="text" id="priority" name="우선순위" defaultValue="보통"></w2:key>
+						<w2:key dataType="text" id="status" name="상태" defaultValue="대기"></w2:key>
+						<w2:key dataType="text" id="assignee" name="담당자"></w2:key>
+						<w2:key dataType="text" id="assigneeName" name="담당자명"></w2:key>
 						<w2:key dataType="text" id="createdAt" name="등록일시"></w2:key>
 						<w2:key dataType="text" id="updatedAt" name="수정일시"></w2:key>
-						<w2:key dataType="text" id="fixedDate" name="해결일"></w2:key>
-						<w2:key dataType="text" id="responsePlan" name="대응방안"></w2:key>
-						<w2:key dataType="text" id="isDeleted" name="삭제여부"></w2:key>
-						<w2:key dataType="text" name="작성자명" id="userName"></w2:key>
-						<w2:key dataType="text" name="테스트명" id="testName"></w2:key>
+						<w2:key dataType="text" id="fixDueDate" name="수정기한"></w2:key>
+						<w2:key dataType="text" id="fixedDate" name="수정완료일"></w2:key>
+						<w2:key dataType="text" id="remarks" name="비고"></w2:key>
+						<w2:key dataType="text" id="pjtid" name="프로젝트ID"></w2:key>
+						<w2:key dataType="text" id="autoGenerated" name="자동생성여부"></w2:key>
 					</w2:keyInfo>
-					<w2:data use="false"></w2:data>
 				</w2:dataMap>
-				<w2:dataList baseNode="list" id="dlt_waitingList" repeatNode="map" saveRemovedData="true" style="">
+
+				<!-- 코드 데이터 -->
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_defStatus" saveRemovedData="true">
 					<w2:columnInfo>
-						<w2:column dataType="text" id="testId" name="테스트 ID"></w2:column>
-						<w2:column dataType="text" id="id" name="결함 고유 ID"></w2:column>
-						<w2:column dataType="text" id="name" name="결함명"></w2:column>
-						<w2:column dataType="text" id="assignee" name="작성자 사용자 ID"></w2:column>
-						<w2:column dataType="text" id="fixDueDate" name="완료 예정일"></w2:column>
-						<w2:column dataType="text" id="status" name="상태"></w2:column>
-						<w2:column dataType="text" id="priority" name="우선순위"></w2:column>
-						<w2:column dataType="text" id="description" name="상세 내용"></w2:column>
-						<w2:column dataType="text" id="createdAt" name="등록일시"></w2:column>
-						<w2:column dataType="text" id="updatedAt" name="수정일시"></w2:column>
-						<w2:column dataType="text" id="fixedDate" name="해결일"></w2:column>
-						<w2:column dataType="text" id="responsePlan" name="대응방안"></w2:column>
-						<w2:column dataType="text" id="isDeleted" name="삭제여부"></w2:column>
-						<w2:column dataType="text" name="작성자명" id="userName"></w2:column>
-						<w2:column dataType="text" name="테스트명" id="testName"></w2:column>
-					</w2:columnInfo>
-				</w2:dataList>
-				<w2:dataList baseNode="list" id="dlt_processingList" repeatNode="map" saveRemovedData="true" style="">
-					<w2:columnInfo>
-						<w2:column dataType="text" id="testId" name="테스트 ID"></w2:column>
-						<w2:column dataType="text" id="id" name="결함 고유 ID"></w2:column>
-						<w2:column dataType="text" id="name" name="결함명"></w2:column>
-						<w2:column dataType="text" id="assignee" name="작성자 사용자 ID"></w2:column>
-						<w2:column dataType="text" id="fixDueDate" name="완료 예정일"></w2:column>
-						<w2:column dataType="text" id="status" name="상태"></w2:column>
-						<w2:column dataType="text" id="priority" name="우선순위"></w2:column>
-						<w2:column dataType="text" id="description" name="상세 내용"></w2:column>
-						<w2:column dataType="text" id="createdAt" name="등록일시"></w2:column>
-						<w2:column dataType="text" id="updatedAt" name="수정일시"></w2:column>
-						<w2:column dataType="text" id="fixedDate" name="해결일"></w2:column>
-						<w2:column dataType="text" id="responsePlan" name="대응방안"></w2:column>
-						<w2:column dataType="text" id="isDeleted" name="삭제여부"></w2:column>
-						<w2:column dataType="text" name="테스트명" id="testName"></w2:column>
-						<w2:column dataType="text" name="작성자명" id="userName"></w2:column>
-					</w2:columnInfo>
-				</w2:dataList>
-				<w2:dataList baseNode="list" id="dlt_completedList" repeatNode="map" saveRemovedData="true" style="">
-					<w2:columnInfo>
-						<w2:column dataType="text" id="testId" name="테스트 ID"></w2:column>
-						<w2:column dataType="text" id="id" name="결함 고유 ID"></w2:column>
-						<w2:column dataType="text" id="name" name="결함명"></w2:column>
-						<w2:column dataType="text" id="assignee" name="작성자 사용자 ID"></w2:column>
-						<w2:column dataType="text" id="fixDueDate" name="완료 예정일"></w2:column>
-						<w2:column dataType="text" id="status" name="상태"></w2:column>
-						<w2:column dataType="text" id="priority" name="우선순위"></w2:column>
-						<w2:column dataType="text" id="description" name="상세 내용"></w2:column>
-						<w2:column dataType="text" id="createdAt" name="등록일시"></w2:column>
-						<w2:column dataType="text" id="updatedAt" name="수정일시"></w2:column>
-						<w2:column dataType="text" id="fixedDate" name="해결일"></w2:column>
-						<w2:column dataType="text" id="responsePlan" name="대응방안"></w2:column>
-						<w2:column dataType="text" id="isDeleted" name="삭제여부"></w2:column>
-						<w2:column dataType="text" name="테스트명" id="testName"></w2:column>
-						<w2:column dataType="text" name="작성자명" id="userName"></w2:column>
-					</w2:columnInfo>
-				</w2:dataList>
-				<w2:dataList baseNode="list" repeatNode="map" id="dlt_Upload" saveRemovedData="true">
-					<w2:columnInfo>
-						<w2:column dataType="text" name="파일명" id="name"></w2:column>
-						<w2:column dataType="text" name="파일크기" id="size"></w2:column>
+						<w2:column dataType="text" name="코드" id="code"></w2:column>
 						<w2:column dataType="text" name="상태" id="status"></w2:column>
 					</w2:columnInfo>
+					<w2:data use="true">
+						<w2:row>
+							<code><![CDATA[대기]]></code>
+							<status><![CDATA[대기]]></status>
+						</w2:row>
+						<w2:row>
+							<code><![CDATA[진행중]]></code>
+							<status><![CDATA[진행중]]></status>
+						</w2:row>
+						<w2:row>
+							<code><![CDATA[완료]]></code>
+							<status><![CDATA[완료]]></status>
+						</w2:row>
+					</w2:data>
 				</w2:dataList>
-				<w2:dataList baseNode="list" repeatNode="map" id="dlt_priority" saveRemovedData="true">
+
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_defPriority" saveRemovedData="true">
 					<w2:columnInfo>
 						<w2:column dataType="text" name="코드" id="code"></w2:column>
 						<w2:column dataType="text" name="우선순위" id="priority"></w2:column>
 					</w2:columnInfo>
 					<w2:data use="true">
 						<w2:row>
-							<code><![CDATA[CR]]></code>
-							<priority><![CDATA[긴급]]></priority>
-						</w2:row>
-						<w2:row>
-							<code><![CDATA[HI]]></code>
+							<code><![CDATA[높음]]></code>
 							<priority><![CDATA[높음]]></priority>
 						</w2:row>
 						<w2:row>
-							<code><![CDATA[MD]]></code>
+							<code><![CDATA[보통]]></code>
 							<priority><![CDATA[보통]]></priority>
 						</w2:row>
 						<w2:row>
-							<code><![CDATA[LO]]></code>
+							<code><![CDATA[낮음]]></code>
 							<priority><![CDATA[낮음]]></priority>
 						</w2:row>
 					</w2:data>
 				</w2:dataList>
-				<w2:dataList baseNode="list" repeatNode="map" id="dlt_status" saveRemovedData="true">
-					<w2:columnInfo>
-						<w2:column dataType="text" name="코드" id="code"></w2:column>
-						<w2:column dataType="text" name="상태" id="status"></w2:column>
-					</w2:columnInfo>
-					<w2:data use="true">
-						<w2:row>
-							<code><![CDATA[NEW]]></code>
-							<status><![CDATA[신규]]></status>
-						</w2:row>
-						<w2:row>
-							<code><![CDATA[IPR]]></code>
-							<status><![CDATA[진행중]]></status>
-						</w2:row>
-						<w2:row>
-							<code><![CDATA[FIX]]></code>
-							<status><![CDATA[해결]]></status>
-						</w2:row>
-						<w2:row>
-							<code><![CDATA[REO]]></code>
-							<status><![CDATA[재오픈]]></status>
-						</w2:row>
-						<w2:row>
-							<code><![CDATA[COM]]></code>
-							<status><![CDATA[완료]]></status>
-						</w2:row>
-					</w2:data>
-				</w2:dataList>
-				<!-- 파일 관리 -->
-				<w2:dataList baseNode="list" repeatNode="map" id="dlt_attVoList" saveRemovedData="true">
+
+				<!-- 통계 정보 -->
+				<w2:dataMap baseNode="map" id="dmp_defStatistics" style="">
+					<w2:keyInfo>
+						<w2:key dataType="text" id="totalCount" name="총개수"></w2:key>
+						<w2:key dataType="text" id="waitingCount" name="대기개수"></w2:key>
+						<w2:key dataType="text" id="inProgressCount" name="진행중개수"></w2:key>
+						<w2:key dataType="text" id="completedCount" name="완료개수"></w2:key>
+						<w2:key dataType="text" id="completionRate" name="완료율"></w2:key>
+					</w2:keyInfo>
+				</w2:dataMap>
+
+				<!-- 페이징 정보 -->
+				<w2:dataMap baseNode="map" id="dmp_pageInfo" style="">
+					<w2:keyInfo>
+						<w2:key dataType="text" id="totalCount" name="총개수"></w2:key>
+						<w2:key dataType="text" id="pageIndex" name="페이지번호"></w2:key>
+						<w2:key dataType="text" id="pageSize" name="페이지크기"></w2:key>
+						<w2:key dataType="text" id="totalPageCount" name="총페이지수"></w2:key>
+					</w2:keyInfo>
+				</w2:dataMap>
+
+				<!-- 파일 관련 dataMap -->
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_defAttVoList" saveRemovedData="true">
 					<w2:columnInfo>
 						<w2:column dataType="text" name="파일ID" id="fileId"></w2:column>
 						<w2:column dataType="text" name="원본파일명" id="originalFileName"></w2:column>
@@ -471,6 +135,7 @@
 						<w2:column dataType="text" name="업로드일시" id="attachedAt"></w2:column>
 					</w2:columnInfo>
 				</w2:dataList>
+
 				<w2:dataMap id="dmp_currentFile" style="">
 					<w2:keyInfo>
 						<w2:key id="fileId" name="파일ID" dataType="text"></w2:key>
@@ -480,1021 +145,1031 @@
 				</w2:dataMap>
 			</w2:dataCollection>
 			<w2:workflowCollection></w2:workflowCollection>
-			<xf:submission id="sbm_selectDefVoList" ref='data:json,{"id":"dmp_defVo","key":"defVo"}'
-				target='data:json,{"id":"dlt_defVoList","key":"elData.defVoList"}' action="/InsWebApp/DEF001List.pwkjson" method="post"
+
+			<!-- 서브미션들 -->
+			<xf:submission id="sbm_selectDefList" ref='data:json,{"id":"dmp_defSearch","key":"defVo"}'
+				target='data:json,{"id":"dlt_defList","key":"elData.defVoList"}' action="/InsWebApp/DEFList.pwkjson" method="post"
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-				processMsg="테스트결함관리 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_defList_submitdone" ev:submiterror="" abortTrigger="">
+				processMsg="결함 목록을 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectDefList_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
-			<xf:submission id="sbm_deleteDefVo" ref='data:json,{"id":"dmp_defVoDetail","key":"defVo"}' target="" action="/InsWebApp/DEF001Del.pwkjson" method="post"
-				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg=""
-				ev:submit="" ev:submitdone="scwin.sbm_deleteDefVo_submitdone" ev:submiterror="" abortTrigger="">
+
+			<xf:submission id="sbm_selectDefListByProject" 
+				ref='data:json,{"id":"dmp_defSearch","key":"defVo"}'
+				target='data:json,{"id":"dlt_defList","key":"elData.defVoList"}' 
+				action="/InsWebApp/DEFListByProject.pwkjson" 
+				method="post"
+				mediatype="application/json" 
+				encoding="UTF-8" 
+				mode="asynchronous"
+				processMsg="프로젝트별 결함 목록을 조회 중입니다." 
+				ev:submitdone="scwin.sbm_selectDefListByProject_submitdone">
 			</xf:submission>
-			<xf:submission id="sbm_updateDefVo" ref='data:json,["dmp_defVoDetail",{"id":"dmp_defVoDetail","key":"defVo"}]' target="" action="/InsWebApp/DEF001Upd.pwkjson" method="post"
-				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg=""
-				ev:submit="" ev:submitdone="scwin.sbm_updateDefVo_submitdone" ev:submiterror="" abortTrigger="">
-			</xf:submission>
-			<xf:submission id="sbm_insertDefVo" ref='data:json,["dmp_defVoDetail",{"id":"dmp_defVoDetail","key":"defVo"}]' target="" action="/InsWebApp/DEF001Ins.pwkjson" method="post"
-				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg=""
-				ev:submit="" ev:submitdone="scwin.sbm_insertDefVo_submitdone" ev:submiterror="" abortTrigger="">
-			</xf:submission>
-			<xf:submission id="sbm_selectDefVo" ref="" target="" action="/InsWebApp/DEF001UpdView.pwkjson" method="post"
+
+			<xf:submission id="sbm_selectDefStatistics" ref='data:json,{"id":"dmp_defSearch","key":"defVo"}'
+				target='data:json,{"id":"dmp_defStatistics","key":""}' action="/InsWebApp/DEFStatistics.pwkjson" method="post"
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-				processMsg="테스트결함관리를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectDefVo_submitdone" ev:submiterror="" abortTrigger="">
+				processMsg="통계를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectDefStatistics_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
-			<xf:submission id="sbm_insertDefWithFiles" action="/InsWebApp/DEF001InsWithFiles.pwkjson" method="post"
-				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg=""
-				ev:submit="" ev:submitdone="scwin.sbm_insertDefWithFiles_submitdone" ev:submiterror="" abortTrigger="">
+
+			<xf:submission id="sbm_selectDefStatisticsByProject" 
+				ref='data:json,{"id":"dmp_defSearch","key":"defVo"}'
+				target='data:json,{"id":"dmp_defStatistics","key":""}' 
+				action="/InsWebApp/DEFStatisticsByProject.pwkjson" 
+				method="post"
+				mediatype="application/json" 
+				encoding="UTF-8" 
+				mode="asynchronous"
+				processMsg="프로젝트별 통계를 조회 중입니다." 
+				ev:submitdone="scwin.sbm_selectDefStatisticsByProject_submitdone">
 			</xf:submission>
-			<xf:submission id="sbm_getDefFileList" ref='data:json,["dmp_defVoDetail",{"id":"dmp_defVoDetail","key":"defVo"}]'
-				target='data:json,{"id":"dlt_attVoList","key":"elData.attVoList"}' action="/InsWebApp/DEF001FileList.pwkjson" method="post"
-				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler=""
-				ev:submit="" ev:submitdone="scwin.sbm_getDefFileList_submitdone">
+
+			<!-- 파일 목록 조회 -->
+			<xf:submission id="sbm_selectDefFileList" 
+				ref='data:json,["dmp_defDetail",{"id":"dmp_defDetail","key":"defVo"}]'
+				target='data:json,{"id":"dlt_defAttVoList","key":"elData.attVoList"}' 
+				action="/InsWebApp/DEFFileList.pwkjson" 
+				method="post"
+				mediatype="application/json" 
+				encoding="UTF-8" 
+				mode="asynchronous"
+				processMsg="파일 목록을 조회 중입니다." 
+				ev:submitdone="scwin.sbm_selectDefFileList_submitdone" 
+				ev:submiterror="scwin.sbm_selectDefFileList_submiterror">
+			</xf:submission>
+
+			<!-- 파일 삭제 -->
+			<xf:submission id="sbm_deleteDefFile" 
+				action="/InsWebApp/DEFFileDelete.pwkjson" method="post"
+				mediatype="application/x-www-form-urlencoded" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
+				processMsg="파일을 삭제 중입니다." ev:submit="scwin.sbm_deleteDefFile_submit" ev:submitdone="scwin.sbm_deleteDefFile_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
 		<w2:publicInfo method="" />
 		<script lazy="false" type="text/javascript"><![CDATA[
-		// 기존 스크립트 유지 (원본 Def.xml에서 가져온 스크립트)
-		scwin.pageInfo = {
-			waiting: { currentPage: 1, pageSize: 10, totalCount: 0, data: [] },
-			processing: { currentPage: 1, pageSize: 10, totalCount: 0, data: [] },
-			completed: { currentPage: 1, pageSize: 10, totalCount: 0, data: [] }
-		};
+// 전역 변수 (Test1.xml과 동일한 방식)
+scwin.CURRENT_PROJECT_ID = "";
+scwin.CURRENT_USER_ID = "";
+scwin.CURRENT_USER_GROUP_ID = "";
 
-		scwin.onpageload = function() {
-			scwin.initPaginationInfo();
-			dmp_defVo.set("pageIndex", "1");
-			dmp_defVo.set("pageSize", "1000");
-			
-			var searchBoxComp = $p.getComponentById("search_box");
-			var searchComp1 = $p.getComponentById("searchComp_1");
-			if (searchBoxComp && searchComp1 == undefined) {
-				searchBoxComp.hide();
-			}
-			
-			scwin.btn_search_onclick();
-		};
+/**
+ * 페이지 로드 시 초기화
+ */
+scwin.onpageload = function() {
+    console.log("결함 관리 페이지 로드 완료");
+    
+    // 초기화
+    scwin.initializeData();
+    
+    // 사용자 정보 가져오기
+    scwin.getCurrentUserInfo();
+    
+    // 부모 창에서 프로젝트 ID 가져오기
+    scwin.getProjectIdFromParent();
+    
+    // 권한에 따른 UI 조정
+    setTimeout(function() {
+        scwin.adjustUIByPermission();
+    }, 200);
+    
+    console.log("결함 관리 페이지 초기화 완료");
+};
 
-		scwin.initPaginationInfo = function() {
-			scwin.pageInfo = {
-				waiting: { currentPage: 1, pageSize: 10, totalCount: 0, data: [] },
-				processing: { currentPage: 1, pageSize: 10, totalCount: 0, data: [] },
-				completed: { currentPage: 1, pageSize: 10, totalCount: 0, data: [] }
-			};
-		};
+/**
+ * 데이터 초기화
+ */
+scwin.initializeData = function() {
+    console.log("데이터 초기화 시작");
+    
+    // 검색 조건 초기화
+    dmp_defSearch.set("pageIndex", "1");
+    dmp_defSearch.set("pageSize", "10");
+    
+    console.log("데이터 초기화 완료");
+};
 
-		scwin.getPageData = function(data, pageInfo) {
-			if (!data || !pageInfo) return [];
-			var startIndex = (pageInfo.currentPage - 1) * pageInfo.pageSize;
-			var endIndex = startIndex + pageInfo.pageSize;
-			return data.slice(startIndex, endIndex);
-		};
+/**
+ * 현재 사용자 정보 가져오기 (Test1.xml과 동일한 방식)
+ */
+scwin.getCurrentUserInfo = function() {
+    try {
+        var parentWindow = $p.getParentWindow();
+        if (parentWindow) {
+            // 메인 페이지의 헤더 프레임에서 사용자 정보 가져오기
+            var headerFrame = parentWindow.$p.getComponentById("pg_header");
+            if (headerFrame && headerFrame.getWindow && headerFrame.getWindow().scwin) {
+                var headerScwin = headerFrame.getWindow().scwin;
+                var headerDoc = headerFrame.getWindow();
+                
+                // 사용자 ID 가져오기
+                scwin.CURRENT_USER_ID = headerScwin.USER_ID || "1";
+                
+                // 현재 선택된 프로젝트 정보 가져오기
+                try {
+                    var selectBox = headerDoc.$p.getComponentById("selectBoxProjectName");
+                    var selectedPjtId = selectBox ? selectBox.getValue() : null;
+                    
+                    console.log("선택된 프로젝트 ID:", selectedPjtId);
+                    
+                    if (selectedPjtId && headerDoc.dlt_projectName) {
+                        // 선택된 프로젝트의 그룹 정보 가져오기
+                        var grpIdResult = headerDoc.dlt_projectName.getMatchedColumnData("pjtId", selectedPjtId, "grpId");
+                        var grpNameResult = headerDoc.dlt_projectName.getMatchedColumnData("pjtId", selectedPjtId, "grpName");
+                        
+                        // 배열인 경우 첫 번째 값 사용
+                        scwin.CURRENT_USER_GROUP_ID = Array.isArray(grpIdResult) ? grpIdResult[0] : grpIdResult;
+                        var groupName = Array.isArray(grpNameResult) ? grpNameResult[0] : grpNameResult;
+                        
+                        console.log("프로젝트별 그룹 정보:", {
+                            프로젝트ID: selectedPjtId,
+                            그룹ID원본: grpIdResult,
+                            그룹ID최종: scwin.CURRENT_USER_GROUP_ID,
+                            그룹명원본: grpNameResult,
+                            그룹명최종: groupName
+                        });
+                    } else {
+                        console.log("프로젝트가 선택되지 않음 또는 데이터 없음");
+                        scwin.CURRENT_USER_GROUP_ID = "2"; // 기본값
+                    }
+                    
+                } catch (projectError) {
+                    console.error("프로젝트 정보 가져오기 실패:", projectError);
+                    scwin.CURRENT_USER_GROUP_ID = "2";
+                }
+                
+                console.log("최종 사용자 정보:", {
+                    userId: scwin.CURRENT_USER_ID,
+                    groupId: scwin.CURRENT_USER_GROUP_ID,
+                    isPM: scwin.CURRENT_USER_GROUP_ID === "1"
+                });
+                
+                return true;
+            }
+        }
+        
+        // 헤더에서 가져오지 못한 경우 기본값
+        scwin.CURRENT_USER_ID = "1";
+        scwin.CURRENT_USER_GROUP_ID = "2"; // 기본값은 일반 사용자
+        console.log("기본값으로 사용자 정보 설정");
+        return false;
+        
+    } catch (e) {
+        console.error("사용자 정보 가져오기 실패:", e);
+        scwin.CURRENT_USER_ID = "1";
+        scwin.CURRENT_USER_GROUP_ID = "2";
+        return false;
+    }
+};
 
-		scwin.updatePagination = function(pageInfo, paginationComponent) {
-			if (!pageInfo || !paginationComponent) return;
-			var totalPages = Math.ceil(pageInfo.totalCount / pageInfo.pageSize);
-			if (totalPages > 0) {
-				paginationComponent.setCount(totalPages);
-				paginationComponent.setSelectedIndex(pageInfo.currentPage);
-			}
-		};
+/**
+ * 부모 창에서 프로젝트 ID 가져오기 (Test1.xml과 동일한 방식)
+ */
+scwin.getProjectIdFromParent = function() {
+    try {
+        var parentWindow = $p.getParentWindow();
+        if (parentWindow && parentWindow.scwin && parentWindow.scwin.SEL_PJT_ID) {
+            scwin.CURRENT_PROJECT_ID = parentWindow.scwin.SEL_PJT_ID;
+            console.log("현재 선택된 프로젝트 ID: " + scwin.CURRENT_PROJECT_ID);
+            
+            // 프로젝트가 선택되어 있으면 해당 프로젝트 결함 조회
+            if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+                scwin.searchDefectsByProject();
+                scwin.loadStatisticsByProject();
+            }
+        } else {
+            console.log("부모 창에서 프로젝트 ID를 찾을 수 없습니다.");
+        }
+    } catch (e) {
+        console.error("부모 창에서 프로젝트 ID 가져오기 실패:", e);
+    }
+};
 
-		scwin.btn_search_onclick = function(e) {
-			dmp_defVo.set("pageIndex", "1");
-			$c.sbm.execute($p, sbm_selectDefVoList);
-		};
+/**
+ * PM 권한 여부 확인 (Test1.xml과 동일한 방식)
+ */
+scwin.isPM = function() {
+    // 문자열로 비교 (배열이 아닌 문자열인지 확인)
+    var groupId = scwin.CURRENT_USER_GROUP_ID;
+    if (Array.isArray(groupId)) {
+        groupId = groupId[0];
+    }
+    return String(groupId) === "1";
+};
 
-		scwin.sbm_defList_submitdone = function(e) {
-			var elData = e.responseJSON.elData;
-			var elHeader = e.responseJSON.elHeader;
-			
-			if (!elHeader || elHeader.resSuc == false) {
-				$c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
-				return false;
-			}
+/**
+ * 권한에 따른 UI 조정 (Test1.xml과 동일한 방식)
+ */
+scwin.adjustUIByPermission = function() {
+    try {
+        if (scwin.isPM()) {
+            console.log("PM 권한: 모든 기능 사용 가능");
+            
+            // PM은 모든 검색 조건 사용 가능
+            scwin.enableAllSearchFields();
+            
+            // 권한 표시
+            scwin.showPermissionIndicator("PM 권한", "#28a745");
+            
+        } else {
+            console.log("일반 사용자 권한: 제한된 기능");
+            
+            // 일반 사용자는 담당자 검색을 자신으로 제한
+            scwin.restrictAssigneeSearch();
+            
+            // 권한 표시
+            scwin.showPermissionIndicator("일반 사용자", "#6c757d");
+        }
+    } catch (e) {
+        console.error("UI 권한 조정 실패:", e);
+    }
+};
 
-			var allData = elData.defVoList || [];
-			var waitingData = [];
-			var processingData = [];
-			var completedData = [];
+/**
+ * 모든 검색 필드 활성화
+ */
+scwin.enableAllSearchFields = function() {
+    try {
+        var searchFields = ["inp_searchAssignee", "sel_searchStatus", "inp_searchDefectName", "sel_searchPriority"];
+        searchFields.forEach(function(fieldId) {
+            var field = $p.getComponentById(fieldId);
+            if (field && field.setReadOnly) {
+                field.setReadOnly(false);
+            }
+        });
+    } catch (e) {
+        console.error("검색 필드 활성화 실패:", e);
+    }
+};
 
-			for (var i = 0; i < allData.length; i++) {
-				var item = allData[i];
-				if (item.status === "NEW") {
-					waitingData.push(item);
-				} else if (item.status === "IPR") {
-					processingData.push(item);
-				} else if (item.status === "COM" || item.status === "FIX") {
-					completedData.push(item);
-				}
-			}
+/**
+ * 담당자 검색 제한
+ */
+scwin.restrictAssigneeSearch = function() {
+    try {
+        var assigneeField = $p.getComponentById("inp_searchAssignee");
+        if (assigneeField) {
+            assigneeField.setValue(scwin.CURRENT_USER_ID);
+            assigneeField.setReadOnly(true);
+            assigneeField.setStyle("background-color: #f8f9fa; color: #6c757d;");
+        }
+    } catch (e) {
+        console.error("담당자 검색 제한 실패:", e);
+    }
+};
 
-			scwin.pageInfo.waiting.data = waitingData;
-			scwin.pageInfo.waiting.totalCount = waitingData.length;
-			scwin.pageInfo.processing.data = processingData;
-			scwin.pageInfo.processing.totalCount = processingData.length;
-			scwin.pageInfo.completed.data = completedData;
-			scwin.pageInfo.completed.totalCount = completedData.length;
+/**
+ * 권한 표시기 추가 (Test1.xml과 동일한 방식)
+ */
+scwin.showPermissionIndicator = function(text, color) {
+    try {
+        console.log("권한 표시기 추가 시도:", text);
+        
+        // 기존 표시기 제거
+        var existing = document.getElementById("permission-indicator");
+        if (existing) {
+            existing.remove();
+        }
+        
+        // 검색 영역 찾기
+        var searchArea = document.querySelector('.schbox, .btn_schbox');
+        if (!searchArea) {
+            // 대안: body에 추가
+            searchArea = document.body;
+        }
+        
+        if (searchArea) {
+            var indicator = document.createElement("div");
+            indicator.style.cssText = `
+                position: fixed;
+                top: 120px;
+                right: 20px;
+                background: ${color};
+                color: white;
+                padding: 8px 12px;
+                border-radius: 4px;
+                font-size: 12px;
+                font-weight: bold;
+                z-index: 9999;
+                box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            `;
+            indicator.textContent = text;
+            indicator.id = "permission-indicator";
+            
+            searchArea.appendChild(indicator);
+            console.log("권한 표시기 추가 성공:", text);
+        } else {
+            console.log("권한 표시기를 추가할 영역을 찾을 수 없습니다.");
+        }
+    } catch (e) {
+        console.error("권한 표시기 추가 실패:", e);
+        // 대안: 간단한 알림으로 권한 표시
+        setTimeout(function() {
+            console.log("현재 권한:", text);
+        }, 1000);
+    }
+};
 
-			scwin.updateGridData();
-			scwin.updatePagination(scwin.pageInfo.waiting, pgl_defList_new);
-			scwin.updatePagination(scwin.pageInfo.processing, pgl_defList_processing);
-			scwin.updatePagination(scwin.pageInfo.completed, pgl_defList_completed);
-			
-			spn_waitListCnt.setLabel(waitingData.length);
-			spn_processingListCnt.setLabel(processingData.length);
-			spn_completeListCnt.setLabel(completedData.length);
-			spn_listCnt.setLabel(allData.length);
-			
-			dmp_defVoDetail.setEmptyValue();
-		};
+/**
+ * 프로젝트 변경 시 호출되는 함수 (Test1.xml과 동일한 방식)
+ */
+scwin.onProjectChange = function(projectId) {
+    console.log("프로젝트 변경 이벤트 수신:", projectId);
+    
+    scwin.CURRENT_PROJECT_ID = projectId;
+    
+    // 사용자 정보 다시 가져오기 (그룹 정보 업데이트)
+    scwin.getCurrentUserInfo();
+    
+    // 권한에 따른 UI 재조정
+    scwin.adjustUIByPermission();
+    
+    if (projectId && projectId !== "") {
+        // 프로젝트가 선택되면 해당 프로젝트의 결함 조회
+        scwin.searchDefectsByProject();
+        scwin.loadStatisticsByProject();
+    } else {
+        // 프로젝트가 선택 해제되면 일반 조회
+        scwin.searchDefects();
+        scwin.loadStatistics();
+    }
+};
 
-		scwin.updateGridData = function() {
-			try {
-				if (scwin.pageInfo.waiting && scwin.pageInfo.waiting.data) {
-					var waitingPageData = scwin.getPageData(scwin.pageInfo.waiting.data, scwin.pageInfo.waiting);
-					dlt_waitingList.setJSON(waitingPageData);
-				}
-				
-				if (scwin.pageInfo.processing && scwin.pageInfo.processing.data) {
-					var processingPageData = scwin.getPageData(scwin.pageInfo.processing.data, scwin.pageInfo.processing);
-					dlt_processingList.setJSON(processingPageData);
-				}
-				
-				if (scwin.pageInfo.completed && scwin.pageInfo.completed.data) {
-					var completedPageData = scwin.getPageData(scwin.pageInfo.completed.data, scwin.pageInfo.completed);
-					dlt_completedList.setJSON(completedPageData);
-				}
-			} catch (err) {
-				console.error("그리드 데이터 업데이트 오류:", err);
-			}
-		};
+/**
+ * 조회 버튼 클릭
+ */
+scwin.btn_search_onclick = function(e) {
+    console.log("조회 버튼 클릭");
+    
+    // 프로젝트가 선택되어 있으면 프로젝트별 검색, 아니면 일반 검색
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        scwin.searchDefectsByProject();
+    } else {
+        scwin.searchDefects();
+    }
+};
 
-		scwin.pgl_defList_new_onclick = function(idx) {
-			if (!scwin.pageInfo.waiting) return;
-			scwin.pageInfo.waiting.currentPage = idx;
-			var waitingPageData = scwin.getPageData(scwin.pageInfo.waiting.data, scwin.pageInfo.waiting);
-			dlt_waitingList.setJSON(waitingPageData);
-			pgl_defList_new.setSelectedIndex(idx);
-		};
+/**
+ * 프로젝트별 결함 목록 조회
+ */
+scwin.searchDefectsByProject = function() {
+    if (!scwin.CURRENT_PROJECT_ID || scwin.CURRENT_PROJECT_ID === "") {
+        console.log("프로젝트 ID가 없어 일반 조회를 실행합니다.");
+        scwin.searchDefects();
+        return;
+    }
+    
+    console.log("프로젝트별 결함 목록 조회 시작: " + scwin.CURRENT_PROJECT_ID);
+    
+    // 프로젝트 ID 설정
+    dmp_defSearch.set("pjtId", scwin.CURRENT_PROJECT_ID);
+    dmp_defSearch.set("pageIndex", "1");
+    dmp_defSearch.set("pageSize", "1000");
+    
+    // 권한에 따른 필터링
+    if (!scwin.isPM()) {
+        dmp_defSearch.set("searchAssignee", scwin.CURRENT_USER_ID);
+    }
+    
+    // 디버깅을 위한 로그 추가
+    console.log("검색 조건:", dmp_defSearch.getJSON());
+    
+    // 서버 통신
+    $c.sbm.execute($p, sbm_selectDefListByProject);
+};
 
-		scwin.pgl_defList_processing_onclick = function(idx) {
-			if (!scwin.pageInfo.processing) return;
-			scwin.pageInfo.processing.currentPage = idx;
-			var processingPageData = scwin.getPageData(scwin.pageInfo.processing.data, scwin.pageInfo.processing);
-			dlt_processingList.setJSON(processingPageData);
-			pgl_defList_processing.setSelectedIndex(idx);
-		};
+/**
+ * 프로젝트별 결함 목록 조회 완료
+ */
+scwin.sbm_selectDefListByProject_submitdone = function(e) {
+    console.log("프로젝트별 결함 목록 조회 완료", e);
+    
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+    
+    // 에러 처리
+    if (!elHeader || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드: ${elHeader.resCode}\n에러메시지: ${elHeader.resMsg}`);
+        return false;
+    }
+    
+    // 데이터 처리
+    var allData = elData.defVoList || [];
+    var totalCount = elData.totalCount || 0;
+    
+    console.log("프로젝트별 전체 데이터:", allData.length, "개");
+    console.log("프로젝트별 총 개수:", totalCount);
+    
+    // 결함 데이터 처리
+    scwin.processDefectData(allData, totalCount);
+};
 
-		scwin.pgl_defList_completed_onclick = function(idx) {
-			if (!scwin.pageInfo.completed) return;
-			scwin.pageInfo.completed.currentPage = idx;
-			var completedPageData = scwin.getPageData(scwin.pageInfo.completed.data, scwin.pageInfo.completed);
-			dlt_completedList.setJSON(completedPageData);
-			pgl_defList_completed.setSelectedIndex(idx);
-		};
+/**
+ * 일반 결함 목록 조회
+ */
+scwin.searchDefects = function() {
+    console.log("일반 결함 목록 조회 시작");
+    
+    dmp_defSearch.set("pageIndex", "1");
+    dmp_defSearch.set("pageSize", "1000");
+    
+    // 권한에 따른 필터링
+    if (!scwin.isPM()) {
+        dmp_defSearch.set("searchAssignee", scwin.CURRENT_USER_ID);
+    }
+    
+    // 서버 통신
+    $c.sbm.execute($p, sbm_selectDefList);
+};
 
-		// 그리드 더블클릭 이벤트
-		scwin.new_grd_oncelldblclick = function(rowIndex, columnIndex, columnId) {
-			dmp_defVoDetail.setJSON(dlt_waitingList.getRowJSON(rowIndex));
-			spn_popupTitle.setValue("신규 결함 상세정보");
-			scwin.setFormMode("view");
-			pop_overlay.show();
-			scwin.loadFileList();
-		};
+/**
+ * 결함 목록 조회 완료
+ */
+scwin.sbm_selectDefList_submitdone = function(e) {
+    console.log("결함 목록 조회 완료", e);
+    
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+    
+    if (!elHeader || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드: ${elHeader.resCode}\n에러메시지: ${elHeader.resMsg}`);
+        return false;
+    }
+    
+    // 데이터 처리
+    var allData = elData.defVoList || [];
+    var totalCount = elData.totalCount || 0;
+    
+    console.log("전체 데이터:", allData.length, "개");
+    console.log("총 개수:", totalCount);
+    
+    // 결함 데이터 처리
+    scwin.processDefectData(allData, totalCount);
+};
 
-		scwin.processing_grd_oncelldblclick = function(rowIndex, columnIndex, columnId) {
-			dmp_defVoDetail.setJSON(dlt_processingList.getRowJSON(rowIndex));
-			spn_popupTitle.setValue("진행중 결함 상세정보");
-			scwin.setFormMode("view");
-			pop_overlay.show();
-			scwin.loadFileList();
-		};
+/**
+ * 결함 데이터 처리 (권한 필터링 포함)
+ */
+scwin.processDefectData = function(allData, totalCount) {
+    // 권한에 따른 데이터 필터링
+    var filteredData = scwin.filterDataByPermission(allData);
+    
+    // 총 레코드 수 업데이트
+    spn_listCnt.setLabel(filteredData.length);
+    
+    // 데이터를 그리드에 셋팅
+    dlt_defList.setJSON(filteredData);
+    
+    // 페이지 네비게이터 업데이트
+    var totalPageCount = Math.ceil(filteredData.length / dmp_defSearch.get("pageSize"));
+    pgl_defList.setCount(totalPageCount);
+    pgl_defList.setSelectedIndex(dmp_defSearch.get("pageIndex"));
+    
+    console.log("결함 목록 조회 완료:", filteredData.length, "건");
+};
 
-		scwin.completed_grd_oncelldblclick = function(rowIndex, columnIndex, columnId) {
-			dmp_defVoDetail.setJSON(dlt_completedList.getRowJSON(rowIndex));
-			spn_popupTitle.setValue("완료 결함 상세정보");
-			scwin.setFormMode("view");
-			pop_overlay.show();
-			scwin.loadFileList();
-		};
+/**
+ * 데이터 필터링 (권한 적용)
+ */
+scwin.filterDataByPermission = function(data) {
+    if (!data || data.length === 0) {
+        return data;
+    }
+    
+    // PM인 경우 모든 데이터 반환
+    if (scwin.isPM()) {
+        console.log("PM 권한: 전체 데이터 표시");
+        return data;
+    }
+    
+    // 일반 사용자인 경우 자신이 담당한 결함만 필터링
+    var filteredData = data.filter(function(item) {
+        return item.assignee === scwin.CURRENT_USER_ID;
+    });
+    
+    console.log("일반 사용자 권한: 필터링된 데이터", {
+        전체: data.length,
+        필터링후: filteredData.length,
+        담당자: scwin.CURRENT_USER_ID
+    });
+    
+    return filteredData;
+};
 
-		// 결함 등록
-		scwin.reg_btn_onclick = function(e) {
-			dmp_defVoDetail.setEmptyValue();
-			dmp_defVoDetail.set("testId", "6");
-			dmp_defVoDetail.set("testName", "ERP 시스템 단위테스트");
-			dmp_defVoDetail.set("assignee", "1");
-			dmp_defVoDetail.set("userName", "김개발");
-			dmp_defVoDetail.set("status", "NEW");
-			dmp_defVoDetail.set("priority", "MD");
-			
-			dlt_Upload.setJSON([]);
-			spn_popupTitle.setValue("결함 등록");
-			scwin.setFormMode("register");
-			pop_overlay.show();
-		};
+/**
+ * 프로젝트별 통계 조회
+ */
+scwin.loadStatisticsByProject = function() {
+    if (!scwin.CURRENT_PROJECT_ID || scwin.CURRENT_PROJECT_ID === "") {
+        console.log("프로젝트 ID가 없어 일반 통계 조회를 실행합니다.");
+        scwin.loadStatistics();
+        return;
+    }
+    
+    console.log("프로젝트별 통계 조회 시작: " + scwin.CURRENT_PROJECT_ID);
+    
+    // 프로젝트 검색 조건 설정
+    dmp_defSearch.set("pjtId", scwin.CURRENT_PROJECT_ID);
+    $c.sbm.execute($p, sbm_selectDefStatisticsByProject);
+};
 
-		// 팝업 닫기
-		scwin.detail_esc_btn_onclick = function(e) {
-			pop_overlay.hide();
-		};
+/**
+ * 프로젝트별 통계 조회 완료
+ */
+scwin.sbm_selectDefStatisticsByProject_submitdone = function(e) {
+    console.log("프로젝트별 통계 조회 완료", e);
+    
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+    
+    if (!elHeader || elHeader.resSuc == false) {
+        console.error("프로젝트별 통계 조회 실패:", elHeader ? elHeader.resMsg : "알 수 없는 오류");
+        return;
+    }
+    
+    // 통계 데이터 설정
+    dmp_defStatistics.setJSON(elData);
+    
+    console.log("프로젝트별 통계 정보:", elData);
+};
 
-		// 폼 모드 설정
-		scwin.setFormMode = function(mode) {
-			if (mode === "register") {
-				btn_popup_save.show();
-				btn_popup_edit.hide();
-				btn_popup_delete.hide();
-				grp_fileUpload.show();
-				scwin.setFieldsReadOnly(false);
-			} else if (mode === "view") {
-				btn_popup_save.hide();
-				btn_popup_edit.show();
-				btn_popup_delete.show();
-				grp_fileUpload.hide();
-				scwin.setFieldsReadOnly(true);
-			} else if (mode === "edit") {
-				btn_popup_save.show();
-				btn_popup_edit.hide();
-				btn_popup_delete.hide();
-				grp_fileUpload.show();
-				scwin.setFieldsReadOnly(false);
-			}
-		};
+/**
+ * 통계 조회
+ */
+scwin.loadStatistics = function() {
+    console.log("통계 조회 시작");
+    $c.sbm.execute($p, sbm_selectDefStatistics);
+};
 
-		scwin.setFieldsReadOnly = function(readOnly) {
-			try {
-				var editableFields = ["inp_defectName", "sel_priority", "sel_status", "cal_dueDate", "cal_fixedDate", "txt_description", "txt_responsePlan"];
-				editableFields.forEach(function(fieldId) {
-					var field = $p.getComponentById(fieldId);
-					if (field && field.setReadOnly) {
-						field.setReadOnly(readOnly);
-					}
-				});
-			} catch(e) {
-				console.error("필드 읽기 전용 설정 오류:", e);
-			}
-		};
+/**
+ * 통계 조회 완료
+ */
+scwin.sbm_selectDefStatistics_submitdone = function(e) {
+    console.log("통계 조회 완료", e);
+    
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+    
+    if (!elHeader || elHeader.resSuc == false) {
+        console.error("통계 조회 실패:", elHeader ? elHeader.resMsg : "알 수 없는 오류");
+        return;
+    }
+    
+    // 통계 데이터 설정
+    dmp_defStatistics.setJSON(elData);
+    
+    console.log("통계 정보:", elData);
+};
 
-		// 저장 버튼 클릭
-		scwin.btn_popup_save_onclick = function(e) {
-			var defectName = dmp_defVoDetail.get("name");
-			if (!defectName || defectName.trim() === "") {
-				$c.win.alert("결함명을 입력해주세요.");
-				return;
-			}
-			scwin.sendDefectAndFiles();
-		};
+/**
+ * 페이지 번호 클릭 이벤트
+ */
+scwin.pgl_defList_onclick = function(idx) {
+    dmp_defSearch.set("pageIndex", idx);
+    $c.sbm.execute($p, sbm_selectDefList);
+};
 
-		scwin.sendDefectAndFiles = function() {
-			var formData = new FormData();
-			formData.append("testId", dmp_defVoDetail.get("testId"));
-			formData.append("name", dmp_defVoDetail.get("name"));
-			formData.append("assignee", dmp_defVoDetail.get("assignee"));
-			formData.append("fixDueDate", dmp_defVoDetail.get("fixDueDate"));
-			formData.append("status", dmp_defVoDetail.get("status") || "NEW");
-			formData.append("priority", dmp_defVoDetail.get("priority") || "MD");
-			formData.append("description", dmp_defVoDetail.get("description"));
-			formData.append("responsePlan", dmp_defVoDetail.get("responsePlan"));
-			formData.append("fixedDate", dmp_defVoDetail.get("fixedDate"));
-			
-			if (mpd_html5Type && mpd_html5Type.fileArray) {
-				var fileList = mpd_html5Type.fileArray;
-				if (fileList && fileList.length > 0) {
-					for (var i = 0; i < fileList.length; i++) {
-						var realFile = fileList[i].file;
-						formData.append("files", realFile);
-					}
-				}
-			}
+/**
+ * 그리드 셀 클릭 이벤트
+ */
+scwin.grd_defList_oncellclick = function(row, col, colId) {
+    console.log("그리드 셀 클릭:", row, colId);
+    
+    var selectedData = dlt_defList.getRowJSON(row);
+    dmp_defDetail.setJSON(selectedData);
+    
+    console.log("선택된 결함:", selectedData);
+};
 
-			fetch("/InsWebApp/DEF001InsWithFiles.pwkjson", {
-				method: "POST",
-				body: formData
-			})
-			.then(function(res) { return res.json(); })
-			.then(function(res) {
-				$c.win.alert("등록되었습니다.");
-				dlt_Upload.removeAll();
-				if (mpd_html5Type && mpd_html5Type.removeAllFiles) {
-					mpd_html5Type.removeAllFiles();
-				}
-				pop_overlay.hide();
-				scwin.btn_search_onclick();
-			})
-			.catch(function(err) {
-				console.error("전송 실패", err);
-				$c.win.alert("등록 중 오류가 발생했습니다.");
-			});
-		};
+/**
+ * 그리드 셀 더블클릭 이벤트 (팝업 열기)
+ */
+scwin.grd_defList_oncelldblclick = function(row, col, colId) {
+    console.log("그리드 셀 더블클릭:", row, colId);
+    
+    var selectedData = dlt_defList.getRowJSON(row);
+    dmp_defDetail.setJSON(selectedData);
+    
+    scwin.openDefectPopup("view", selectedData);
+};
 
-		// 수정 버튼 클릭
-		scwin.btn_popup_edit_onclick = function(e) {
-			scwin.setFormMode("edit");
-		};
+/**
+ * 등록 버튼 클릭
+ */
+scwin.btn_register_onclick = function(e) {
+    console.log("등록 버튼 클릭");
+    
+    dmp_defDetail.setEmptyValue();
+    dmp_defDetail.set("status", "대기");
+    dmp_defDetail.set("priority", "보통");
+    dmp_defDetail.set("assignee", scwin.CURRENT_USER_ID);
+    dmp_defDetail.set("assigneeName", scwin.getCurrentUserName() || "현재 사용자");
+    dmp_defDetail.set("pjtid", scwin.CURRENT_PROJECT_ID);
+    
+    scwin.openDefectPopup("new");
+};
 
-		// 삭제 버튼 클릭
-		scwin.btn_popup_delete_onclick = function(e) {
-			var defectId = dmp_defVoDetail.get("id");
-			if (!defectId) {
-				$c.win.alert("삭제할 결함을 선택해주세요.");
-				return;
-			}
-			var promise = $c.win.confirm("결함을 삭제하시겠습니까?");
-			promise.then(function(result) {
-				if (result) {
-					$c.sbm.execute($p, sbm_deleteDefVo);
-				}
-			});
-		};
+/**
+ * 결함 팝업 열기
+ */
+scwin.openDefectPopup = function(mode, defectData) {
+    console.log("결함 팝업 열기:", mode);
+    
+    var popupUrl = "/InsWebApp/Def/DefPopup.xml";
+    var popupOptions = {
+        id: "defPopup",
+        type: "window",
+        width: 1200,
+        height: 800,
+        top: 50,
+        left: 100,
+        resizable: true,
+        scrollbars: true,
+        status: false,
+        dataObject: {
+            mode: mode,
+            defectData: defectData || dmp_defDetail.getJSON(),
+            currentUserId: scwin.CURRENT_USER_ID,
+            currentProjectId: scwin.CURRENT_PROJECT_ID
+        }
+    };
+    
+    $c.win.openPopup(popupUrl, popupOptions, function(popupResult) {
+        if (popupResult && popupResult.updated) {
+            // 팝업에서 변경이 있었으면 목록 새로고침
+            if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+                scwin.searchDefectsByProject();
+                scwin.loadStatisticsByProject();
+            } else {
+                scwin.searchDefects();
+                scwin.loadStatistics();
+            }
+        }
+    });
+};
 
-		// 서버 응답 처리
-		scwin.sbm_deleteDefVo_submitdone = function(e) {
-			var elHeader = e.responseJSON.elHeader;
-			if (!elHeader || elHeader.resSuc == false) {
-				$c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
-				return false;
-			}
-			$c.win.alert("삭제되었습니다.");
-			pop_overlay.hide();
-			scwin.btn_search_onclick();
-		};
+/**
+ * 현재 사용자명 가져오기
+ */
+scwin.getCurrentUserName = function() {
+    try {
+        var parentWindow = $p.getParentWindow();
+        if (parentWindow) {
+            var headerFrame = parentWindow.$p.getComponentById("pg_header");
+            if (headerFrame && headerFrame.getWindow && headerFrame.getWindow().scwin) {
+                return headerFrame.getWindow().scwin.USER_NAME || "현재 사용자";
+            }
+        }
+        return "현재 사용자";
+    } catch (e) {
+        console.error("사용자명 가져오기 실패:", e);
+        return "현재 사용자";
+    }
+};
 
-		scwin.sbm_updateDefVo_submitdone = function(e) {
-			var elHeader = e.responseJSON.elHeader;
-			if (!elHeader || elHeader.resSuc == false) {
-				$c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
-				return false;
-			}
-			$c.win.alert("수정되었습니다.");
-			pop_overlay.hide();
-			scwin.btn_search_onclick();
-		};
+/**
+ * 엑셀 다운로드
+ */
+scwin.btn_excel_download_onclick = function(e) {
+    var currentData = dlt_defList.getAllJSON();
+    
+    if (currentData.length === 0) {
+        $c.win.alert("다운로드할 데이터가 없습니다.");
+        return;
+    }
+    
+    var options = {
+        fileName: "테스트결함목록_" + new Date().toISOString().slice(0, 10).replace(/-/g, ""),
+        useStyle: true,
+        headerFontBold: true,
+        bodyFontBold: false,
+        type: 1,
+        trim: 1,
+        processMsg: "엑셀 파일을 생성하고 있습니다...",
+        timeout: 60000,
+        checkInterval: 1000,
+        onSuccessCallback: function () {
+            $c.win.alert("엑셀 파일 다운로드가 완료되었습니다.");
+        },
+        onFailureCallback: function () {
+            $c.win.alert("엑셀 파일 다운로드에 실패했습니다.");
+        }
+    };
 
-		scwin.sbm_insertDefVo_submitdone = function(e) {
-			var elHeader = e.responseJSON.elHeader;
-			if (!elHeader || elHeader.resSuc == false) {
-				$c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
-				return false;
-			}
-			$c.win.alert("등록되었습니다.");
-			pop_overlay.hide();
-			scwin.btn_search_onclick();
-		};
+    grd_defList.advancedExcelDownload(options);
+};
 
-		// 파일 관련 함수
-		scwin.loadFileList = function() {
-			var defectId = dmp_defVoDetail.get("id");
-			if (defectId) {
-				$c.sbm.execute($p, sbm_getDefFileList);
-			}
-		};
+/**
+ * 검색 조건 초기화
+ */
+scwin.btn_searchReset_onclick = function(e) {
+    console.log("검색 조건 초기화");
+    
+    dmp_defSearch.setEmptyValue();
+    dmp_defSearch.set("pageIndex", "1");
+    dmp_defSearch.set("pageSize", "10");
+    
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        dmp_defSearch.set("pjtId", scwin.CURRENT_PROJECT_ID);
+        scwin.searchDefectsByProject();
+    } else {
+        scwin.searchDefects();
+    }
+};
 
-		scwin.sbm_getDefFileList_submitdone = function(e) {
-			var elHeader = e.responseJSON.elHeader;
-			if (!elHeader || elHeader.resSuc == false) {
-				console.error("파일 목록 조회 실패:", elHeader ? elHeader.resMsg : "알 수 없는 오류");
-				return false;
-			}
-		};
+/**
+ * 결함 상태 포맷터
+ */
+scwin.defectStatusFmt = function(data, formattedData, rowIndex, colIndex) {
+    if (!data) return "";
+    
+    var statusClass = "";
+    var statusText = data;
+    
+    switch(data) {
+        case "대기":
+            statusClass = "status-waiting";
+            break;
+        case "진행중":
+            statusClass = "status-progress";
+            break;
+        case "완료":
+            statusClass = "status-completed";
+            break;
+    }
+    
+    return `<span class="defect-status-tag ${statusClass}">${statusText}</span>`;
+};
 
-		scwin.multiUploadSelectDone = function() {
-			var fileInfos = mpd_html5Type.getFileInfos();
-			var newFileData = [];
-			for (var i = 0; i < fileInfos.length; i++) {
-				var file = fileInfos[i];
-				newFileData.push({
-					name: file.name,
-					size: file.size,
-					status: "업로드 대기"
-				});
-			}
-			dlt_Upload.setJSON(newFileData);
-		};
+/**
+ * 우선순위 포맷터
+ */
+scwin.defectPriorityFmt = function(data, formattedData, rowIndex, colIndex) {
+    if (!data) return "";
+    
+    var priorityClass = "";
+    var priorityText = data;
+    
+    switch(data) {
+        case "높음":
+            priorityClass = "priority-high";
+            break;
+        case "보통":
+            priorityClass = "priority-medium";
+            break;
+        case "낮음":
+            priorityClass = "priority-low";
+            break;
+    }
+    
+    return `<span class="defect-priority-tag ${priorityClass}">${priorityText}</span>`;
+};
 
-		scwin.btn_InitMultiupload_onclick = function(e) {
-			dlt_Upload.removeAll();
-			if (mpd_html5Type && mpd_html5Type.clear) {
-				mpd_html5Type.clear();
-			}
-		};
+/**
+ * 자동생성 여부 포맷터
+ */
+scwin.autoGeneratedFmt = function(data, formattedData, rowIndex, colIndex) {
+    if (!data || data === "N") return "";
+    
+    return '<span class="auto-generated-tag">자동생성</span>';
+};
 
-		scwin.fileActionClick = function(row, col, colId, targetId) {
-			var rowData = dlt_attVoList.getRowJSON(row);
-			var fileId = rowData.fileId;
-			var fileName = rowData.originalFileName;
-			
-			if (targetId.indexOf("download") >= 0 || col === 3) {
-				scwin.downloadFile(fileId, fileName);
-			} else if (targetId.indexOf("delete") >= 0) {
-				scwin.deleteFile(fileId);
-			}
-		};
-
-		scwin.downloadFile = function(fileId, fileName) {
-			if (!fileId || !fileName) {
-				alert("다운로드할 파일 정보가 없습니다.");
-				return;
-			}
-			
-			var downloadUrl = "/InsWebApp/FileDownload.pwkjson?fileId=" + encodeURIComponent(fileId);
-			var iframe = document.createElement('iframe');
-			iframe.style.display = 'none';
-			iframe.src = downloadUrl;
-			document.body.appendChild(iframe);
-			
-			setTimeout(function() {
-				if (iframe.parentNode) {
-					document.body.removeChild(iframe);
-				}
-			}, 2000);
-		};
-
-		scwin.deleteFile = function(fileId) {
-			if (!fileId) {
-				alert("삭제할 파일을 선택해주세요.");
-				return;
-			}
-			
-			var promise = $c.win.confirm("파일을 삭제하시겠습니까?");
-			promise.then(function(result) {
-				if (result) {
-					fetch("/InsWebApp/DEF001FileDelete.pwkjson", {
-						method: "POST",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify({ fileId: fileId })
-					})
-					.then(function(res) { return res.json(); })
-					.then(function(res) {
-						if (res.elHeader && res.elHeader.resSuc === true) {
-							alert("파일이 삭제되었습니다.");
-							scwin.loadFileList();
-						} else {
-							alert("파일 삭제 실패: " + (res.elHeader ? res.elHeader.resMsg : "알 수 없는 오류"));
-						}
-					})
-					.catch(function(err) {
-						console.error("파일 삭제 실패:", err);
-						alert("파일 삭제 중 오류가 발생했습니다.");
-					});
-				}
-			});
-		};
-
-		// 우선순위 렌더링
-		scwin.renderPriority = function(priority) {
-			var priorityClass = "";
-			var priorityText = "";
-			
-			switch(priority) {
-				case "CR":
-					priorityClass = "priority-critical";
-					priorityText = "긴급";
-					break;
-				case "HI":
-					priorityClass = "priority-high";
-					priorityText = "높음";
-					break;
-				case "MD":
-					priorityClass = "priority-medium";
-					priorityText = "보통";
-					break;
-				case "LO":
-					priorityClass = "priority-low";
-					priorityText = "낮음";
-					break;
-				default:
-					priorityClass = "priority-medium";
-					priorityText = "보통";
-			}
-			
-			return '<span class="priority-badge ' + priorityClass + '">' + priorityText + '</span>';
-		};
-
-		// 그리드 렌더링 함수
-		scwin.new_grd_onrenderrow = function(rowIndex) {
-			var priorityValue = dlt_waitingList.getCellData(rowIndex, "priority");
-			var cell = new_grd.getCell(rowIndex, "priority");
-			if (cell) {
-				cell.innerHTML = scwin.renderPriority(priorityValue);
-			}
-		};
-
-		scwin.processing_grd_onrenderrow = function(rowIndex) {
-			var priorityValue = dlt_processingList.getCellData(rowIndex, "priority");
-			var cell = processing_grd.getCell(rowIndex, "priority");
-			if (cell) {
-				cell.innerHTML = scwin.renderPriority(priorityValue);
-			}
-		};
-
-		scwin.completed_grd_onrenderrow = function(rowIndex) {
-			var priorityValue = dlt_completedList.getCellData(rowIndex, "priority");
-			var cell = completed_grd.getCell(rowIndex, "priority");
-			if (cell) {
-				cell.innerHTML = scwin.renderPriority(priorityValue);
-			}
-		};
-		]]></script>
+/**
+ * 팝업 결과 처리 (팝업에서 호출됨)
+ */
+scwin.refreshDefectList = function() {
+    console.log("결함 목록 새로고침 요청");
+    
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        scwin.searchDefectsByProject();
+        scwin.loadStatisticsByProject();
+    } else {
+        scwin.searchDefects();
+        scwin.loadStatistics();
+    }
+};
+]]></script>
 	</head>
-	<body ev:onpageload="scwin.onpageload" class="kanban-container">
-		<xf:group class="sub_contents">
-			<!-- 페이지 헤더 -->
-			<xf:group class="page-header">
-				<w2:textbox class="page-title" label="🐛 테스트 결함 관리" />
-				<w2:textbox label="칸반 보드로 결함을 효율적으로 관리하세요" style="opacity: 0.9; margin-top: 8px;" />
+	<body ev:onpageload="scwin.onpageload">
+		<xf:group class="sub_contents" id="" style="">
+			<xf:group class="pgtbox" id="" style="">
+				<w2:textbox class="pgt_tit" id="" label="테스트 결함 관리" style="" tagname="" />
 			</xf:group>
-
-			<!-- 검색 패널 -->
-			<xf:group class="search-section" id="search_box">
-				<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" style="width:100%;" tagname="table">
-					<w2:attributes>
-						<w2:summary />
-					</w2:attributes>
-					<xf:group tagname="colgroup">
-						<xf:group style="width:120px;" tagname="col"></xf:group>
-						<xf:group style="width:200px;" tagname="col"></xf:group>
-						<xf:group style="width:120px;" tagname="col"></xf:group>
-						<xf:group style="width:200px;" tagname="col"></xf:group>
-					</xf:group>
-					<xf:group tagname="tr">
-						<xf:group class="w2tb_th" tagname="th">
-							<w2:textbox label="결함명" style="font-weight: 600; color: #495057;" />
+			
+			<!-- 검색 영역 -->
+			<xf:group class="schbox" id="search_box" style="">
+				<xf:group class="schbox_inner" id="" style="">
+					<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" id="" style="width:100%;" tagname="table">
+						<w2:attributes>
+							<w2:summary />
+						</w2:attributes>
+						<xf:group tagname="colgroup">
+							<xf:group style="width:120px;" tagname="col"></xf:group>
+							<xf:group style="width:200px;" tagname="col"></xf:group>
+							<xf:group style="width:120px;" tagname="col"></xf:group>
+							<xf:group style="" tagname="col"></xf:group>
 						</xf:group>
-						<xf:group class="w2tb_td" tagname="td">
-							<xf:input ref="data:dmp_defVo.searchName" placeholder="결함명을 입력하세요" style="width:100%; padding: 8px; border: 1px solid #e9ecef; border-radius: 4px;" />
+						<xf:group tagname="tr">
+							<xf:group class="w2tb_th" tagname="th">
+								<w2:textbox label="결함 상태" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" tagname="td">
+								<xf:select1 id="sel_searchStatus" ref="data:dmp_defSearch.searchStatus" 
+									style="width:150px;" appearance="minimal" chooseOption="true" chooseOptionLabel="전체">
+									<xf:choices>
+										<xf:itemset nodeset="data:dlt_defStatus">
+											<xf:label ref="status"></xf:label>
+											<xf:value ref="code"></xf:value>
+										</xf:itemset>
+									</xf:choices>
+								</xf:select1>
+							</xf:group>
+							<xf:group class="w2tb_th" tagname="th">
+								<w2:textbox label="우선순위" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" tagname="td">
+								<xf:select1 id="sel_searchPriority" ref="data:dmp_defSearch.searchPriority" 
+									style="width:150px;" appearance="minimal" chooseOption="true" chooseOptionLabel="전체">
+									<xf:choices>
+										<xf:itemset nodeset="data:dlt_defPriority">
+											<xf:label ref="priority"></xf:label>
+											<xf:value ref="code"></xf:value>
+										</xf:itemset>
+									</xf:choices>
+								</xf:select1>
+							</xf:group>
 						</xf:group>
-						<xf:group class="w2tb_th" tagname="th">
-							<w2:textbox label="담당자" style="font-weight: 600; color: #495057;" />
-						</xf:group>
-						<xf:group class="w2tb_td" tagname="td">
-							<xf:input ref="data:dmp_defVo.searchAssignee" placeholder="담당자명을 입력하세요" style="width:100%; padding: 8px; border: 1px solid #e9ecef; border-radius: 4px;" />
-						</xf:group>
-					</xf:group>
-					<xf:group tagname="tr">
-						<xf:group class="w2tb_th" tagname="th">
-							<w2:textbox label="상태" style="font-weight: 600; color: #495057;" />
-						</xf:group>
-						<xf:group class="w2tb_td" tagname="td">
-							<xf:select1 ref="data:dmp_defVo.searchStatus" chooseOption="true" chooseOptionLabel="전체" style="width:100%; padding: 8px; border: 1px solid #e9ecef; border-radius: 4px;">
-								<xf:choices>
-									<xf:itemset nodeset="data:dlt_status">
-										<xf:label ref="status"></xf:label>
-										<xf:value ref="code"></xf:value>
-									</xf:itemset>
-								</xf:choices>
-							</xf:select1>
-						</xf:group>
-						<xf:group class="w2tb_th" tagname="th">
-							<w2:textbox label="우선순위" style="font-weight: 600; color: #495057;" />
-						</xf:group>
-						<xf:group class="w2tb_td" tagname="td">
-							<xf:select1 ref="data:dmp_defVo.searchPriority" chooseOption="true" chooseOptionLabel="전체" style="width:100%; padding: 8px; border: 1px solid #e9ecef; border-radius: 4px;">
-								<xf:choices>
-									<xf:itemset nodeset="data:dlt_priority">
-										<xf:label ref="priority"></xf:label>
-										<xf:value ref="code"></xf:value>
-									</xf:itemset>
-								</xf:choices>
-							</xf:select1>
+						<xf:group tagname="tr">
+							<xf:group class="w2tb_th" tagname="th">
+								<w2:textbox label="담당자" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" tagname="td">
+								<xf:input id="inp_searchAssignee" ref="data:dmp_defSearch.searchAssignee" 
+									style="width:150px;" placeholder="담당자명 입력"></xf:input>
+							</xf:group>
+							<xf:group class="w2tb_th" tagname="th">
+								<w2:textbox label="결함명" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" tagname="td">
+								<xf:input id="inp_searchDefectName" ref="data:dmp_defSearch.searchDefectName" 
+									style="width:150px;" placeholder="결함명 입력"></xf:input>
+							</xf:group>
 						</xf:group>
 					</xf:group>
 				</xf:group>
-				<xf:group class="btn_schbox" style="margin-top: 20px; text-align: right;">
-					<xf:trigger class="btn_cm" style="background: #6c757d; color: white; margin-right: 10px;" ev:onclick="scwin.btn_search_onclick">
-						<xf:label>🔄 초기화</xf:label>
+				<xf:group class="btn_schbox" id="" style="">
+					<xf:trigger class="btn_cm sch" id="btn_search" style="" type="button" ev:onclick="scwin.btn_search_onclick">
+						<xf:label><![CDATA[조회]]></xf:label>
 					</xf:trigger>
-					<xf:trigger class="btn_cm sch" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; margin-right: 10px;" ev:onclick="scwin.btn_search_onclick">
-						<xf:label>🔍 조회</xf:label>
-					</xf:trigger>
-					<xf:trigger class="btn_cm" style="background: linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%); color: white;" ev:onclick="scwin.reg_btn_onclick">
-						<xf:label>➕ 등록</xf:label>
+					<xf:trigger class="btn_cm" id="btn_searchReset" style="" type="button" ev:onclick="scwin.btn_searchReset_onclick">
+						<xf:label><![CDATA[초기화]]></xf:label>
 					</xf:trigger>
 				</xf:group>
 			</xf:group>
 
-			<!-- 통계 카드 -->
-			<xf:group class="statistics-cards">
-				<xf:group class="stat-card new">
-					<xf:group class="stat-number new">
-						<w2:span id="spn_waitListCnt" label="0"></w2:span>
-					</xf:group>
-					<xf:group class="stat-label">
-						<w2:textbox label="신규 결함"></w2:textbox>
-					</xf:group>
-				</xf:group>
-				<xf:group class="stat-card processing">
-					<xf:group class="stat-number processing">
-						<w2:span id="spn_processingListCnt" label="0"></w2:span>
-					</xf:group>
-					<xf:group class="stat-label">
-						<w2:textbox label="진행중 결함"></w2:textbox>
-					</xf:group>
-				</xf:group>
-				<xf:group class="stat-card completed">
-					<xf:group class="stat-number completed">
-						<w2:span id="spn_completeListCnt" label="0"></w2:span>
-					</xf:group>
-					<xf:group class="stat-label">
-						<w2:textbox label="완료 결함"></w2:textbox>
-					</xf:group>
-				</xf:group>
-				<xf:group class="stat-card total">
-					<xf:group class="stat-number total">
-						<w2:span id="spn_listCnt" label="0"></w2:span>
-					</xf:group>
-					<xf:group class="stat-label">
-						<w2:textbox label="전체 결함"></w2:textbox>
-					</xf:group>
+			<!-- 액션 버튼 영역 -->
+			<xf:group class="titbox" id="" style="margin-bottom: 15px;">
+				<xf:group class="rt" id="" style="float: right;">
+					<xf:trigger class="btn_cm" id="btn_register" 
+						style="background: linear-gradient(to bottom, #007bff 0%, #0056b3 100%); color: white; border: 1px solid #0056b3; padding: 10px 20px; font-size: 14px; height: 35px; border-radius: 4px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 100px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); margin-right: 10px;"
+						type="button" ev:onclick="scwin.btn_register_onclick">
+						<xf:label><![CDATA[+ 새 결함 등록]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="btn_cm" id="btn_excel_download" 
+						style="background: linear-gradient(to bottom, #28a745 0%, #1e7e34 100%); color: white; border: 1px solid #1e7e34; padding: 10px 15px; font-size: 14px; height: 35px; border-radius: 4px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 100px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); margin-right: 5px;"
+						type="button" ev:onclick="scwin.btn_excel_download_onclick">
+						<xf:label><![CDATA[엑셀 다운로드]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="btn_cm" id="btn_refresh" 
+						style="background: linear-gradient(to bottom, #28a745 0%, #1e7e34 100%); color: white; border: 1px solid #1e7e34; padding: 10px 15px; font-size: 14px; height: 35px; border-radius: 4px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 80px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
+						type="button" ev:onclick="scwin.btn_search_onclick">
+						<xf:label><![CDATA[새로고침]]></xf:label>
+					</xf:trigger>
 				</xf:group>
 			</xf:group>
 
-			<!-- 칸반 보드 -->
-			<xf:group class="kanban-board">
-				<!-- 신규 결함 컬럼 -->
-				<xf:group class="kanban-column">
-					<xf:group class="kanban-header new">
-						<w2:textbox label="🆕 신규 결함"></w2:textbox>
-						<xf:group class="kanban-count">
-							<w2:span id="spn_newKanbanCount" ref="data:spn_waitListCnt"></w2:span>
-						</xf:group>
-					</xf:group>
-					<xf:group class="kanban-content">
-						<w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_waitingList" defaultCellHeight="30" 
-							focusMode="row" id="new_grd" scrollByColumn="false" scrollByColumnAdaptive="false" 
-							style="height: 350px;" visibleRowNum="10" readOnly="true" 
-							ev:oncelldblclick="scwin.new_grd_oncelldblclick" ev:onrenderrow="scwin.new_grd_onrenderrow">
-							<w2:header>
-								<w2:row>
-									<w2:column width="50" inputType="text" value="ID" displayMode="label" style="background: #f8f9fa; font-weight: 600;"></w2:column>
-									<w2:column width="150" inputType="text" value="결함명" displayMode="label" style="background: #f8f9fa; font-weight: 600;"></w2:column>
-									<w2:column width="80" inputType="text" value="우선순위" displayMode="label" style="background: #f8f9fa; font-weight: 600;"></w2:column>
-									<w2:column width="80" inputType="text" value="담당자" displayMode="label" style="background: #f8f9fa; font-weight: 600;"></w2:column>
-									<w2:column width="80" inputType="text" value="등록일" displayMode="label" style="background: #f8f9fa; font-weight: 600;"></w2:column>
-								</w2:row>
-							</w2:header>
-							<w2:gBody>
-								<w2:row>
-									<w2:column width="50" inputType="text" id="id" displayMode="label" textAlign="center"></w2:column>
-									<w2:column width="150" inputType="text" id="name" displayMode="label" textAlign="left"></w2:column>
-									<w2:column width="80" inputType="text" id="priority" displayMode="label" textAlign="center"></w2:column>
-									<w2:column width="80" inputType="text" id="userName" displayMode="label" textAlign="center"></w2:column>
-									<w2:column width="80" inputType="text" id="createdAt" displayMode="label" textAlign="center"></w2:column>
-								</w2:row>
-							</w2:gBody>
-						</w2:gridView>
-					</xf:group>
-					<xf:group class="pagination-container">
-						<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" 
-							ev:onclick="scwin.pgl_defList_new_onclick" id="pgl_defList_new" pageSize="5" pagingType="0">
-						</w2:pageList>
-					</xf:group>
+			<!-- 통계 영역 -->
+			<xf:group class="titbox" id="" style="">
+				<xf:group class="lt" id="" style="">
+					<w2:textbox class="tit" id="" label="결함 현황" style="" tagname="h3"></w2:textbox>
 				</xf:group>
-
-				<!-- 진행중 결함 컬럼 -->
-				<xf:group class="kanban-column">
-					<xf:group class="kanban-header processing">
-						<w2:textbox label="⚡ 진행중 결함"></w2:textbox>
-						<xf:group class="kanban-count">
-							<w2:span id="spn_processingKanbanCount" ref="data:spn_processingListCnt"></w2:span>
-						</xf:group>
-					</xf:group>
-					<xf:group class="kanban-content">
-						<w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_processingList" defaultCellHeight="30" 
-							focusMode="row" id="processing_grd" scrollByColumn="false" scrollByColumnAdaptive="false" 
-							style="height: 350px;" visibleRowNum="10" readOnly="true" 
-							ev:oncelldblclick="scwin.processing_grd_oncelldblclick" ev:onrenderrow="scwin.processing_grd_onrenderrow">
-							<w2:header>
-								<w2:row>
-									<w2:column width="50" inputType="text" value="ID" displayMode="label" style="background: #f8f9fa; font-weight: 600;"></w2:column>
-									<w2:column width="150" inputType="text" value="결함명" displayMode="label" style="background: #f8f9fa; font-weight: 600;"></w2:column>
-									<w2:column width="80" inputType="text" value="우선순위" displayMode="label" style="background: #f8f9fa; font-weight: 600;"></w2:column>
-									<w2:column width="80" inputType="text" value="담당자" displayMode="label" style="background: #f8f9fa; font-weight: 600;"></w2:column>
-									<w2:column width="80" inputType="text" value="진행일" displayMode="label" style="background: #f8f9fa; font-weight: 600;"></w2:column>
-								</w2:row>
-							</w2:header>
-							<w2:gBody>
-								<w2:row>
-									<w2:column width="50" inputType="text" id="id" displayMode="label" textAlign="center"></w2:column>
-									<w2:column width="150" inputType="text" id="name" displayMode="label" textAlign="left"></w2:column>
-									<w2:column width="80" inputType="text" id="priority" displayMode="label" textAlign="center"></w2:column>
-									<w2:column width="80" inputType="text" id="userName" displayMode="label" textAlign="center"></w2:column>
-									<w2:column width="80" inputType="text" id="updatedAt" displayMode="label" textAlign="center"></w2:column>
-								</w2:row>
-							</w2:gBody>
-						</w2:gridView>
-					</xf:group>
-					<xf:group class="pagination-container">
-						<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" 
-							ev:onclick="scwin.pgl_defList_processing_onclick" id="pgl_defList_processing" pageSize="5" pagingType="0">
-						</w2:pageList>
-					</xf:group>
-				</xf:group>
-
-				<!-- 완료 결함 컬럼 -->
-				<xf:group class="kanban-column">
-					<xf:group class="kanban-header completed">
-						<w2:textbox label="✅ 완료 결함"></w2:textbox>
-						<xf:group class="kanban-count">
-							<w2:span id="spn_completedKanbanCount" ref="data:spn_completeListCnt"></w2:span>
-						</xf:group>
-					</xf:group>
-					<xf:group class="kanban-content">
-						<w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_completedList" defaultCellHeight="30" 
-							focusMode="row" id="completed_grd" scrollByColumn="false" scrollByColumnAdaptive="false" 
-							style="height: 350px;" visibleRowNum="10" readOnly="true" 
-							ev:oncelldblclick="scwin.completed_grd_oncelldblclick" ev:onrenderrow="scwin.completed_grd_onrenderrow">
-							<w2:header>
-								<w2:row>
-									<w2:column width="50" inputType="text" value="ID" displayMode="label" style="background: #f8f9fa; font-weight: 600;"></w2:column>
-									<w2:column width="150" inputType="text" value="결함명" displayMode="label" style="background: #f8f9fa; font-weight: 600;"></w2:column>
-									<w2:column width="80" inputType="text" value="우선순위" displayMode="label" style="background: #f8f9fa; font-weight: 600;"></w2:column>
-									<w2:column width="80" inputType="text" value="담당자" displayMode="label" style="background: #f8f9fa; font-weight: 600;"></w2:column>
-									<w2:column width="80" inputType="text" value="완료일" displayMode="label" style="background: #f8f9fa; font-weight: 600;"></w2:column>
-								</w2:row>
-							</w2:header>
-							<w2:gBody>
-								<w2:row>
-									<w2:column width="50" inputType="text" id="id" displayMode="label" textAlign="center"></w2:column>
-									<w2:column width="150" inputType="text" id="name" displayMode="label" textAlign="left"></w2:column>
-									<w2:column width="80" inputType="text" id="priority" displayMode="label" textAlign="center"></w2:column>
-									<w2:column width="80" inputType="text" id="userName" displayMode="label" textAlign="center"></w2:column>
-									<w2:column width="80" inputType="text" id="fixedDate" displayMode="label" textAlign="center"></w2:column>
-								</w2:row>
-							</w2:gBody>
-						</w2:gridView>
-					</xf:group>
-					<xf:group class="pagination-container">
-						<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" 
-							ev:onclick="scwin.pgl_defList_completed_onclick" id="pgl_defList_completed" pageSize="5" pagingType="0">
-						</w2:pageList>
-					</xf:group>
+				<xf:group class="rt" id="" style="">
+					<w2:textbox id="txt_totalCount" ref="data:dmp_defStatistics.totalCount" 
+						style="font-weight: bold; color: #333; margin-right: 10px;"></w2:textbox>
+					<w2:textbox label="건 (완료율: " style=""></w2:textbox>
+					<w2:textbox id="txt_completionRate" ref="data:dmp_defStatistics.completionRate" 
+						style="font-weight: bold; color: #28a745;"></w2:textbox>
+					<w2:textbox label="%)" style=""></w2:textbox>
 				</xf:group>
 			</xf:group>
 
-			<!-- 결함 상세/등록 팝업 -->
-			<xf:group class="popup-overlay" id="pop_overlay" style="display: none;">
-				<xf:group class="popup-content">
-					<xf:group class="popup-header">
-						<w2:textbox class="popup-title" id="spn_popupTitle" label="결함 상세정보"></w2:textbox>
-						<xf:group class="rt" style="display: flex; gap: 10px;">
-							<xf:trigger class="btn_cm save" id="btn_popup_save" style="background: #28a745; color: white; display: none;" ev:onclick="scwin.btn_popup_save_onclick">
-								<xf:label>💾 저장</xf:label>
-							</xf:trigger>
-							<xf:trigger class="btn_cm edit" id="btn_popup_edit" style="background: #17a2b8; color: white; display: none;" ev:onclick="scwin.btn_popup_edit_onclick">
-								<xf:label>✏️ 수정</xf:label>
-							</xf:trigger>
-							<xf:trigger class="btn_cm delete" id="btn_popup_delete" style="background: #dc3545; color: white; display: none;" ev:onclick="scwin.btn_popup_delete_onclick">
-								<xf:label>🗑️ 삭제</xf:label>
-							</xf:trigger>
-							<xf:trigger class="btn_cm" id="btn_popup_close" style="background: #6c757d; color: white;" ev:onclick="scwin.detail_esc_btn_onclick">
-								<xf:label>❌ 닫기</xf:label>
-							</xf:trigger>
-						</xf:group>
-					</xf:group>
-					<xf:group class="popup-body">
-						<!-- 기본 정보 섹션 -->
-						<xf:group class="form-section">
-							<w2:textbox class="form-section-title" label="📋 기본 정보"></w2:textbox>
-							<xf:group adaptive="layout" adaptiveThreshold="600" class="w2tb tbl" style="margin-bottom: 20px;" tagname="table">
-								<w2:attributes>
-									<w2:summary></w2:summary>
-								</w2:attributes>
-								<xf:group tagname="colgroup">
-									<xf:group style="width:140px;" tagname="col"></xf:group>
-									<xf:group style="width:220px;" tagname="col"></xf:group>
-									<xf:group style="width:140px;" tagname="col"></xf:group>
-									<xf:group style="" tagname="col"></xf:group>
-								</xf:group>
-								
-								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 12px; font-weight: bold;" tagname="th">
-										<w2:textbox label="테스트명"></w2:textbox>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 12px;" tagname="td" colspan="3">
-										<xf:input class="form-input" ref="data:dmp_defVoDetail.testName" readOnly="true" 
-											value="ERP 시스템 단위테스트" style="width: 100%; background-color: #f5f5f5;"></xf:input>
-										<xf:input type="hidden" ref="data:dmp_defVoDetail.testId" value="6"></xf:input>
-									</xf:group>
-								</xf:group>
-								
-								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 12px; font-weight: bold;" tagname="th">
-										<w2:textbox label="결함명"></w2:textbox>
-										<span style="color: red;">*</span>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 12px;" tagname="td">
-										<xf:input class="form-input" id="inp_defectName" placeholder="결함명을 입력하세요" 
-											ref="data:dmp_defVoDetail.name" style="width: 100%;"></xf:input>
-									</xf:group>
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 12px; font-weight: bold;" tagname="th">
-										<w2:textbox label="작성자"></w2:textbox>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 12px;" tagname="td">
-										<xf:input class="form-input" ref="data:dmp_defVoDetail.userName" readOnly="true" 
-											value="김개발" style="width: 100%; background-color: #f5f5f5;"></xf:input>
-										<xf:input type="hidden" ref="data:dmp_defVoDetail.assignee" value="1"></xf:input>
-									</xf:group>
-								</xf:group>
-								
-								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 12px; font-weight: bold;" tagname="th">
-										<w2:textbox label="우선순위"></w2:textbox>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 12px;" tagname="td">
-										<xf:select1 class="form-select" id="sel_priority" ref="data:dmp_defVoDetail.priority" 
-											chooseOption="true" chooseOptionLabel="선택하세요" style="width: 100%;">
-											<xf:choices>
-												<xf:itemset nodeset="data:dlt_priority">
-													<xf:label ref="priority"></xf:label>
-													<xf:value ref="code"></xf:value>
-												</xf:itemset>
-											</xf:choices>
-										</xf:select1>
-									</xf:group>
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 12px; font-weight: bold;" tagname="th">
-										<w2:textbox label="상태"></w2:textbox>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 12px;" tagname="td">
-										<xf:select1 class="form-select" id="sel_status" ref="data:dmp_defVoDetail.status" 
-											chooseOption="true" chooseOptionLabel="선택하세요" style="width: 100%;">
-											<xf:choices>
-												<xf:itemset nodeset="data:dlt_status">
-													<xf:label ref="status"></xf:label>
-													<xf:value ref="code"></xf:value>
-												</xf:itemset>
-											</xf:choices>
-										</xf:select1>
-									</xf:group>
-								</xf:group>
-								
-								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 12px; font-weight: bold;" tagname="th">
-										<w2:textbox label="완료예정일"></w2:textbox>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 12px;" tagname="td">
-										<w2:inputCalendar class="form-input" id="cal_dueDate" 
-											ref="data:dmp_defVoDetail.fixDueDate" calendarValueType="yearMonthDate" 
-											style="width: 100%;"></w2:inputCalendar>
-									</xf:group>
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 12px; font-weight: bold;" tagname="th">
-										<w2:textbox label="해결일"></w2:textbox>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 12px;" tagname="td">
-										<w2:inputCalendar class="form-input" id="cal_fixedDate" 
-											ref="data:dmp_defVoDetail.fixedDate" calendarValueType="yearMonthDate" 
-											style="width: 100%;"></w2:inputCalendar>
-									</xf:group>
-								</xf:group>
-							</xf:group>
-						</xf:group>
-
-						<!-- 상세 정보 섹션 -->
-						<xf:group class="form-section">
-							<w2:textbox class="form-section-title" label="📝 상세 정보"></w2:textbox>
-							<xf:group adaptive="layout" class="w2tb tbl" tagname="table" style="margin-bottom: 20px;">
-								<xf:group tagname="colgroup">
-									<xf:group style="width:140px;" tagname="col"></xf:group>
-									<xf:group style="" tagname="col"></xf:group>
-								</xf:group>
-								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 12px; font-weight: bold; vertical-align: top;" tagname="th">
-										<w2:textbox label="결함 설명"></w2:textbox>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 12px;" tagname="td">
-										<xf:textarea class="form-textarea" id="txt_description" 
-											placeholder="결함에 대한 상세한 설명을 입력하세요" 
-											ref="data:dmp_defVoDetail.description" 
-											style="width: 100%; height: 100px; resize: vertical;"></xf:textarea>
-									</xf:group>
-								</xf:group>
-								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 12px; font-weight: bold; vertical-align: top;" tagname="th">
-										<w2:textbox label="대응 방안"></w2:textbox>
-									</xf:group>
-									<xf:group class="w2tb_td" style="padding: 12px;" tagname="td">
-										<xf:textarea class="form-textarea" id="txt_responsePlan" 
-											placeholder="결함 해결을 위한 대응 방안을 입력하세요" 
-											ref="data:dmp_defVoDetail.responsePlan" 
-											style="width: 100%; height: 100px; resize: vertical;"></xf:textarea>
-									</xf:group>
-								</xf:group>
-							</xf:group>
-						</xf:group>
-
-						<!-- 파일 첨부 섹션 -->
-						<xf:group class="form-section">
-							<w2:textbox class="form-section-title" label="📎 파일 첨부"></w2:textbox>
-							
-							<!-- 파일 업로드 영역 (편집 모드에서만 표시) -->
-							<xf:group id="grp_fileUpload" style="display: none; margin-bottom: 20px;">
-								<xf:group class="titbox" style="margin-bottom: 15px;">
-									<w2:textbox label="파일 업로드" style="font-weight: bold; font-size: 16px; display: inline-block;" tagname="h4"></w2:textbox>
-									<w2:textbox label="* 최대 10개 파일, 파일당 10MB 이하" 
-										style="color: #666; font-size: 12px; margin-left: 10px; display: inline-block;"></w2:textbox>
-								</xf:group>
-								<xf:group class="upload-buttons" style="margin-bottom: 15px;">
-									<xf:group style="position: relative; display: inline-block; margin-right: 10px;">
-										<xf:trigger class="btn_cm" 
-											style="background: #007bff; color: white; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer;" 
-											type="button">
-											<xf:label>📎 파일 선택</xf:label>
-										</xf:trigger>
-										<w2:multiupload ev:ondone="scwin.mpd_html5Type_ondone" id="mpd_html5Type" 
-											maxcount="10" maxsize="10485760" mode="html5_transparent" 
-											selectCallback="scwin.multiUploadSelectDone"
-											style="position: absolute; left: 0px; top: 0px; width: 100%; height: 100%; cursor: pointer; z-index: 999; opacity: 0;" 
-											uploadButton="" wmode="false"></w2:multiupload>
-									</xf:group>
-									<xf:trigger class="btn_cm" ev:onclick="scwin.btn_InitMultiupload_onclick" 
-										style="background: #6c757d; color: white; padding: 10px 15px; border-radius: 4px; border: none; cursor: pointer;" 
-										type="button">
-										<xf:label>🗑️ 전체 삭제</xf:label>
-									</xf:trigger>
-								</xf:group>
-								
-								<!-- 업로드 대기 파일 목록 -->
-								<xf:group class="upload-list" style="margin-bottom: 20px;">
-									<w2:textbox label="선택된 파일" style="font-weight: bold; margin-bottom: 8px;" tagname="h5"></w2:textbox>
-									<w2:gridView autoFit="allColumn" class="gvw" dataList="dlt_Upload" id="grd_uploadList" 
-										noResultMessage="선택된 파일이 없습니다." rowNumVisible="false" 
-										style="height: 120px; border: 1px solid #ddd; width: 100%;" visibleRowNum="4">
-										<w2:header style="">
-											<w2:row style="">
-												<w2:column displayMode="label" inputType="text" 
-													style="height:25px; background-color: #e9ecef; font-weight: 600;" value="파일명" width="250"></w2:column>
-												<w2:column displayMode="label" inputType="text" 
-													style="height:25px; background-color: #e9ecef; font-weight: 600;" value="크기" width="100"></w2:column>
-												<w2:column displayMode="label" inputType="text" 
-													style="height:25px; background-color: #e9ecef; font-weight: 600;" value="상태" width="100"></w2:column>
-											</w2:row>
-										</w2:header>
-										<w2:gBody style="">
-											<w2:row style="">
-												<w2:column displayMode="label" id="name" inputType="text" 
-													style="height:25px; padding: 5px;" textAlign="left" width="250"></w2:column>
-												<w2:column dataType="number" displayFormat="#,###" displayMode="label" 
-													id="size" inputType="text" style="height:25px; padding: 5px;" 
-													textAlign="right" width="100"></w2:column>
-												<w2:column displayMode="label" id="status" inputType="text" 
-													style="height:25px; padding: 5px; color: #007bff;" textAlign="center" width="100"></w2:column>
-											</w2:row>
-										</w2:gBody>
-									</w2:gridView>
-								</xf:group>
-							</xf:group>
-							
-							<!-- 기존 첨부파일 목록 -->
-							<xf:group class="existing-files">
-								<xf:group class="titbox" style="margin-bottom: 15px;">
-									<w2:textbox label="기존 첨부파일" style="font-weight: bold; font-size: 16px; display: inline-block;" tagname="h4"></w2:textbox>
-									<xf:trigger class="btn_cm" ev:onclick="scwin.loadFileList" 
-										style="margin-left: 10px; background: #28a745; color: white; padding: 5px 10px; border-radius: 3px; font-size: 12px; display: inline-block;" 
-										type="button">
-										<xf:label>🔄 새로고침</xf:label>
-									</xf:trigger>
-								</xf:group>
-
-								<w2:gridView autoFit="lastColumn" class="gvw" dataList="dlt_attVoList" id="grd_fileList" 
-									noResultMessage="첨부된 파일이 없습니다." rowNumVisible="true" rowNumWidth="30" 
-									style="height: 200px; border: 1px solid #ddd;" visibleRowNum="6">
-									<w2:header style="">
-										<w2:row style="">
-											<w2:column displayMode="label" inputType="text" 
-												style="height:30px; background-color: #343a40; color: white; font-weight: bold;" 
-												value="파일명" width="200"></w2:column>
-											<w2:column displayMode="label" inputType="text" 
-												style="height:30px; background-color: #343a40; color: white; font-weight: bold;" 
-												value="크기" width="80"></w2:column>
-											<w2:column displayMode="label" inputType="text" 
-												style="height:30px; background-color: #343a40; color: white; font-weight: bold;" 
-												value="업로드일" width="100"></w2:column>
-											<w2:column displayMode="label" inputType="text" 
-												style="height:30px; background-color: #343a40; color: white; font-weight: bold;" 
-												value="작업" width="120"></w2:column>
-										</w2:row>
-									</w2:header>
-									<w2:gBody style="">
-										<w2:row style="">
-											<w2:column displayMode="label" id="originalFileName" inputType="text" 
-												style="height:30px; padding: 8px;" textAlign="left" width="200"></w2:column>
-											<w2:column dataType="number" displayFormat="#,###" displayMode="label" 
-												id="fileSize" inputType="text" style="height:30px; padding: 8px;" 
-												textAlign="right" width="80"></w2:column>
-											<w2:column displayMode="label" id="attachedAt" inputType="text" 
-												style="height:30px; padding: 8px;" textAlign="center" width="100"></w2:column>
-											<w2:column displayMode="button" inputType="button" 
-												style="height:30px; padding: 2px;" textAlign="center" width="120" 
-												value="다운로드|삭제" ev:onclick="scwin.fileActionClick"></w2:column>
-										</w2:row>
-									</w2:gBody>
-								</w2:gridView>
-							</xf:group>
-						</xf:group>
-					</xf:group>
+			<!-- 결함 목록 -->
+			<xf:group class="titbox" id="" style="">
+				<xf:group class="count" id="">
+					<w2:span id="" label="총" style=""></w2:span>
+					<w2:span class="num" id="spn_listCnt" label="0" ref="" style=""></w2:span>
+					<w2:span id="" label="건" style=""></w2:span>
 				</xf:group>
+			</xf:group>
+			
+			<xf:group class="gvwbox" id="" style="">
+				<w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_defList"
+					defaultCellHeight="26" focusMode="row" id="grd_defList" readOnly="true" scrollByColumn="false" 
+					style="height: 400px;" visibleRowNum="15" 
+					ev:oncellclick="scwin.grd_defList_oncellclick" ev:oncelldblclick="scwin.grd_defList_oncelldblclick">
+					<w2:caption style="" id="caption1" value="테스트 결함 목록"></w2:caption>
+					<w2:header style="" id="header1">
+						<w2:row style="" id="row1">
+							<w2:column width="100" inputType="text" id="column1" value="결함 ID" displayMode="label"></w2:column>
+							<w2:column width="100" inputType="text" id="column2" value="연결테스트 ID" displayMode="label"></w2:column>
+							<w2:column width="250" inputType="text" id="column3" value="결함명" displayMode="label"></w2:column>
+							<w2:column width="80" inputType="text" id="column4" value="우선순위" displayMode="label"></w2:column>
+							<w2:column width="80" inputType="text" id="column5" value="상태" displayMode="label"></w2:column>
+							<w2:column width="100" inputType="text" id="column6" value="담당자" displayMode="label"></w2:column>
+							<w2:column width="120" inputType="text" id="column7" value="등록일시" displayMode="label"></w2:column>
+							<w2:column width="120" inputType="text" id="column8" value="수정기한" displayMode="label"></w2:column>
+							<w2:column width="80" inputType="text" id="column9" value="자동생성" displayMode="label"></w2:column>
+						</w2:row>
+					</w2:header>
+					<w2:gBody style="" id="gBody1">
+						<w2:row style="" id="row2">
+							<w2:column width="100" inputType="text" id="id" displayMode="label"></w2:column>
+							<w2:column width="100" inputType="text" id="testId" displayMode="label"></w2:column>
+							<w2:column width="250" inputType="text" id="name" displayMode="label"></w2:column>
+							<w2:column width="80" inputType="text" id="priority" displayMode="label" customFormatter="scwin.defectPriorityFmt"></w2:column>
+							<w2:column width="80" inputType="text" id="status" displayMode="label" customFormatter="scwin.defectStatusFmt"></w2:column>
+							<w2:column width="100" inputType="text" id="assigneeName" displayMode="label"></w2:column>
+							<w2:column width="120" inputType="text" id="createdAt" displayMode="label"></w2:column>
+							<w2:column width="120" inputType="text" id="fixDueDate" displayMode="label"></w2:column>
+							<w2:column width="80" inputType="text" id="autoGenerated" displayMode="label" customFormatter="scwin.autoGeneratedFmt"></w2:column>
+						</w2:row>
+					</w2:gBody>
+				</w2:gridView>
+			</xf:group>
+			
+			<xf:group class="pglbox" id="" style="">
+				<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_defList" 
+					pageSize="5" pagingType="0" style="" ev:onclick="scwin.pgl_defList_onclick">
+				</w2:pageList>
 			</xf:group>
 		</xf:group>
+
+		<!-- CSS 스타일 -->
+		<style>
+		<![CDATA[
+		.defect-status-tag {
+			padding: 4px 8px;
+			border-radius: 4px;
+			font-size: 12px;
+			font-weight: bold;
+			text-align: center;
+		}
+		
+		.status-waiting {
+			background-color: #ffc107;
+			color: #212529;
+		}
+		
+		.status-progress {
+			background-color: #007bff;
+			color: white;
+		}
+		
+		.status-completed {
+			background-color: #28a745;
+			color: white;
+		}
+		
+		.defect-priority-tag {
+			padding: 2px 6px;
+			border-radius: 3px;
+			font-size: 11px;
+			font-weight: bold;
+		}
+		
+		.priority-high {
+			background-color: #dc3545;
+			color: white;
+		}
+		
+		.priority-medium {
+			background-color: #ffc107;
+			color: #212529;
+		}
+		
+		.priority-low {
+			background-color: #6c757d;
+			color: white;
+		}
+		
+		.auto-generated-tag {
+			background-color: #17a2b8;
+			color: white;
+			padding: 2px 6px;
+			border-radius: 3px;
+			font-size: 10px;
+			font-weight: bold;
+		}
+		]]>
+		</style>
 	</body>
 </html>
