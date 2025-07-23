@@ -20,28 +20,28 @@
         <w2:publicInfo method=""/>
         <script lazy="false" type="text/javascript"><![CDATA[
 scwin.onpageload = function() {
-	
 };
 
 // 사용자관리 페이지 이동 버튼
 scwin.btn_userListPage_onclick = function (e) {
-    location.href = "/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/users/UsersList.xml"; 
+    window.open("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/users/UsersList.xml");
 };
 
 // 그룹관리 페이지 이동 버튼
 scwin.btn_groupPage_onclick = function (e) {
-    location.href = "/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/groups/Groups.xml"; 
+    window.open("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/groups/Groups.xml"); 
 };
 
 // 메뉴관리 페이지 이동 버튼
 scwin.btn_menuPage_onclick = function (e) {
-    alert("메뉴관리 페이지로 이동합니다.");
+    window.open("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/menuGroups/menuGroups.xml"); 
 };
 
 // 로그아웃 버튼
 scwin.btn_logout_onclick = function (e) {
-    WebSquare.cookie.delCookie("usrId");
-    location.href = "/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/login.xml";
+    WebSquare.session.removeAttribute("usrId");
+    window.open("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/login.xml");
+
 };
 ]]></script>
     </head>

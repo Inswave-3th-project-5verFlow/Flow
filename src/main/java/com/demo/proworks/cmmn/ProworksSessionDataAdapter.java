@@ -58,7 +58,7 @@ public class ProworksSessionDataAdapter extends SessionDataAdapter {
 			UsersService usersService = (UsersService) ElBeanUtils.getBean("usersServiceImpl");
 			UsersVo usersVo = new UsersVo();
 
-			usersVo.setAccountId(id); // pmkim
+			usersVo.setAccountId(id);
 			UsersVo resUsersVo = usersService.selectUsers(usersVo);
 
 			userHeader.setUsrId(resUsersVo.getUserId());
@@ -66,7 +66,6 @@ public class ProworksSessionDataAdapter extends SessionDataAdapter {
 			userHeader.setIsAdmin(resUsersVo.getIsAdmin());
 			userHeader.setIsCreate(resUsersVo.getIsCreate());
 
-			System.out.println("=============================================");
 			System.out.println(resUsersVo.getIsAdmin());
 			System.out.println(resUsersVo.getIsCreate());
 

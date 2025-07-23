@@ -73,7 +73,8 @@
 };
 
 scwin.btn_search_onclick = function (e) {
-    var usrId = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_ID;
+    var usrId = WebSquare.session.getAttribute("usrId");
+
     // 헤더에서 사용자 정보 바인딩
     dmp_usersVo.set("userId", usrId);
     // PGAE번호 초기화
