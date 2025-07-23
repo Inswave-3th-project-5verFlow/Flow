@@ -316,7 +316,7 @@ scwin.taskStatus_onchange = function (info) {
 		<xf:group class="pop_contents" style="width:700px;">
 
 			<!-- 팝업 헤더 -->
-			<xf:group class="pop_header" style="padding:15px; border-bottom:1px solid #ddd; background-color:#f8f9fa;">
+			<xf:group class="pop_header" style="padding:15px; border-bottom:1px solid #ddd; background-color:#98bed6; color: white;">
 				<w2:textbox class="pop_title" id="tbx_title" label="제목" style="font-size:18px; font-weight:bold;" />
 			</xf:group>
 
@@ -340,14 +340,14 @@ scwin.taskStatus_onchange = function (info) {
 
 						<!-- 1행: 업무명, 업무구분 -->
 						<xf:group tagname="tr">
-							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
-								<w2:textbox label="업무명" style="color:#333;" />
+							<xf:group class="w2tb_th" style="" tagname="th">
+								<w2:textbox label="업무명" style="" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskName" />
 							</xf:group>
-							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
-								<w2:textbox label="업무구분" style="color:#333;" />
+							<xf:group class="w2tb_th" style="" tagname="th">
+								<w2:textbox label="업무구분" style="" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<xf:select1 id="" chooseOption="" style="width: 180px;height: 30px;" submenuSize="auto" allOption=""
@@ -365,8 +365,8 @@ scwin.taskStatus_onchange = function (info) {
 
 						<!-- 2행: 업무상태, 테스트여부 -->
 						<xf:group tagname="tr">
-							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
-								<w2:textbox label="업무상태" style="color:#333;" />
+							<xf:group class="w2tb_th" style="" tagname="th">
+								<w2:textbox label="업무상태" style="" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<xf:select1 style="width:180px;" ref="data:dmp_taskDetail.taskStatus" appearance="minimal" allOption=""
@@ -379,8 +379,8 @@ scwin.taskStatus_onchange = function (info) {
 									</xf:choices>
 								</xf:select1>
 							</xf:group>
-							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
-								<w2:textbox label="테스트여부" style="color:#333;" />
+							<xf:group class="w2tb_th" style="" tagname="th">
+								<w2:textbox label="테스트여부" style="" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<xf:select1 style="width:180px;" ref="data:dmp_taskDetail.isTest" appearance="minimal" allOption=""
@@ -397,8 +397,8 @@ scwin.taskStatus_onchange = function (info) {
 
 						<!-- 3행: 상위업무명 (colspan=3) -->
 						<xf:group tagname="tr">
-							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
-								<w2:textbox label="상위업무명" style="color:#333;" />
+							<xf:group class="w2tb_th" style="" tagname="th">
+								<w2:textbox label="상위업무명" style="" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<w2:attributes>
@@ -416,14 +416,14 @@ scwin.taskStatus_onchange = function (info) {
 
 						<!-- 4행: 업무담당자, 진척률 -->
 						<xf:group tagname="tr">
-							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
-								<w2:textbox label="업무담당자" style="color:#333;" />
+							<xf:group class="w2tb_th" style="" tagname="th">
+								<w2:textbox label="업무담당자" style="" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskAsi" id="ipt_taskAsi"/>
 							</xf:group>
-							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
-								<w2:textbox label="진척률(%)" style="color:#333;" />
+							<xf:group class="w2tb_th" style="" tagname="th">
+								<w2:textbox label="진척률(%)" style="" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskRate" id="ipt_taskRate" initValue="0"/>
@@ -449,16 +449,16 @@ scwin.taskStatus_onchange = function (info) {
 
 						<!-- 1행: 시작예정일, 완료예정일 -->
 						<xf:group tagname="tr">
-							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
-								<w2:textbox label="시작예정일" style="color:#333;" />
+							<xf:group class="w2tb_th" style="" tagname="th">
+								<w2:textbox label="시작예정일" style="" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<w2:inputCalendar style="width: 150px;height: 23px;" calendarValueType="yearMonthDate"
 									ref="data:dmp_taskDetail.taskSt" id="ipt_taskSt">
 								</w2:inputCalendar>
 							</xf:group>
-							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
-								<w2:textbox label="완료예정일" style="color:#333;" />
+							<xf:group class="w2tb_th" style="" tagname="th">
+								<w2:textbox label="완료예정일" style="" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<w2:inputCalendar style="width: 150px;height: 23px;" calendarValueType="yearMonthDate"
@@ -472,12 +472,11 @@ scwin.taskStatus_onchange = function (info) {
 				<!-- 버튼 영역 -->
 				<xf:group class="btnbox" style="">
 					<xf:group class="rt" style="">
-						<w2:textbox class="bar_btndiv" label="" style=""></w2:textbox>
-						<xf:trigger class="btn_cm pt" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
+						<xf:trigger class="btn_cm pt" id="btn_save" style="background-color:#98BED6;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border-color: #fff;border: none;" type="button" ev:onclick="scwin.btn_save_onclick">
 							<xf:label><![CDATA[버튼]]></xf:label>
 						</xf:trigger>
 
-						<xf:trigger class="btn_cm pt" id="btn_delete" style="background-color:#FF0000;" type="button"
+						<xf:trigger class="btn_cm pt" id="btn_delete" style="background-color:#ec9192;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border: none;" type="button"
 							ev:onclick="scwin.btn_delete_onclick">
 							<xf:label><![CDATA[삭제]]></xf:label>
 						</xf:trigger>

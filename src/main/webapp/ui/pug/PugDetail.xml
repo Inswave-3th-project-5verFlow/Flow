@@ -238,13 +238,13 @@ scwin.btn_close_onclick = function (e) {
 								<w2:textbox class="" id="" label="사용자ID" style=""></w2:textbox>
 							</xf:group>
 							<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:input id="" style="width: 144px;height: 21px;" ref="data:dmp_userVo.scUserId"></xf:input>
+								<xf:input id="" style="width: 150px;height: 30px;" ref="data:dmp_userVo.scUserId"></xf:input>
 							</xf:group>
 							<xf:group class="w2tb_th" style="" tagname="th">
 								<w2:textbox class="" id="" label="이름" style=""></w2:textbox>
 							</xf:group>
 							<xf:group class="w2tb_td" id="" style="" tagname="td">
-								<xf:input id="" style="width: 144px;height: 21px;" ref="data:dmp_userVo.scUserName"></xf:input>
+								<xf:input id="" style="width: 150px;height: 30px;" ref="data:dmp_userVo.scUserName"></xf:input>
 							</xf:group>
 						</xf:group>
 					</xf:group>
@@ -347,7 +347,7 @@ scwin.btn_close_onclick = function (e) {
 							<w2:textbox class="" id="" label="사용자ID" ref="" style="" userData2=""></w2:textbox>
 						</xf:group>
 						<xf:group class="w2tb_td" style="" tagname="td" id="">
-							<xf:input id="ipt_userId" style="width: 144px;height: 21px;" ref="data:dlt_userVoList.userId" disabled="true"></xf:input>
+							<xf:input id="ipt_userId" style="width: 150px;height: 30px;" ref="data:dlt_userVoList.userId" disabled="true"></xf:input>
 						</xf:group>
 					</xf:group>
 					<xf:group tagname="tr">
@@ -362,7 +362,7 @@ scwin.btn_close_onclick = function (e) {
 								<w2:colspan>1</w2:colspan>
 								<w2:rowspan>1</w2:rowspan>
 							</w2:attributes>
-							<xf:input id="" style="width: 144px;height: 21px;" ref="data:dlt_userVoList.name" disabled="true"></xf:input>
+							<xf:input id="" style="width: 150px;height: 30px;" ref="data:dlt_userVoList.name" disabled="true"></xf:input>
 						</xf:group>
 					</xf:group>
 					<xf:group tagname="tr">
@@ -374,7 +374,7 @@ scwin.btn_close_onclick = function (e) {
 						</xf:group>
 						<xf:group class="w2tb_td" tagname="td">
 							<w2:attributes></w2:attributes>
-							<xf:select1 id="slt_grp" chooseOption="true" style="width: 148px;height: 21px;" submenuSize="auto" allOption=""
+							<xf:select1 id="slt_grp" chooseOption="" style="width: 150px;height: 30px;" submenuSize="auto" allOption=""
 								disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" chooseOptionLabel="$blank" ref="">
 								<xf:choices>
 									<xf:itemset nodeset="data:dlt_grpVoList">
@@ -390,7 +390,7 @@ scwin.btn_close_onclick = function (e) {
 			<xf:group class="btnbox" id="" meta_snippetCategory="08_버튼" meta_snippetKeyComponent="true" meta_snippetName="8_05 팝업전체제어버튼"
 				style="">
 				<xf:group class="rt" id="" style="">
-					<xf:trigger class="btn_cm pt" id="btn_new" style="" type="button" ev:onclick="scwin.btn_new_onclick">
+					<xf:trigger class="btn_cm pt" id="btn_new" style="background-color:#98BED6;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border-color: #fff;border: none;" type="button" ev:onclick="scwin.btn_new_onclick">
 						<xf:label><![CDATA[등록]]></xf:label>
 					</xf:trigger>
 					<xf:trigger class="btn_cm " id="btn_close" style="" type="button" ev:onclick="scwin.btn_close_onclick">
