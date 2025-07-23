@@ -2941,16 +2941,6 @@ scwin.btn_excel_upload_onclick = function (e) {
 						type="button" ev:onclick="scwin.btn_register_onclick">
 						<xf:label><![CDATA[+ 새 테스트 케이스 등록]]></xf:label>
 					</xf:trigger>
-                    <xf:trigger class="btn_cm" id="btn_excel_template" 
-                        style="background: linear-gradient(to bottom, #ffc107 0%, #e0a800 100%); color: white; border: 1px solid #e0a800; padding: 10px 15px; font-size: 14px; height: 35px; border-radius: 4px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 120px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); margin-right: 5px;"
-                        type="button" ev:onclick="scwin.btn_excel_template_download_onclick">
-                        <xf:label><![CDATA[템플릿 다운로드]]></xf:label>
-                    </xf:trigger>
-                    <xf:trigger class="btn_cm" id="btn_excel_upload" 
-                        style="background: linear-gradient(to bottom, #17a2b8 0%, #138496 100%); color: white; border: 1px solid #138496; padding: 10px 15px; font-size: 14px; height: 35px; border-radius: 4px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 100px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); margin-right: 5px;"
-                        type="button" ev:onclick="scwin.btn_excel_upload_onclick">
-                        <xf:label><![CDATA[엑셀 업로드]]></xf:label>
-                    </xf:trigger>
                     <xf:trigger class="btn_cm" id="btn_excel_download" 
                         style="background: linear-gradient(to bottom, #28a745 0%, #1e7e34 100%); color: white; border: 1px solid #1e7e34; padding: 10px 15px; font-size: 14px; height: 35px; border-radius: 4px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 100px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); margin-right: 5px;"
                         type="button" ev:onclick="scwin.btn_excel_download_onclick">
