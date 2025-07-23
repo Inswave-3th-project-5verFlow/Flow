@@ -257,7 +257,7 @@
                 t.task_name as taskName,
                 t.task_des as taskDes,
                 t.task_status as taskStatus,
-                t.is_test as isTest,
+                CASE WHEN test.task_id IS NOT NULL THEN 1 ELSE 0 END as isTest,
                 t.is_design as isDesign,
                 t.pt_task_id as ptTaskId,
                 t.de_task_id as deTaskId,
@@ -273,6 +273,7 @@
                 pt.task_name as ptTaskName                         -- 상위 업무명 (조인으로 가져오기)
             FROM project_task t
             LEFT JOIN project_task pt ON t.pt_task_id = pt.task_id  -- 상위 업무와 조인
+            LEFT JOIN test ON t.task_id = test.task_id 
             WHERE t.pjt_id = #{pjtId} 
               AND t.user_id = #{userId} AND t.is_design = 0
             <if test="scTaskId != null and scTaskId != ''">

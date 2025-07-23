@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper      
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"      
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.demo.proworks.menu">
+    <insert id="insertMenu" parameterType="com.demo.proworks.menu.vo.MenuVo">
+        INSERT INTO MENU   /* QueryID : com.demo.proworks.menu.insertMenu */
+        ( 
+            MENU_ID
+            <if test="menuName     != null"> , MENU_NAME      </if>
+            <if test="description   != null"> , DESCRIPTION    </if>
+            <if test="parentMenuId!= null"> , PARENT_MENU_ID </if>
+            <if test="depth         != null"> , DEPTH          </if>
+            <if test="url           != null"> , URL            </if>
+        )
+        VALUES  
+        ( 
+            #{menuId}
+            <if test="menuName     != null"> , #{menuName}      </if>
+            <if test="description   != null"> , #{description}    </if>
+            <if test="parentMenuId!= null"> , #{parentMenuId} </if>
+            <if test="depth         != null"> , #{depth}          </if>
+            <if test="url           != null"> , #{url}            </if>
+        )          
+    </insert>	
+	
+    <update id="updateMenu" parameterType="com.demo.proworks.menu.vo.MenuVo">
+        UPDATE MENU    /* QueryID : com.demo.proworks.menu.updateMenu */      
+      	  SET  
+                MENU_ID        = #{menuId}       
+            <if test="menuName     != null"> , MENU_NAME      = #{menuName}      </if>
+            <if test="description   != null"> , DESCRIPTION    = #{description}    </if>
+            <if test="parentMenuId!= null"> , PARENT_MENU_ID = #{parentMenuId} </if>
+            <if test="depth         != null"> , DEPTH          = #{depth}          </if>
+            <if test="url           != null"> , URL            = #{url}            </if>
+        WHERE   
+                MENU_ID        = #{menuId}       
+    </update>
+	
+    <delete id="deleteMenu" parameterType="com.demo.proworks.menu.vo.MenuVo">
+        DELETE FROM MENU   /* QueryID : com.demo.proworks.menu.deleteMenu */ 
+        WHERE   
+                MENU_ID        = #{menuId}       
+    </delete>
+	
+    <select id="selectMenu" parameterType="com.demo.proworks.menu.vo.MenuVo" resultType="com.demo.proworks.menu.vo.MenuVo">
+        SELECT     /* QueryID : com.demo.proworks.menu.selectMenu */
+            MENU_ID as menuId, MENU_NAME as menuName, DESCRIPTION as description, PARENT_MENU_ID as parentMenuId, DEPTH as depth, URL as url
+        FROM MENU 
+        WHERE 
+                MENU_ID        = #{menuId}       
+    </select>
+	
+    <select id="selectListMenu" parameterType="com.demo.proworks.menu.vo.MenuVo" resultType="com.demo.proworks.menu.vo.MenuVo">
+           SELECT    /* QueryID : com.demo.proworks.menu.selectListMenu */
+               MENU_ID as menuId, MENU_NAME as menuName, DESCRIPTION as description, PARENT_MENU_ID as parentMenuId, DEPTH as depth, URL as url		       
+           FROM (
+               SELECT  S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
+               FROM (				
+                   SELECT 
+                       *  		                  
+                   FROM MENU
+                   WHERE  1=1    		
+               ) S, (SELECT @ROWNUM := 0) TMP
+           ) A
+            WHERE PAGE = #{pageIndex}
+    </select>
+	
+    <select id="selectListCountMenu" parameterType="com.demo.proworks.menu.vo.MenuVo" resultType="long">
+         SELECT    /* QueryID : com.demo.proworks.menu.selectListCountMenu */
+             COUNT(*) totcnt  		                  
+         FROM MENU
+         WHERE  1=1    		
+    </select>
+
+    <select id="selectGroupMenuList" parameterType="com.demo.proworks.menu.vo.MenuVo" resultType="com.demo.proworks.menu.vo.MenuVo">
+           SELECT    /* QueryID : com.demo.proworks.menu.selectGroupMenuList */
+               MGM.GRP_ID as grpId,
+               MGM.MENU_ID as menuId		       
+           FROM MENU_GROUP_MAPPING MGM
+           WHERE MGM.GRP_ID = #{grpId}
+    </select>
+
+    <insert id="insertGroupMenu" parameterType="com.demo.proworks.menu.vo.MenuVo">
+        INSERT INTO MENU_GROUP_MAPPING   /* QueryID : com.demo.proworks.menu.insertGroupMenu */
+        ( 
+            GRP_ID,
+            MENU_ID
+        )
+        VALUES  
+        ( 
+            #{grpId},
+            #{menuId}
+        )          
+    </insert>
+
+    <delete id="deleteGroupMenu" parameterType="com.demo.proworks.menu.vo.MenuVo">
+        DELETE FROM MENU_GROUP_MAPPING   /* QueryID : com.demo.proworks.menu.deleteGroupMenu */ 
+        WHERE   
+                GRP_ID = #{grpId}               
+    </delete>
+
+</mapper>

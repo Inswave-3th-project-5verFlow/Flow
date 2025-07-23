@@ -7,71 +7,298 @@
         <w2:buildDate/>
         <w2:MSA/>
         <xf:model>
-            <w2:dataCollection baseNode="map">
-            	<w2:dataList baseNode="list" repeatNode="map" id="dlt_menuVoList" saveRemovedData="true">
-            		<w2:columnInfo>
-            			<w2:column dataType="text" name="name1" id="menu_id"></w2:column>
-            			<w2:column dataType="text" name="name2" id="menu_name"></w2:column>
-            			<w2:column dataType="text" name="name3" id="description"></w2:column>
-            			<w2:column dataType="text" name="name4" id="parent_menu_id"></w2:column>
-            			<w2:column dataType="text" name="name5" id="depth"></w2:column>
-            			<w2:column dataType="text" name="name6" id="url"></w2:column>
-            		</w2:columnInfo>
-            	</w2:dataList>
-            </w2:dataCollection>
-            <w2:workflowCollection/>
+        	<w2:dataCollection baseNode="map">
+        		<w2:dataMap baseNode="map" id="dmp_groupsVo">
+        			<w2:keyInfo>
+        				<w2:key dataType="text" defaultValue="1" id="pageIndex"></w2:key>
+        				<w2:key dataType="text" defaultValue="9999" id="pageSize"></w2:key>
+        			</w2:keyInfo>
+        		</w2:dataMap>
+        		<w2:dataList baseNode="list" id="dlt_groupsVoList" repeatNode="map">
+        			<w2:columnInfo>
+        				<w2:column dataType="text" id="grpId"></w2:column>
+        				<w2:column dataType="text" id="grpName"></w2:column>
+        				<w2:column dataType="text" id="description"></w2:column>
+        			</w2:columnInfo>
+        		</w2:dataList>
+        		<w2:dataMap baseNode="map" id="dmp_menuVo">
+        			<w2:keyInfo>
+        				<w2:key dataType="text" id="pageSize" defaultValue="9999"></w2:key>
+        				<w2:key dataType="text" id="pageIndex" defaultValue="1"></w2:key>
+        				<w2:key id="grpId" name="그룹ID" dataType="text"></w2:key>
+        			</w2:keyInfo>
+        		</w2:dataMap>
+        		<w2:dataList baseNode="list" id="dlt_menuVoList" repeatNode="map">
+        			<w2:columnInfo>
+        				<w2:column dataType="text" id="menuId"></w2:column>
+        				<w2:column dataType="text" id="menuName"></w2:column>
+        				<w2:column dataType="text" id="description"></w2:column>
+        				<w2:column dataType="text" id="parentMenuId"></w2:column>
+        				<w2:column dataType="text" id="depth"></w2:column>
+        				<w2:column dataType="text" id="url"></w2:column>
+        				<w2:column dataType="text" id="checked"></w2:column>
+        			</w2:columnInfo>
+        		</w2:dataList>
+        		<w2:dataMap baseNode="map" id="dmp_selectedGroup">
+        			<w2:keyInfo>
+        				<w2:key dataType="text" id="selectedGrpId"></w2:key>
+        				<w2:key dataType="text" id="selectedGrpName"></w2:key>
+        			</w2:keyInfo>
+        		</w2:dataMap>
+        	</w2:dataCollection>
+        	<xf:submission id="sbm_selectGroupsVoList" action="/InsWebApp/GROUPS0001List.pwkjson" method="post" 
+        		ref='data:json,{"id":"dmp_groupsVo","key":"groupsVo"}' 
+        		target='data:json,{"id":"dlt_groupsVoList","key":"elData.groupsVoList"}' 
+        		mediatype="application/json" encoding="UTF-8" mode="asynchronous" 
+        		processMsg="그룹정보 리스트를 조회 중입니다." 
+        		ev:submitdone="scwin.sbm_selectGroupsVoList_submitdone">
+        	</xf:submission>
+        	<xf:submission id="sbm_selectMenuVoList" action="/InsWebApp/MENUList.pwkjson" method="post" 
+        		ref='data:json,{"id":"dmp_menuVo","key":"menuVo"}' 
+        		target='data:json,{"id":"dlt_menuVoList","key":"elData.menuVo"}' 
+        		mediatype="application/json" encoding="UTF-8" mode="asynchronous" 
+        		processMsg="메뉴 목록을 조회중입니다." 
+        		ev:submitdone="scwin.sbm_selectMenuVoList_submitdone">
+        	</xf:submission>
+        	<xf:submission id="sbm_selectGroupMenuList" action="/InsWebApp/GroupMenuList.pwkjson" method="post" 
+        		ref='data:json,{"id":"dmp_menuVo","key":"menuVo"}' target="" mediatype="application/json" encoding="UTF-8" mode="asynchronous" 
+        		processMsg="그룹 메뉴 권한을 조회중입니다." 
+        		ev:submitdone="scwin.sbm_selectGroupMenuList_submitdone">
+        	</xf:submission>
+        	<xf:submission id="sbm_saveGroupMenu" action="/InsWebApp/GroupMenuSave.pwkjson" method="post" 
+        		ref="" target="" mediatype="application/json" encoding="UTF-8" mode="asynchronous" 
+        		processMsg="그룹 메뉴 권한을 저장중입니다." 
+        		ev:submitdone="scwin.sbm_saveGroupMenu_submitdone">
+        	</xf:submission>
         </xf:model>
-        <w2:layoutInfo/>
-        <w2:publicInfo method=""/>
         <script lazy="false" type="text/javascript"><![CDATA[
-scwin.onpageload = function() {
-	
+scwin.checkedMenuIds = [];
+
+scwin.onpageload = function () {
+    console.log("메뉴-그룹 권한 관리 시작!!!!");
+    
+    dmp_selectedGroup.set("selectedGrpId", "");
+    dmp_selectedGroup.set("selectedGrpName", "선택된 그룹 없음");
+    
+    $c.sbm.execute($p, sbm_selectGroupsVoList);
+    $c.sbm.execute($p, sbm_selectMenuVoList);
+};
+
+scwin.sbm_selectGroupsVoList_submitdone = function (e) {
+    var elHeader = e.responseJSON.elHeader;
+    
+    if (!elHeader || elHeader.resSuc == false) {
+        $c.win.alert("그룹 목록 조회 실패: " + (elHeader ? elHeader.resMsg : "오류"));
+        return;
+    }
+
+    console.log("그룹 목록 조회 완료:", dlt_groupsVoList.getTotalRow() + "개");
+};
+
+scwin.sbm_selectMenuVoList_submitdone = function (e) {
+    var elHeader = e.responseJSON.elHeader;
+    var elData = e.responseJSON.elData;
+    console.log(elData);
+    
+    if (!elHeader || elHeader.resSuc == false) {
+        $c.win.alert("메뉴 목록 조회 실패: " + (elHeader ? elHeader.resMsg : "오류"));
+        return;
+    }
+    dlt_menuVoList.setJSON(elData.menuVoList);
+    for (let i = 0; i < dlt_menuVoList.getTotalRow(); i++) {
+        dlt_menuVoList.setCellData(i, "checked", "false");
+    }
+    
+    console.log("전체 메뉴 목록 조회 완료:", dlt_menuVoList.getTotalRow() + "개");
+};
+
+scwin.sbm_selectGroupMenuList_submitdone = function (e) {
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+    
+    if (!elHeader || elHeader.resSuc == false) {
+        console.log("그룹 메뉴 권한 조회 실패:", elHeader ? elHeader.resMsg : "오류");
+        scwin.checkedMenuIds = [];
+        return;
+    }
+    
+    console.log("그룹 메뉴 권한 조회 완료:", elData);
+    
+    scwin.checkedMenuIds = [];
+    if (elData.menuVoList && elData.menuVoList.length > 0) {
+        scwin.checkedMenuIds = elData.menuVoList.map(item => item.menuId);
+    }
+    
+    for (let i = 0; i < dlt_menuVoList.getTotalRow(); i++) {
+        let menuId = dlt_menuVoList.getCellData(i, "menuId");
+        let shouldCheck = scwin.checkedMenuIds.includes(menuId);
+        dlt_menuVoList.setCellData(i, "checked", shouldCheck ? "true" : "false");
+    }
+};
+
+scwin.sbm_saveGroupMenu_submitdone = function (e) {
+    var elHeader = e.responseJSON.elHeader;
+    
+    if (!elHeader || elHeader.resSuc == false) {
+        $c.win.alert("저장 실패: " + (elHeader ? elHeader.resMsg : "오류"));
+        return;
+    }
+    
+    $c.win.alert("메뉴 권한이 저장되었습니다.");
+    console.log("저장 완료");
+};
+
+scwin.gridView_oncellclick = function (rowIndex, columnIndex, columnId) {
+    scwin.selectGroup(rowIndex);
+};
+
+scwin.selectGroup = function(rowIndex) {
+    let selectedRow = dlt_groupsVoList.getRowJSON(rowIndex);
+    let grpId = selectedRow.grpId;
+    let grpName = selectedRow.grpName;
+    
+    dmp_selectedGroup.set("selectedGrpId", grpId);
+    dmp_selectedGroup.set("selectedGrpName", grpName);
+    
+    gridView.setFocusedCell(rowIndex, 0, false);
+    
+    dmp_menuVo.set("grpId", grpId);
+    $c.sbm.execute($p, sbm_selectGroupMenuList);
+    
+    console.log("그룹 선택:", grpId, grpName);
+};
+
+// 수정된 체크박스 클릭 이벤트 - getCheckedValues() API 사용
+scwin.treeview_oncheckboxclick = function(value, node, index) {
+    console.log("체크박스 변경:", value, node.checked ? "체크" : "해제");
+    
+    // 약간의 지연 후 실제 체크된 모든 값들을 가져옴 (checkAllChildNodes 처리 완료 후)
+    setTimeout(function() {
+        scwin.checkedMenuIds = treeview.getCheckedValues();
+        console.log("현재 체크된 모든 메뉴들:", scwin.checkedMenuIds);
+    }, 50);
+};
+
+// 수정된 저장 버튼 - 저장 직전에 최신 체크 상태 반영
+scwin.btn_save_onclick = function(e) {
+    let selectedGrpId = dmp_selectedGroup.get("selectedGrpId");
+    
+    if (!selectedGrpId || selectedGrpId === "") {
+        $c.win.alert("먼저 그룹을 선택해주세요.");
+        return;
+    }
+    
+    // 저장 직전에 실제 체크된 값들을 다시 가져옴 (확실하게!)
+    scwin.checkedMenuIds = treeview.getCheckedValues();
+    
+    let menuList = scwin.checkedMenuIds.map(menuId => ({
+        menuId: menuId,
+        grpId: selectedGrpId
+    }));
+    
+    console.log("저장할 메뉴 (부모+하위 모두 포함):", menuList);
+    
+    let reqObj = {
+        "elData": { "menuVoList": menuList }
+    };
+    
+    $c.sbm.execute($p, sbm_saveGroupMenu, reqObj);
+};
+
+// 수정된 새로고침 버튼 - reqObj 오류 수정
+scwin.btn_refresh_onclick = function(e) {
+    let selectedGrpId = dmp_selectedGroup.get("selectedGrpId");
+    
+    if (selectedGrpId) {
+        dmp_menuVo.set("grpId", selectedGrpId);
+        $c.sbm.execute($p, sbm_selectGroupMenuList);
+    }
 };
 ]]></script>
     </head>
     <body ev:onpageload="scwin.onpageload">
-    	<xf:group class="sub_contents" id="" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true" meta_snippetName="0_01 페이지시작"
-    		style="">
-    		<xf:group class="lybox" id="" meta_snippetCategory="01_화면분할" meta_snippetKeyComponent="true" meta_snippetName="1_01 가변 2단 분할"
-    			style="">
-    			<xf:group adaptiveThreshold="" class=" col_5" id="" style="">
-    				<xf:group adaptiveThreshold="" class="gvwbox" id="" meta_snippetCategory="06_그리드" meta_snippetKeyComponent="true"
-    					meta_snippetName="6_01 그리드" style="">
-    					<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dataList1" focusMode="row"
-    						id="" scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 153px;">
-    						<w2:caption id="caption1" style="" value="this is a grid caption."></w2:caption>
-    						<w2:header id="header2" style="">
-    							<w2:row id="row3" style="">
-    								<w2:column blockSelect="false" displayMode="label" id="column12" inputType="text"
-    									removeBorderStyle="false" value="그룹ID" width="70">
-    								</w2:column>
-    								<w2:column blockSelect="false" displayMode="label" id="column11" inputType="text"
-    									removeBorderStyle="false" value="그룹명" width="70">
-    								</w2:column>
-    								<w2:column blockSelect="false" displayMode="label" id="column10" inputType="text"
-    									removeBorderStyle="false" value="그룹 설명" width="70">
-    								</w2:column>
+    	<xf:group class="sub_contents">
+    		<xf:group class="pgtbox">
+    			<w2:textbox class="pgt_tit" label="메뉴-그룹 권한 관리"></w2:textbox>
+    		</xf:group>
+    		
+    		<xf:group class="lybox" style="margin-top: 20px;">
+    			
+    			<!-- 왼쪽: 그룹 목록 -->
+    			<xf:group class="col_5" style="padding-right: 10px;">
+    				<xf:group class="gvwbox" style="border: 1px solid #ddd; padding: 15px; height: 600px;">
+    					<w2:textbox label="그룹 목록" style="font-size: 16px; font-weight: bold; margin-bottom: 10px;"></w2:textbox>
+    					<w2:gridView id="gridView" dataList="data:dlt_groupsVoList" autoFit="allColumn" 
+    						focusMode="row" readOnly="true" 
+    						style="height: 540px; border: 1px solid #ccc;" 
+    						ev:oncellclick="scwin.gridView_oncellclick">
+    						<w2:caption value="그룹 목록"></w2:caption>
+    						<w2:header>
+    							<w2:row>
+    								<w2:column value="그룹ID" width="80"></w2:column>
+    								<w2:column value="그룹명" width="120"></w2:column>
+    								<w2:column value="설명" width="150"></w2:column>
     							</w2:row>
     						</w2:header>
-    						<w2:gBody id="gBody2" style="">
-    							<w2:row id="row4" style="">
-    								<w2:column blockSelect="false" displayMode="label" id="col1" inputType="text" removeBorderStyle="false"
-    									width="70">
-    								</w2:column>
-    								<w2:column blockSelect="false" displayMode="label" id="col2" inputType="text" removeBorderStyle="false"
-    									width="70">
-    								</w2:column>
-    								<w2:column blockSelect="false" displayMode="label" id="col3" inputType="text" removeBorderStyle="false"
-    									width="70">
-    								</w2:column>
+    						<w2:gBody>
+    							<w2:row>
+    								<w2:column id="grpId" width="80"></w2:column>
+    								<w2:column id="grpName" width="120"></w2:column>
+    								<w2:column id="description" width="150"></w2:column>
     							</w2:row>
     						</w2:gBody>
     					</w2:gridView>
     				</xf:group>
     			</xf:group>
-    			<xf:group class=" col_5" id="" style="">
-    				<w2:treeview id="" dataType="listed" tooltipGroupClass="false" style="width: 200px;height: 200px;"></w2:treeview>
+    			
+    			<!-- 오른쪽: 메뉴 권한 설정 -->
+    			<xf:group class="col_5" style="padding-left: 10px;">
+    				<xf:group style="border: 1px solid #ddd; padding: 15px; height: 600px;">
+    					
+    					<!-- 헤더 -->
+    					<xf:group style="margin-bottom: 15px; border-bottom: 1px solid #ccc; padding-bottom: 10px;">
+    						<w2:textbox label="메뉴 권한 설정" style="font-size: 16px; font-weight: bold; float: left;"></w2:textbox>
+    						<w2:textbox ref="data:dmp_selectedGroup.selectedGrpName" 
+    							style="font-size: 14px; color: blue; font-weight: bold; float: right;"></w2:textbox>
+    						<div style="clear: both;"></div>
+    					</xf:group>
+    					
+    					<!-- 버튼 -->
+    					<xf:group style="margin-bottom: 15px; text-align: right;">
+    						<xf:trigger class="btn_cm" style="margin-right: 5px;" 
+    							type="button" ev:onclick="scwin.btn_refresh_onclick">
+    							<xf:label>새로고침</xf:label>
+    						</xf:trigger>
+    						<xf:trigger class="btn_cm" style="background-color: green; color: white;" 
+    							type="button" ev:onclick="scwin.btn_save_onclick">
+    							<xf:label>권한 저장</xf:label>
+    						</xf:trigger>
+    					</xf:group>
+    					
+    					<!-- 트리뷰 -->
+    					<xf:group style="border: 1px solid #ccc; padding: 10px; height: 480px; overflow-y: auto;">
+    						<w2:treeview id="treeview" dataType="listed" 
+    							style="width: 100%; height: 100%;" 
+    							showCheckbox="true" 
+    							ev:oncheckboxclick="scwin.treeview_oncheckboxclick" checkAllChildNodes="true">
+    							<w2:itemset nodeset="data:dlt_menuVoList">
+    								<w2:label ref="menuName"></w2:label>
+    								<w2:value ref="menuId"></w2:value>
+    								<w2:depth ref="depth"></w2:depth>
+    								<w2:checkbox ref="checked"></w2:checkbox>
+    							</w2:itemset>
+    						</w2:treeview>
+    					</xf:group>
+    					
+    					<!-- 안내 메시지 -->
+    					<xf:group style="margin-top: 10px; padding: 8px; background-color: #f0f0f0;">
+    						<w2:textbox label="체크박스를 선택/해제하여 메뉴 권한을 설정하고 저장 버튼을 클릭하세요." 
+    							style="font-size: 12px; color: #666; text-align: center;"></w2:textbox>
+    					</xf:group>
+    					
+    				</xf:group>
     			</xf:group>
+    			
     		</xf:group>
     	</xf:group>
     </body>

@@ -112,6 +112,7 @@ scwin.onpageload = function () {
     if (cptIbxName == undefined) {
         search_box.hide();
     }
+    scwin.handleWbsParam();
     scwin.btn_search_onclick();
 };
 
@@ -521,6 +522,17 @@ scwin.btn_excel_template_download_onclick = function (e) {
     grd_list.advancedExcelDownload(options);
 };
 
+scwin.handleWbsParam = function() {
+    try {
+        var wbsData = $p.getParameter("tabData");
+        if (wbsData && wbsData.fromWbs && wbsData.selectedTaskId) {
+            dmp_designVo.set("scTaskId", wbsData.selectedTaskId);
+            console.log("WBS에서 전달받은 업무ID:", wbsData.selectedTaskId);
+        }
+    } catch (e) {
+        console.log("WBS 파라미터 처리 생략");
+    }
+};
 ]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">

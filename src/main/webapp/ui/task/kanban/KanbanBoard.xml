@@ -472,48 +472,6 @@ scwin.createTaskCard = function(task) {
 };
 
 
-// 업무 상세 팝업 열기 함수 정의
-scwin.openTaskDetailPopup = function(taskId) {
-    console.log("업무 상세 팝업 열기:", taskId);
-    
-    var taskData = dlt_designVoList.getAllJSON();
-    var task = null;
-    
-    for (var i = 0; i < taskData.length; i++) {
-        if (taskData[i].taskId === taskId) {
-            task = taskData[i];
-            break;
-        }
-    }
-    
-    if (!task) {
-        alert("업무 정보를 찾을 수 없습니다.");
-        return;
-    }
-    
-    // DesignPopup.xml에 전달할 데이터
-    var jsnPopupData = {
-        "type": "json",
-        "name": "taskData",
-        "data": task
-    };
-    
-    var options = {
-        id: "task_detail_popup",
-        type: "wframePopup",
-        width: "750px",
-        height: "700px",
-        top: "30px",
-        left: "200px",
-        popupName: "업무 상세 정보",
-        modal: true,
-        closeAction: "scwin.detailPopup_closeAction",
-        dataObject: jsnPopupData
-    };
-    
-    $p.openPopup("/InsWebApp/ui/task/design/DesignPopup.xml", options);
-};
-
 // 업무 상세 팝업 열기 함수를 여기로 이동 (createTaskCard보다 먼저 정의)
 scwin.openTaskDetailPopup = function(taskId) {
     console.log("업무 상세 팝업 열기:", taskId);
@@ -553,7 +511,10 @@ scwin.openTaskDetailPopup = function(taskId) {
         dataObject: jsnPopupData
     };
     
-    $p.openPopup("/InsWebApp/ui/task/design/DesignPopup.xml", options);
+    console.log("설계 업무 여부", task.isDesign);
+    if(task.isDesign === "1") $p.openPopup("/InsWebApp/ui/task/design/DesignPopup.xml", options);
+    else if(task.isDesign === "0") $p.openPopup("/InsWebApp/ui/task/develop/DevelopPopup.xml", options);
+    
 };
 
 scwin.updateStatistics = function() {
