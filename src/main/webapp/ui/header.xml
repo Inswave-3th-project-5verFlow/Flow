@@ -33,19 +33,21 @@ scwin.USER_ID = "";
 scwin.USER_NAME = "";
 scwin.IS_ADMIN = "";
 scwin.IS_CREATE = "";
-scwin.IS_SYSTEMADMIN = "";
 scwin.POPUP = "";
 
 
 scwin.onpageload = function() {
+    
     scwin.SERVER_TIME = $c.date.getServerDateTime("yyyy-MM-dd hh:mm:ss");
     serverTime.setValue(scwin.SERVER_TIME);
-    scwin.USER_ID = WebSquare.cookie.getCookie("usrId");
+
+    scwin.USER_ID = WebSquare.session.getAttribute("usrId");
 
     var requestData = {
         "elData": { "userId": scwin.USER_ID}
     }
     $c.sbm.execute(sbm_selectUsersMapping, requestData);
+    
 
 };
 
@@ -57,11 +59,6 @@ scwin.sbm_selectUsersMapping_submitdone = function (e) {
     scwin.USER_NAME = header.userName;
     scwin.IS_ADMIN = header.isAdmin;
     scwin.IS_CREATE = header.isCreate;
-
-    // 시스템 관리자 여부 (해당 프로젝트가 전혀 없으면 시스템 관리자)
-    if (data == ""){
-        scwin.IS_SYSTEMADMIN = 1
-    }
 
     // SelectBox와 프로젝트명 Bind
     var projectNameData = data.map(item => ({
@@ -79,13 +76,8 @@ scwin.sbm_selectUsersMapping_submitdone = function (e) {
     textGrpName.setValue("");
 
     // TextBox와 사용자명 Bind
-    if (scwin.IS_SYSTEMADMIN) {
-        textName1.setValue("관리자");
-    } else {
-        var nameData = data[0].name;
-        textName1.setValue(nameData);
-    }
-    
+    textName1.setValue(scwin.USER_NAME);
+
 };
 
 // 오른쪽 상단 아이콘 클릭 이벤트 (마이페이지, 로그아웃 버튼 있는 팝업창 표시)
@@ -120,7 +112,7 @@ scwin.accountImg_onclick = function (e) {
         fixPosition: true
     };
 
-    if (scwin.IS_SYSTEMADMIN){
+    if (scwin.IS_ADMIN == 1){
         $p.openPopup("popup_header_admin.xml", options); // 관리자일 경우
         scwin.POPUP = 1;
     } else {

@@ -25,20 +25,13 @@ scwin.onpageload = function() {
 
 // 마이페이지 이동 버튼
 scwin.btn_myPage_onclick = function (e) {
-    alert("마이페이지로 이동합니다.");
-    location.href = "/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/myPage.xml";
-};
-
-// 회원탈퇴 처리 버튼
-scwin.btn_deleteAccount_onclick = function (e) {
-    alert("회원탈퇴 처리되었습니다.");
- 
+    window.open("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/myPage.xml");
 };
 
 // 로그아웃 버튼
 scwin.btn_logout_onclick = function (e) {
-    WebSquare.cookie.delCookie("usrId");
-    location.href = "/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/login.xml";
+    WebSquare.session.removeAttribute("usrId")
+    window.open("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/login.xml");
 };
 ]]></script>
     </head>
