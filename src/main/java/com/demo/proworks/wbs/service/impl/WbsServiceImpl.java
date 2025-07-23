@@ -22,6 +22,7 @@ import com.demo.proworks.wbs.dao.WbsDAO;
  *               2025/07/19 김성민 STG 테이블 관련 코드 제거 
  *               2025/07/21 김성민 진척률 계산 로직 추가
  *               2025/07/21 김성민 상위/하위 업무 상태 연동 로직 추가
+ *               2025/07/22 김성민 de_task_id 제거 프로젝트 적용
  * 
  */
 @Service("wbsServiceImpl")
@@ -89,14 +90,7 @@ public class WbsServiceImpl implements WbsService {
 				System.out.println("하위업무 추가로 인한 상위업무 " + wbsVo.getPtTaskId() + " 진척률 재계산 완료");
 			}
 			
-			// 개발업무 추가 시 연관 설계업무의 진척률 재계산
-			if (wbsVo.getDeTaskId() != null && !wbsVo.getDeTaskId().trim().isEmpty()) {
-				WbsVo designParam = new WbsVo();
-				designParam.setTaskId(wbsVo.getDeTaskId());
-				designParam.setPjtId(wbsVo.getPjtId());
-				calcProgress(designParam);
-				System.out.println("개발업무 추가로 인한 설계업무 " + wbsVo.getDeTaskId() + " 진척률 재계산 완료");
-			}
+
 			
 		} catch (Exception e) {
 			System.err.println("상위 업무 상태 조정 또는 진척률 계산 실패: " + e.getMessage());
@@ -154,9 +148,7 @@ public class WbsServiceImpl implements WbsService {
 					calcTargets.add(task.getPtTaskId());
 				}
 				// 연관 설계 업무가 있으면 계산 대상에 추가
-				if (task.getDeTaskId() != null && !task.getDeTaskId().trim().isEmpty()) {
-					calcTargets.add(task.getDeTaskId());
-				}
+
 			}
 		} catch (Exception e) {
 			// 조회 실패해도 삭제는 진행
@@ -215,27 +207,7 @@ public class WbsServiceImpl implements WbsService {
 			}
 		}
 		
-		// 설계업무에 개발업무가 추가되는 경우도 처리
-		String designTaskId = childVo.getDeTaskId();
-		if (designTaskId != null && !designTaskId.trim().isEmpty()) {
-			WbsVo designParam = new WbsVo();
-			designParam.setTaskId(designTaskId);
-			designParam.setPjtId(childVo.getPjtId());
-			
-			WbsVo designTask = wbsDAO.selectWbs(designParam);
-			
-			if (designTask != null) {
-				String designStatus = designTask.getTaskStatus();
-				
-				if ("대기".equals(designStatus) || "완료".equals(designStatus)) {
-					designTask.setTaskStatus("진행중");
-					// 진척률은 calcProgress에서 재계산될 예정이므로 임시값 설정
-					designTask.setTaskRate("0");
-					wbsDAO.updateWbs(designTask);
-					System.out.println("설계 업무 " + designTaskId + " 상태를 " + designStatus + " → 진행중으로 변경");
-				}
-			}
-		}
+
 	}
 
 	/**
@@ -323,23 +295,7 @@ public class WbsServiceImpl implements WbsService {
 			}
 		}
 		
-		// 3. 개발업무 이고 연관 설계업무가 있는 경우
-		if (allChildrenCompleted && "0".equals(childVo.getIsDesign()) && childVo.getDeTaskId() != null && !childVo.getDeTaskId().trim().isEmpty()) {
-			// 다른 개발업무들도 확인
-			WbsVo designParam = new WbsVo();
-			designParam.setTaskId(childVo.getDeTaskId());
-			designParam.setPjtId(pjtId);
-			
-			List<WbsVo> relatedDevList = wbsDAO.selectDevByDesign(designParam);
-			if (relatedDevList != null && !relatedDevList.isEmpty()) {
-				for (WbsVo dev : relatedDevList) {
-					if (!"완료".equals(dev.getTaskStatus())) {
-						allChildrenCompleted = false;
-						break;
-					}
-				}
-			}
-		}
+
 		
 		// 모든 하위 업무가 완료면 상위 업무도 완료로 변경
 		if (allChildrenCompleted) {

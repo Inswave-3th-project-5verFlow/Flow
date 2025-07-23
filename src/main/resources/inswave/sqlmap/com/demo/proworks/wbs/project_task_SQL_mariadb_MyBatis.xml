@@ -22,41 +22,41 @@
 		INSERT INTO PROJECT_TASK /* QueryID : com.demo.proworks.wbs.insertWbs */
 		(
 		<trim prefix="" suffix="" suffixOverrides=",">
-			<if test="taskName != null">TASK_NAME,</if>
-			<if test="taskDes != null">TASK_DES,</if>
-			<if test="taskStatus != null">TASK_STATUS,</if>
+			<if test="taskName != null and taskName != ''">TASK_NAME,</if>
+			<if test="taskDes != null and taskDes != ''">TASK_DES,</if>
+			<if test="taskStatus != null and taskStatus != ''">TASK_STATUS,</if>
 			<if test="isTest != null">IS_TEST,</if>
 			IS_DESIGN,
 			<if test="taskDepth != null">TASK_DEPTH,</if>
 			<if test="ptTaskId != null and ptTaskId != ''">PT_TASK_ID,</if>
-			<if test="deTaskId != null and deTaskId != ''">DE_TASK_ID,</if>
+
 			<if test="taskSt != null and taskSt != ''">TASK_ST,</if>
 			<if test="taskEt != null and taskEt != ''">TASK_ET,</if>
 			<if test="taskRst != null and taskRst != ''">TASK_RST,</if>
 			<if test="taskRet != null and taskRet != ''">TASK_RET,</if>
-			<if test="taskAsi != null">TASK_ASI,</if>
+			<if test="taskAsi != null and taskAsi != ''">TASK_ASI,</if>
 			<if test="taskRate != null">TASK_RATE,</if>
-			<if test="pjtId != null">PJT_ID,</if>
-			<if test="userId != null">USER_ID,</if>
+			<if test="pjtId != null and pjtId != ''">PJT_ID,</if>
+			<if test="userId != null and userId != ''">USER_ID,</if>
 		</trim>
 		) VALUES (
 		<trim prefix="" suffix="" suffixOverrides=",">
-			<if test="taskName != null">#{taskName},</if>
-			<if test="taskDes != null">#{taskDes},</if>
-			<if test="taskStatus != null">#{taskStatus},</if>
+			<if test="taskName != null and taskName != ''">#{taskName},</if>
+			<if test="taskDes != null and taskDes != ''">#{taskDes},</if>
+			<if test="taskStatus != null and taskStatus != ''">#{taskStatus},</if>
 			<if test="isTest != null">#{isTest},</if>
 			COALESCE(#{isDesign}, 0),
 			<if test="taskDepth != null">#{taskDepth},</if>
 			<if test="ptTaskId != null and ptTaskId != ''">#{ptTaskId},</if>
-			<if test="deTaskId != null and deTaskId != ''">#{deTaskId},</if>
+
 			<if test="taskSt != null and taskSt != ''">#{taskSt},</if>
 			<if test="taskEt != null and taskEt != ''">#{taskEt},</if>
 			<if test="taskRst != null and taskRst != ''">#{taskRst},</if>
 			<if test="taskRet != null and taskRet != ''">#{taskRet},</if>
-			<if test="taskAsi != null">#{taskAsi},</if>
+			<if test="taskAsi != null and taskAsi != ''">#{taskAsi},</if>
 			<if test="taskRate != null">#{taskRate},</if>
-			<if test="pjtId != null">#{pjtId},</if>
-			<if test="userId != null">#{userId},</if>
+			<if test="pjtId != null and pjtId != ''">#{pjtId},</if>
+			<if test="userId != null and userId != ''">#{userId},</if>
 		</trim>
 		)
 	</insert>
@@ -69,18 +69,18 @@
 			<if test="taskDes != null">TASK_DES = #{taskDes},</if>
 			<if test="taskStatus != null">TASK_STATUS = #{taskStatus},</if>
 			<if test="isTest != null">IS_TEST = #{isTest},</if>
-			<if test="isDesign != null">IS_DESIGN = #{isDesign},</if>
-			<if test="taskDepth != null">TASK_DEPTH = #{taskDepth},</if>
-			<if test="ptTaskId != null">PT_TASK_ID = #{ptTaskId},</if>
-			<if test="deTaskId != null">DE_TASK_ID = #{deTaskId},</if>
+			<if test="isDesign != null and isDesign != ''">IS_DESIGN = #{isDesign},</if>
+			<if test="taskDepth != null and taskDepth != '' ">TASK_DEPTH = #{taskDepth},</if>
+			<if test="ptTaskId != null and ptTaskId != '' ">PT_TASK_ID = #{ptTaskId},</if>
+
 			<if test="taskSt != null and taskSt != ''">TASK_ST = #{taskSt},</if>
 			<if test="taskEt != null and taskEt != ''">TASK_ET = #{taskEt},</if>
 			<if test="taskRst != null and taskRst != ''">TASK_RST = #{taskRst},</if>
 			<if test="taskRet != null and taskRet != ''">TASK_RET = #{taskRet},</if>
-			<if test="taskAsi != null">TASK_ASI = #{taskAsi},</if>
-			<if test="taskRate != null">TASK_RATE = #{taskRate},</if>
-			<if test="pjtId != null">PJT_ID = #{pjtId},</if>
-			<if test="userId != null">USER_ID = #{userId},</if>
+			<if test="taskAsi != null and taskAsi != ''">TASK_ASI = #{taskAsi},</if>
+			<if test="taskRate != null and taskRate != ''">TASK_RATE = #{taskRate},</if>
+			<if test="pjtId != null and pjtId != ''">PJT_ID = #{pjtId},</if>
+			<if test="userId != null and userId != ''">USER_ID = #{userId},</if>
 		</set>
 		WHERE TASK_ID = #{taskId}
 	</update>
@@ -97,10 +97,12 @@
 		t.TASK_ID as taskId, t.TASK_NAME as taskName, t.TASK_DES as taskDes,
 		t.TASK_STATUS as
 		taskStatus, t.IS_TEST as isTest, t.IS_DESIGN as isDesign,
-		t.TASK_DEPTH as taskDepth, t.PT_TASK_ID as ptTaskId, t.DE_TASK_ID as deTaskId,
-		pt.TASK_NAME as ptTaskName, t.TASK_ST as taskSt, t.TASK_ET as taskEt,
+		t.TASK_DEPTH as taskDepth, t.PT_TASK_ID as ptTaskId,
+		pt.TASK_NAME as ptTaskName,
+		t.TASK_ST as taskSt, t.TASK_ET as taskEt,
 		t.TASK_RST as taskRst, t.TASK_RET as taskRet, t.TASK_ASI as taskAsi,
-		t.TASK_RATE as taskRate, t.PJT_ID as pjtId, t.USER_ID as userId
+		t.TASK_RATE as taskRate,
+		t.PJT_ID as pjtId, t.USER_ID as userId
 		FROM
 		PROJECT_TASK t
 		LEFT JOIN PROJECT_TASK pt ON t.PT_TASK_ID = pt.TASK_ID
@@ -114,30 +116,35 @@
 		SELECT
 		t.task_id, t.task_name, t.task_des,
 		t.task_status, t.is_test, t.is_design,
-		t.task_depth, t.pt_task_id, t.de_task_id, t.task_st, t.task_et,
+		t.task_depth, t.pt_task_id, t.task_st, t.task_et,
 		t.task_rst, t.task_ret, t.task_asi,
-		t.task_rate, t.pjt_id, t.user_id,
+		t.task_rate,
+		t.pjt_id, t.user_id,
 		pt.task_name as pt_task_name,
 		CAST(t.task_id AS CHAR(1000)) AS sort_path
 		FROM
 		project_task t
 		LEFT JOIN
-		project_task pt ON t.pt_task_id = pt.task_id
+		project_task pt ON
+		t.pt_task_id = pt.task_id
 		WHERE t.pjt_id = #{pjtId} AND (t.pt_task_id IS NULL OR t.pt_task_id =
 		'')
 
 		UNION ALL
 
 		SELECT
-		t.task_id, t.task_name, t.task_des, t.task_status, t.is_test, t.is_design,
-		t.task_depth, t.pt_task_id, t.de_task_id,
+		t.task_id, t.task_name,
+		t.task_des, t.task_status, t.is_test, t.is_design,
+		t.task_depth, t.pt_task_id,
 		t.task_st, t.task_et,
-		t.task_rst, t.task_ret, t.task_asi, t.task_rate, t.pjt_id, t.user_id,
+		t.task_rst, t.task_ret, t.task_asi,
+		t.task_rate, t.pjt_id, t.user_id,
 		pt.task_name as pt_task_name,
 		CONCAT(th.sort_path, '-', t.task_id) AS
 		sort_path
 		FROM project_task t
-		INNER JOIN task_hierarchy th ON t.pt_task_id = th.task_id
+		INNER
+		JOIN task_hierarchy th ON t.pt_task_id = th.task_id
 		LEFT JOIN
 		project_task pt ON t.pt_task_id = pt.task_id
 		WHERE t.pjt_id = #{pjtId}
@@ -150,20 +157,23 @@
 		)
 		SELECT
 		task_id as
-		taskId, task_name as taskName, task_des as taskDes,
+		taskId, task_name as taskName,
+		task_des as taskDes,
 		task_status as taskStatus, is_test as isTest,
 		is_design as isDesign,
 		task_depth as
-		taskDepth, pt_task_id as ptTaskId, de_task_id as deTaskId,
+		taskDepth, pt_task_id as ptTaskId,
 		pt_task_name as ptTaskName, task_st as taskSt, task_et as taskEt,
 		task_rst as
 		taskRst, task_ret as taskRet, task_asi as taskAsi,
-		task_rate as taskRate, pjt_id as pjtId, user_id as userId
+		task_rate as
+		taskRate, pjt_id as pjtId, user_id as userId
 		FROM ranked_tasks
 		WHERE rn
 		BETWEEN ((#{pageIndex} - 1) * #{pageSize} + 1)
 		AND (#{pageIndex}
-		* #{pageSize})
+		*
+		#{pageSize})
 		ORDER BY sort_path
 	</select>
 
@@ -174,10 +184,11 @@
 		search_matches AS (
 		SELECT task_id, task_name, task_des,
 		task_status, is_test, is_design,
-		task_depth, pt_task_id, de_task_id, task_st, task_et, task_rst,
+		task_depth, pt_task_id, task_st, task_et, task_rst,
 		task_ret, task_asi, task_rate, pjt_id,
 		user_id
-		FROM project_task
+		FROM
+		project_task
 		WHERE pjt_id = #{pjtId}
 		<if test="scTaskId != null and scTaskId != ''">
 			AND task_id like CONCAT('%', #{scTaskId}, '%')
@@ -198,7 +209,7 @@
 
 		parent_tasks AS (
 		SELECT task_id, task_name, task_des, task_status, is_test, is_design,
-		task_depth, pt_task_id, de_task_id, task_st,
+		task_depth, pt_task_id, task_st,
 		task_et, task_rst,
 		task_ret, task_asi, task_rate, pjt_id, user_id
 		FROM search_matches
@@ -206,9 +217,10 @@
 		UNION ALL
 
 		SELECT t.task_id, t.task_name, t.task_des,
-		t.task_status, t.is_test,
+		t.task_status,
+		t.is_test,
 		t.is_design,
-		t.task_depth, t.pt_task_id, t.de_task_id, t.task_st, t.task_et, t.task_rst,
+		t.task_depth, t.pt_task_id, t.task_st, t.task_et, t.task_rst,
 		t.task_ret, t.task_asi,
 		t.task_rate, t.pjt_id, t.user_id
 		FROM project_task t
@@ -218,11 +230,13 @@
 		),
 
 		child_tasks AS (
-		SELECT task_id, task_name, task_des, task_status, is_test, is_design,
-		task_depth, pt_task_id, de_task_id,
+		SELECT task_id,
+		task_name, task_des, task_status, is_test, is_design,
+		task_depth, pt_task_id,
 		task_st, task_et,
 		task_rst,
-		task_ret, task_asi, task_rate, pjt_id, user_id
+		task_ret, task_asi, task_rate,
+		pjt_id, user_id
 		FROM search_matches
 
 		UNION ALL
@@ -230,11 +244,13 @@
 		SELECT t.task_id, t.task_name,
 		t.task_des,
 		t.task_status, t.is_test, t.is_design,
-		t.task_depth, t.pt_task_id, t.de_task_id, t.task_st, t.task_et, t.task_rst,
+		t.task_depth,
+		t.pt_task_id, t.task_st, t.task_et, t.task_rst,
 		t.task_ret, t.task_asi,
 		t.task_rate, t.pjt_id, t.user_id
 		FROM project_task t
-		INNER JOIN child_tasks ct ON t.pt_task_id = ct.task_id
+		INNER JOIN
+		child_tasks ct ON t.pt_task_id = ct.task_id
 		WHERE t.pjt_id =
 		#{pjtId}
 		),
@@ -242,30 +258,35 @@
 		all_related_tasks AS (
 		SELECT DISTINCT * FROM parent_tasks
 		UNION
-		SELECT DISTINCT * FROM child_tasks
+		SELECT
+		DISTINCT * FROM child_tasks
 		),
 
 		task_hierarchy AS (
 		SELECT
 		t.task_id,
 		t.task_name, t.task_des, t.task_status, t.is_test, t.is_design,
-		t.task_depth, t.pt_task_id, t.de_task_id, t.task_st, t.task_et,
+		t.task_depth, t.pt_task_id, t.task_st, t.task_et,
 		t.task_rst,
 		t.task_ret, t.task_asi, t.task_rate, t.pjt_id, t.user_id,
-		pt.task_name as pt_task_name,
+		pt.task_name as
+		pt_task_name,
 		CAST(t.task_id AS CHAR(1000)) AS sort_path
 		FROM
 		all_related_tasks t
 		LEFT JOIN project_task pt ON t.pt_task_id = pt.task_id
-		WHERE t.pt_task_id IS NULL OR t.pt_task_id = '' OR t.pt_task_id
+		WHERE
+		t.pt_task_id IS NULL OR t.pt_task_id = '' OR t.pt_task_id
 		NOT IN (SELECT task_id FROM all_related_tasks)
 
 		UNION ALL
 
 		SELECT
-		t.task_id, t.task_name, t.task_des, t.task_status, t.is_test, t.is_design,
-		t.task_depth, t.pt_task_id, t.de_task_id, t.task_st, t.task_et, t.task_rst,
-		t.task_ret, t.task_asi, t.task_rate, t.pjt_id, t.user_id,
+		t.task_id,
+		t.task_name, t.task_des, t.task_status, t.is_test, t.is_design,
+		t.task_depth, t.pt_task_id, t.task_st, t.task_et, t.task_rst,
+		t.task_ret,
+		t.task_asi, t.task_rate, t.pjt_id, t.user_id,
 		pt.task_name as pt_task_name,
 		CONCAT(th.sort_path, '-', t.task_id) AS sort_path
 		FROM
@@ -286,15 +307,16 @@
 		task_status as taskStatus, is_test
 		as isTest, is_design as isDesign,
 		task_depth as taskDepth, pt_task_id as ptTaskId,
-		de_task_id as deTaskId,
 		pt_task_name as ptTaskName,
 		task_st as taskSt, task_et as taskEt,
 		task_rst as taskRst, task_ret as taskRet, task_asi as taskAsi,
-		task_rate as taskRate, pjt_id as pjtId,
+		task_rate as
+		taskRate, pjt_id as pjtId,
 		user_id as userId
 		FROM ranked_tasks
 		WHERE rn BETWEEN ((#{pageIndex} - 1) * #{pageSize} + 1) AND (#{pageIndex}
-		* #{pageSize})
+		*
+		#{pageSize})
 		ORDER BY
 		sort_path
 	</select>
@@ -366,30 +388,34 @@
 
 	<!-- 하위 설계업무 조회 -->
 	<select id="selectChildDesign" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
-		SELECT TASK_ID as taskId, TASK_STATUS as taskStatus, TASK_RATE as taskRate
+		SELECT TASK_ID as taskId, TASK_STATUS as
+		taskStatus, TASK_RATE as taskRate
 		FROM PROJECT_TASK
 		WHERE PT_TASK_ID = #{taskId} AND PJT_ID = #{pjtId} AND IS_DESIGN = 1
 	</select>
 
 	<!-- 연관 개발업무 조회 -->
 	<select id="selectDevByDesign" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
-		SELECT TASK_ID as taskId, TASK_STATUS as taskStatus, TASK_RATE as taskRate
+		SELECT TASK_ID as taskId, TASK_STATUS as
+		taskStatus, TASK_RATE as taskRate
 		FROM PROJECT_TASK
-		WHERE DE_TASK_ID = #{taskId} AND PJT_ID = #{pjtId} AND IS_DESIGN = 0
+		WHERE PT_TASK_ID = #{taskId} AND PJT_ID = #{pjtId} AND IS_DESIGN = 0
 	</select>
 
 	<!-- 상위 설계업무 조회 -->
 	<select id="selectParentDesign" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
-		SELECT PT_TASK_ID as taskId, PJT_ID as pjtId
+		SELECT PT_TASK_ID as taskId, PJT_ID as
+		pjtId
 		FROM PROJECT_TASK
 		WHERE TASK_ID = #{taskId} AND PT_TASK_ID IS NOT NULL AND PT_TASK_ID != ''
 	</select>
 
 	<!-- 연관 설계업무 조회 -->
 	<select id="selectDesignByDev" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
-		SELECT DE_TASK_ID as taskId, PJT_ID as pjtId
+		SELECT PT_TASK_ID as taskId, PJT_ID as
+		pjtId
 		FROM PROJECT_TASK
-		WHERE TASK_ID = #{taskId} AND DE_TASK_ID IS NOT NULL AND DE_TASK_ID != ''
+		WHERE TASK_ID = #{taskId} AND PT_TASK_ID IS NOT NULL AND PT_TASK_ID != ''
 	</select>
 
 	<!-- 진척률 업데이트 -->
@@ -398,17 +424,19 @@
 		SET TASK_RATE = #{taskRate}
 		WHERE TASK_ID = #{taskId}
 	</update>
-	
+
 	<!-- 모든 하위 업무 조회 (pt_task_id 기반, 페이징 없음) -->
 	<select id="selectAllChildrenByParent" parameterType="com.demo.proworks.wbs.vo.WbsVo" resultType="com.demo.proworks.wbs.vo.WbsVo">
-		SELECT 
-			TASK_ID as taskId, 
-			TASK_NAME as taskName, 
-			TASK_STATUS as taskStatus, 
-			IS_DESIGN as isDesign,
-			TASK_RATE as taskRate
+		SELECT
+		TASK_ID as taskId,
+		TASK_NAME
+		as taskName,
+		TASK_STATUS as taskStatus,
+		IS_DESIGN as isDesign,
+		TASK_RATE as taskRate
 		FROM PROJECT_TASK
-		WHERE PT_TASK_ID = #{ptTaskId} AND PJT_ID = #{pjtId}
+		WHERE PT_TASK_ID = #{ptTaskId} AND
+		PJT_ID = #{pjtId}
 	</select>
 
 </mapper>
