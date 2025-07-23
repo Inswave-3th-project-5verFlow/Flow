@@ -29,14 +29,14 @@ public class DefDAO extends ProworksDefaultAbstractDAO{
      */
     @SuppressWarnings("unchecked")
     public List<DefVo> selectListDef(DefVo defVo) throws Exception {
-        return (List<DefVo>) list("def.selectListDef", defVo);
+        return (List<DefVo>) list("com.demo.proworks.defect.selectListDef", defVo);
     }
 
     /**
      * 조회한 테스트결함관리 전체 카운트
      */
     public long selectListCountDef(DefVo defVo) throws Exception {
-        return (Long) selectByPk("def.selectListCountDef", defVo);
+        return (Long) selectByPk("com.demo.proworks.defect.selectListCountDef", defVo);
     }
 
     /**
@@ -44,7 +44,7 @@ public class DefDAO extends ProworksDefaultAbstractDAO{
      */
 
     public DefVo selectDef(DefVo defVo) throws Exception {
-        return (DefVo) selectByPk("def.selectDef", defVo);
+        return (DefVo) selectByPk("com.demo.proworks.defect.selectDef", defVo);
     }
 
     /**
@@ -52,7 +52,7 @@ public class DefDAO extends ProworksDefaultAbstractDAO{
      */
 
     public int insertDef(DefVo defVo) throws Exception {
-        return insert("def.insertDef", defVo);
+        return insert("com.demo.proworks.defect.insertDef", defVo);
     }
 
     /**
@@ -60,7 +60,7 @@ public class DefDAO extends ProworksDefaultAbstractDAO{
      */
 
     public int updateDef(DefVo defVo) throws Exception {
-        return update("def.updateDef", defVo);
+        return update("com.demo.proworks.defect.updateDef", defVo);
     }
 
     /**
@@ -68,7 +68,7 @@ public class DefDAO extends ProworksDefaultAbstractDAO{
      */
 
     public int deleteDef(DefVo defVo) throws Exception {
-        return update("def.deleteDef", defVo);
+        return update("com.demo.proworks.defect.deleteDef", defVo);
     }
 
     // ========== 자동 생성 기능 관련 메서드들 ==========
@@ -78,7 +78,7 @@ public class DefDAO extends ProworksDefaultAbstractDAO{
      */
 
     public DefVo selectLatestDefectByTestId(DefVo defVo) throws Exception {
-        return (DefVo) selectByPk("def.selectLatestDefectByTestId", defVo);
+        return (DefVo) selectByPk("com.demo.proworks.defect.selectLatestDefectByTestId", defVo);
     }
 
     /**
@@ -86,7 +86,7 @@ public class DefDAO extends ProworksDefaultAbstractDAO{
      */
 
     public int updateDefectFixedDate(DefVo defVo) throws Exception {
-        return update("def.updateDefectFixedDate", defVo);
+        return update("com.demo.proworks.defect.updateDefectFixedDate", defVo);
     }
 
     /**
@@ -94,7 +94,7 @@ public class DefDAO extends ProworksDefaultAbstractDAO{
      */
 
     public int insertDefectStatusHistory(DefVo defVo) throws Exception {
-        return insert("def.insertDefectStatusHistory", defVo);
+        return insert("com.demo.proworks.defect.insertDefectStatusHistory", defVo);
     }
 
     /**
@@ -103,7 +103,7 @@ public class DefDAO extends ProworksDefaultAbstractDAO{
 
     @SuppressWarnings("unchecked")
     public List<Map<String, Object>> selectDefectStatsByStatus(DefVo defVo) throws Exception {
-        return (List<Map<String, Object>>) list("def.selectDefectStatsByStatus", defVo);
+        return (List<Map<String, Object>>) list("com.demo.proworks.defect.selectDefectStatsByStatus", defVo);
     }
 
     /**
@@ -112,7 +112,7 @@ public class DefDAO extends ProworksDefaultAbstractDAO{
 
     @SuppressWarnings("unchecked")
     public List<Map<String, Object>> selectDefectStatsByPriority(DefVo defVo) throws Exception {
-        return (List<Map<String, Object>>) list("def.selectDefectStatsByPriority", defVo);
+        return (List<Map<String, Object>>) list("com.demo.proworks.defect.selectDefectStatsByPriority", defVo);
     }
 
     /**
@@ -121,7 +121,7 @@ public class DefDAO extends ProworksDefaultAbstractDAO{
 
     @SuppressWarnings("unchecked")
     public List<DefVo> selectUpcomingDefects(DefVo defVo) throws Exception {
-        return (List<DefVo>) list("def.selectUpcomingDefects", defVo);
+        return (List<DefVo>) list("com.demo.proworks.defect.selectUpcomingDefects", defVo);
     }
 
     /**
@@ -129,7 +129,7 @@ public class DefDAO extends ProworksDefaultAbstractDAO{
      */
 
     public int getNextDefectSequence() throws Exception {
-        Object result = selectByPk("def.getNextDefectSequence", null);
+        Object result = selectByPk("com.demo.proworks.defect.getNextDefectSequence", null);
         return result != null ? (Integer) result : 1;
     }
 }

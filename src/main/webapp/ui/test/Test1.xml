@@ -2861,6 +2861,34 @@ scwin.btn_excel_upload_onclick = function (e) {
     };
 
     grd_list.advancedExcelUpload(options);
+};/**
+ * 현재 사용자 이름 가져오기
+ */
+scwin.getCurrentUserName = function() {
+    try {
+        var parentWindow = $p.getParentWindow();
+        if (parentWindow) {
+            // 메인 페이지의 헤더 프레임에서 사용자 이름 가져오기
+            var headerFrame = parentWindow.$p.getComponentById("pg_header");
+            if (headerFrame && headerFrame.getWindow && headerFrame.getWindow().scwin) {
+                var headerScwin = headerFrame.getWindow().scwin;
+                
+                // 헤더에서 USER_NAME 직접 가져오기
+                if (headerScwin.USER_NAME) {
+                    console.log("헤더에서 사용자 이름 가져옴:", headerScwin.USER_NAME);
+                    return headerScwin.USER_NAME;
+                }
+            }
+        }
+        
+        // 헤더에서 가져오지 못한 경우 기본값
+        console.log("헤더에서 사용자 이름을 가져올 수 없음, 기본값 사용");
+        return "사용자";
+        
+    } catch (e) {
+        console.error("사용자 이름 가져오기 실패:", e);
+        return "사용자";
+    }
 };]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">
