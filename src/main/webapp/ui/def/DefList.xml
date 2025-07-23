@@ -21,14 +21,16 @@
                         <w2:column dataType="text" id="testId" name="연결된 테스트 ID"></w2:column>
                         <w2:column dataType="text" id="name" name="결함명"></w2:column>
                         <w2:column dataType="text" id="description" name="결함 상세 설명"></w2:column>
-                        <w2:column dataType="text" id="priority" name="우선순위 (Critical/High/Medium/Low)"></w2:column>
-                        <w2:column dataType="text" id="status" name="상태 (신규/진행중/수정완료/재오픈/종료)"></w2:column>
+                        <w2:column dataType="text" id="priority" name="우선순위"></w2:column>
+                        <w2:column dataType="text" id="status" name="상태"></w2:column>
                         <w2:column dataType="text" id="createdAt" name="등록일시"></w2:column>
-                        <w2:column dataType="text" id="assignee" name="수정 담당자"></w2:column>
+                        <w2:column dataType="text" id="assignee" name="작성자id"></w2:column>
                         <w2:column dataType="text" id="fixDueDate" name="수정 기한"></w2:column>
                         <w2:column dataType="text" id="fixedDate" name="수정 완료일"></w2:column>
                         <w2:column dataType="text" id="remarks" name="비고사항"></w2:column>
                         <w2:column dataType="text" id="isDeleted" name="삭제 여부"></w2:column>
+                        <w2:column dataType="text" id="updatedAt" name="최종 수정일시"></w2:column>
+                        <w2:column dataType="text" id="pjtid" name="프로젝트id"></w2:column>
                        
 					</w2:columnInfo>
 				</w2:dataList>
@@ -41,7 +43,7 @@
 			<w2:workflowCollection></w2:workflowCollection>
 
 			<xf:submission id="sbm_selectDefVoList" ref='data:json,{"id":"dmp_defVo","key":"defVo"}'
-				target='data:json,{"id":"dlt_defVoList","key":"elData.defVoList"}' action="/InsWebApp/DEF001List.pwkjson" method="post"
+				target='data:json,{"id":"dlt_defVoList","key":"elData.defVoList"}' action="/InsWebApp/DEFList.pwkjson" method="post"
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
 				processMsg="테스트결함관리 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_defList_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
@@ -174,14 +176,16 @@
                             <w2:column width="70" inputType="text" style="" id="column2" value="연결된 테스트 ID" displayMode="label" localeRef="Def_COLNAME_00002"></w2:column>
                             <w2:column width="70" inputType="text" style="" id="column3" value="결함명" displayMode="label" localeRef="Def_COLNAME_00003"></w2:column>
                             <w2:column width="70" inputType="text" style="" id="column4" value="결함 상세 설명" displayMode="label" localeRef="Def_COLNAME_00004"></w2:column>
-                            <w2:column width="70" inputType="text" style="" id="column5" value="우선순위 (Critical/High/Medium/Low)" displayMode="label" localeRef="Def_COLNAME_00005"></w2:column>
-                            <w2:column width="70" inputType="text" style="" id="column6" value="상태 (신규/진행중/수정완료/재오픈/종료)" displayMode="label" localeRef="Def_COLNAME_00006"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="column5" value="우선순위" displayMode="label" localeRef="Def_COLNAME_00005"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="column6" value="상태" displayMode="label" localeRef="Def_COLNAME_00006"></w2:column>
                             <w2:column width="70" inputType="text" style="" id="column7" value="등록일시" displayMode="label" localeRef="Def_COLNAME_00007"></w2:column>
-                            <w2:column width="70" inputType="text" style="" id="column8" value="수정 담당자" displayMode="label" localeRef="Def_COLNAME_00008"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="column8" value="작성자id" displayMode="label" localeRef="Def_COLNAME_00008"></w2:column>
                             <w2:column width="70" inputType="text" style="" id="column9" value="수정 기한" displayMode="label" localeRef="Def_COLNAME_00009"></w2:column>
                             <w2:column width="70" inputType="text" style="" id="column10" value="수정 완료일" displayMode="label" localeRef="Def_COLNAME_00010"></w2:column>
                             <w2:column width="70" inputType="text" style="" id="column11" value="비고사항" displayMode="label" localeRef="Def_COLNAME_00011"></w2:column>
                             <w2:column width="70" inputType="text" style="" id="column12" value="삭제 여부" displayMode="label" localeRef="Def_COLNAME_00012"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="column13" value="최종 수정일시" displayMode="label" localeRef="Def_COLNAME_00013"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="column14" value="프로젝트id" displayMode="label" localeRef="Def_COLNAME_00014"></w2:column>
                            
 						</w2:row>
 					</w2:header>
@@ -199,6 +203,8 @@
                             <w2:column width="70" inputType="text" style="" id="fixedDate" value="" displayMode="label"></w2:column>
                             <w2:column width="70" inputType="text" style="" id="remarks" value="" displayMode="label"></w2:column>
                             <w2:column width="70" inputType="text" style="" id="isDeleted" value="" displayMode="label"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="updatedAt" value="" displayMode="label"></w2:column>
+                            <w2:column width="70" inputType="text" style="" id="pjtid" value="" displayMode="label"></w2:column>
                            
 						</w2:row>
 					</w2:gBody>

@@ -23,6 +23,7 @@ import com.demo.proworks.att.service.AttService;
 import com.demo.proworks.att.vo.AttVo;
 import com.demo.proworks.cmmn.ProworksCommVO;
 import com.demo.proworks.common.s3.S3Uploader;
+import com.demo.proworks.def.service.DefService;
 import com.demo.proworks.unit.dao.UnitTestDao;
 import com.demo.proworks.unit.service.UnitTestService;
 import com.demo.proworks.unit.vo.UnitTestListVo;
@@ -42,6 +43,9 @@ public class UnitTestServiceImpl implements UnitTestService {
     
     @Resource(name = "attServiceImpl")
     private AttService attService;
+    
+    @Resource(name = "defServiceImpl")
+    private DefService defService;
     
     @Resource(name = "attDAO")
     private AttDAO attDAO;
@@ -65,16 +69,20 @@ public class UnitTestServiceImpl implements UnitTestService {
      * 단위테스트 케이스 목록 조회
      */
     @Override
-    public List<UnitTestVo> selectUnitTestList(UnitTestVo unitTestVo) throws Exception{
-        logger.debug("단위테스트 케이스 목록 조회 시작: {}", unitTestVo);
-        
-        return unitTestDao.selectUnitTestList(unitTestVo);
-    }
+	public List<UnitTestVo> selectUnitTestList(UnitTestVo unitTestVo) throws Exception{
+	    logger.debug("단위테스트 케이스 목록 조회 시작: {}", unitTestVo);
+	    
+	    // 현재 사용자 권한 정보 설정
+	    return unitTestDao.selectUnitTestList(unitTestVo);
+	}
     
     @Override
     public long selectListCountUnitTest(UnitTestVo unitTestVo) throws Exception {
-        return unitTestDao.selectUnitTestListCount(unitTestVo);
-    }
+	    
+	    return unitTestDao.selectUnitTestListCount(unitTestVo);
+	}
+
+
     
     /**
      * 단위테스트 케이스 상세 조회
@@ -327,6 +335,7 @@ public class UnitTestServiceImpl implements UnitTestService {
     @Override
     public Map<String, Object> selectUnitTestStatistics(UnitTestVo unitTestVo) throws Exception {
         logger.debug("통계 조회: {}", unitTestVo);
+    
         
         List<Map<String, Object>> statistics = unitTestDao.selectUnitTestStatistics(unitTestVo);
         
@@ -540,4 +549,9 @@ public class UnitTestServiceImpl implements UnitTestService {
             return defaultValue;
         }
     }
+    
+
+	
+	
+	
 }

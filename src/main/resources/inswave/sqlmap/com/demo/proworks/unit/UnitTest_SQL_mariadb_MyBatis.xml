@@ -24,7 +24,8 @@
 	        duration, 
 	        notes, 
 	        requirements, 
-	        assignee, 
+	        assignee,
+	        assigneeName,
 	        is_deleted as isDeleted,
 	        created_at as createdAt, 
 	        updated_at as updatedAt, 
@@ -35,130 +36,127 @@
 	        SELECT S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
 	        FROM (
 	            SELECT
-	                id, task_id, task_name, test_case_name, test_target, test_type,
-	                priority, description, precondition, test_data, test_steps,
-	                expected_result, actual_result, test_status, execution_date,
-	                duration, notes, requirements, assignee, is_deleted,
-	                created_at, updated_at, created_by, updated_by, pjt_id
-	            FROM unit_test_case
-	            WHERE is_deleted = 'N'
+	                ut.id, ut.task_id, ut.task_name, ut.test_case_name, ut.test_target, ut.test_type,
+	                ut.priority, ut.description, ut.precondition, ut.test_data, ut.test_steps,
+	                ut.expected_result, ut.actual_result, ut.test_status, ut.execution_date,
+	                ut.duration, ut.notes, ut.requirements, ut.assignee, ut.is_deleted,
+	                ut.created_at, ut.updated_at, ut.created_by, ut.updated_by, ut.pjt_id,
+	                COALESCE(u.name, ut.assignee) as assigneeName
+	            FROM unit_test_case ut
+	            LEFT JOIN users u ON ut.assignee = u.user_id
+	            WHERE ut.is_deleted = 'N'
 	            <if test="searchTaskId != null and searchTaskId != ''">
-	                <![CDATA[AND task_id LIKE CONCAT('%', #{searchTaskId}, '%')]]>
+	                <![CDATA[AND ut.task_id LIKE CONCAT('%', #{searchTaskId}, '%')]]>
 	            </if>
 	            <if test="searchTestStatus != null and searchTestStatus != ''">
-	                AND test_status = #{searchTestStatus}
+	                AND ut.test_status = #{searchTestStatus}
 	            </if>
 	            <if test="searchAssignee != null and searchAssignee != ''">
-	                <![CDATA[AND assignee LIKE CONCAT('%', #{searchAssignee}, '%')]]>
+	                <![CDATA[AND (ut.assignee LIKE CONCAT('%', #{searchAssignee}, '%') OR u.name LIKE CONCAT('%', #{searchAssignee}, '%'))]]>
 	            </if>
 	            <if test="searchTestCaseName != null and searchTestCaseName != ''">
-	                <![CDATA[AND test_case_name LIKE CONCAT('%', #{searchTestCaseName}, '%')]]>
+	                <![CDATA[AND ut.test_case_name LIKE CONCAT('%', #{searchTestCaseName}, '%')]]>
 	            </if>
 	            <if test="searchTestTarget != null and searchTestTarget != ''">
-	                <![CDATA[AND test_target LIKE CONCAT('%', #{searchTestTarget}, '%')]]>
+	                <![CDATA[AND ut.test_target LIKE CONCAT('%', #{searchTestTarget}, '%')]]>
 	            </if>
 	            <if test="searchTestType != null and searchTestType != ''">
-	                AND test_type = #{searchTestType}
+	                AND ut.test_type = #{searchTestType}
 	            </if>
 	            <if test="searchPriority != null and searchPriority != ''">
-	                AND priority = #{searchPriority}
+	                AND ut.priority = #{searchPriority}
 	            </if>
 	            <if test="dateFrom != null and dateFrom != ''">
-	                <![CDATA[AND DATE(created_at) >= #{dateFrom}]]>
+	                <![CDATA[AND DATE(ut.created_at) >= #{dateFrom}]]>
 	            </if>
 	            <if test="dateTo != null and dateTo != ''">
-	                <![CDATA[AND DATE(created_at) <= #{dateTo}]]>
+	                <![CDATA[AND DATE(ut.created_at) <= #{dateTo}]]>
 	            </if>
 	            <if test="pjtId != null and pjtId != ''">
-	                AND pjt_id = #{pjtId}
+	                AND ut.pjt_id = #{pjtId}
 	            </if>
-	            ORDER BY id DESC
+	            
+	            ORDER BY ut.id DESC
 	        ) S, (SELECT @ROWNUM := 0) TMP
 	    ) A
 	    WHERE PAGE = #{pageIndex}
 	</select>
 
+
     <!-- 단위테스트 케이스 총 개수 조회 -->
     <select id="selectUnitTestListCount" parameterType="com.demo.proworks.unit.vo.UnitTestVo" resultType="long">
-        SELECT COUNT(*)
-        FROM unit_test_case 
-        WHERE is_deleted = 'N'
-        <if test="searchTaskId != null and searchTaskId != ''">
-            <![CDATA[
-            AND task_id LIKE CONCAT('%', #{searchTaskId}, '%')
-            ]]>
-        </if>
-        <if test="searchTestStatus != null and searchTestStatus != ''">
-            AND test_status = #{searchTestStatus}
-        </if>
-        <if test="searchAssignee != null and searchAssignee != ''">
-            <![CDATA[
-            AND assignee LIKE CONCAT('%', #{searchAssignee}, '%')
-            ]]>
-        </if>
-        <if test="searchTestCaseName != null and searchTestCaseName != ''">
-            <![CDATA[
-            AND test_case_name LIKE CONCAT('%', #{searchTestCaseName}, '%')
-            ]]>
-        </if>
-        <if test="searchTestTarget != null and searchTestTarget != ''">
-            <![CDATA[
-            AND test_target LIKE CONCAT('%', #{searchTestTarget}, '%')
-            ]]>
-        </if>
-        <if test="searchTestType != null and searchTestType != ''">
-            AND test_type = #{searchTestType}
-        </if>
-        <if test="searchPriority != null and searchPriority != ''">
-            AND priority = #{searchPriority}
-        </if>
-        <if test="dateFrom != null and dateFrom != ''">
-            <![CDATA[
-            AND DATE(created_at) >= #{dateFrom}
-            ]]>
-        </if>
-        <if test="dateTo != null and dateTo != ''">
-            <![CDATA[
-            AND DATE(created_at) <= #{dateTo}
-            ]]>
-        </if>
-        <if test="pjtId != null and pjtId != ''">
-            AND pjt_id = #{pjtId}
-        </if>
-    </select>
+	    SELECT COUNT(*)
+	    FROM unit_test_case ut
+	    LEFT JOIN users u ON ut.assignee = u.user_id
+	    WHERE ut.is_deleted = 'N'
+	    <if test="searchTaskId != null and searchTaskId != ''">
+	        <![CDATA[AND ut.task_id LIKE CONCAT('%', #{searchTaskId}, '%')]]>
+	    </if>
+	    <if test="searchTestStatus != null and searchTestStatus != ''">
+	        AND ut.test_status = #{searchTestStatus}
+	    </if>
+	    <if test="searchAssignee != null and searchAssignee != ''">
+	        <![CDATA[AND (ut.assignee LIKE CONCAT('%', #{searchAssignee}, '%') OR u.name LIKE CONCAT('%', #{searchAssignee}, '%'))]]>
+	    </if>
+	    <if test="searchTestCaseName != null and searchTestCaseName != ''">
+	        <![CDATA[AND ut.test_case_name LIKE CONCAT('%', #{searchTestCaseName}, '%')]]>
+	    </if>
+	    <if test="searchTestTarget != null and searchTestTarget != ''">
+	        <![CDATA[AND ut.test_target LIKE CONCAT('%', #{searchTestTarget}, '%')]]>
+	    </if>
+	    <if test="searchTestType != null and searchTestType != ''">
+	        AND ut.test_type = #{searchTestType}
+	    </if>
+	    <if test="searchPriority != null and searchPriority != ''">
+	        AND ut.priority = #{searchPriority}
+	    </if>
+	    <if test="dateFrom != null and dateFrom != ''">
+	        <![CDATA[AND DATE(ut.created_at) >= #{dateFrom}]]>
+	    </if>
+	    <if test="dateTo != null and dateTo != ''">
+	        <![CDATA[AND DATE(ut.created_at) <= #{dateTo}]]>
+	    </if>
+	    <if test="pjtId != null and pjtId != ''">
+	        AND ut.pjt_id = #{pjtId}
+	    </if>
+	   
+	</select>
 
     <!-- 단위테스트 케이스 상세 조회 -->
     <select id="selectUnitTestDetail" parameterType="com.demo.proworks.unit.vo.UnitTestVo" resultType="com.demo.proworks.unit.vo.UnitTestVo">
-        SELECT 
-            id as testCaseId,
-            task_id as taskId,
-            task_name as taskName,
-            test_case_name as testCaseName,
-            test_target as testTarget,
-            test_type as testType,
-            priority,
-            description,
-            precondition,
-            test_data as testData,
-            test_steps as testSteps,
-            expected_result as expectedResult,
-            actual_result as actualResult,
-            test_status as testStatus,
-            execution_date as executionDate,
-            duration,
-            notes,
-            requirements,
-            assignee,
-            is_deleted as isDeleted,
-            created_at as createdAt,
-            updated_at as updatedAt,
-            created_by as createdBy,
-            updated_by as updatedBy,
-            pjt_id as pjtId
-        FROM unit_test_case 
-        WHERE id = #{testCaseId}
-        AND is_deleted = 'N'
-    </select>
+	    SELECT 
+	        ut.id as testCaseId,
+	        ut.task_id as taskId,
+	        ut.task_name as taskName,
+	        ut.test_case_name as testCaseName,
+	        ut.test_target as testTarget,
+	        ut.test_type as testType,
+	        ut.priority,
+	        ut.description,
+	        ut.precondition,
+	        ut.test_data as testData,
+	        ut.test_steps as testSteps,
+	        ut.expected_result as expectedResult,
+	        ut.actual_result as actualResult,
+	        ut.test_status as testStatus,
+	        ut.execution_date as executionDate,
+	        ut.duration,
+	        ut.notes,
+	        ut.requirements,
+	        ut.assignee,
+	        COALESCE(u.name, ut.assignee) as assigneeName,
+	        ut.is_deleted as isDeleted,
+	        ut.created_at as createdAt,
+	        ut.updated_at as updatedAt,
+	        ut.created_by as createdBy,
+	        ut.updated_by as updatedBy,
+	        ut.pjt_id as pjtId
+	    FROM unit_test_case ut
+	    LEFT JOIN users u ON ut.assignee = u.user_id
+	    WHERE ut.id = #{testCaseId}
+	    AND ut.is_deleted = 'N'
+	</select>
+
 
     <!-- 단위테스트 케이스 등록 -->
     <insert id="insertUnitTest" parameterType="com.demo.proworks.unit.vo.UnitTestVo">
@@ -297,18 +295,19 @@
 
     <!-- 담당자별 테스트 케이스 개수 조회 -->
     <select id="selectTestCountByAssignee" parameterType="com.demo.proworks.unit.vo.UnitTestVo" resultType="map">
-        SELECT 
-            assignee,
-            COUNT(*) as count
-        FROM unit_test_case 
-        WHERE is_deleted = 'N'
-        <if test="pjtId != null and pjtId != ''">
-            AND pjt_id = #{pjtId}
-        </if>
-        GROUP BY assignee
-        ORDER BY count DESC
-    </select>
-
+	    SELECT 
+	        ut.assignee,
+	        COALESCE(u.name, ut.assignee) as assigneeName,
+	        COUNT(*) as count
+	    FROM unit_test_case ut
+	    LEFT JOIN users u ON ut.assignee = u.user_id
+	    WHERE ut.is_deleted = 'N'
+	    <if test="pjtId != null and pjtId != ''">
+	        AND ut.pjt_id = #{pjtId}
+	    </if>
+	    GROUP BY ut.assignee, u.name
+	    ORDER BY count DESC
+	</select>
     <!-- 우선순위별 테스트 케이스 개수 조회 -->
     <select id="selectTestCountByPriority" parameterType="com.demo.proworks.unit.vo.UnitTestVo" resultType="map">
         SELECT 

@@ -121,7 +121,7 @@
 						<if test="userId != null and userId != ''">
 						AND ir.USER_ID = #{userId}
 						</if>
-						AND ir.IS_DELETED = 'N'
+						AND (ir.IS_DELETED = 'N' OR ir.IS_DELETED IS NULL)
 						ORDER BY ir.CREATED_AT DESC
 					) S, (SELECT @ROWNUM := 0) TMP
 				) A

@@ -115,6 +115,15 @@ public class UnitTestVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElDtoField(logicalName = "", physicalName = "dateTo", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String dateTo;
 
+    @ElDtoField(logicalName = "담당자명", physicalName = "assigneeName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String assigneeName;
+
+    @ElDtoField(logicalName = "현재사용자ID", physicalName = "currentUserId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String currentUserId;
+
+    @ElDtoField(logicalName = "현재사용자그룹ID", physicalName = "currentUserGrpId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String currentUserGrpId;
+
     @ElVoField(physicalName = "testCaseId")
     public String getTestCaseId(){
         String ret = this.testCaseId;
@@ -489,6 +498,39 @@ public class UnitTestVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.dateTo = dateTo;
     }
 
+    @ElVoField(physicalName = "assigneeName")
+    public String getAssigneeName(){
+        String ret = this.assigneeName;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "assigneeName")
+    public void setAssigneeName(String assigneeName){
+        this.assigneeName = assigneeName;
+    }
+
+    @ElVoField(physicalName = "currentUserId")
+    public String getCurrentUserId(){
+        String ret = this.currentUserId;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "currentUserId")
+    public void setCurrentUserId(String currentUserId){
+        this.currentUserId = currentUserId;
+    }
+
+    @ElVoField(physicalName = "currentUserGrpId")
+    public String getCurrentUserGrpId(){
+        String ret = this.currentUserGrpId;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "currentUserGrpId")
+    public void setCurrentUserGrpId(String currentUserGrpId){
+        this.currentUserGrpId = currentUserGrpId;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -526,7 +568,10 @@ public class UnitTestVo extends com.demo.proworks.cmmn.ProworksCommVO {
         sb.append("searchTestType").append("=").append(searchTestType).append(",");
         sb.append("searchPriority").append("=").append(searchPriority).append(",");
         sb.append("dateFrom").append("=").append(dateFrom).append(",");
-        sb.append("dateTo").append("=").append(dateTo);
+        sb.append("dateTo").append("=").append(dateTo).append(",");
+        sb.append("assigneeName").append("=").append(assigneeName).append(",");
+        sb.append("currentUserId").append("=").append(currentUserId).append(",");
+        sb.append("currentUserGrpId").append("=").append(currentUserGrpId);
         sb.append("]");
         return sb.toString();
 
