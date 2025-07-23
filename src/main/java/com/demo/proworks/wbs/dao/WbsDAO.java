@@ -131,7 +131,7 @@ public class WbsDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
 	}
 
 	/**
-	 * 연관 설계업무 조회
+	 * 개발업무의 상위 설계업무 조회
 	 */
 	public WbsVo selectDesignByDev(WbsVo vo) throws ElException {
 		return (WbsVo) selectByPk("com.demo.proworks.wbs.selectDesignByDev", vo);
@@ -145,7 +145,7 @@ public class WbsDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
 	}
 	
 	/**
-	 * 모든 하위 업무 조회 (pt_task_id 기반, 페이징 없음)
+	 * 모든 하위 업무 조회
 	 */
 	public List<WbsVo> selectAllChildrenByParent(WbsVo vo) throws ElException {
 		return (List<WbsVo>) list("com.demo.proworks.wbs.selectAllChildrenByParent", vo);

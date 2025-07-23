@@ -137,7 +137,8 @@ scwin.onpageload = function () {
         dmp_taskDetail.set("userId", popupData.userId);
         // 기본 담당자로 로그인 유저 이름 설정
         const userName = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_NAME;
-        ipt_taskAsi.setValue(userName)
+        ipt_taskAsi.setValue(userName);
+        ipt_taskSt.setValue($p.getCurrentServerDate("yyyyMMdd"));
         btn_save.setValue("등록");
     }
 
@@ -349,7 +350,7 @@ scwin.taskStatus_onchange = function (info) {
 								<w2:textbox label="업무구분" style="color:#333;" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
-								<xf:select1 id="" chooseOption="true" style="width: 180px;height: 30px;" submenuSize="auto" allOption=""
+								<xf:select1 id="" chooseOption="" style="width: 180px;height: 30px;" submenuSize="auto" allOption=""
 									disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" chooseOptionLabel="$blank"
 									ref="data:dmp_taskDetail.isDesign">
 									<xf:choices>
@@ -369,7 +370,7 @@ scwin.taskStatus_onchange = function (info) {
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<xf:select1 style="width:180px;" ref="data:dmp_taskDetail.taskStatus" appearance="minimal" allOption=""
-									chooseOption="true" chooseOptionLabel="$blank" id="taskStatus" ev:onchange="scwin.taskStatus_onchange">
+									chooseOption="" chooseOptionLabel="$blank" id="taskStatus" ev:onchange="scwin.taskStatus_onchange">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_taskStatus">
 											<xf:label ref="label"></xf:label>
@@ -382,8 +383,8 @@ scwin.taskStatus_onchange = function (info) {
 								<w2:textbox label="테스트여부" style="color:#333;" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
-								<xf:select1 style="width:180px;" ref="data:dmp_taskDetail.isTest" appearance="minimal" allOption="" chooseOption="true"
-									chooseOptionLabel="$blank">
+								<xf:select1 style="width:180px;" ref="data:dmp_taskDetail.isTest" appearance="minimal" allOption=""
+									chooseOption="" chooseOptionLabel="">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_isTest">
 											<xf:label ref="label"></xf:label>
@@ -425,7 +426,7 @@ scwin.taskStatus_onchange = function (info) {
 								<w2:textbox label="진척률(%)" style="color:#333;" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
-								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskRate" id="ipt_taskRate"/>
+								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskRate" id="ipt_taskRate" initValue="0"/>
 							</xf:group>
 						</xf:group>
 					</xf:group>
@@ -453,7 +454,7 @@ scwin.taskStatus_onchange = function (info) {
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<w2:inputCalendar style="width: 150px;height: 23px;" calendarValueType="yearMonthDate"
-									ref="data:dmp_taskDetail.taskSt">
+									ref="data:dmp_taskDetail.taskSt" id="ipt_taskSt">
 								</w2:inputCalendar>
 							</xf:group>
 							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">

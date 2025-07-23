@@ -82,8 +82,7 @@ public class WbsVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElDtoField(logicalName = "유저ID", physicalName = "userId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String userId;
 
-    @ElDtoField(logicalName = "설계업무아이디", physicalName = "deTaskId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
-    private String deTaskId;
+
 
     @ElVoField(physicalName = "taskId")
     public String getTaskId(){
@@ -338,16 +337,7 @@ public class WbsVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.userId = userId;
     }
 
-    @ElVoField(physicalName = "deTaskId")
-    public String getDeTaskId(){
-        String ret = this.deTaskId;
-        return ret;
-    }
 
-    @ElVoField(physicalName = "deTaskId")
-    public void setDeTaskId(String deTaskId){
-        this.deTaskId = deTaskId;
-    }
 
     @Override
     public String toString() {
@@ -375,8 +365,7 @@ public class WbsVo extends com.demo.proworks.cmmn.ProworksCommVO {
         sb.append("scTaskRate").append("=").append(scTaskRate).append(",");
         sb.append("ptTaskName").append("=").append(ptTaskName).append(",");
         sb.append("rowStatus").append("=").append(rowStatus).append(",");
-        sb.append("userId").append("=").append(userId).append(",");
-        sb.append("deTaskId").append("=").append(deTaskId);
+        sb.append("userId").append("=").append(userId);
         sb.append("]");
         return sb.toString();
 

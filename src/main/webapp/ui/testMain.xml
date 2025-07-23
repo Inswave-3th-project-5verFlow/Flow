@@ -208,9 +208,9 @@
 					</w2:data>
 				</w2:dataList>
 			</w2:dataCollection>
-			<xf:submission id="sbm_selectMenuList" action="/InsWebApp/MenuList.pwkjson" method="post" mediatype="application/json" ref="" target=""
-				encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit="" ev:submitdone="scwin.sbm_selectMenuList_submitdone"
-				ev:submiterror="" abortTrigger="">
+			<xf:submission id="sbm_selectMenuList" action="/InsWebApp/MenuList.pwkjson" method="post" mediatype="application/json"
+				ref="" target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit=""
+				ev:submitdone="scwin.sbm_selectMenuList_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
 		</xf:model>
 
@@ -241,14 +241,14 @@ scwin.onpageload = function () {
             });
 
             // 임시 사용자 관리 탭 추가
-            tab_content.addTab("usersTab", {
-                label: "사용자 관리",
-                closable: false,
-                openAction: "select"
-            }, {
-                src: "users/UsersList.xml",
-                frameMode: "wframe"
-            });
+            //tab_content.addTab("usersTab", {
+            //    label: "사용자 관리",
+            //    closable: false,
+            //    openAction: "select"
+            //}, {
+            //    src: "users/UsersList.xml",
+            //    frameMode: "wframe"
+            //});
         } catch (e) {
             console.error("초기 탭 생성 실패:", e);
             // 실패 시 다시 시도
@@ -391,6 +391,9 @@ scwin.createMenuWithGenerator = function () {
             menuObj.setUserData("menuId", group.menu.menuId);
             menuObj.setUserData("menuUrl", group.menu.menuUrl);
             menuObj.setUserData("hasChildren", group.children.length > 0 ? "Y" : "N");
+            
+            // 메뉴 전체 영역 클릭 이벤트 추가
+            scwin.addMenuClickEvent(menuObj, idx);
 
             // 2뎁스 메뉴가 있는 경우 하위 메뉴 생성
             if (group.children.length > 0) {
@@ -405,10 +408,61 @@ scwin.createMenuWithGenerator = function () {
                     subMenuObj.setUserData("menuId", childMenu.menuId);
                     subMenuObj.setUserData("menuUrl", childMenu.menuUrl);
                     subMenuObj.setUserData("parentId", childMenu.parentId);
+                    
+                    // 서브메뉴 전체 영역 클릭 이벤트 추가
+                    scwin.addSubmenuClickEvent(subMenuObj, idx, subIdx);
                 }
             }
         }
     }
+};
+
+/**
+ * 메뉴 전체 영역 클릭 이벤트 추가 (CSS 클래스 유지)
+ */
+scwin.addMenuClickEvent = function(menuObj, idx) {
+    setTimeout(function() {
+        var menuElement = document.getElementById(menuObj.getID());
+        if (menuElement && menuElement.parentElement) {
+            var parentEl = menuElement.parentElement;
+            
+            // 기존 클래스 유지하면서 클릭 이벤트만 추가
+            parentEl.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                scwin.menu_onclick.call(menuObj);
+            });
+            
+            // 커서만 추가 (기존 스타일 유지)
+            if (!parentEl.style.cursor) {
+                parentEl.style.cursor = 'pointer';
+            }
+        }
+    }, 100);
+};
+
+/**
+ * 서브메뉴 전체 영역 클릭 이벤트 추가 (CSS 클래스 유지)
+ */
+scwin.addSubmenuClickEvent = function(subMenuObj, parentIdx, subIdx) {
+    setTimeout(function() {
+        var submenuElement = document.getElementById(subMenuObj.getID());
+        if (submenuElement && submenuElement.parentElement) {
+            var parentEl = submenuElement.parentElement;
+            
+            // 기존 클래스 유지하면서 클릭 이벤트만 추가
+            parentEl.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                scwin.submenu_onclick.call(subMenuObj);
+            });
+            
+            // 커서만 추가 (기존 스타일 유지)
+            if (!parentEl.style.cursor) {
+                parentEl.style.cursor = 'pointer';
+            }
+        }
+    }, 100);
 };
 
 /**
@@ -441,7 +495,7 @@ scwin.submenu_onclick = function () {
 };
 
 /**
- * 하위 메뉴 토글 함수
+ * 하위 메뉴 토글 함수 (CSS 클래스 활용)
  */
 scwin.toggleSubMenu = function (menuObj) {
     var gen = menuObj.getGenerator();
@@ -453,14 +507,17 @@ scwin.toggleSubMenu = function (menuObj) {
         if (i !== idx) {
             var otherSubNav = gen.getChild(i, 'gen_subMenu');
             otherSubNav.hide();
+            otherSubNav.removeClass('submenu-show');
         }
     }
 
     // 현재 메뉴의 하위 메뉴 토글
     if (subNavObj.getStyle('display') === 'none' || !subNavObj.getStyle('display')) {
         subNavObj.show();
+        subNavObj.addClass('submenu-show');
     } else {
         subNavObj.hide();
+        subNavObj.removeClass('submenu-show');
     }
 };
 
@@ -479,7 +536,7 @@ scwin.openTab = async function (url, title, tabData) {
         var tabInfo = tab_content.getTabInfo();
         var existingTabId = null;
         var existingTabIndex = -1;
-        
+
         // 같은 URL의 탭이 이미 열려있는지 확인
         for (var i = 0; i < tabInfo.length; i++) {
             if (tabInfo[i] && tabInfo[i].src === url) {
@@ -508,7 +565,7 @@ scwin.openTab = async function (url, title, tabData) {
         if (existingTabIndex !== -1) {
             // 기존 탭ID로 exist 옵션 사용
             console.log("기존 탭 갱신:", existingTabId);
-            
+
             var newTabId = await tab_content.addTab(existingTabId, {
                 "label": title,
                 "closable": true,
@@ -530,6 +587,47 @@ scwin.openTab = async function (url, title, tabData) {
     } catch (e) {
         console.error("탭 생성 실패:", e);
         $c.win.alert("페이지를 로드할 수 없습니다: " + title);
+    }
+};
+
+/**
+ * 모든 탭 닫기 버튼 클릭 이벤트
+ */
+scwin.btn_closeAllTabs_onclick = function () {
+    try {
+        // 현재 열린 탭 개수 확인
+        var tabCount = tab_content.getTabCount();
+        
+        if (tabCount <= 1) {
+            $c.win.alert("닫을 탭이 없습니다.");
+            return;
+        }
+        
+        // 사용자 확인
+        $c.win.confirm("모든 탭을 닫으시겠습니까?\n(HOME 탭은 유지됩니다)", function(result) {
+            if (result) {
+                // 모든 탭 삭제
+                tab_content.deleteAllTabs();
+                
+                // HOME 탭 재생성
+                setTimeout(function() {
+                    tab_content.addTab("dashboardTab", {
+                        label: "HOME",
+                        closable: false,
+                        openAction: "select"
+                    }, {
+                        src: "dashboard.xml",
+                        frameMode: "wframe"
+                    });
+                    
+                    console.log("모든 탭 닫기 완료 - HOME 탭 재생성됨");
+                }, 100);
+            }
+        });
+        
+    } catch (e) {
+        console.error("모든 탭 닫기 실패:", e);
+        $c.win.alert("탭을 닫는 중 오류가 발생했습니다.");
     }
 };
 
@@ -569,117 +667,35 @@ scwin.sbm_selectMenuList_submitdone = function (e) {
 		<!-- ===== 헤더 영역 (높이 일단 80 고정) ===== -->
 		<xf:group id="grp_header"
 			style="background-color: #ffffff;padding: 10px 10px;display: flex;justify-content: center;align-items: center;border-bottom: 1px solid #dee2e6;flex-shrink: 0;">
-
-			<!-- 좌측 영역: 사이드바 토글 + 로고 + 프로젝트 선택 -->
-			<!--
-				<xf:group id="grp_headerLeft" style="display: flex; align-items: center; gap: 20px;">
-
-				<xf:trigger id="btn_sidebarToggle" style="width: 40px; height: 40px; background-color: #6c757d; color: white; border: none; border-radius:
-				4px; cursor: pointer; font-size: 16px;" ev:onclick="scwin.btn_sidebarToggle_onclick">
-				<xf:label>☰</xf:label>
-				</xf:trigger>
-
-				<xf:group id="grp_logo" style="display: flex; align-items: center; gap: 10px;">
-				<xf:group id="grp_logoIcon" style="width: 40px; height: 40px; background-color: #007bff; color: white; border-radius: 8px; display: flex;
-				align-items: center; justify-content: center; font-weight: bold; font-size: 18px;">
-				<w2:textbox id="txt_logoIcon" style="border: none; background: transparent; color: inherit; text-align: center;" readOnly="true">
-				<xf:label>P</xf:label>
-				</w2:textbox>
-				</xf:group>
-				<w2:textbox id="txt_systemName" style="font-size: 18px; font-weight: bold; color: #333; border: none; background: transparent;" readOnly="true">
-				<xf:label bind="dmp_systemInfo.systemName"></xf:label>
-				</w2:textbox>
-				</xf:group>
-
-
-				<xf:group id="grp_projectSelect" style="display: flex; align-items: center; gap: 10px;">
-				<w2:textbox id="txt_projectLabel" style="font-size: 14px; color: #666; border: none; background: transparent;" readOnly="true">
-				<xf:label>프로젝트:</xf:label>
-				</w2:textbox>
-				<xf:select1 id="sel_projects"
-				style="width: 200px; height: 32px; border: 1px solid #ddd; border-radius: 4px; padding: 5px;"
-				ev:onchange="scwin.sel_projects_onchange" appearance="minimal" allOption="" chooseOption="true"
-				chooseOptionLabel="$blank" ref="">
-				<xf:itemset nodeset="data:dlt_projects">
-				<xf:label ref="projectName"></xf:label>
-				<xf:value ref="projectId"></xf:value>
-				</xf:itemset>
-				<xf:choices>
-				<xf:itemset nodeset="data:dlt_pjtVoList">
-				<xf:label ref="pjtName"></xf:label>
-				<xf:value ref="pjtId"></xf:value>
-				</xf:itemset>
-				</xf:choices>
-				</xf:select1>
-				</xf:group>
-
-				</xf:group>
-			-->
-
-			<!-- 우측 영역: 사용자 정보 + 로그인/로그아웃 -->
-			<!--
-				<xf:group id="grp_headerRight" style="display: flex; align-items: center; gap: 15px;">
-
-				<xf:group id="grp_userInfo" style="display: flex; align-items: center; gap: 12px;">
-
-				<xf:group id="grp_profile" style="width: 40px; height: 40px; background-color: #e9ecef; border-radius: 50%; display: flex; align-items: center;
-				justify-content: center; cursor: pointer; border: 2px solid #dee2e6;" ev:onclick="scwin.grp_profile_onclick">
-
-				</xf:group>
-
-				<xf:group id="grp_userText" style="display: flex; flex-direction: column; align-items: flex-start;">
-				<w2:textbox id="txt_name" style="font-size: 14px; font-weight: 600; color: #333; border: none; background: transparent;" readOnly="true">
-				<xf:label bind="dmp_userVoDetail.name"></xf:label>
-				</w2:textbox>
-				<w2:textbox id="txt_accId" style="font-size: 12px; color: #666; border: none; background: transparent;" readOnly="true">
-				<xf:label bind="dmp_userVoDetail.accountId"></xf:label>
-				</w2:textbox>
-				<w2:textbox id="txt_userId" style="font-size: 12px; color: #666; border: none; background: transparent;" readOnly="true">
-				<xf:label bind="dmp_userVoDetail.userId"></xf:label>
-				</w2:textbox>
-				</xf:group>
-
-				</xf:group>
-
-				<xf:trigger id="btn_logout" style="padding: 8px 16px; background-color: #dc3545; color: white; border: none; border-radius: 4px; cursor:
-				pointer; font-size: 13px;" ev:onclick="scwin.btn_logout_onclick">
-				<xf:label>로그아웃</xf:label>
-				</xf:trigger>
-
-				</xf:group>
-			-->
-
 			<w2:pageFrame style="width: 100%;" id="pg_header" src="/InsWebApp/ui/header.xml"></w2:pageFrame>
 
 		</xf:group>
 
 		<!-- ===== 메인 컨텐츠 영역 (남은 공간 모두 차지) ===== -->
-		<xf:group id="grp_main" style="flex: 1; display: flex;">
+		<xf:group id="grp_main"
+			style="flex: 1; display: flex; background: linear-gradient(135deg, #B8D4F0 0%, #A8D8EA 50%, #92C5F7 100%);">
 
 			<!-- ===== 사이드바 영역 (높이 자동 확장) ===== -->
-			<xf:group id="grp_menu"
-				style="width: 13%; background-color: #f8f9fa; padding: 15px; display: flex; flex-direction: column; border-right: 1px solid #dee2e6;" class="sidebar">
+			<xf:group id="grp_menu" class="sidebar"
+				style="width: 220px; background-color: #7FC7D9; padding: 16px; display: flex; flex-direction: column; border-right: 1px solid #6BB6CD; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
 				<w2:textbox id="txt_menuTitle"
-					style="font-weight: bold; font-size: 16px; margin-bottom: 15px; border: none; background: transparent; flex-shrink: 0;" readOnly="true">
+					style="font-weight: 600; font-size: 16px; margin-bottom: 20px; border: none; background: transparent; color: #2c3e50; text-align: center;"
+					readOnly="true">
 					<xf:label>메뉴</xf:label>
 				</w2:textbox>
 
 				<!-- Generator를 사용한 동적 메뉴 생성 -->
 				<w2:generator tagname="div" id="gen_menu" style="flex: 1;">
 					<!-- 1뎁스 메뉴 -->
-					<xf:group style="margin-bottom: 5px;">
-						<w2:anchor id="anc_menu"
-							style="display: block; padding: 8px 12px; background-color: #e9ecef; border: 1px solid #ddd; border-radius: 4px; text-decoration: none; color: #495057; cursor: pointer;"
-							ev:onclick="scwin.menu_onclick">
+					<xf:group class="menu-group">
+						<w2:anchor id="anc_menu" class="menu-item" ev:onclick="scwin.menu_onclick">
 							<xf:label></xf:label>
 						</w2:anchor>
 
 						<!-- 2뎁스 메뉴 Generator -->
-						<w2:generator tagname="div" id="gen_subMenu" style="display: none; margin-top: 5px; margin-left: 15px;">
-							<xf:group style="margin-bottom: 3px;">
-								<w2:anchor id="anc_subMenu"
-									style="display: block; padding: 6px 10px; background-color: #ffffff; border: 1px solid #e9ecef; border-radius: 3px; text-decoration: none; color: #6c757d; cursor: pointer; font-size: 13px;"
-									ev:onclick="scwin.submenu_onclick">
+						<w2:generator tagname="div" id="gen_subMenu" class="submenu-container">
+							<xf:group class="submenu-group">
+								<w2:anchor id="anc_subMenu" class="submenu-item" ev:onclick="scwin.submenu_onclick">
 									<xf:label></xf:label>
 								</w2:anchor>
 							</xf:group>
@@ -689,11 +705,28 @@ scwin.sbm_selectMenuList_submitdone = function (e) {
 			</xf:group>
 
 			<!-- ===== 컨텐츠 영역 (높이 자동 확장) ===== -->
-			<xf:group id="grp_content" style="flex: 1; background-color: #ffffff; padding: 15px; display: flex; flex-direction: column;overflow-y: scroll;">
+			<xf:group id="grp_content"
+				style="flex: 1; background-color: white; padding: 20px; display: flex; flex-direction: column; overflow-y: auto;">
 
-				<!-- 탭 컨트롤 (남은 공간 모두 차지) -->
-				<w2:tabControl id="tab_content" style="flex: 1; border: 1px solid #dee2e6;" useTabScroll="true" closable="true">
-				</w2:tabControl>
+				<!-- 탭 컨트롤과 오버레이 버튼을 포함하는 컨테이너 -->
+				<xf:group id="grp_tabContainer"
+					style="flex: 1; position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.12);">
+
+					<!-- 탭 컨트롤 (남은 공간 모두 차지) -->
+					<w2:tabControl id="tab_content" style="width: 100%; height: 100%; border: 1px solid #e0e0e0;" useTabScroll="true"
+						closable="true">
+					</w2:tabControl>
+
+					<!-- 탭 헤더 위에 오버레이되는 버튼 -->
+					<xf:group id="grp_tabOverlay" style="position: absolute; top: 2px; right: 2px; z-index: 1000; pointer-events: none;">
+						<xf:trigger id="btn_closeAllTabs" ev:onclick="scwin.btn_closeAllTabs_onclick"
+							style="width: 32px; height: 32px; font-size: 18px; font-weight: bold; background-color: #5A9BD4; color: white; border: none; border-radius: 6px; cursor: pointer; pointer-events: auto; box-shadow: 0 2px 8px rgba(90, 155, 212, 0.3); display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
+							<xf:label>×</xf:label>
+						</xf:trigger>
+					</xf:group>
+
+				</xf:group>
+
 			</xf:group>
 
 		</xf:group>
