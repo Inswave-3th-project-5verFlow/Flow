@@ -66,7 +66,7 @@ scwin.onpageload = function () {
         btn_newPjt.hide();
     }
 
-    dmp_pjtVo.set("userId", usrId);    
+    dmp_pjtVo.set("userId", usrId);
     $c.sbm.execute(sbm_selectPjtVoList);
 };
 
@@ -103,6 +103,7 @@ scwin.sbm_pjtList_submitdone = function (e) {
     let num = Number(dmp_pjtVo.get("pageIndex"));
     num = (num - 1) * 10;
     grd_list.setStartRowNumber(num);
+    scwin.setClickableStyle();
 };
 
 /**
@@ -207,6 +208,30 @@ scwin.btn_newPjt_onclick = function (e) {
         tabContent.openTab("pjt/Pjt.xml", "새 프로젝트");
     } else {
         alert("새 프로젝트 생성 페이지를 열 수 없습니다.");
+    }
+};
+
+/**
+ * 그리드 셀 클릭 이벤트
+ */
+scwin.grd_list_oncellclick = async function (rowIndex, columnIndex, columnId) {
+    var header = $p.getComponentById("mf_pg_header").getWindow();
+    var selPjtId = dlt_pjtVoList.getCellData(rowIndex, "pjtId");
+    header.selectBoxProjectName.setValue(selPjtId);
+};
+
+/**
+ * 그리드 스타일 적용
+ * @description 
+ */
+scwin.setClickableStyle = function () {
+    const rowCount = dlt_pjtVoList.getTotalRow();
+    const nameColIndex = grd_list.getColumnIndex("pjtName");
+
+    for (let i = 0; i < rowCount; i++) {
+        let taskIdStyle = "text-align: center; font-weight: bold;";
+        taskIdStyle += "color: #0f3460; text-decoration: underline; cursor: pointer;";
+        grd_list.setCellStyle(i, nameColIndex, taskIdStyle);
     }
 };]]></script>
 	</head>
