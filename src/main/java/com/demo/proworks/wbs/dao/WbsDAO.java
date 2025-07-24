@@ -107,35 +107,6 @@ public class WbsDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
 		return (Long) selectByPk("com.demo.proworks.wbs.selectListCountWbsSearch", vo);
 	}
 
-// WbsDAO.java에 추가할 메소드들
-
-	/**
-	 * 하위 설계업무 조회
-	 */
-	public List<WbsVo> selectChildDesign(WbsVo vo) throws ElException {
-		return (List<WbsVo>) list("com.demo.proworks.wbs.selectChildDesign", vo);
-	}
-
-	/**
-	 * 연관 개발업무 조회
-	 */
-	public List<WbsVo> selectDevByDesign(WbsVo vo) throws ElException {
-		return (List<WbsVo>) list("com.demo.proworks.wbs.selectDevByDesign", vo);
-	}
-
-	/**
-	 * 상위 설계업무 조회
-	 */
-	public WbsVo selectParentDesign(WbsVo vo) throws ElException {
-		return (WbsVo) selectByPk("com.demo.proworks.wbs.selectParentDesign", vo);
-	}
-
-	/**
-	 * 개발업무의 상위 설계업무 조회
-	 */
-	public WbsVo selectDesignByDev(WbsVo vo) throws ElException {
-		return (WbsVo) selectByPk("com.demo.proworks.wbs.selectDesignByDev", vo);
-	}
 
 	/**
 	 * 진척률 업데이트

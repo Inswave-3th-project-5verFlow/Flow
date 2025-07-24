@@ -9,6 +9,10 @@ import org.springframework.stereotype.Service;
 
 import com.demo.proworks.task.design.service.DesignService;
 import com.demo.proworks.task.design.vo.DesignVo;
+import com.demo.proworks.task.design.util.DesignWbsConverter;
+import com.demo.proworks.wbs.service.WbsProgressService;
+import com.demo.proworks.wbs.service.WbsStatusPropagationService;
+import com.demo.proworks.wbs.vo.WbsVo;
 import com.inswave.elfw.log.AppLog;
 import com.inswave.elfw.util.ControllerContextUtil;
 import com.inswave.elfw.util.ElBeanUtils;
@@ -34,6 +38,12 @@ public class DesignServiceImpl implements DesignService {
 
 	@Resource(name = "messageSource")
 	private MessageSource messageSource;
+
+	@Resource(name = "wbsProgressServiceImpl")
+	private WbsProgressService wbsProgressService;
+
+	@Resource(name = "wbsStatusPropagationServiceImpl")
+	private WbsStatusPropagationService wbsStatusPropagationService;
 
 	/**
 	 * 모든 업무 정보 목록을 조회합니다.
@@ -131,7 +141,27 @@ public class DesignServiceImpl implements DesignService {
 	 * @throws Exception
 	 */
 	public int insertDesign(DesignVo designVo) throws Exception {
-		return designDAO.insertDesign(designVo);
+		// 1. 기존 Design 로직으로 업무 등록 (중복 삽입 방지)
+		int result = designDAO.insertDesign(designVo);
+		
+		// 2. WBS 로직 추가: 업무 삽입 후 상태 전파 및 진척률 계산
+		if (result > 0 && designVo.getTaskId() != null) {
+			try {
+				WbsVo wbsVo = DesignWbsConverter.toWbsVo(designVo);
+				
+				// 하위 업무 추가 시 상위 업무 상태 자동 조정
+				wbsStatusPropagationService.propagateOnChildInsert(wbsVo);
+				
+				// 진척률 계산 및 업데이트
+				wbsProgressService.calculateAndUpdateProgress(wbsVo.getTaskId(), wbsVo.getPjtId());
+				
+			} catch (Exception e) {
+				System.err.println("insertDesign 후 WBS 로직 처리 오류: " + e.getMessage());
+				// WBS 로직 실패해도 기본 삽입은 성공으로 처리
+			}
+		}
+		
+		return result;
 	}
 
 	/**
@@ -144,30 +174,57 @@ public class DesignServiceImpl implements DesignService {
 	 * @throws Exception
 	 */
 	public int updateDesign(DesignVo designVo) throws Exception {
-		// 기존 데이터 조회
+		// 0. 기존 데이터 조회 (상태 변경 감지용)
 		DesignVo currentData = designDAO.selectDesign(designVo);
 		if (currentData == null) {
 			throw new RuntimeException("존재하지 않는 업무입니다. taskId: " + designVo.getTaskId());
 		}
 
-		// 상위업무 변경 여부 체크
+		// 1. 기존 Design 로직으로 업무 수정 (상위업무 변경 등 기존 로직 유지)
 		boolean isParentChanged = isParentTaskChanged(currentData, designVo);
-
+		int result;
+		
 		if (isParentChanged) {
 			System.out.println("상위업무 변경 감지 : taskName=" + designVo.getTaskName() + ", taskId=" + designVo.getTaskId()
 					+ ", 이전상위=" + currentData.getPtTaskId() + ", 새상위=" + designVo.getPtTaskId());
 
 			// 1) 자신의 업무 정보 + depth 업데이트
-			int result1 = designDAO.updateDesign(designVo);
+			result = designDAO.updateDesign(designVo);
 
 			// 2) 자신의 하위 업무들의 depth 연쇄 업데이트
 			int result2 = updateChildTasksDepth(designVo);
 
-			System.out.println("기본업데이트=" + result1 + ", 하위업데이트=" + result2);
-			return result1;
+			System.out.println("기본업데이트=" + result + ", 하위업데이트=" + result2);
 		} else {
-			return designDAO.updateDesign(designVo);
+			result = designDAO.updateDesign(designVo);
 		}
+		
+		// 2. WBS 로직 추가: 업무 수정 후 상태 전파 및 진척률 계산
+		if (result > 0) {
+			try {
+				WbsVo wbsVo = DesignWbsConverter.toWbsVo(designVo);
+				String oldStatus = currentData.getTaskStatus() != null ? currentData.getTaskStatus() : "대기";
+				String newStatus = designVo.getTaskStatus() != null ? designVo.getTaskStatus() : "대기";
+				
+				// 상태 변경이 있는 경우 상태 전파 처리
+				if (!oldStatus.equals(newStatus)) {
+					// 상위 업무에 영향을 주는 상태 전파 (하위 업무 상태 변경)
+					wbsStatusPropagationService.propagateOnChildUpdate(wbsVo);
+					
+					// 하위 업무에 영향을 주는 상태 전파 (상위 업무 상태 변경)
+					wbsStatusPropagationService.propagateOnParentUpdate(wbsVo, oldStatus, newStatus);
+				}
+				
+				// 진척률 재계산
+				wbsProgressService.calculateAndUpdateProgress(wbsVo.getTaskId(), wbsVo.getPjtId());
+				
+			} catch (Exception e) {
+				System.err.println("updateDesign 후 WBS 로직 처리 오류: " + e.getMessage());
+				// WBS 로직 실패해도 기본 수정은 성공으로 처리
+			}
+		}
+		
+		return result;
 	}
 
 	/**
@@ -226,7 +283,32 @@ public class DesignServiceImpl implements DesignService {
 	 * @throws Exception
 	 */
 	public int deleteDesign(DesignVo designVo) throws Exception {
-		return designDAO.deleteDesign(designVo);
+		// 0. 삭제 전 현재 업무 정보 조회 (WBS 로직용)
+		DesignVo currentData = designDAO.selectDesign(designVo);
+		
+		// 1. 기존 Design 로직으로 업무 삭제 (중복 삭제 방지)
+		int result = designDAO.deleteDesign(designVo);
+		
+		// 2. WBS 로직 추가: 업무 삭제 후 상태 전파 및 진척률 계산
+		if (result > 0 && currentData != null) {
+			try {
+				WbsVo wbsVo = DesignWbsConverter.toWbsVo(currentData);
+				
+				// 업무 삭제 시 관련 업무들의 상태 조정
+				wbsStatusPropagationService.propagateOnTaskDelete(wbsVo);
+				
+				// 부모 업무의 진척률 재계산 (삭제된 업무가 있었다면)
+				if (currentData.getPtTaskId() != null) {
+					wbsProgressService.calculateAndUpdateProgress(currentData.getPtTaskId(), currentData.getPjtId());
+				}
+				
+			} catch (Exception e) {
+				System.err.println("deleteDesign 후 WBS 로직 처리 오류: " + e.getMessage());
+				// WBS 로직 실패해도 기본 삭제는 성공으로 처리
+			}
+		}
+		
+		return result;
 	}
 
 	/**
