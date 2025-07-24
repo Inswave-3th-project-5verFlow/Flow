@@ -70,10 +70,11 @@
 		<script lazy="false" type="text/javascript"><![CDATA[scwin.onpageload = function () {
     // 사용자정보 조회
     scwin.btn_search_onclick();
+
 };
 
 scwin.btn_search_onclick = function (e) {
-    var usrId = WebSquare.session.getAttribute("usrId");
+    var usrId = WebSquare.localStorage.getItem("usrId");
 
     // 헤더에서 사용자 정보 바인딩
     dmp_usersVo.set("userId", usrId);
@@ -321,10 +322,6 @@ scwin.grd_list_oncellclick = function (rowIndex, columnIndex, columnId) {
     }
 };
 
-
-
-
-
 scwin.sbm_resetPassword_submitdone = function (e) {
     var elData = e.responseJSON.elData;
     var elHeader = e.responseJSON.elHeader;
@@ -337,9 +334,20 @@ scwin.sbm_resetPassword_submitdone = function (e) {
     $c.win.alert("변경이 완료되었습니다.");
     scwin.btn_search_onclick();
 };
+
+// 돌아가기 버튼 이벤트
+scwin.btn_return_onclick = function (e) {
+    WebSquare.localStorage.removeItem("adminPage");
+    $p.url("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/testMain.xml");
+};
 ]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">
+		<xf:group
+			style="background-color: #ffffff;//padding: 10px 10px;display: flex;justify-content: center;align-items: center;border-bottom: 1px solid #dee2e6;flex-shrink: 0;"
+			id="group3">
+			<w2:pageFrame src="/InsWebApp/ui/header.xml" style="width: 100%;" id="pageFrame1"></w2:pageFrame>
+		</xf:group>
 		<xf:group class="sub_contents " id="" style="">
 			<xf:group class="pgtbox" id="" style="">
 				<w2:textbox class="pgt_tit" id="" label="사용자정보" style="" tagname="" />
@@ -365,7 +373,8 @@ scwin.sbm_resetPassword_submitdone = function (e) {
 					</xf:group>
 				</xf:group>
 				<xf:group class="btn_schbox" id="" style="">
-					<xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_search" style="" type="button"
+					<xf:trigger class="btn_cm" disabled="" escape="false" id="btn_search"
+						style="padding: 0;height: 36px;font-size: 14px;width: 80px;background-color: #454F5B;color: #fff;border: none;" type="button"
 						ev:onclick="scwin.btn_search_onclick" localeRef="COMMON_BUTTON_00001">
 						<xf:label><![CDATA[조회]]></xf:label>
 					</xf:trigger>
@@ -381,13 +390,19 @@ scwin.sbm_resetPassword_submitdone = function (e) {
 			<xf:group meta_snippetCategory="02_타이틀" meta_snippetName="2_02 서브타이틀(h3)" meta_snippetKeyComponent="true" style="" id=""
 				class="titbox">
 				<xf:group style="" id="" class="rt">
-					<xf:trigger ev:onclick="scwin.btn_new_onclick" style="" id="btn_new" type="button" class="btn_cm row_add">
+					<xf:trigger ev:onclick="scwin.btn_new_onclick"
+						style="padding: 0;height: 36px;font-size: 14px;width: 80px;background-color: #454F5B;color: #fff;border: none;" id="btn_new"
+						type="button" class="btn_cm">
 						<xf:label><![CDATA[등록]]></xf:label>
 					</xf:trigger>
-					<xf:trigger ev:onclick="scwin.btn_delete_onclick" style="" id="btn_delete" type="button" class="btn_cm  row_del">
+					<xf:trigger ev:onclick="scwin.btn_delete_onclick"
+						style="padding: 0;height: 36px;font-size: 14px;width: 80px;background-color: #ec9192;color: #fff;border: none;" id="btn_delete"
+						type="button" class="btn_cm">
 						<xf:label><![CDATA[삭제]]></xf:label>
 					</xf:trigger>
-					<xf:trigger ev:onclick="scwin.btn_save_onclick" style="" id="btn_save" type="button" class="btn_cm save">
+					<xf:trigger ev:onclick="scwin.btn_save_onclick"
+						style="background-color:#98BED6;color: #ffffff !important;padding: 0 24px;height: 36px;font-size: 14px;width: 80px;border: none;" id="btn_save"
+						type="button" class="btn_cm">
 						<xf:label><![CDATA[저장]]></xf:label>
 					</xf:trigger>
 				</xf:group>
@@ -484,6 +499,15 @@ scwin.sbm_resetPassword_submitdone = function (e) {
 					<w2:span id="span1" label="/" style=""></w2:span>
 					<w2:span id="spn_totalPageCount" label="0" ref="data:dma_usersVo.totalPageCount" style=""></w2:span>
 					<w2:span id="span2" label="페이지" localeRef="COMMON_LABEL_00005" style=""></w2:span>
+				</xf:group>
+			</xf:group>
+			<xf:group class="pglbox" id="" style="margin-top: 50px;">
+				<xf:group class="btn_schbox" id="" style="">
+					<xf:trigger class="btn_cm" disabled="" escape="false" id="btn_return" localeRef="COMMON_BUTTON_00001"
+						style="padding: 0;height: 36px;font-size: 14px;width: 80px;background-color: #454F5B;color: #fff;border: none;" type="button"
+						ev:onclick="scwin.btn_return_onclick">
+						<xf:label><![CDATA[돌아가기]]></xf:label>
+					</xf:trigger>
 				</xf:group>
 			</xf:group>
 		</xf:group>
