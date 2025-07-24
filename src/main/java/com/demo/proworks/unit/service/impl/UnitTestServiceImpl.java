@@ -28,6 +28,7 @@ import com.demo.proworks.unit.dao.UnitTestDao;
 import com.demo.proworks.unit.service.UnitTestService;
 import com.demo.proworks.unit.vo.UnitTestListVo;
 import com.demo.proworks.unit.vo.UnitTestVo;
+import com.inswave.elfw.log.AppLog;
 
 
 /**
@@ -106,28 +107,39 @@ public class UnitTestServiceImpl implements UnitTestService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public String insertUnitTest(UnitTestVo unitTestVo) throws Exception {
-        logger.debug("단위테스트 케이스 등록 시작: {}", unitTestVo);
-        
-        // 필수값 검증
-        validateRequiredFields(unitTestVo);
-        
-        // 테스트 케이스 ID 생성 (시퀀스 기반)
-        String testCaseId = generateTestCaseId();
-        unitTestVo.setTestCaseId(testCaseId);
-        
-        // 기본값 설정
-        setDefaultValues(unitTestVo);
-        
-        // 등록
-        int result = unitTestDao.insertUnitTest(unitTestVo);
-        
-        if (result > 0) {
-            logger.debug("단위테스트 케이스 등록 완료: {}", testCaseId);
-            return testCaseId;
-        } else {
-            throw new Exception("단위테스트 케이스 등록에 실패했습니다.");
-        }
-    }
+	    AppLog.debug("단위테스트 케이스 등록 시작: {}", unitTestVo);
+	    
+	    // 필수값 검증
+	    validateRequiredFields(unitTestVo);
+	    
+	    // 테스트 케이스 ID 생성 (시퀀스 기반)
+	    String testCaseId = generateTestCaseId();
+	    unitTestVo.setTestCaseId(testCaseId);
+	    
+	    // 기본값 설정
+	    setDefaultValues(unitTestVo);
+	    
+	    // 1. 테스트 케이스 등록
+	    int result = unitTestDao.insertUnitTest(unitTestVo);
+	    
+	    if (result > 0) {
+	        // 2. project_task의 isTest 필드 업데이트
+	        try {
+	            int updateResult = unitTestDao.updateProjectTaskIsTest(unitTestVo);
+	            AppLog.debug("project_task.isTest 업데이트 완료 for taskId: {} (업데이트된 행 수: {})"+ 
+	                unitTestVo.getTaskId(), updateResult);
+	        } catch (Exception e) {
+	            AppLog.debug("project_task.isTest 업데이트 실패 (taskId: {}): {}"+ 
+	                unitTestVo.getTaskId(), e.getMessage());
+	            // 필요에 따라 예외를 던지거나 로그만 남길 수 있습니다
+	        }
+	        
+	        AppLog.debug("단위테스트 케이스 등록 완료: {}", testCaseId);
+	        return testCaseId;
+	    } else {
+	        throw new Exception("단위테스트 케이스 등록에 실패했습니다.");
+	    }
+	}
     
     /**
      * 단위테스트 케이스와 파일 함께 등록

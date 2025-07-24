@@ -311,18 +311,17 @@ scwin.SELECTED_PROJECT_NAME = "";
 scwin.onpageload = function () {
     console.log("=== 이슈 페이지 로드 ===");
     
-    // 헤더에서 사용자 정보만 한 번 가져오기
+    // 사용자 정보 가져오기
     var headerWindow = $p.getComponentById("mf_pg_header");
     if (headerWindow) {
         scwin.USER_ID = headerWindow.getWindow().scwin.USER_ID;
         scwin.USER_NAME = headerWindow.getWindow().scwin.USER_NAME;
+        console.log("사용자 정보 로드:", scwin.USER_ID, scwin.USER_NAME);
     }
     
     // 버튼 초기화
     btn_save.show("");
-    btn_edit.hide();
-    btn_delete.hide();
-
+    
     // 페이지 정보 초기화
     scwin.initPaginationInfo();
 
@@ -332,16 +331,196 @@ scwin.onpageload = function () {
         search_box.hide();
     }
 
-    // 초기 데이터 조회 (이때 최신 프로젝트 정보 가져옴)
-    scwin.btn_search_onclick();
+    // 1초 후에 조회 버튼 클릭으로 데이터 로드
+    setTimeout(function() {
+        console.log("=== 자동 데이터 로드 시작 ===");
+        scwin.btn_search_onclick();
+    }, 100);
 };
+
+
+/**
+ * 프로젝트 정보를 가져와서 데이터 로드
+ */
+scwin.getProjectInfoAndLoadData = function() {
+    console.log("=== 프로젝트 정보 확인 및 데이터 로드 ===");
+    
+    // 1차: 헤더에서 프로젝트 정보 가져오기 시도
+    var projectFound = scwin.getProjectInfoFromHeader();
+    
+    if (projectFound) {
+        console.log("헤더에서 프로젝트 정보 획득 성공");
+        scwin.loadInitialData();
+        return;
+    }
+    
+    // 2차: 부모 윈도우에서 프로젝트 정보 가져오기 시도
+    projectFound = scwin.getProjectInfoFromParent();
+    
+    if (projectFound) {
+        console.log("부모 윈도우에서 프로젝트 정보 획득 성공");
+        scwin.loadInitialData();
+        return;
+    }
+    
+    // 3차: 지연 로드 시도 (헤더가 아직 로드되지 않은 경우)
+    console.log("프로젝트 정보를 찾을 수 없음. 지연 로드 시도...");
+    setTimeout(function() {
+        scwin.retryProjectInfoLoad();
+    }, 500);
+};
+
+scwin.getProjectInfoFromHeader = function() {
+    try {
+        var headerWindow = $p.getComponentById("mf_pg_header");
+        if (headerWindow) {
+            var headerScwin = headerWindow.getWindow();
+            if (headerScwin && headerScwin.scwin && headerScwin.scwin.selectBoxProjectName) {
+                var currentSelectedProject = headerScwin.scwin.selectBoxProjectName.getValue();
+                
+                if (currentSelectedProject) {
+                    scwin.SELECTED_PROJECT_ID = currentSelectedProject;
+                    
+                    // 프로젝트명도 가져오기
+                    if (headerScwin.scwin.dlt_projectName) {
+                        var projectName = headerScwin.scwin.dlt_projectName.getMatchedColumnData(
+                            "pjtId", currentSelectedProject, "pjtName");
+                        scwin.SELECTED_PROJECT_NAME = projectName;
+                    }
+                    
+                    console.log("헤더에서 프로젝트 정보 획득:", {
+                        id: scwin.SELECTED_PROJECT_ID,
+                        name: scwin.SELECTED_PROJECT_NAME
+                    });
+                    
+                    return true;
+                }
+            }
+        }
+    } catch(e) {
+        console.error("헤더에서 프로젝트 정보 가져오기 실패:", e);
+    }
+    
+    return false;
+};
+
+/**
+ * 부모 윈도우에서 프로젝트 정보 가져오기
+ */
+scwin.getProjectInfoFromParent = function() {
+    try {
+        var parentWindow = $p.getParentWindow();
+        if (parentWindow && parentWindow.scwin) {
+            var parentProjectId = parentWindow.scwin.SEL_PJT_ID;
+            var parentProjectName = parentWindow.scwin.SEL_PJT_NAME;
+            
+            if (parentProjectId) {
+                scwin.SELECTED_PROJECT_ID = parentProjectId;
+                scwin.SELECTED_PROJECT_NAME = parentProjectName || "";
+                
+                console.log("부모 윈도우에서 프로젝트 정보 획득:", {
+                    id: scwin.SELECTED_PROJECT_ID,
+                    name: scwin.SELECTED_PROJECT_NAME
+                });
+                
+                return true;
+            }
+        }
+    } catch(e) {
+        console.error("부모 윈도우에서 프로젝트 정보 가져오기 실패:", e);
+    }
+    
+    return false;
+};
+
+/**
+ * 지연 로드 재시도
+ */
+scwin.retryProjectInfoLoad = function() {
+    console.log("=== 프로젝트 정보 재시도 ===");
+    
+    var projectFound = scwin.getProjectInfoFromHeader() || scwin.getProjectInfoFromParent();
+    
+    if (projectFound) {
+        console.log("재시도로 프로젝트 정보 획득 성공");
+        scwin.loadInitialData();
+    } else {
+        console.log("프로젝트 정보를 찾을 수 없음. 빈 상태로 초기화");
+        scwin.initializeEmptyState();
+        
+        // 한 번 더 재시도 (최대 2초 후)
+        setTimeout(function() {
+            var finalAttempt = scwin.getProjectInfoFromHeader() || scwin.getProjectInfoFromParent();
+            if (finalAttempt) {
+                console.log("최종 재시도로 프로젝트 정보 획득 성공");
+                scwin.loadInitialData();
+            }
+        }, 1500);
+    }
+};
+
+/**
+ * 초기 데이터 로드
+ */
+scwin.loadInitialData = function() {
+    console.log("=== 초기 데이터 로드 시작 ===");
+    console.log("프로젝트 ID:", scwin.SELECTED_PROJECT_ID);
+    console.log("프로젝트명:", scwin.SELECTED_PROJECT_NAME);
+    
+    if (!scwin.SELECTED_PROJECT_ID) {
+        console.warn("프로젝트 ID가 없어서 데이터를 로드할 수 없습니다.");
+        scwin.initializeEmptyState();
+        return;
+    }
+    
+    // 검색 조건 설정
+    dmp_issVo.set("pageIndex", "1");
+    dmp_issVo.set("pageSize", "1000");
+    dmp_issVo.set("pjtId", scwin.SELECTED_PROJECT_ID);
+    dmp_issVo.set("userId", scwin.USER_ID);
+    
+    console.log("초기 검색 조건:", {
+        pjtId: scwin.SELECTED_PROJECT_ID,
+        userId: scwin.USER_ID,
+        pageIndex: "1",
+        pageSize: "1000"
+    });
+
+    // 데이터 조회 실행
+    $c.sbm.execute($p, sbm_selectIssVoList);
+};
+
+/**
+ * 빈 상태로 초기화
+ */
+scwin.initializeEmptyState = function() {
+    console.log("=== 빈 상태로 초기화 ===");
+    
+    // 데이터 초기화
+    dlt_waitingList.setJSON([]);
+    dlt_processingList.setJSON([]);
+    dlt_completedList.setJSON([]);
+    dlt_issVoList.setJSON([]);
+    
+    // 카운트 초기화
+    scwin.updateCountLabels(0, 0, 0, 0);
+    
+    // 폼 초기화
+    dmp_issVoDetail.setEmptyValue();
+    
+    console.log("빈 상태 초기화 완료");
+};
+
+
 
 /**
  * 새로고침 버튼에도 동일 로직 적용
  */
 scwin.btn_refresh_project_onclick = function(e) {
-    console.log("=== 프로젝트 새로고침 ===");
-    scwin.btn_search_onclick(); // 최신 프로젝트 정보로 다시 조회
+    console.log("=== 프로젝트 새로고침 버튼 클릭 ===");
+    
+    // 강제로 최신 프로젝트 정보 다시 가져오기
+    scwin.getProjectInfoAndLoadData();
 };
 
 /**
@@ -474,80 +653,34 @@ scwin.stripHtmlTags = function(htmlString) {
  * 조회 버튼 클릭 이벤트
  */
 scwin.btn_search_onclick = function (e) {
-    console.log("=== 검색 시작 ===");
+    console.log("=== 검색 버튼 클릭 ===");
     
-    // 헤더에서 직접 현재 선택된 값 가져오기
-    var headerWindow = $p.getComponentById("mf_pg_header");
-    if (headerWindow) {
-        var headerScwin = headerWindow.getWindow();
-        if (headerScwin && headerScwin.selectBoxProjectName) {
-            var currentSelectedProject = headerScwin.selectBoxProjectName.getValue();
-            console.log("헤더에서 직접 가져온 프로젝트 ID:", currentSelectedProject);
-            
-            if (currentSelectedProject) {
-                scwin.SELECTED_PROJECT_ID = currentSelectedProject;
-                
-                // 프로젝트명도 가져오기
-                var projectList = headerScwin.dlt_projectName;
-                if (projectList) {
-                    var projectName = projectList.getMatchedColumnData("pjtId", currentSelectedProject, "pjtName");
-                    scwin.SELECTED_PROJECT_NAME = projectName;
-                    console.log("프로젝트명:", scwin.SELECTED_PROJECT_NAME);
-                }
-            }
-        }
-    }
-    // 부모 윈도우 정보와 비교
-    var parentWindow = $p.getParentWindow();
-    if (parentWindow && parentWindow.scwin) {
-        console.log("부모 윈도우 프로젝트 ID:", parentWindow.scwin.SEL_PJT_ID);
-        console.log("헤더에서 가져온 프로젝트 ID:", scwin.SELECTED_PROJECT_ID);
-        
-        // 둘 중 더 최신 정보 사용 (헤더가 더 정확할 가능성 높음)
-        if (!scwin.SELECTED_PROJECT_ID && parentWindow.scwin.SEL_PJT_ID) {
-            scwin.SELECTED_PROJECT_ID = parentWindow.scwin.SEL_PJT_ID;
-        }
+    // 최신 프로젝트 정보 다시 가져오기
+    var projectFound = scwin.getProjectInfoFromHeader() || scwin.getProjectInfoFromParent();
+    
+    if (!projectFound) {
+        console.log("프로젝트가 선택되지 않았습니다.");
+        $c.win.alert("프로젝트를 선택해주세요.");
+        scwin.initializeEmptyState();
+        return;
     }
     
-    console.log("최종 사용할 프로젝트 ID:", scwin.SELECTED_PROJECT_ID);
-    
+    // 페이지 정보 초기화 (필요시)
     if (!scwin.waitingPageInfo) {
         scwin.initPaginationInfo();
     }
-
-    // 프로젝트가 선택되지 않은 경우
-    if (!scwin.SELECTED_PROJECT_ID) {
-        console.log("프로젝트가 선택되지 않았습니다.");
-        // 데이터 초기화
-        dlt_waitingList.setJSON([]);
-        dlt_processingList.setJSON([]);
-        dlt_completedList.setJSON([]);
-        scwin.updateCountLabels(0, 0, 0, 0);
-        return;
-    }
-
-    // 검색 조건 설정 (최신 프로젝트 정보로)
-    dmp_issVo.set("pageIndex", "1");
-    dmp_issVo.set("pageSize", "1000");
-    dmp_issVo.set("pjtId", scwin.SELECTED_PROJECT_ID);
-    dmp_issVo.set("userId", scwin.USER_ID);
     
-    console.log("검색 조건:", {
-        pjtId: scwin.SELECTED_PROJECT_ID,
-        userId: scwin.USER_ID,
-        pageIndex: "1",
-        pageSize: "1000"
-    });
-
-    $c.sbm.execute($p, sbm_selectIssVoList);
+    // 데이터 로드
+    scwin.loadInitialData();
 };
+
 
 /**
  * 서버 조회 결과 처리 콜백
  * @param {Object} e - 서버 응답 이벤트 객체
  */
 scwin.sbm_issList_submitdone = function (e) {
-    console.log("서버 응답 수신", e);
+    console.log("=== 서버 응답 수신 ===", e);
     
     if (!scwin.allDataPageInfo) {
         scwin.initPaginationInfo();
@@ -565,16 +698,18 @@ scwin.sbm_issList_submitdone = function (e) {
         if (elHeader && elHeader.resCode) {
             errorMsg += "\n오류코드: " + elHeader.resCode;
         }
+        console.error("데이터 조회 실패:", errorMsg);
         $c.win.alert(errorMsg);
+        scwin.initializeEmptyState();
         return false;
     }
 
     // 성공 시 데이터 처리
     var allData = elData.issVoList || [];
-    console.log("전체 데이터:", allData.length, "개");
+    console.log("조회된 전체 데이터:", allData.length, "개");
 
     scwin.allDataPageInfo.data = allData;
-    scwin.allDataPageInfo.totalCount = elData.totalCount;
+    scwin.allDataPageInfo.totalCount = elData.totalCount || allData.length;
 
     // 상태별로 데이터 필터링
     var waitingData = [];      // 대기 (PEN)
@@ -607,11 +742,46 @@ scwin.sbm_issList_submitdone = function (e) {
 
     // 그리드 및 UI 업데이트
     scwin.updateGridData();
-    scwin.updatePaginationAll(elData.totalCount);
-    scwin.updateCountLabels(waitingData.length, processingData.length, completedData.length, elData.totalCount);
+    scwin.updatePaginationAll(scwin.allDataPageInfo.totalCount);
+    scwin.updateCountLabels(waitingData.length, processingData.length, completedData.length, scwin.allDataPageInfo.totalCount);
 
     // 폼 초기화
     dmp_issVoDetail.setEmptyValue();
+    
+    console.log("데이터 로드 완료:", {
+        전체: scwin.allDataPageInfo.totalCount,
+        대기: waitingData.length,
+        진행중: processingData.length,
+        완료: completedData.length
+    });
+};
+
+scwin.startProjectChangeMonitoring = function() {
+    // 헤더의 프로젝트 선택박스 변경 이벤트 모니터링
+    setInterval(function() {
+        var currentProjectId = scwin.getCurrentProjectId();
+        if (currentProjectId && currentProjectId !== scwin.SELECTED_PROJECT_ID) {
+            console.log("프로젝트 변경 감지:", scwin.SELECTED_PROJECT_ID, "->", currentProjectId);
+            scwin.SELECTED_PROJECT_ID = currentProjectId;
+            scwin.loadInitialData();
+        }
+    }, 2000); // 2초마다 체크
+};
+
+
+scwin.getCurrentProjectId = function() {
+    try {
+        var headerWindow = $p.getComponentById("mf_pg_header");
+        if (headerWindow && headerWindow.getWindow() && headerWindow.getWindow().scwin) {
+            var headerScwin = headerWindow.getWindow().scwin;
+            if (headerScwin.selectBoxProjectName) {
+                return headerScwin.selectBoxProjectName.getValue();
+            }
+        }
+    } catch(e) {
+        // 무시
+    }
+    return null;
 };
 
 /**

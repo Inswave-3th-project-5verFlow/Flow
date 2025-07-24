@@ -470,7 +470,7 @@ public class DefServiceImpl implements DefService {
         defVo.setAssignee(unitTestVo.getAssignee());
         defVo.setCreatedAt(getCurrentTimestamp());
         defVo.setUpdatedAt(getCurrentTimestamp());
-        defVo.setPjtid(unitTestVo.getPjtId());
+        defVo.setPjtId(unitTestVo.getPjtId());
         defVo.setIsDeleted("N");
         defVo.setFixDueDate(calculateFixDueDate(unitTestVo.getPriority()));
         

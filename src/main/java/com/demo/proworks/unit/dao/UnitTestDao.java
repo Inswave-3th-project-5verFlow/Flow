@@ -152,4 +152,8 @@ public class UnitTestDao extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstr
         Object result = selectByPk("com.demo.proworks.unit.getNextTestCaseSequence", null);
         return result != null ? (Integer) result : 1;
     }
+    
+    public int updateProjectTaskIsTest(UnitTestVo unitTestVo) throws ElException {
+	    return update("com.demo.proworks.unit.updateProjectTaskIsTest", unitTestVo);
+	}
 }

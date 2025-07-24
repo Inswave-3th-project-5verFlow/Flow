@@ -160,60 +160,66 @@
 
     <!-- 단위테스트 케이스 등록 -->
     <insert id="insertUnitTest" parameterType="com.demo.proworks.unit.vo.UnitTestVo">
-        INSERT INTO unit_test_case (
-            id,
-            task_id,
-            task_name,
-            test_case_name,
-            test_target,
-            test_type,
-            priority,
-            description,
-            precondition,
-            test_data,
-            test_steps,
-            expected_result,
-            actual_result,
-            test_status,
-            execution_date,
-            duration,
-            notes,
-            requirements,
-            assignee,
-            is_deleted,
-            created_at,
-            updated_at,
-            created_by,
-            updated_by,
-            pjt_id
-        ) VALUES (
-            #{testCaseId},
-            #{taskId},
-            #{taskName},
-            #{testCaseName},
-            #{testTarget},
-            #{testType},
-            #{priority},
-            #{description},
-            #{precondition},
-            #{testData},
-            #{testSteps},
-            #{expectedResult},
-            #{actualResult},
-            #{testStatus},
-            #{executionDate},
-            #{duration},
-            #{notes},
-            #{requirements},
-            #{assignee},
-            'N',
-            NOW(),
-            NOW(),
-            #{createdBy},
-            #{updatedBy},
-            #{pjtId}
-        )
-    </insert>
+	    INSERT INTO unit_test_case (
+	        id,
+	        task_id,
+	        task_name,
+	        test_case_name,
+	        test_target,
+	        test_type,
+	        priority,
+	        description,
+	        precondition,
+	        test_data,
+	        test_steps,
+	        expected_result,
+	        actual_result,
+	        test_status,
+	        execution_date,
+	        duration,
+	        notes,
+	        requirements,
+	        assignee,
+	        is_deleted,
+	        created_at,
+	        updated_at,
+	        created_by,
+	        updated_by,
+	        pjt_id
+	    ) VALUES (
+	        #{testCaseId},
+	        #{taskId},
+	        #{taskName},
+	        #{testCaseName},
+	        #{testTarget},
+	        #{testType},
+	        #{priority},
+	        #{description},
+	        #{precondition},
+	        #{testData},
+	        #{testSteps},
+	        #{expectedResult},
+	        #{actualResult},
+	        #{testStatus},
+	        #{executionDate},
+	        #{duration},
+	        #{notes},
+	        #{requirements},
+	        #{assignee},
+	        'N',
+	        NOW(),
+	        NOW(),
+	        #{createdBy},
+	        #{updatedBy},
+	        #{pjtId}
+	    );
+	</insert>
+	<update id="updateProjectTaskIsTest" parameterType="com.demo.proworks.unit.vo.UnitTestVo">
+	    UPDATE project_task 
+	    SET is_test = 1
+	    WHERE task_id = #{taskId}
+	    AND (is_test IS NULL OR is_test != 1)
+	</update>
 
     <!-- 단위테스트 케이스 수정 -->
     <update id="updateUnitTest" parameterType="com.demo.proworks.unit.vo.UnitTestVo">

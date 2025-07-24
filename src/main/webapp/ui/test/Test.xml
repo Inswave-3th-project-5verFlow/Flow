@@ -6,7 +6,7 @@
 		<w2:type>COMPONENT</w2:type>
 		<w2:buildDate />
 		<w2:MSA />
-		<xf:model>
+		<xf:model> 
 			<w2:dataCollection baseNode="map">
                 <w2:dataList baseNode="list" id="dlt_taskList" repeatNode="map" saveRemovedData="true">
                     <w2:columnInfo>
@@ -433,8 +433,85 @@ scwin.onpageload = function() {
         scwin.adjustUIByPermission();
     }, 200);
     
+    scwin.handleTaskIdParam();
+
     console.log("페이지 로드 완료");
 };
+
+
+
+scwin.handleTaskIdParam = function() {
+    try {
+        var developParam = $p.getParameter("tabData");
+        if (developParam &&  developParam.selectedTaskId) {
+            console.log("개발업무에서 전달받은 업무ID :", developParam.selectedTaskId);
+            console.log("개발업무에서 전달받은 flag :", developParam.openRegisterPopup);
+            if(developParam.openRegisterPopup){ // 개발 업무 팝업에서 테스트 등록을 누른 경우.
+                // 전달받은 업무ID로 테스트 등록 팝업 열기
+                scwin.openTestRegisterPopupWithTask(developParam.selectedTaskId, developParam.selectedTaskName || "");
+            } 
+            else{ // 개발 업무 목록 페이지에서 개발 업무 ID를 클릭해서 넘어온 경우.
+                // 검색 조건에 업무ID 설정하여 필터링
+                dmp_search.set("searchTaskId", developParam.selectedTaskId);
+                scwin.searchUnitTests();
+            } 
+        }
+    } catch (e) {
+        console.log("개발 업무ID 파라미터 처리 생략");
+    }
+};
+
+
+/**
+ * 개발업무에서 전달받은 업무ID로 테스트 등록 팝업 열기
+ */
+scwin.openTestRegisterPopupWithTask = function(taskId, taskName) {
+    console.log("개발업무 연동 테스트 등록 팝업 열기:", taskId, taskName);
+    
+    // 데이터 완전 초기화
+    dmp_unitTestDetail.setEmptyValue();
+    
+    // 전달받은 업무 정보로 설정
+    dmp_unitTestDetail.set("testCaseId", "");
+    dmp_unitTestDetail.set("testStatus", "SUC");
+    dmp_unitTestDetail.set("priority", "MEDIUM");
+    dmp_unitTestDetail.set("testType", "NORMAL");
+    dmp_unitTestDetail.set("taskId", taskId);
+    dmp_unitTestDetail.set("taskName", taskName || "선택된 업무");
+    dmp_unitTestDetail.set("assignee", scwin.CURRENT_USER_ID);
+    dmp_unitTestDetail.set("assigneeName", scwin.getCurrentUserName() || "현재 사용자");
+    
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        dmp_unitTestDetail.set("pjtId", scwin.CURRENT_PROJECT_ID);
+    }
+
+    // 파일 관련 초기화
+    dlt_upload.setJSON([]);
+    dlt_attVoList.setJSON([]);
+    
+    scwin.setFormMode("new");
+    pop_overlay.show();
+    
+    setTimeout(function() {
+        try {
+            spn_popupTitle.setValue("새 단위테스트 케이스 등록 (개발업무 연동)");
+        } catch(e) {
+            setTimeout(function() {
+                spn_popupTitle.setValue("새 단위테스트 케이스 등록 (개발업무 연동)");
+            }, 50);
+        }
+    }, 50);
+    
+    scwin.hideAllPreviewPanels();
+    scwin.showNoPreview();
+    
+    console.log("개발업무 연동 테스트 등록 모드로 초기화 완료:", {
+        업무ID: taskId,
+        업무명: taskName,
+        담당자: scwin.CURRENT_USER_ID
+    });
+};
+
 
 /**
  * 데이터 필터링 (권한 적용)
@@ -3070,7 +3147,7 @@ scwin.getCurrentUserName = function() {
         return "사용자";
     }
 };]]></script>
-	</head>
+    </head>
 	<body ev:onpageload="scwin.onpageload">
 		<xf:group class="sub_contents" id="" style="">
 			<xf:group class="pgtbox" id="" style="">
