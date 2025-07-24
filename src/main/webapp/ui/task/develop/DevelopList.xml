@@ -28,7 +28,7 @@
 						<w2:column dataType="text" id="taskName" name="업무명"></w2:column>
 						<w2:column dataType="text" id="taskDes" name="업무상세"></w2:column>
 						<w2:column dataType="text" id="taskStatus" name="업무상태"></w2:column>
-						<w2:column dataType="text" id="isTest" name="테스트여부" defaultValue="0"></w2:column>
+						<w2:column dataType="text" id="isTest" name="테스트여부" defaultValue="0" ignoreStatus="true"></w2:column>
 						<w2:column dataType="text" id="isDesign" name="설계업무여부" defaultValue="0"></w2:column>
 						<w2:column dataType="text" id="ptTaskId" name="상위업무ID" defaultValue=""></w2:column>
 						<w2:column dataType="text" id="deTaskId" name="소속설계업무ID"></w2:column>
@@ -151,6 +151,13 @@ scwin.sbm_designList_submitdone = function (e) {
     spn_totalPageCount.setValue(totalPageCount);
     spn_pageIndex.setValue(dmp_designVo.get("pageIndex"));
     pgl_designList.setSelectedIndex(dmp_designVo.get("pageIndex"));
+
+    // 스타일 적용
+    setTimeout(function () {
+        scwin.setProgressStyle();
+        scwin.setTaskStatusStyle();
+        scwin.setTestStatusStyleSimple();
+    }, 100);
 };
 
 scwin.pgl_designList_onclick = function (idx) {
@@ -205,35 +212,38 @@ scwin.sbm_saveDesignVoList_submitdone = function (e) {
 };
 
 scwin.grd_list_oncellclick = function (row, col, colId) {
+    let rowData = dlt_designVoList.getRowJSON(row)
     if (colId === "ptTaskName") {
         scwin.openParentTaskPopup(row);
     }
-    if (colId === "isTest" && dlt_designVoList.getRowData(row).isTest === "1") {
-        console.log("테스트 여부 컬럼 클릭.")
-        scwin.navigateToTaskTab(row);
+    if (colId === "taskId") {
+        if (rowData.isTest === "1") scwin.navigateToTaskTab(row, false);
+        else $c.win.alert("해당 개발업무에 등록된 테스트가 없습니다.");
+
     }
 };
 
-// 테스트 여부 컬럼 클리시, 개발 업무ID를 넘겨주면서 페이지 이동.
-scwin.navigateToTaskTab = function (rowIndex) {
+// 개발 업무ID 컬럼 클리시, 개발 업무ID를 넘겨주면서 페이지 이동.
+scwin.navigateToTaskTab = function (rowIndex, flag) {
     try {
         const rowData = dlt_designVoList.getRowJSON(rowIndex);
 
         // URL과 타이틀 결정
-        let targetUrl = "test/Test1.xml";
+        let targetUrl = "test/Test.xml";
         let tabTitle = "테스트 내역";
 
         // 전달할 탭 데이터
         const tabData = {
             selectedTaskId: rowData.taskId, // 개발 업무ID
             taskName: rowData.taskName,
-            fromWbs: true,
+            openRegisterPopup: flag,
             timestamp: new Date().getTime(),
         };
+        console.log("선택된 개발업무ID : ", rowData.taskId);
 
         // 메인페이지의 openTab 함수 호출 (수정된 방식)
         if ($p.parent() && $p.parent().scwin && $p.parent().scwin.openTab) {
-             $p.parent().scwin.openTab(targetUrl, tabTitle, tabData);
+            $p.parent().scwin.openTab(targetUrl, tabTitle, tabData);
         } else {
             console.error("메인페이지의 openTab 함수를 찾을 수 없습니다.");
             $c.win.alert("페이지 이동에 실패했습니다.");
@@ -535,7 +545,7 @@ scwin.btn_excel_template_download_onclick = function (e) {
     grd_list.advancedExcelDownload(options);
 };
 
-scwin.handleWbsParam = function() {
+scwin.handleWbsParam = function () {
     try {
         var wbsData = $p.getParameter("tabData");
         if (wbsData && wbsData.fromWbs && wbsData.selectedTaskId) {
@@ -544,6 +554,132 @@ scwin.handleWbsParam = function() {
         }
     } catch (e) {
         console.log("WBS 파라미터 처리 생략");
+    }
+};
+
+// ================================================================
+// 스타일 적용 함수들
+// ================================================================
+
+/**
+ * 진척률별 프로그래스 바 스타일 적용
+ * @description 진척률에 따라 그리드 셀에 프로그래스 바 스타일을 적용합니다.
+ */
+scwin.setProgressStyle = function () {
+    const rowCount = dlt_designVoList.getRowCount();
+    const colIndex = grd_list.getColumnIndex("taskRate");
+
+    for (let i = 0; i < rowCount; i++) {
+        const percent = parseInt(dlt_designVoList.getCellData(i, "taskRate"), 10) || 0;
+
+        let styleValue = "#f8f9fa";
+        if (percent > 0) {
+            styleValue = `linear-gradient(to right,
+                #EC9192 0%,
+                #EC9192 ${percent}%,
+                #f8f9fa ${percent}%,
+                #f8f9fa 100%)`;
+        }
+
+        // 진척률에 따른 글자 색상 결정
+        let textColor = "#333333";
+        if (percent > 50) {
+            textColor = "#ffffff";
+        }
+
+        const styles = [
+            { type: "cell", rowIndex: i, colIndex, styleName: "background", styleValue },
+            { type: "cell", rowIndex: i, colIndex, styleName: "border-radius", styleValue: "12px" },
+            { type: "cell", rowIndex: i, colIndex, styleName: "text-align", styleValue: "center" },
+            { type: "cell", rowIndex: i, colIndex, styleName: "color", styleValue: textColor },
+            { type: "cell", rowIndex: i, colIndex, styleName: "font-weight", styleValue: "bold" },
+        ];
+
+        styles.forEach(style => grd_list.setStyleAll(style));
+    }
+};
+
+
+/**
+ * 업무상태별 스타일 적용 (배지 스타일)
+ * @description 업무상태에 따라 배지 형태로 스타일을 적용합니다.
+ */
+scwin.setTaskStatusStyle = function () {
+    const rowCount = dlt_designVoList.getTotalRow();
+    const colIndex = grd_list.getColumnIndex("taskStatus");
+
+    for (let i = 0; i < rowCount; i++) {
+        const status = dlt_designVoList.getCellData(i, "taskStatus");
+        let backgroundColor = "#f8f9fa";
+        let textColor = "#333333";
+
+        switch (status) {
+            case "대기":
+                backgroundColor = "#FFF3CD";
+                textColor = "#333";
+                break;
+            case "진행중":
+                backgroundColor = "#CCE7F0";
+                textColor = "#333";
+                break;
+            case "완료":
+                backgroundColor = "#D4EDDA";
+                textColor = "#333";
+                break;
+        }
+
+        const styles = [
+            { type: "cell", rowIndex: i, colIndex, styleName: "background-color", styleValue: backgroundColor },
+            { type: "cell", rowIndex: i, colIndex, styleName: "color", styleValue: textColor },
+            { type: "cell", rowIndex: i, colIndex, styleName: "border-radius", styleValue: "20px" },
+            { type: "cell", rowIndex: i, colIndex, styleName: "text-align", styleValue: "center" },
+            { type: "cell", rowIndex: i, colIndex, styleName: "font-weight", styleValue: "bold" },
+            { type: "cell", rowIndex: i, colIndex, styleName: "font-size", styleValue: "11px" },
+            { type: "cell", rowIndex: i, colIndex, styleName: "border", styleValue: "none" }
+        ];
+
+        styles.forEach(style => grd_list.setStyleAll(style));
+    }
+};
+
+/**
+ * 테스트 여부별 스타일 적용 (데이터 보존 버전)
+ * @description 원본 데이터를 보존하면서 스타일만 적용합니다.
+ */
+scwin.setTestStatusStyleSimple = function () {
+    const rowCount = dlt_designVoList.getTotalRow();
+    const colIndex = grd_list.getColumnIndex("isTest");
+    
+    for (let i = 0; i < rowCount; i++) {
+        const testStatus = dlt_designVoList.getCellData(i, "isTest");
+        
+        // 원본 데이터를 보존하고 스타일만 적용
+        let backgroundColor = "#f8f9fa";
+        let textColor = "#333333";
+
+        switch (testStatus) {
+            case "1": // 테스트 있음
+                backgroundColor = "#D1ECF1";
+                textColor = "#0C5460";
+                break;
+            case "0": // 테스트 없음
+                backgroundColor = "#F8D7DA";
+                textColor = "#721C24";
+                break;
+        }
+
+        const styles = [
+            { type: "cell", rowIndex: i, colIndex, styleName: "background", styleValue: backgroundColor },
+            { type: "cell", rowIndex: i, colIndex, styleName: "background-color", styleValue: backgroundColor },
+            { type: "cell", rowIndex: i, colIndex, styleName: "color", styleValue: textColor },
+            { type: "cell", rowIndex: i, colIndex, styleName: "border-radius", styleValue: "15px" },
+            { type: "cell", rowIndex: i, colIndex, styleName: "text-align", styleValue: "center" },
+            { type: "cell", rowIndex: i, colIndex, styleName: "font-weight", styleValue: "bold" },
+            { type: "cell", rowIndex: i, colIndex, styleName: "font-size", styleValue: "12px" },
+            { type: "cell", rowIndex: i, colIndex, styleName: "border", styleValue: "none" }
+        ];
+
+        styles.forEach(style => grd_list.setStyleAll(style));
     }
 };]]></script>
 	</head>
@@ -648,27 +784,27 @@ scwin.handleWbsParam = function() {
 				<xf:group class="btnbox" id="" meta_snippetCategory="08_버튼" meta_snippetKeyComponent="true" meta_snippetName="8_04 전체제어버튼"
 					style="">
 					<xf:group class="rt" id="" style="">
-						<xf:trigger class="btn_cm" id="btn_add" style="" type="button" ev:onclick="scwin.btn_add_onclick">
+						<xf:trigger class="btn_cm" id="btn_add" style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 80px;width: auto;padding: 0 10px;width: 80px;border-color: #fff;border: none;" type="button" ev:onclick="scwin.btn_add_onclick">
 							<xf:label><![CDATA[업무 추가]]></xf:label>
 						</xf:trigger>
 
-						<xf:trigger class="btn_cm" id="btn_excel_template" style="background-color:;color:;" type="button"
+						<xf:trigger class="btn_cm" id="btn_excel_template" style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 120px;width: auto;padding: 0 10px;width: 80px;border-color: #fff;border: none;" type="button"
 							ev:onclick="scwin.btn_excel_template_download_onclick">
 							<xf:label><![CDATA[템플릿 다운로드]]></xf:label>
 						</xf:trigger>
-						<xf:trigger class="btn_cm" id="btn_excel_upload" style="" type="button"
+						<xf:trigger class="btn_cm" id="btn_excel_upload" style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 90px;width: auto;padding: 0 10px;width: 80px;border-color: #fff;border: none;" type="button"
 							ev:onclick="scwin.btn_excel_upload_onclick">
 							<xf:label><![CDATA[엑셀 업로드]]></xf:label>
 						</xf:trigger>
-						<xf:trigger class="btn_cm" id="btn_excel_download" style="" type="button"
+						<xf:trigger class="btn_cm" id="btn_excel_download" style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 105px;width: auto;padding: 0 10px;width: 80px;border-color: #fff;border: none;" type="button"
 							ev:onclick="scwin.btn_excel_download_onclick">
 							<xf:label><![CDATA[엑셀 다운로드]]></xf:label>
 						</xf:trigger>
 						<w2:textbox class="bar_btndiv" id="" label="" style=""></w2:textbox>
-						<xf:trigger class="btn_cm pt" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
+						<xf:trigger class="btn_cm pt" id="btn_save" style="background-color:#98BED6;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 80px;width: auto;padding: 0 10px;width: 80px;border-color: #fff;border: none;" type="button" ev:onclick="scwin.btn_save_onclick">
 							<xf:label><![CDATA[저장]]></xf:label>
 						</xf:trigger>
-						<xf:trigger class="btn_cm " id="btn_delete" style=";background-color:#FF0000;color:#FFFFFF;" type="button"
+						<xf:trigger class="btn_cm " id="btn_delete" style="background-color:#EC9192;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 80px;width: auto;padding: 0 10px;width: 80px;border-color: #fff;border: none;" type="button"
 							ev:onclick="scwin.btn_delete_onclick">
 							<xf:label><![CDATA[삭제]]></xf:label>
 						</xf:trigger>
@@ -680,7 +816,7 @@ scwin.handleWbsParam = function() {
 				<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dlt_designVoList"
 					defaultCellHeight="26" focusMode="row" id="grd_list" scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;"
 					visibleRowNum="15" ev:oncellclick="scwin.grd_list_oncellclick" readOnly="false" rowStatusHeaderValue="상태" rowStatusVisible="true"
-					editModeEvent="onclick" sortEvent="onclick" sortable="true" ev:oncelldblclick="scwin.grd_list_oncelldblclick">
+					editModeEvent="onclick" sortEvent="onclick" sortable="true" ev:oncelldblclick="scwin.grd_list_oncelldblclick" oddEvenColorDisplay="false">
 					<w2:caption style="" id="caption2" value="this is a grid caption."></w2:caption>
 					<w2:header style="" id="header2">
 						<w2:row style="" id="row3">
@@ -714,7 +850,7 @@ scwin.handleWbsParam = function() {
 							<w2:column width="70" inputType="text" style="" id="column14" value="업무담당자" displayMode="label"
 								localeRef="Design_COLNAME_00014">
 							</w2:column>
-							<w2:column width="70" inputType="text" style="" id="column15" value="진척률" displayMode="label"
+							<w2:column width="100" inputType="text" style="" id="column15" value="진척률" displayMode="label"
 								localeRef="Design_COLNAME_00015">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column16" value="프로젝트ID" displayMode="label"
@@ -749,13 +885,13 @@ scwin.handleWbsParam = function() {
 							<w2:column width="70" inputType="text" style="" id="ptTaskId" value="" displayMode="label" readOnly="true"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="ptTaskName" value="" displayMode="label" readOnly="true"></w2:column>
 							<w2:column width="70" inputType="calendar" style="" id="taskSt" value="" displayMode="label"
-								useFilter="false">
+								useFilter="false" viewTypeIconImage="true">
 							</w2:column>
-							<w2:column width="70" inputType="calendar" style="" id="taskEt" value="" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="calendar" style="" id="taskRst" value="" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="calendar" style="" id="taskRet" value="" displayMode="label"></w2:column>
+							<w2:column width="70" inputType="calendar" style="" id="taskEt" value="" displayMode="label" viewTypeIconImage="true"></w2:column>
+							<w2:column width="70" inputType="calendar" style="" id="taskRst" value="" displayMode="label" viewTypeIconImage="true"></w2:column>
+							<w2:column width="70" inputType="calendar" style="" id="taskRet" value="" displayMode="label" viewTypeIconImage="true"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="taskAsi" value="" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="taskRate" value="" displayMode="label"></w2:column>
+							<w2:column width="120" inputType="text" style="" id="taskRate" value="" displayMode="label" dataType="number" displayFormat="###%" applyFormat="all"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="pjtId" value="" displayMode="label" hidden="true"></w2:column>
 
 						</w2:row>

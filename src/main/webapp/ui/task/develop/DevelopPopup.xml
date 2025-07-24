@@ -6,6 +6,85 @@
         <w2:type>COMPONENT</w2:type>
         <w2:buildDate/>
         <w2:MSA/>
+        
+        <style>
+			/* 팝업 전체 컨테이너 - 특정 클래스만 적용 */
+			.pop_contents {
+				background-color: white;
+				border: 2px solid #98BED6;
+				border-radius: 8px;
+				box-shadow: 0 4px 12px rgba(152, 190, 214, 0.2);
+			}
+			
+			/* 팝업 헤더 - 이 팝업 내부만 적용 */
+			.pop_contents .pop_header {
+				background-color: #EDFAFF !important;
+				border-bottom: 1px solid #7BA6C4 !important;
+			}
+			
+			.pop_contents .pop_title {
+				color: #333 !important;
+				font-weight: bold !important;
+			}
+			
+			/* 팝업 바디 - 이 팝업 내부만 적용 */
+			.pop_contents .pop_body {
+				background-color: white;
+			}
+			
+			/* 섹션 타이틀 - 이 팝업 내부만 적용 */
+			.pop_contents .section_title {
+				color: #98BED6 !important;
+				border-bottom: 2px solid #98BED6 !important;
+				padding-bottom: 5px !important;
+			}
+			
+			/* 테이블 헤더 - 이 팝업 내부만 적용 */
+			.pop_contents .w2tb_th {
+				background-color: #EDFAFF !important;
+				color: #333 !important;
+			}
+			
+			/* 테이블 바디 - 이 팝업 내부만 적용 */
+			.pop_contents .w2tb_td {
+				background-color: white !important;
+			}
+			
+			/* 입력 요소들 - 이 팝업 내부만 적용 */
+			.pop_contents input[type="text"], 
+			.pop_contents select, 
+			.pop_contents textarea {
+				border: 1px solid #98BED6 !important;
+				border-radius: 4px !important;
+			}
+			
+			.pop_contents input[type="text"]:focus, 
+			.pop_contents select:focus, 
+			.pop_contents textarea:focus {
+				border-color: #7BA6C4 !important;
+				box-shadow: 0 0 0 2px rgba(152, 190, 214, 0.2) !important;
+			}
+			
+			/* 읽기 전용 입력 - 이 팝업 내부만 적용 */
+			.pop_contents input[readonly] {
+				background-color: #f8f9fa !important;
+			}
+			
+			
+			/* 버튼 박스 - 이 팝업 내부만 적용 */
+			.pop_contents .btnbox {
+				background-color: #f8f9fa;
+				border-top: 1px solid #98BED6;
+				border-radius: 0 0 8px 8px;
+			}
+			
+			/* 달력 입력 - 이 팝업 내부만 적용 */
+			.pop_contents .w2inputcalendar {
+				border: 1px solid #98BED6 !important;
+				border-radius: 4px !important;
+			}
+		</style>
+        
         <xf:model>
         	<w2:dataCollection baseNode="map">
         		<!-- 업무 상세 정보 -->
@@ -30,6 +109,7 @@
         				<w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
         				<w2:key id="userId" name="사용자ID" dataType="text"></w2:key>
         				<w2:key id="displayTest" name="화면용 테스트 여부" dataType="text"></w2:key>
+        				<w2:key id="isDesign" name="업무분류" dataType="text" defaultValue="0"></w2:key>
         			</w2:keyInfo>
         		</w2:dataMap>
 
@@ -70,18 +150,6 @@
         		</w2:dataList>
 
         		<!-- 단계ID 목록 -->
-        		<w2:dataList baseNode="list" repeatNode="map" id="dlt_stgId" saveRemovedData="true">
-        			<w2:columnInfo>
-        				<w2:column dataType="text" name="단계명" id="label"></w2:column>
-        				<w2:column dataType="text" name="stgId" id="value"></w2:column>
-        			</w2:columnInfo>
-        			<w2:data use="true">
-        				<w2:row>
-        					<label><![CDATA[개발]]></label>
-        					<value><![CDATA[6]]></value>
-        				</w2:row>
-        			</w2:data>
-        		</w2:dataList>
         	</w2:dataCollection>
 
         	<w2:workflowCollection />
@@ -149,7 +217,7 @@ scwin.btn_ptTaskName_onclick = function (e) {
         dataObject: jsnPopupData
     };
 
-    $p.openPopup("/InsWebApp/ui/task/develop/DesignTaskTree.xml", options);
+    $p.openPopup("/InsWebApp/ui/task/design/DesignTaskTree.xml", options);
 };
 
 scwin.receiveTaskData = function (returnData) {
@@ -257,6 +325,56 @@ scwin.btn_reset_onclick = function (e) {
     dmp_taskDetail.set("taskDepth", 1);
     $c.win.alert("설계 업무가 초기화되었습니다.")
 };
+
+// 테스트 등록 버튼
+scwin.btn_test_reg_onclick = function (e) {
+    console.log(dmp_taskDetail.get("taskId"));
+    let taskId = dmp_taskDetail.get("taskId"); // 개발 업무ID
+    scwin.navigateToTaskTab(taskId, true);
+};
+
+// 개발 업무ID 를 테스트 페이지 >> 테스트 등록 팝업으로 전달
+scwin.navigateToTaskTab = function (taskId, flag) {
+    try {
+        
+        // URL과 타이틀 결정
+        let targetUrl = "test/Test.xml";
+        let tabTitle = "테스트 내역";
+
+        // 전달할 탭 데이터
+        const tabData = {
+            selectedTaskId: taskId, // 개발 업무ID
+            openRegisterPopup: flag, 
+            timestamp: new Date().getTime(),
+        };
+        console.log("선택된 개발업무ID : ", taskId);
+
+        // 메인페이지의 openTab 함수 호출 (수정된 방식)
+        // 팝업 -> developlist -> 메인페이지로 2단계 거쳐서 접근
+        var parentDevelopList = $p.parent(); // developlist.xml
+        if (parentDevelopList && parentDevelopList.scwin) {
+            var mainPage = parentDevelopList.$p.parent(); // testMain.xml
+            
+            if (mainPage && mainPage.scwin && mainPage.scwin.openTab) {
+                mainPage.scwin.openTab(targetUrl, tabTitle, tabData);
+                
+                // 팝업 닫기
+                $p.closePopup();
+                
+            } else {
+                console.error("메인페이지의 openTab 함수를 찾을 수 없습니다.");
+                $c.win.alert("페이지 이동에 실패했습니다.");
+            }
+        } else {
+            console.error("부모 페이지(developlist)를 찾을 수 없습니다.");
+            $c.win.alert("페이지 이동에 실패했습니다.");
+        }
+
+    } catch (error) {
+        console.error("테스트 화면 이동 중 오류:", error);
+        $c.win.alert("화면 이동 중 오류가 발생했습니다.");
+    }
+};
 ]]></script>
     </head>
     
@@ -323,7 +441,11 @@ scwin.btn_reset_onclick = function (e) {
     							<w2:textbox label="테스트여부" style="color:#333;" />
     						</xf:group>
     						<xf:group class="w2tb_td" tagname="td">
-    							<xf:input id="" style="width: 144px;" ref="data:dmp_taskDetail.displayTest" readOnly="true"></xf:input>
+    							<xf:input id="" style="width: 100px;" ref="data:dmp_taskDetail.displayTest" readOnly="true"></xf:input>
+    							<xf:trigger class="btn_cm" id="btn_test_reg"
+    								style="margin-left:5px; padding:2px 8px; background-color: #454F5B; color: #FFFFFF;" type="button" ev:onclick="scwin.btn_test_reg_onclick">
+    								<xf:label>등록</xf:label>
+    							</xf:trigger>
     						</xf:group>
     					</xf:group>
 
@@ -337,13 +459,13 @@ scwin.btn_reset_onclick = function (e) {
 									<w2:colspan>3</w2:colspan>
 								</w2:attributes>
                                 <xf:group style="align-items:center;">
-                                	<xf:input style="width:393px;" ref="data:dmp_taskDetail.ptTaskName" readOnly="true" />
-                                	<xf:trigger class="btn_cm" id="btn_ptTaskName" style="margin-left:5px; padding:2px 8px;" type="button"
+                                	<xf:input style="width:320px;" ref="data:dmp_taskDetail.ptTaskName" readOnly="true" />
+                                	<xf:trigger class="btn_cm" id="btn_ptTaskName" style="margin-left:5px; padding:2px 8px; background-color: #454F5B; color: #FFFFFF;" type="button"
                                 		ev:onclick="scwin.btn_ptTaskName_onclick">
                                 		<xf:label>선택</xf:label>
                                 	</xf:trigger>
                                 	<xf:trigger class="btn_cm" ev:onclick="scwin.btn_reset_onclick" id="btn_reset"
-                                		style="margin-left:5px; padding:2px 8px;" type="button">
+                                		style="margin-left:5px; padding:2px 8px; background-color: #454F5B; color: #FFFFFF;" type="button">
                                 		<xf:label>초기화</xf:label>
                                 	</xf:trigger>
                                 </xf:group>
@@ -434,25 +556,25 @@ scwin.btn_reset_onclick = function (e) {
     				<xf:textarea style="width:100%; height:100px; resize:vertical;" ref="data:dmp_taskDetail.taskDes"
     					placeholder="업무에 대한 상세 설명을 입력하세요." />
     			</xf:group>
-    			<xf:group class="btnbox" id="" meta_snippetCategory="08_버튼" meta_snippetKeyComponent="true" meta_snippetName="8_04 전체제어버튼"
-    				style="">
-    				<xf:group class="rt" id="" style="">
-    					<w2:textbox class="bar_btndiv" id="" label="" style=""></w2:textbox>
-    					<xf:trigger class="btn_cm pt" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
-    						<xf:label><![CDATA[저장]]></xf:label>
-    					</xf:trigger>
-
-    					<xf:trigger class="btn_cm pt" id="btn_delete" style=";color:;background-color:#FF0000;" type="button" ev:onclick="scwin.btn_delete_onclick">
-    						<xf:label><![CDATA[삭제]]></xf:label>
-    					</xf:trigger>
-    					<xf:trigger class="btn_cm " id="btn_cancel" style="" type="button" ev:onclick="scwin.btn_cancel_onclick">
-    						<xf:label><![CDATA[취소]]></xf:label>
-    					</xf:trigger>
-    				</xf:group>
-    			</xf:group>
     		</xf:group>
 
     		<!-- 팝업 버튼 영역 -->
+    		<xf:group class="btnbox" id="" meta_snippetCategory="08_버튼" meta_snippetKeyComponent="true" meta_snippetName="8_04 전체제어버튼"
+    			style="">
+    			<xf:group class="rt" id="" style="">
+    				<w2:textbox class="bar_btndiv" id="" label="" style=""></w2:textbox>
+    				<xf:trigger class="btn_cm pt" id="btn_save" style="background-color:#98BED6;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 80px;width: auto;padding: 0 10px;width: 80px;border-color: #fff;border: none;" type="button" ev:onclick="scwin.btn_save_onclick">
+    					<xf:label><![CDATA[저장]]></xf:label>
+    				</xf:trigger>
+
+    				<xf:trigger class="btn_cm pt" id="btn_delete" style="background-color:#EC9192;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 80px;width: auto;padding: 0 10px;width: 80px;border-color: #fff;border: none;" type="button" ev:onclick="scwin.btn_delete_onclick">
+    					<xf:label><![CDATA[삭제]]></xf:label>
+    				</xf:trigger>
+    				<xf:trigger class="btn_cm " id="btn_cancel" style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 80px;width: auto;padding: 0 10px;width: 80px;border-color: #fff;border: none;" type="button" ev:onclick="scwin.btn_cancel_onclick">
+    					<xf:label><![CDATA[취소]]></xf:label>
+    				</xf:trigger>
+    			</xf:group>
+    		</xf:group>
     	</xf:group>
     </body>
 </html>

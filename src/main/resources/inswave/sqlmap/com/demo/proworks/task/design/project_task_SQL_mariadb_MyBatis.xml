@@ -103,7 +103,12 @@
 		    ELSE NULLIF(#{taskRet}, '')
 		END,   
         task_asi = COALESCE(NULLIF(#{taskAsi}, ''), task_asi),              <!-- null이면 기존값 유지 -->
-        task_rate = COALESCE(NULLIF(#{taskRate}, ''), task_rate),           <!-- null이면 기존값 유지 -->
+        task_rate = CASE 
+		    WHEN COALESCE(NULLIF(#{taskStatus}, ''), '대기') = '대기' THEN 0
+		    WHEN COALESCE(NULLIF(#{taskStatus}, ''), '대기') = '진행중' THEN 50
+		    WHEN COALESCE(NULLIF(#{taskStatus}, ''), '대기') = '완료' THEN 100
+		    ELSE 0
+		END,          <!-- 진척률 -->
         pjt_id = COALESCE(NULLIF(#{pjtId}, ''), pjt_id)                     <!-- null이면 기존값 유지 -->
     WHERE
         task_id = #{taskId}
@@ -257,7 +262,7 @@
                 t.task_name as taskName,
                 t.task_des as taskDes,
                 t.task_status as taskStatus,
-                CASE WHEN test.task_id IS NOT NULL THEN 1 ELSE 0 END as isTest,
+                CASE WHEN unit_test_case.task_id IS NOT NULL THEN 1 ELSE 0 END as isTest,
                 t.is_design as isDesign,
                 t.pt_task_id as ptTaskId,
                 t.de_task_id as deTaskId,
@@ -273,7 +278,7 @@
                 pt.task_name as ptTaskName                         -- 상위 업무명 (조인으로 가져오기)
             FROM project_task t
             LEFT JOIN project_task pt ON t.pt_task_id = pt.task_id  -- 상위 업무와 조인
-            LEFT JOIN test ON t.task_id = test.task_id 
+            LEFT JOIN unit_test_case ON t.task_id = unit_test_case.task_id 
             WHERE t.pjt_id = #{pjtId} 
               AND t.user_id = #{userId} AND t.is_design = 0
             <if test="scTaskId != null and scTaskId != ''">

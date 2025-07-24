@@ -88,6 +88,9 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElDtoField(logicalName = "search_업무ID", physicalName = "scTaskId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String scTaskId;
 
+    @ElDtoField(logicalName = "업무분류", physicalName = "taskType", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String taskType;
+
     @ElVoField(physicalName = "taskId")
     public String getTaskId(){
         String ret = this.taskId;
@@ -363,6 +366,17 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.scTaskId = scTaskId;
     }
 
+    @ElVoField(physicalName = "taskType")
+    public String getTaskType(){
+        String ret = this.taskType;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "taskType")
+    public void setTaskType(String taskType){
+        this.taskType = taskType;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -391,7 +405,8 @@ public class DesignVo extends com.demo.proworks.cmmn.ProworksCommVO {
         sb.append("scPtTaskId").append("=").append(scPtTaskId).append(",");
         sb.append("ptTaskName").append("=").append(ptTaskName).append(",");
         sb.append("userId").append("=").append(userId).append(",");
-        sb.append("scTaskId").append("=").append(scTaskId);
+        sb.append("scTaskId").append("=").append(scTaskId).append(",");
+        sb.append("taskType").append("=").append(taskType);
         sb.append("]");
         return sb.toString();
 
