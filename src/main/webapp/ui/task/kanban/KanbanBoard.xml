@@ -90,14 +90,14 @@
 			text-align:
 			center;
 			font-weight: bold;
-			color: white;
+			color: #333;
 			border-radius: 8px 8px 0 0;
 			flex-shrink: 0;
 			}
 
-			.column_header.waiting { background: #f39c12; }
-			.column_header.progress { background: #3498db; }
-			.column_header.completed { background: #27ae60; }
+			.column_header.waiting { background: #FFF3CD; }
+			.column_header.progress { background: #CCE7F0; }
+			.column_header.completed { background: #D4EDDA; }
 
 			.column_body {
 			flex: 1;
@@ -177,9 +177,9 @@
 			background: #3498db;
 			}
 
-			/* 개발 업무 - 주황색 */
+			/* 개발 업무 - 핑크색 */
 			.task_stage.development {
-			background: #e67e22;
+			background: #EC9192;
 			}
 
 			.task_dates {
@@ -718,12 +718,6 @@ scwin.detailPopup_closeAction = function(argRuntimeID, argJsnInfo) {
     return true;
 };
 
-// 리스트 페이지로 이동
-scwin.goToListPage = function() {
-    console.log("리스트 페이지로 이동");
-    // $c.win.moveUrl("/InsWebApp/ui/task/design/DesignList.xml");
-};
-
 scwin.refreshBoard = function() {
     scwin.loadTaskList();
 };
@@ -745,29 +739,23 @@ scwin.sbm_designList_submitdone = function(e) {
 			<xf:group class="kanban_header" id="grp_header">
 				<xf:group class="kanban_stats" id="grp_stats">
 					<xf:group class="stat_item" id="grp_total_stat">
-						<w2:span class="stat_label" id="" label="전체"></w2:span>
+						<w2:span class="stat_label" id="" label="전체 "></w2:span>
 						<w2:span class="stat_number" id="spn_total" ref="data:dmp_stats.totalTasks"></w2:span>
 					</xf:group>
 					<xf:group class="stat_item" id="grp_waiting_stat">
-						<w2:span class="stat_label" id="" label="대기"></w2:span>
+						<w2:span class="stat_label" id="" label="대기 "></w2:span>
 						<w2:span class="stat_number" id="spn_waiting" ref="data:dmp_stats.waitingTasks"></w2:span>
 					</xf:group>
 					<xf:group class="stat_item" id="grp_progress_stat">
-						<w2:span class="stat_label" id="" label="진행중"></w2:span>
+						<w2:span class="stat_label" id="" label="진행중 "></w2:span>
 						<w2:span class="stat_number" id="spn_progress" ref="data:dmp_stats.progressTasks"></w2:span>
 					</xf:group>
 					<xf:group class="stat_item" id="grp_completed_stat">
-						<w2:span class="stat_label" id="" label="완료"></w2:span>
+						<w2:span class="stat_label" id="" label="완료 "></w2:span>
 						<w2:span class="stat_number" id="spn_completed" ref="data:dmp_stats.completedTasks"></w2:span>
 					</xf:group>
 				</xf:group>
 				<xf:group style="margin-top:15px;" id="grp_actions">
-					<xf:trigger class="smart_button" id="btn_refresh" type="button" ev:onclick="scwin.refreshBoard">
-						<xf:label><![CDATA[ 새로고침]]></xf:label>
-					</xf:trigger>
-					<xf:trigger class="smart_button" id="btn_go_list" type="button" ev:onclick="scwin.goToListPage">
-						<xf:label><![CDATA[ 리스트 보기]]></xf:label>
-					</xf:trigger>
 				</xf:group>
 			</xf:group>
 

@@ -49,8 +49,8 @@
 			flex-wrap: wrap;
 			}
 			.smart_button {
-			background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-			color: white;
+			background: #454F5B;
+			color: #FFFFFF;
 			border: none;
 			padding: 8px 16px; /* 크기 축소 */
 			border-radius: 6px;
@@ -92,7 +92,6 @@
 			position: relative;
 			}
 			.status_badge {
-			padding: 3px 6px;
 			border-radius: 10px;
 			font-size: 10px;
 			font-weight: 600;
@@ -145,7 +144,7 @@
 
 			/* 계획 일정 바 스타일 (파란색) */
 			.gantt_task_line.planned_task {
-			background: linear-gradient(90deg, #e3f2fd 0%, #2196f3 100%) !important;
+			background: #98BED6 !important;
 			border: 2px solid #1976d2 !important;
 			border-radius: 6px;
 			height: 20px !important;
@@ -153,7 +152,7 @@
 
 			/* 실제 일정 바 스타일 (주황색) */
 			.gantt_task_line.actual_task {
-			background: linear-gradient(90deg, #fff3e0 0%, #ff9800 100%) !important;
+			background: #EC9192 !important;
 			border: 2px solid #f57c00 !important;
 			border-radius: 6px;
 			height: 20px !important;
@@ -367,7 +366,7 @@ scwin.initGanttConfig = function () {
         // 컬럼 설정
         gantt.config.columns = [
             { name: "text", label: "업무명", width: 200, tree: true },
-            { name: "stage", label: "단계", width: 70, align: "center" },
+            // { name: "stage", label: "분류", width: 70, align: "center" },
             {
                 name: "status", label: "상태", width: 70, align: "center", template: function (task) {
                     if (!task.task_type) return "";
@@ -420,6 +419,7 @@ scwin.initGanttConfig = function () {
 
             if (task.task_type === "planned") {
                 html += "<div style='font-weight: bold; color: #007bff; margin-bottom: 8px;'>계획 일정</div>";
+                html += "<div><b>업무ID:</b> " + task.id + "</div>";
                 html += "<div><b>업무명:</b> " + task.original_name + "</div>";
                 html += "<div><b>단계:</b> " + (task.stage || "기타") + "</div>";
                 html += "<div><b>상태:</b> " + (task.status || "대기") + "</div>";
@@ -436,6 +436,7 @@ scwin.initGanttConfig = function () {
                 }
             } else if (task.task_type === "actual") {
                 html += "<div style='font-weight: bold; color: #ff9800; margin-bottom: 8px;'>실제 일정</div>";
+                html += "<div><b>업무ID:</b> " + task.id + "</div>";
                 html += "<div><b>업무명:</b> " + task.original_name + "</div>";
                 html += "<div><b>단계:</b> " + (task.stage || "기타") + "</div>";
                 html += "<div><b>상태:</b> " + (task.status || "대기") + "</div>";
@@ -804,9 +805,6 @@ scwin.collapseAll = function () {
 					</xf:trigger>
 					<xf:trigger class="smart_button secondary" id="btn_day_view" type="button" ev:onclick="scwin.changeToDayView">
 						<xf:label><![CDATA[일별]]></xf:label>
-					</xf:trigger>
-					<xf:trigger class="smart_button" id="btn_go_list" type="button" ev:onclick="scwin.goToListPage">
-						<xf:label><![CDATA[리스트 보기]]></xf:label>
 					</xf:trigger>
 				</xf:group>
 			</xf:group>
