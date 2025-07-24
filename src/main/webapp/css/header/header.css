@@ -1,0 +1,23 @@
+@charset "utf-8";
+
+.admin-btn {
+    height: 35px;
+    width: 100%;
+    border-radius: 8px; 
+    font-weight: bold; 
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    background-color: white;
+    transition: all 0.15s ease-in-out;
+    user-select: none;
+}
+
+.admin-btn:hover {
+    background-color: #EDFAFF; /* 파란색 계열 */
+    cursor: pointer;
+}
+
+/* 클릭(눌림) 효과 */
+.admin-btn:active {
+    transform: scale(0.97); /* 살짝 눌리는 느낌 */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* 그림자 약하게 */
+}

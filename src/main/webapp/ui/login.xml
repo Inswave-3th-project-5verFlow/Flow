@@ -47,33 +47,20 @@ scwin.btn_login_onclick = function (e) {
 
     // 아이디 혹은 비밀번호가 Null값일 경우
     if (!userId || !plainPassword) {
-        alert("아이디와 비밀번호를 입력하세요.");
+        $c.win.alert("아이디와 비밀번호를 입력하세요.");
         return;
     }
 
-    // 유효성 실패 메시지 출력
-    var pwValid = validatePassword(plainPassword);
-    if (pwValid !== true) {
-        alert(pwValid); 
+    // 아이디 혹은 비밀번호가 공백이 존재할 경우
+    var spaceCheck = /\s/;
+    if (spaceCheck.test(userId) || spaceCheck.test(plainPassword)){
+        $c.win.alert("아이디 혹은 비밀번호에 공백이 포함될 수 없습니다.");
         return;
     }
 
     $c.sbm.execute(sbm_login);
 
 };
-
-function validatePassword(password) {
-    var lengthCheck = /^.{4,16}$/;
-    var spaceCheck = /\s/;
-
-    if (!lengthCheck.test(password)) {
-        return "비밀번호는 4~16자여야 합니다.";
-    }
-    if (spaceCheck.test(password)) {
-        return "비밀번호에 공백이 포함될 수 없습니다.";
-    }
-    return true;
-}
 
 
 // 로그인 완료 처리 후
@@ -85,11 +72,14 @@ scwin.sbm_login_submitdone = function (e) {
     if(userHeader != "" && userHeader != null && userHeader != "undefined") {
         if(elHeader.resSuc == true) {
 
-           WebSquare.session.setAttribute("usrId", userHeader.usrId);
-           window.open("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/testMain.xml");
+           $p.url("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/testMain.xml");
+           
+           var serverTime = $c.date.getServerDateTime("yyyy-MM-dd hh:mm:ss");   // 로그인 접속시간
+           WebSquare.localStorage.setItem("serverTime", serverTime);
+           WebSquare.localStorage.setItem("usrId", userHeader.usrId);
 
         } else {
-            alert(elHeader.resMsg);
+            $c.win.alert(elHeader.resMsg);
         }
 
     }
@@ -97,8 +87,11 @@ scwin.sbm_login_submitdone = function (e) {
     </head>
     <body ev:onpageload="scwin.onpageload">
     	<xf:group class="sub_contents" id="" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true" meta_snippetName="0_01 페이지시작"
-    		style="display: flex;justify-content: center;align-items: center; height: 60%;">
-    		<xf:group style="width: 300px;height: 300px;" id="">
+    		style="display: flex; justify-content: center; align-items: center;">
+    		<xf:group style="width: 300px;height: 560px;" id="">
+    			<xf:group style="margin-top: 20px; margin-bottom: 55px;display: flex;justify-content: center;" id="">
+    				<xf:image id="image1" src="/InsWebApp/ui/mainLogo.jpg" style="width: 100%; height: 140px;"></xf:image>
+    			</xf:group>
     			<xf:group style="margin-bottom: 30px;display: flex;justify-content: center;" id="">
     				<w2:span meta_snippetCategory="10_입력폼" meta_snippetName="10_16 출력텍스트" meta_snippetKeyComponent="true"
     					style="font-size: 22px;font-weight: bold;width: 100%;" id="" label="프로젝트, 새롭게 관리하세요">
@@ -112,7 +105,8 @@ scwin.sbm_login_submitdone = function (e) {
     			<xf:group style="display: flex;justify-content: center;" id="login_info">
     				<xf:input ref="data:dma_login.id" meta_snippetCategory="10_입력폼" meta_snippetName="10_01 InputBox"
     					ev:onclick="scwin.id_input_onclick" meta_snippetKeyComponent="true"
-    					style="margin-top: 10px;margin-bottom: 20px;border-radius: 8px;width: 100%;height: 40px;" id="id_input" placeholder="아이디를 입력하세요" class="login-input">
+    					style="margin-top: 10px;margin-bottom: 20px;border-radius: 8px;width: 100%;height: 40px;" id="id_input" placeholder="아이디를 입력하세요"
+    					class="login-input">
     				</xf:input>
     			</xf:group>
     			<xf:group style="" id="">
@@ -124,14 +118,14 @@ scwin.sbm_login_submitdone = function (e) {
     			<xf:group style='display: flex;justify-content: center;' id="">
     				<xf:input ref="data:dma_login.pw" meta_snippetCategory="10_입력폼" meta_snippetName="10_01 InputBox"
     					ev:onclick="scwin.pw_input_onclick" ev:onkeydown="scwin.pw_input_onkeydown" meta_snippetKeyComponent="true"
-    					style="margin-top: 10px;margin-bottom: 40px;border-radius: 8px;width: 100%;height: 40px;" id="pw_input" placeholder="패스워드를 입력하세요" type="password" class="login-input">
+    					style="margin-top: 10px;margin-bottom: 40px;border-radius: 8px;width: 100%;height: 40px;" id="pw_input" placeholder="패스워드를 입력하세요"
+    					type="password" class="login-input">
     				</xf:input>
     			</xf:group>
-    			<xf:group meta_snippetCategory="08_버튼" meta_snippetName="8_04 전체제어버튼" meta_snippetKeyComponent="true"
-    				style="width: 100%;" id="" class="btnbox lt">
-    				<xf:trigger ev:onclick="scwin.btn_login_onclick"
-    					style="width: 100%;height: 40px;border-radius: 8px;font-size: 16px;" id="btn_login"
-    					type="button" class="login-btn">
+    			<xf:group meta_snippetCategory="08_버튼" meta_snippetName="8_04 전체제어버튼" meta_snippetKeyComponent="true" style="width: 100%;"
+    				id="" class="btnbox lt">
+    				<xf:trigger ev:onclick="scwin.btn_login_onclick" style="width: 100%;height: 40px;border-radius: 8px;font-size: 16px;"
+    					id="btn_login" type="button" class="login-btn">
     					<xf:label><![CDATA[로그인]]></xf:label>
     				</xf:trigger>
     			</xf:group>

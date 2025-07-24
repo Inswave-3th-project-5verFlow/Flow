@@ -115,7 +115,6 @@ scwin.btn_insert_onclick = function (e) {
 // 다중행삭제 버튼 클릭 시 체크한 행 일괄 제거
 scwin.btn_deleteRows_onclick = function (e) {
     var chkIdxArr = grd_list.getCheckedIndex("checkBox");
-    console.log(chkIdxArr);
     dlt_groupsVoList.deleteRows(chkIdxArr);
 };
 
@@ -208,13 +207,7 @@ scwin.btn_saves_onclick = function (e) {
     let reqObj = {
         "elData": { "groupsVoList": dlt_groupsVoList.getModifiedJSON() }
     };
-    console.log(dlt_groupsVoList.getModifiedJSON());
     $c.sbm.execute(sbm_saveGroupsVoList, reqObj);
-};
-
-// 초기화 버튼 클릭시 화면에 데이터 모두 제거
-scwin.btn_reset_onclick = function (e) {
-    dlt_groupsVoList.setData([]);
 };
 
 // 저장 이후 수행되는 로직
@@ -232,9 +225,21 @@ scwin.sbm_saveGroupsVoList_submitdone = function (e) {
         scwin.btn_search_onclick();
     }
 
-};]]></script>
+};
+
+// 돌아가기 버튼 이벤트
+scwin.btn_return_onclick = function (e) {
+    WebSquare.localStorage.removeItem("adminPage");
+    $p.url("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/testMain.xml");
+};
+]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">
+		<xf:group
+			style="background-color: #ffffff;//padding: 10px 10px;display: flex;justify-content: center;align-items: center;border-bottom: 1px solid #dee2e6;flex-shrink: 0;"
+			id="group1">
+			<w2:pageFrame src="/InsWebApp/ui/header.xml" style="width: 100%;" id="pageFrame1"></w2:pageFrame>
+		</xf:group>
 		<xf:group class="sub_contents " id="" style="">
 			<xf:group class="pgtbox" id="" style="margin-bottom: 50px;">
 				<w2:textbox class="pgt_tit" id="" label="그룹 정보" style="" tagname="" />
@@ -242,23 +247,20 @@ scwin.sbm_saveGroupsVoList_submitdone = function (e) {
 			<xf:group meta_snippetCategory="08_버튼" meta_snippetName="8_04 전체제어버튼" meta_snippetKeyComponent="true" style="" id=""
 				class="btnbox">
 				<xf:group style="" id="" class="rt">
-					<xf:trigger style="" id="btn_reg" type="button" class="btn_cm row_add" ev:onclick="scwin.btn_reg_onclick">
-						<xf:label><![CDATA[ 등록]]></xf:label>
-					</xf:trigger>
-					<xf:trigger ev:onclick="scwin.btn_insert_onclick" style="" id="btn_insert" type="button" class="btn_cm row_add">
+					<xf:trigger ev:onclick="scwin.btn_insert_onclick"
+						style="padding: 0;height: 36px;font-size: 14px;width: 80px;background-color: #454F5B;color: #fff;border: none;" id="btn_insert"
+						type="button" class="btn_cm">
 						<xf:label><![CDATA[ 행 추가]]></xf:label>
 					</xf:trigger>
-					<xf:trigger style="" id="btn_deleteRows" type="button" class="btn_cm row_del"
-						ev:onclick="scwin.btn_deleteRows_onclick">
-						<xf:label><![CDATA[ 행 삭제]]></xf:label>
+					<xf:trigger
+						style="padding: 0;height: 36px;font-size: 14px;width: 80px;background-color: #ec9192;color: #fff;border: none;" id="btn_deleteRows"
+						type="button" class="btn_cm" ev:onclick="scwin.btn_deleteRows_onclick">
+						<xf:label><![CDATA[행 삭제]]></xf:label>
 					</xf:trigger>
-					<xf:trigger style="" id="btn_saves" type="button" class="btn_cm pt" ev:onclick="scwin.btn_saves_onclick">
+					<xf:trigger
+						style="background-color:#98BED6;color: #ffffff !important;padding: 0 24px;height: 36px;font-size: 14px;width: 80px;border: none;"
+						id="btn_saves" type="button" class="btn_cm pt" ev:onclick="scwin.btn_saves_onclick">
 						<xf:label><![CDATA[저장]]></xf:label>
-					</xf:trigger>
-					<w2:textbox style="" id="" label="" class="bar_btndiv"></w2:textbox>
-					<xf:trigger localeRef="" style="" id="btn_reset" type="button" class="btn_cm refresh"
-						ev:onclick="scwin.btn_reset_onclick">
-						<xf:label><![CDATA[ 초기화]]></xf:label>
 					</xf:trigger>
 				</xf:group>
 			</xf:group>
@@ -273,19 +275,16 @@ scwin.sbm_saveGroupsVoList_submitdone = function (e) {
 				<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dlt_groupsVoList"
 					defaultCellHeight="26" focusMode="row" id="grd_list" scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;"
 					visibleRowNum="15" ev:oncellclick="scwin.grd_list_oncellclick" readOnly="false" sortable="true" useFilterList="true"
-					editModeEvent="onclick" focusFlow="linear" rowNumWidth="20" rowStatusWidth="50" fixedColumn="1" rowStatusVisible="true"
+					editModeEvent="onclick" focusFlow="linear" rowNumWidth="15" rowStatusWidth="20" fixedColumn="1" rowStatusVisible="true"
 					rowNumVisible="true" rowNumHeaderValue="순번" rowStatusHeaderValue="상태">
 					<w2:caption style="" id="caption2" value="this is a grid caption."></w2:caption>
 					<w2:header style="" id="header2">
 						<w2:row style="" id="row3">
-							<w2:column width="30" inputType="checkbox" style="" id="column4" value="" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="column1" value="grp_id" displayMode="label"
-								localeRef="Groups_COLNAME_00001" hidden="false">
-							</w2:column>
-							<w2:column width="70" inputType="text" style="" id="column2" value="grp_name" displayMode="label"
+							<w2:column width="25" inputType="checkbox" style="" id="column4" value="" displayMode="label"></w2:column>
+							<w2:column width="40" inputType="text" style="" id="column2" value="그룹명" displayMode="label"
 								localeRef="Groups_COLNAME_00002">
 							</w2:column>
-							<w2:column width="70" inputType="text" style="" id="column3" value="description" displayMode="label"
+							<w2:column width="80" inputType="text" style="" id="column3" value="내용" displayMode="label"
 								localeRef="Groups_COLNAME_00003">
 							</w2:column>
 
@@ -294,8 +293,7 @@ scwin.sbm_saveGroupsVoList_submitdone = function (e) {
 					<w2:gBody style="" id="gBody2">
 						<w2:row style="" id="row4">
 							<w2:column width="30" inputType="checkbox" style="" id="checkBox" value="" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="grpId" value="" displayMode="label" hidden="false"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="grpName" value="" displayMode="label"></w2:column>
+							<w2:column width="40" inputType="text" style="" id="grpName" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="description" value="" displayMode="label"></w2:column>
 
 						</w2:row>
@@ -322,8 +320,9 @@ scwin.sbm_saveGroupsVoList_submitdone = function (e) {
 				</xf:group>
 
 				<xf:group class="rt" id="" style="">
-					<xf:trigger class="btn_cm save" id="btn_save" style="" type="button" localeRef="COMMON_BUTTON_00003"
-						ev:onclick="scwin.btn_save_onclick">
+					<xf:trigger class="btn_cm" id="btn_save"
+						style="background-color:#98BED6;color: #ffffff !important;padding: 0 24px;height: 36px;font-size: 14px;width: 80px;border: none;" type="button"
+						localeRef="COMMON_BUTTON_00003" ev:onclick="scwin.btn_save_onclick">
 						<xf:label><![CDATA[저장]]></xf:label>
 					</xf:trigger>
 				</xf:group>
@@ -341,30 +340,27 @@ scwin.sbm_saveGroupsVoList_submitdone = function (e) {
 					</xf:group>
 					<xf:group style="" tagname="tr">
 						<xf:group class="w2tb_th" style="" tagname="th">
-							<w2:textbox class="" id="" label="grp_id" ref="" style="" userData2="" localeRef="Groups_COLNAME_00001" />
-						</xf:group>
-						<xf:group class="w2tb_td" style="" tagname="td">
-							<xf:input class="" id="" placeholder="" style="width:100%;" ref="data:dmp_groupsVoDetail.grpId" />
-						</xf:group>
-						<xf:group class="w2tb_th" style="" tagname="th">
-							<w2:textbox class="" id="" label="grp_name" ref="" style="" userData2="" localeRef="Groups_COLNAME_00002" />
+							<w2:textbox class="" id="" label="그룹명" ref="" style="" userData2="" localeRef="Groups_COLNAME_00001" />
 						</xf:group>
 						<xf:group class="w2tb_td" style="" tagname="td">
 							<xf:input class="" id="" placeholder="" style="width:100%;" ref="data:dmp_groupsVoDetail.grpName" />
 						</xf:group>
-					</xf:group>
-					<xf:group style="" tagname="tr">
 						<xf:group class="w2tb_th" style="" tagname="th">
-							<w2:textbox class="" id="" label="description" ref="" style="" userData2="" localeRef="Groups_COLNAME_00003" />
+							<w2:textbox class="" id="" label="내용" ref="" style="" userData2="" localeRef="Groups_COLNAME_00002" />
 						</xf:group>
 						<xf:group class="w2tb_td" style="" tagname="td">
 							<xf:input class="" id="" placeholder="" style="width:100%;" ref="data:dmp_groupsVoDetail.description" />
 						</xf:group>
-						<xf:group class="w2tb_th" style="" tagname="th">
-							<w2:textbox class="" id="" label="" ref="" style="" userData2="" />
-						</xf:group>
-						<xf:group class="w2tb_td" style="" tagname="td"></xf:group>
 					</xf:group>
+				</xf:group>
+			</xf:group>
+			<xf:group class="pglbox" id="" style="">
+				<xf:group class="btn_schbox" id="" style="margin-top: 70px;">
+					<xf:trigger class="btn_cm" disabled="" escape="false" id="btn_return" localeRef="COMMON_BUTTON_00001"
+						style="padding: 0;height: 36px;font-size: 14px;width: 80px;background-color: #454F5B;color: #fff;border: none;" type="button"
+						ev:onclick="scwin.btn_return_onclick">
+						<xf:label><![CDATA[돌아가기]]></xf:label>
+					</xf:trigger>
 				</xf:group>
 			</xf:group>
 		</xf:group>

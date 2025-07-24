@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/InsWebApp/css/header/header.css" type="text/css"?>
 <html xmlns="http://www.w3.org/1999/xhtml"
     xmlns:ev="http://www.w3.org/2001/xml-events"
     xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
@@ -24,23 +25,32 @@ scwin.onpageload = function() {
 
 // 사용자관리 페이지 이동 버튼
 scwin.btn_userListPage_onclick = function (e) {
-    window.open("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/users/UsersList.xml");
+    var adminPage = 1; 
+    WebSquare.localStorage.setItem("adminPage", adminPage);
+    $p.url("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/users/UsersList.xml");
+
 };
 
 // 그룹관리 페이지 이동 버튼
 scwin.btn_groupPage_onclick = function (e) {
-    window.open("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/groups/Groups.xml"); 
+    var adminPage = 1; 
+    WebSquare.localStorage.setItem("adminPage", adminPage);
+    $p.url("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/groups/Groups.xml"); 
 };
 
 // 메뉴관리 페이지 이동 버튼
 scwin.btn_menuPage_onclick = function (e) {
-    window.open("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/menuGroups/menuGroups.xml"); 
+    var adminPage = 1; 
+    WebSquare.localStorage.setItem("adminPage", adminPage);
+    $p.url("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/menuGroups/menuGroups.xml"); 
 };
 
 // 로그아웃 버튼
 scwin.btn_logout_onclick = function (e) {
-    WebSquare.session.removeAttribute("usrId");
-    window.open("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/login.xml");
+    WebSquare.localStorage.removeItem("serverTime");
+    WebSquare.localStorage.removeItem("usrId");
+    WebSquare.localStorage.removeItem("adminPage");
+    $p.url("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/login.xml");
 
 };
 ]]></script>
@@ -50,25 +60,25 @@ scwin.btn_logout_onclick = function (e) {
     		meta_snippetName="0_02 팝업페이지시작">
     		<xf:group class="pgtbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_01 페이지타이틀"
     			style="">
-    			<xf:trigger type="button" style="height: 30px;width: 100%;border-radius: 8px; font-weight: bold; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);" id="btn_userListPage" ev:onclick="scwin.btn_userListPage_onclick">
+    			<xf:trigger type="button" style="height: 35px;width: 100%;border-radius: 8px; font-weight: bold; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);" id="btn_userListPage" ev:onclick="scwin.btn_userListPage_onclick" class="admin-btn">
     				<xf:label><![CDATA[사용자관리]]></xf:label>
     			</xf:trigger>
     		</xf:group>
     		<xf:group class="pgtbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_01 페이지타이틀"
     			style="">
-    			<xf:trigger id="btn_groupPage" style="height: 30px;width: 100%;border-radius: 8px; font-weight: bold; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);" type="button" ev:onclick="scwin.btn_groupPage_onclick">
+    			<xf:trigger id="btn_groupPage" style="height: 35px;width: 100%;border-radius: 8px; font-weight: bold; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);" type="button" ev:onclick="scwin.btn_groupPage_onclick" class="admin-btn">
     				<xf:label><![CDATA[그룹관리]]></xf:label>
     			</xf:trigger>
     		</xf:group>
     		<xf:group meta_snippetCategory="02_타이틀" meta_snippetName="2_01 페이지타이틀" meta_snippetKeyComponent="true" style="" id=""
     			class="pgtbox">
-    			<xf:trigger style="height: 30px;width: 100%;border-radius: 8px; font-weight: bold; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);" id="btn_menuPage" type="button" ev:onclick="scwin.btn_menuPage_onclick">
+    			<xf:trigger style="height: 35px;width: 100%;border-radius: 8px; font-weight: bold; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);" id="btn_menuPage" type="button" ev:onclick="scwin.btn_menuPage_onclick" class="admin-btn">
     				<xf:label><![CDATA[메뉴관리]]></xf:label>
     			</xf:trigger>
     		</xf:group>
     		<xf:group class="pgtbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_01 페이지타이틀"
     			style="">
-    			<xf:trigger id="btn_logout" style="height: 30px;width: 100%;border-radius: 8px; font-weight: bold; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);" type="button" ev:onclick="scwin.btn_logout_onclick">
+    			<xf:trigger id="btn_logout" style="height: 35px;width: 100%;border-radius: 8px; font-weight: bold; box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);" type="button" ev:onclick="scwin.btn_logout_onclick" class="admin-btn">
     				<xf:label><![CDATA[로그아웃]]></xf:label>
     			</xf:trigger>
     		</xf:group>

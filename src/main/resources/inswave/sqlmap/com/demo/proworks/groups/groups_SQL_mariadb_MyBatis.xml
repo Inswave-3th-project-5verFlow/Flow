@@ -20,14 +20,12 @@
     		
         INSERT INTO GROUPS   /* QueryID : com.demo.proworks.groups.insertGroups */
         ( 
-            GRP_ID
-            <if test="grpName   != null"> , GRP_NAME    </if>
+            <if test="grpName   != null"> GRP_NAME    </if>
             <if test="description!= null"> , DESCRIPTION </if>
         )
         VALUES  
         ( 
-            #{grpId}
-            <if test="grpName   != null"> , #{grpName}    </if>
+            <if test="grpName   != null"> #{grpName}    </if>
             <if test="description!= null"> , #{description} </if> 
         )          
     </insert>	
