@@ -103,8 +103,8 @@ scwin.sbm_getDashboardData_submitdone = function (e) {
 
     // 모든 데이터가 준비되었으므로 차트를 한 번에 렌더링
     scwin.initFusionChart(projectPieChart, "프로젝트 현황", { "showPercentValues": "1" });
-    scwin.initFusionChart(taskPieChart, "업무 단계별 현황", { "yAxisName": "업무 수" });
-    scwin.initFusionChart(issuePieChart, "이슈/리스크 현황", { "yAxisName": "이슈 수" });
+    scwin.initFusionChart(taskPieChart, "업무별 현황", { "yAxisName": "업무 수" });
+    scwin.initFusionChart(issuePieChart, "이슈 / 리스크 현황", { "yAxisName": "이슈 수" });
 
 };
 
@@ -134,9 +134,7 @@ scwin.initFusionChart = function (chartObj, captionText, customAttrs) {
     
     // FusionCharts 3.19 색상 변경 API 사용 - 파스텔톤 파랑 계열
     chartObj.setPlotColor([
-        "#A8D8EA", "#7FC7D9", "#6BB6CD", "#5A9BD4", 
-        "#B8D4F0", "#9BC8E5", "#7FB3D3", "#87C0E8",
-        "#A5D6F7", "#92C5F7", "#7FB2E8", "#6DA0D6"
+        "#FF6B6B","#FFE66D", "#4ECDC4", "#A8E6CF","#FF6B6B"
     ]);
     chartObj.draw();
 
@@ -152,15 +150,15 @@ scwin.initFusionChart = function (chartObj, captionText, customAttrs) {
             <xf:group style="display: flex; justify-content: space-around; gap: 24px;">
                 <xf:group style="flex: 1; padding: 20px; border-radius: 12px; background-color: #ffffff; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
                     <w2:textbox style="font-size: 16px; color: #666; margin-bottom: 12px;" label="나의 프로젝트"></w2:textbox>
-                    <w2:textbox style="font-size: 38px; font-weight: bold; color: #5A9BD4;" ref="data:dmp_projectSummary.totalProjects"></w2:textbox>
+                    <w2:textbox style="font-size: 38px; font-weight: bold; color: #FF6B6B;" ref="data:dmp_projectSummary.totalProjects"></w2:textbox>
                 </xf:group>
                 <xf:group style="flex: 1; padding: 20px; border-radius: 12px; background-color: #ffffff; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
                     <w2:textbox style="font-size: 16px; color: #666; margin-bottom: 12px;" label="나의 업무"></w2:textbox>
-                    <w2:textbox style="font-size: 38px; font-weight: bold; color: #7FC7D9;" ref="data:dmp_projectSummary.totalTasks"></w2:textbox>
+                    <w2:textbox style="font-size: 38px; font-weight: bold; color: #FFE66D;" ref="data:dmp_projectSummary.totalTasks"></w2:textbox>
                 </xf:group>
                 <xf:group style="flex: 1; padding: 20px; border-radius: 12px; background-color: #ffffff; text-align: center; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
                     <w2:textbox style="font-size: 16px; color: #666; margin-bottom: 12px;" label="나의 이슈/리스크"></w2:textbox>
-                    <w2:textbox style="font-size: 38px; font-weight: bold; color: #87C0E8;" ref="data:dmp_projectSummary.totalIssues"></w2:textbox>
+                    <w2:textbox style="font-size: 38px; font-weight: bold; color: #4ECDC4;" ref="data:dmp_projectSummary.totalIssues"></w2:textbox>
                 </xf:group>
             </xf:group>
 
@@ -179,7 +177,7 @@ scwin.initFusionChart = function (chartObj, captionText, customAttrs) {
 
             <!-- 프로젝트 목록 (pageFrame) -->
             <xf:group style="flex: 1; padding: 20px; border-radius: 12px; background-color: #ffffff; box-shadow: 0 4px 8px rgba(0,0,0,0.05);">
-                <w2:pageFrame id="pjtListFrame" src="pjt/PjtList.xml" style="width: 100%; height: 400px;"></w2:pageFrame>
+                <w2:pageFrame id="pjtListFrame" style="width: 100%; height: 400px;" src="/InsWebApp/ui/pjt/PjtList.xml"></w2:pageFrame>
             </xf:group>
         </xf:group>
     </body>

@@ -596,17 +596,23 @@ scwin.setProgressStyle = function () {
         let styleValue = "#ffffff";
         if (percent > 0) {
             styleValue = `linear-gradient(to right,
-                #16213e 0%,
-                #16213e ${percent}%,
-                #fff ${percent}%,
-                #fff 100%)`;
+                #efdbde 0%,
+                #EC9192 ${percent}%,
+                #ffffff ${percent}%,
+                #ffffff 100%)`;
+        }
+
+        // 진척률에 따른 글자 색상 결정 (배경 대비 잘 보이도록)
+        let textColor = "#333333"; // 기본 어두운 색 (흰색/연한 배경용)
+        if (percent > 50) {
+            textColor = "#ffffff"; // 진척률이 50% 초과시 흰색 (어두운 배경용)
         }
 
         const styles = [
             { type: "cell", rowIndex: i, colIndex, styleName: "background", styleValue },
             { type: "cell", rowIndex: i, colIndex, styleName: "border-radius", styleValue: "10px" },
             { type: "cell", rowIndex: i, colIndex, styleName: "text-align", styleValue: "center" },
-            { type: "cell", rowIndex: i, colIndex, styleName: "color", styleValue: "#e94560" }
+            { type: "cell", rowIndex: i, colIndex, styleName: "color", styleValue: textColor }
         ];
 
         styles.forEach(style => grd_list.setStyleAll(style));
@@ -625,16 +631,16 @@ scwin.setTaskStatusStyle = function () {
 
         switch (status) {
             case "대기":
-                statusStyle += "color: #16213e;";
+                statusStyle += "color: #FFE066;"; // 파스텔 노란색
                 break;
             case "진행중":
-                statusStyle += "color: #0f3460;";
+                statusStyle += "color: #87CEEB;"; // 파스텔 파란색
                 break;
             case "완료":
-                statusStyle += "color: #1a1a2e;";
+                statusStyle += "color: #90EE90;"; // 파스텔 초록색
                 break;
             default:
-                statusStyle += "color: black;";
+                statusStyle += "color: #333333;"; // 기본 검정색
         }
 
         grd_list.setCellStyle(i, "taskStatus", statusStyle);
@@ -652,11 +658,11 @@ scwin.setTestStatusStyle = function () {
         let testStyle = "text-align: center; font-size: 16px; font-weight: bold;";
 
         if (isTest === "1") {
-            testStyle += "color: #1a1a2e;";
+            testStyle += "color: #90EE90;"; // 파스텔 초록색
         } else if (isTest === "0") {
-            testStyle += "color: #e94560;";
+            testStyle += "color: #EC9192;"; // 팀 색상 빨강
         } else {
-            testStyle += "color: #16213e;";
+            testStyle += "color: #333333;"; // 기본 검정색
         }
 
         grd_list.setCellStyle(i, "isTestDisplay", testStyle);
@@ -675,22 +681,22 @@ scwin.setDelayStatusStyle = function () {
 
         switch (delayStatusCode) {
             case "0":  // 없음
-                delayStyle += "color: black;";
+                delayStyle += "color: #000000;"; // 기본 검정색
                 break;
             case "1":  // 완료
-                delayStyle += "color: #1a1a2e;";
+                delayStyle += "color: #90EE90;"; // 파스텔 초록색
                 break;
             case "2":  // 지연완료
-                delayStyle += "color: #16213e;";
+                delayStyle += "color: #90EE90;"; // 파스텔 초록색 (완료이므로)
                 break;
             case "3":  // 지연중
-                delayStyle += "color: #e94560;";
+                delayStyle += "color: #EC9192;"; // 팀 색상 빨강
                 break;
             case "4":  // 진행중
-                delayStyle += "color: #0f3460;";
+                delayStyle += "color: #000000;"; // 기본 검정색
                 break;
             default:
-                delayStyle += "color: black;";
+                delayStyle += "color: #000000;"; // 기본 검정색
         }
 
         grd_list.setCellStyle(i, "isLazy", delayStyle);
@@ -705,14 +711,16 @@ scwin.setTaskTypeStyle = function () {
     const rowCount = dlt_wbsVoList.getTotalRow();
     for (let i = 0; i < rowCount; i++) {
         const isDesign = dlt_wbsVoList.getCellData(i, "isDesign");
-        let typeStyle = "text-align: center; font-weight: bold;";
+        let typeStyle = "text-align: center;";
 
         if (isDesign === "1") {
-            typeStyle += "color: #1a1a2e;";
+            // 설계: 기본 검정색
+            typeStyle += "color: #000000; font-weight: normal;";
         } else if (isDesign === "0") {
-            typeStyle += "color: #0f3460;";
+            // 개발: 볼드 처리
+            typeStyle += "color: #000000; font-weight: bold;";
         } else {
-            typeStyle += "color: black;";
+            typeStyle += "color: #000000; font-weight: normal;";
         }
 
         grd_list.setCellStyle(i, "taskTypeName", typeStyle);
@@ -1203,14 +1211,12 @@ scwin.setTaskIdClickableStyle = function () {
 							<w2:summary />
 						</w2:attributes>
 
-						<!-- colgroup: 6열 (3쌍) 정의 -->
+						<!-- colgroup: 4열 (2쌍) 정의 -->
 						<xf:group tagname="colgroup">
-							<xf:group tagname="col" style="width:100px;" id="searchComp_1" />
-							<xf:group tagname="col" style="width:200px;" id="searchComp_2" />
-							<xf:group tagname="col" style="width:100px;" id="searchComp_3" />
-							<xf:group tagname="col" style="width:200px;" id="searchComp_4" />
-							<xf:group tagname="col" style="width:100px;" id="searchComp_5" />
-							<xf:group tagname="col" style="width:200px;" id="searchComp_6" />
+							<xf:group tagname="col" style="width:120px;" id="searchComp_1" />
+							<xf:group tagname="col" style="width:250px;" id="searchComp_2" />
+							<xf:group tagname="col" style="width:120px;" id="searchComp_3" />
+							<xf:group tagname="col" style="width:250px;" id="searchComp_4" />
 						</xf:group>
 
 						<!-- 첫 번째 행 -->
@@ -1219,22 +1225,32 @@ scwin.setTaskIdClickableStyle = function () {
 								<w2:textbox localeRef="Wbs_SEARCH_00001" label="업무ID" />
 							</xf:group>
 							<xf:group tagname="td" class="w2tb_td">
-								<xf:input ref="data:dmp_wbsVo.scTaskId" style="width:100%;" />
+								<xf:input ref="data:dmp_wbsVo.scTaskId" style="width:50%;" />
 							</xf:group>
 
 							<xf:group tagname="th" class="w2tb_th">
 								<w2:textbox localeRef="Wbs_SEARCH_00002" label="업무명" />
 							</xf:group>
 							<xf:group tagname="td" class="w2tb_td">
-								<xf:input ref="data:dmp_wbsVo.scTaskName" style="width:100%;" />
+								<xf:input ref="data:dmp_wbsVo.scTaskName" style="width:50%;" />
+							</xf:group>
+						</xf:group>
+
+						<!-- 두 번째 행 -->
+						<xf:group tagname="tr">
+							<xf:group tagname="th" class="w2tb_th">
+								<w2:textbox label="업무담당자" localeRef="Wbs_SEARCH_00005" style=""></w2:textbox>
+							</xf:group>
+							<xf:group tagname="td" class="w2tb_td">
+								<xf:input ref="data:dmp_wbsVo.scTaskAsi" style="width:50%;"></xf:input>
 							</xf:group>
 
 							<xf:group tagname="th" class="w2tb_th">
 								<w2:textbox localeRef="Wbs_SEARCH_00003" label="업무상태" />
 							</xf:group>
 							<xf:group tagname="td" class="w2tb_td">
-								<xf:select1 id="" chooseOption="true" style="width: 100%;height: 30px;" submenuSize="auto" allOption="" disabled="false"
-									direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" ref="data:dmp_wbsVo.scTaskStatus"
+								<xf:select1 id="" chooseOption="true" style="width: 50%;height: 30px;" submenuSize="auto" allOption=""
+									disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" ref="data:dmp_wbsVo.scTaskStatus"
 									chooseOptionLabel="$blank">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_wbsStatusList">
@@ -1245,29 +1261,11 @@ scwin.setTaskIdClickableStyle = function () {
 								</xf:select1>
 							</xf:group>
 						</xf:group>
-
-						<!-- 두 번째 행 -->
-						<xf:group tagname="tr">
-							<xf:group tagname="th" class="w2tb_th">
-								<w2:textbox label="업무담당자" localeRef="Wbs_SEARCH_00005" style=""></w2:textbox>
-							</xf:group>
-							<xf:group tagname="td" class="w2tb_td">
-								<xf:input ref="data:dmp_wbsVo.scTaskAsi" style="width:100%;"></xf:input>
-							</xf:group>
-
-							<xf:group tagname="th" class="w2tb_th"></xf:group>
-							<xf:group tagname="td" class="w2tb_td"></xf:group>
-
-							<xf:group tagname="th" class="w2tb_th">
-							</xf:group>
-							<xf:group tagname="td" class="w2tb_td">
-							</xf:group>
-						</xf:group>
 					</xf:group>
 
 				</xf:group>
 				<xf:group class="btn_schbox" id="" style="">
-					<xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_search" style="" type="button"
+					<xf:trigger class="btn_cm" disabled="" escape="false" id="btn_search" style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border-color: #fff;border: none;" type="button"
 						ev:onclick="scwin.btn_search_onclick" localeRef="COMMON_BUTTON_00001">
 						<xf:label><![CDATA[조회]]></xf:label>
 					</xf:trigger>
@@ -1283,31 +1281,48 @@ scwin.setTaskIdClickableStyle = function () {
 			<xf:group class="titbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_02 서브타이틀(h3)"
 				style="">
 				<xf:group class="rt" id="" style="">
-					<xf:trigger class="btn_cm" id="btn_groupby_taskType" style="" type="button" ev:onclick="scwin.groupByTaskType">
-						<xf:label><![CDATA[업무구분별]]></xf:label>
+					<xf:trigger class="btn_cm" id="btn_groupby_taskType"
+						style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border-color: #fff;border: none;"
+						type="button" ev:onclick="scwin.groupByTaskType">
+						<xf:label><![CDATA[업무구분]]></xf:label>
 					</xf:trigger>
-					<xf:trigger class="btn_cm" id="btn_groupby_taskStatus" style="" type="button" ev:onclick="scwin.groupByTaskStatus">
-						<xf:label><![CDATA[업무상태별]]></xf:label>
+					<xf:trigger class="btn_cm" id="btn_groupby_taskStatus"
+						style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border-color: #fff;border: none;"
+						type="button" ev:onclick="scwin.groupByTaskStatus">
+						<xf:label><![CDATA[업무상태]]></xf:label>
 					</xf:trigger>
-					<xf:trigger class="btn_cm" id="btn_groupby_delayStatus" style="" type="button" ev:onclick="scwin.groupByDelayStatus">
-						<xf:label><![CDATA[지연여부별]]></xf:label>
+					<xf:trigger class="btn_cm" id="btn_groupby_delayStatus"
+						style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border-color: #fff;border: none;"
+						type="button" ev:onclick="scwin.groupByDelayStatus">
+						<xf:label><![CDATA[지연여부]]></xf:label>
 					</xf:trigger>
 
-					<xf:trigger class="btn_cm row_add" id="btn_new" style="" type="button" ev:onclick="scwin.btn_new_onclick">
+					<xf:trigger class="btn_cm" id="btn_new"
+						style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border-color: #fff;border: none;"
+						type="button" ev:onclick="scwin.btn_new_onclick">
 						<xf:label><![CDATA[등록]]></xf:label>
 					</xf:trigger>
-					<xf:trigger class="btn_cm row_del" id="btn_delete" style="" type="button" ev:onclick="scwin.btn_delete_onclick">
-						<xf:label><![CDATA[삭제]]></xf:label>
-					</xf:trigger>
-					<xf:trigger class="btn_cm  save" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
+					<xf:trigger class="btn_cm" id="btn_save"
+						style="background-color:#98BED6;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border-color: #fff;border: none;"
+						type="button" ev:onclick="scwin.btn_save_onclick">
 						<xf:label><![CDATA[저장]]></xf:label>
 					</xf:trigger>
-					<xf:trigger class="btn_cm download" id="btn_down" style="" type="button" ev:onclick="scwin.btn_down_onclick">
+					<xf:trigger class="btn_cm" id="btn_delete"
+						style="background-color:#ec9192;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border: none;" type="button"
+						ev:onclick="scwin.btn_delete_onclick">
+						<xf:label><![CDATA[삭제]]></xf:label>
+					</xf:trigger>
+
+					<xf:trigger class="btn_cm" id="btn_down"
+						style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border-color: #fff;border: none;"
+						type="button" ev:onclick="scwin.btn_down_onclick">
 						<xf:label><![CDATA[다운로드]]></xf:label>
 					</xf:trigger>
 
 
-					<xf:trigger class="btn_cm" id="btn_clearGroupby" style="" type="button" ev:onclick="scwin.btn_clearGroupby_onclick">
+					<xf:trigger class="btn_cm" id="btn_clearGroupby"
+						style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border-color: #fff;border: none;"
+						type="button" ev:onclick="scwin.btn_clearGroupby_onclick">
 						<xf:label><![CDATA[초기화]]></xf:label>
 					</xf:trigger>
 
@@ -1317,7 +1332,7 @@ scwin.setTaskIdClickableStyle = function () {
 				<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dlt_wbsVoList"
 					defaultCellHeight="26" focusMode="row" id="grd_list" scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;"
 					visibleRowNum="20" ev:oncellclick="scwin.grd_list_oncellclick" readOnly="false" rowNumHeaderValue="순번" rowNumVisible="true"
-					rowNumWidth="20" rowStatusHeaderValue="상태" rowStatusVisible="true" rowStatusWidth="20" useFilterList="true" groupbyZone="true"
+					rowNumWidth="35" rowStatusHeaderValue="상태" rowStatusVisible="true" rowStatusWidth="35" useFilterList="true" groupbyZone="true"
 					ev:oncelldblclick="scwin.grd_list_oncelldblclick" editModeEvent="onclick">
 					<w2:caption style="" id="caption2" value="this is a grid caption."></w2:caption>
 					<w2:header style="" id="header2">

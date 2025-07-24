@@ -289,6 +289,9 @@ scwin.btn_new_onclick = function (e) {
  */
 scwin.popup_closeAction = function (argRuntimeID, argJsnInfo) {
     var popObj = $p.getPopupWindow(argRuntimeID);
+    // 검색 조건 초기화
+    dmp_pugVo.set("pjtId", scwin.PJT_ID);
+
     scwin.btn_search_onclick();
     return true;
 };
@@ -345,8 +348,8 @@ scwin.popup_closeAction = function (argRuntimeID, argJsnInfo) {
 					</xf:group>
 				</xf:group>
 				<xf:group class="btn_schbox">
-					<xf:trigger class="btn_cm sch" escape="false" id="btn_search" type="button" ev:onclick="scwin.btn_search_onclick"
-						localeRef="COMMON_BUTTON_00001">
+					<xf:trigger class="btn_cm" escape="false" id="btn_search" type="button" ev:onclick="scwin.btn_search_onclick"
+						localeRef="COMMON_BUTTON_00001" style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border-color: #fff;border: none;">
 						<xf:label><![CDATA[조회]]></xf:label>
 					</xf:trigger>
 				</xf:group>
@@ -362,14 +365,14 @@ scwin.popup_closeAction = function (argRuntimeID, argJsnInfo) {
 			<xf:group class="titbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_02 서브타이틀(h3)"
 				style="">
 				<xf:group class="rt" id="" style="">
-					<xf:trigger class="btn_cm row_add" id="btn_new" style="" type="button" ev:onclick="scwin.btn_new_onclick">
+					<xf:trigger class="btn_cm" id="btn_new" style="background-color:#98BED6;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border: none;" type="button" ev:onclick="scwin.btn_new_onclick">
 						<xf:label><![CDATA[등록]]></xf:label>
 					</xf:trigger>
-					<xf:trigger class="btn_cm  row_del" id="btn_delete" style="" type="button" ev:onclick="scwin.btn_delete_onclick">
+					<xf:trigger class="btn_cm" id="btn_delete" style="background-color:#ec9192;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border: none;" type="button" ev:onclick="scwin.btn_delete_onclick">
 						<xf:label><![CDATA[삭제]]></xf:label>
 					</xf:trigger>
 
-					<xf:trigger class="btn_cm save" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
+					<xf:trigger class="btn_cm" id="btn_save" style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border: none;" type="button" ev:onclick="scwin.btn_save_onclick">
 						<xf:label><![CDATA[저장]]></xf:label>
 					</xf:trigger>
 				</xf:group>

@@ -17,7 +17,7 @@
     --ws-primary-100:#EBF4FD;
     --ws-primary-200:#DCEFFF;
     --ws-primary-300:#B5DAFF;
-    --ws-primary-400:#56A6F8;
+    --ws-primary-400:#98BED6;
     --ws-primary-500:#006FDF;
     --ws-primary-600:#005AB5;
     --ws-primary-700:#014A81;
@@ -75,14 +75,14 @@
 	
 	--ws-listitem-hover-bg:var(--ws-gray-100);
    
-	--ws-table-th-bg:var(--ws-gray-100);
-	--ws-table-th-color:var(--ws-gray-800);
+	--ws-table-th-bg:#98BED6;
+	--ws-table-th-color:#fff;
 	--ws-table-td-bg:var(--ws-gray-0);
 	--ws-table-bd:var(--ws-gray-300);
     
-	--ws-grid-header-bg:var(--ws-gray-0);
+	--ws-grid-header-bg:#98BED6;
 	--ws-grid-header-bd:var(--ws-gray-400);
-	--ws-grid-header-color:var(--ws-gray-800);
+	--ws-grid-header-color:#fff;
 	--ws-grid-bg:var(--ws-gray-0);
 	--ws-grid-bd:var(--ws-gray-200);
 	--ws-grid-color:var(--ws-gray-700);
@@ -753,7 +753,7 @@ span.w2autoComplete_label {padding:0 0 0 8px;text-align:left;color:var(--ws-form
 
 /* table */
 .w2tb {position:relative;width:100%}
-.w2tb .w2tb_th {height:30px;padding:4px 12px;border-color:var(--ws-table-bd);background:var(--ws-table-th-bg);background-clip:padding-box;text-align:left;word-break:break-word}
+.w2tb .w2tb_th {height:30px;padding:4px 12px;border-color:var(--ws-table-bd);background:var(--ws-table-th-bg);background-clip:padding-box;text-align:left;word-break:break-word;color:white}
 .w2tb .w2tb_th .w2textbox,
 .w2tb .w2tb_th .w2span {display:inline-block;position:relative;vertical-align:middle}
 .w2tb .w2tb_td {height:30px;padding:6px;border-color:var(--ws-table-bd);background:var(--ws-table-td-bg);background-clip:padding-box;word-break:break-word}
@@ -1333,7 +1333,7 @@ div.exup_wrap {width:100%;padding:19px;border:0;box-sizing:border-box}
 .bar_btndiv::after {content:'';display:inline-block;position:absolute;top:50%;left:0;width:1px;height:15px;margin-top:-7px;background:var(--ws-gray-300)}
 
 /* search table */
-.schbox {display:flex;position:relative;margin:0 0 28px;padding:0 16px 0;border:1px solid var(--ws-gray-300);border-radius:8px;background-color:var(--ws-gray-100);box-shadow:0 2px 3px rgba(133, 143, 155, .08)}
+.schbox {display:flex;position:relative;margin:0 0 28px;padding:0 16px 0;border:1px solid var(--ws-gray-300);border-radius:8px;background-color:#98bed6;box-shadow:0 2px 3px rgba(133, 143, 155, .08)}
 .schbox:last-child {margin-bottom:0}
 .schbox .schbox_inner {flex:1;margin:0 8px 0 0;padding:4px 0}
 .schbox .w2tb {border:0}

@@ -391,7 +391,7 @@ scwin.createMenuWithGenerator = function () {
             menuObj.setUserData("menuId", group.menu.menuId);
             menuObj.setUserData("menuUrl", group.menu.menuUrl);
             menuObj.setUserData("hasChildren", group.children.length > 0 ? "Y" : "N");
-            
+
             // 메뉴 전체 영역 클릭 이벤트 추가
             scwin.addMenuClickEvent(menuObj, idx);
 
@@ -408,7 +408,7 @@ scwin.createMenuWithGenerator = function () {
                     subMenuObj.setUserData("menuId", childMenu.menuId);
                     subMenuObj.setUserData("menuUrl", childMenu.menuUrl);
                     subMenuObj.setUserData("parentId", childMenu.parentId);
-                    
+
                     // 서브메뉴 전체 영역 클릭 이벤트 추가
                     scwin.addSubmenuClickEvent(subMenuObj, idx, subIdx);
                 }
@@ -420,19 +420,19 @@ scwin.createMenuWithGenerator = function () {
 /**
  * 메뉴 전체 영역 클릭 이벤트 추가 (CSS 클래스 유지)
  */
-scwin.addMenuClickEvent = function(menuObj, idx) {
-    setTimeout(function() {
+scwin.addMenuClickEvent = function (menuObj, idx) {
+    setTimeout(function () {
         var menuElement = document.getElementById(menuObj.getID());
         if (menuElement && menuElement.parentElement) {
             var parentEl = menuElement.parentElement;
-            
+
             // 기존 클래스 유지하면서 클릭 이벤트만 추가
-            parentEl.addEventListener('click', function(e) {
+            parentEl.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 scwin.menu_onclick.call(menuObj);
             });
-            
+
             // 커서만 추가 (기존 스타일 유지)
             if (!parentEl.style.cursor) {
                 parentEl.style.cursor = 'pointer';
@@ -444,19 +444,19 @@ scwin.addMenuClickEvent = function(menuObj, idx) {
 /**
  * 서브메뉴 전체 영역 클릭 이벤트 추가 (CSS 클래스 유지)
  */
-scwin.addSubmenuClickEvent = function(subMenuObj, parentIdx, subIdx) {
-    setTimeout(function() {
+scwin.addSubmenuClickEvent = function (subMenuObj, parentIdx, subIdx) {
+    setTimeout(function () {
         var submenuElement = document.getElementById(subMenuObj.getID());
         if (submenuElement && submenuElement.parentElement) {
             var parentEl = submenuElement.parentElement;
-            
+
             // 기존 클래스 유지하면서 클릭 이벤트만 추가
-            parentEl.addEventListener('click', function(e) {
+            parentEl.addEventListener('click', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
                 scwin.submenu_onclick.call(subMenuObj);
             });
-            
+
             // 커서만 추가 (기존 스타일 유지)
             if (!parentEl.style.cursor) {
                 parentEl.style.cursor = 'pointer';
@@ -597,34 +597,35 @@ scwin.btn_closeAllTabs_onclick = function () {
     try {
         // 현재 열린 탭 개수 확인
         var tabCount = tab_content.getTabCount();
-        
+
         if (tabCount <= 1) {
             $c.win.alert("닫을 탭이 없습니다.");
             return;
         }
-        
+
         // 사용자 확인
-        $c.win.confirm("모든 탭을 닫으시겠습니까?\n(HOME 탭은 유지됩니다)", function(result) {
-            if (result) {
-                // 모든 탭 삭제
-                tab_content.deleteAllTabs();
-                
-                // HOME 탭 재생성
-                setTimeout(function() {
-                    tab_content.addTab("dashboardTab", {
-                        label: "HOME",
-                        closable: false,
-                        openAction: "select"
-                    }, {
-                        src: "dashboard.xml",
-                        frameMode: "wframe"
-                    });
-                    
-                    console.log("모든 탭 닫기 완료 - HOME 탭 재생성됨");
-                }, 100);
-            }
-        });
-        
+        var promise = $c.win.confirm("모든 탭을 닫으시겠습니까?\n(HOME 탭은 유지됩니다)")
+        promise.then(function (result) {
+                if (result) {
+                    // 모든 탭 삭제
+                    tab_content.deleteAllTabs();
+
+                    // HOME 탭 재생성
+                    setTimeout(function () {
+                        tab_content.addTab("dashboardTab", {
+                            label: "HOME",
+                            closable: false,
+                            openAction: "select"
+                        }, {
+                            src: "dashboard.xml",
+                            frameMode: "wframe"
+                        });
+
+                        console.log("모든 탭 닫기 완료 - HOME 탭 재생성됨");
+                    }, 100);
+                }
+            });
+
     } catch (e) {
         console.error("모든 탭 닫기 실패:", e);
         $c.win.alert("탭을 닫는 중 오류가 발생했습니다.");
@@ -666,22 +667,22 @@ scwin.sbm_selectMenuList_submitdone = function (e) {
 
 		<!-- ===== 헤더 영역 (높이 일단 80 고정) ===== -->
 		<xf:group id="grp_header"
-			style="background-color: #ffffff;padding: 10px 10px;display: flex;justify-content: center;align-items: center;border-bottom: 1px solid #dee2e6;flex-shrink: 0;">
+			style="background-color: #ffffff;//padding: 10px 10px;display: flex;justify-content: center;align-items: center;border-bottom: 1px solid #dee2e6;flex-shrink: 0;">
 			<w2:pageFrame style="width: 100%;" id="pg_header" src="/InsWebApp/ui/header.xml"></w2:pageFrame>
 
 		</xf:group>
 
 		<!-- ===== 메인 컨텐츠 영역 (남은 공간 모두 차지) ===== -->
 		<xf:group id="grp_main"
-			style="flex: 1; display: flex; background: linear-gradient(135deg, #B8D4F0 0%, #A8D8EA 50%, #92C5F7 100%);">
+			style="flex: 1; display: flex; background: linear-gradient(135deg, #EDFAFF 0%, #E5F7FE 25%, #DDEFFE 50%, #D5E7FD 75%, #CDDFFE 100%);">
 
 			<!-- ===== 사이드바 영역 (높이 자동 확장) ===== -->
 			<xf:group id="grp_menu" class="sidebar"
-				style="width: 220px; background-color: #7FC7D9; padding: 16px; display: flex; flex-direction: column; border-right: 1px solid #6BB6CD; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+				style="width: 240px; background: linear-gradient(145deg, #98BED6 0%, #89B2D1 50%, #7BA6CC 100%); padding: 20px; display: flex; flex-direction: column; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 2px 0 15px rgba(152, 190, 214, 0.3);">
 				<w2:textbox id="txt_menuTitle"
-					style="font-weight: 600; font-size: 16px; margin-bottom: 20px; border: none; background: transparent; color: #2c3e50; text-align: center;"
+					style="font-weight: 700; font-size: 18px; margin-bottom: 24px; border: none; background: transparent; color: #ffffff; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.2);"
 					readOnly="true">
-					<xf:label>메뉴</xf:label>
+					<xf:label>MENU</xf:label>
 				</w2:textbox>
 
 				<!-- Generator를 사용한 동적 메뉴 생성 -->
@@ -720,7 +721,7 @@ scwin.sbm_selectMenuList_submitdone = function (e) {
 					<!-- 탭 헤더 위에 오버레이되는 버튼 -->
 					<xf:group id="grp_tabOverlay" style="position: absolute; top: 2px; right: 2px; z-index: 1000; pointer-events: none;">
 						<xf:trigger id="btn_closeAllTabs" ev:onclick="scwin.btn_closeAllTabs_onclick"
-							style="width: 32px; height: 32px; font-size: 18px; font-weight: bold; background-color: #5A9BD4; color: white; border: none; border-radius: 6px; cursor: pointer; pointer-events: auto; box-shadow: 0 2px 8px rgba(90, 155, 212, 0.3); display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
+							style="width: 32px; height: 32px; font-size: 18px; font-weight: bold; background-color: #EC9192; color: white; border: none; border-radius: 6px; cursor: pointer; pointer-events: auto; box-shadow: 0 2px 8px rgba(90, 155, 212, 0.3); display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
 							<xf:label>×</xf:label>
 						</xf:trigger>
 					</xf:group>

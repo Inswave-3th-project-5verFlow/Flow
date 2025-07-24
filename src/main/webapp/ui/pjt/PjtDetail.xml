@@ -290,14 +290,13 @@ scwin.sbm_selectPjtVo_submitdone = function (e) {
 				</xf:group>
 
 			</xf:group>
-			<xf:group class="btnbox" id="" meta_snippetCategory="08_버튼" meta_snippetKeyComponent="true" meta_snippetName="8_04 전체제어버튼"
+			<xf:group class="btnbox rt" id="" meta_snippetCategory="08_버튼" meta_snippetKeyComponent="true" meta_snippetName="8_04 전체제어버튼"
 				style="">
 				<xf:group class="rt" id="" style="">
-					<w2:textbox class="bar_btndiv" id="" label="" style=""></w2:textbox>
-					<xf:trigger class="btn_cm pt" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
+					<xf:trigger class="btn_cm pt" id="btn_save" style="background-color:#98BED6;color: #ffffff !important;padding: 0 24px;height: 36px;font-size: 14px;width: 80px;border: none;" type="button" ev:onclick="scwin.btn_save_onclick">
 						<xf:label><![CDATA[저장]]></xf:label>
 					</xf:trigger>
-					<xf:trigger class="btn_cm " id="btn_refresh" style="" type="button" ev:onclick="scwin.btn_refresh_onclick">
+					<xf:trigger class="btn_cm " id="btn_refresh" style="padding: 0;height: 36px;font-size: 14px;width: 80px;background-color: #454F5B;color: #fff;border: none;" type="button" ev:onclick="scwin.btn_refresh_onclick">
 						<xf:label><![CDATA[초기화]]></xf:label>
 					</xf:trigger>
 				</xf:group>

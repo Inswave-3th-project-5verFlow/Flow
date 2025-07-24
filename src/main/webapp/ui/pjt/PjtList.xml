@@ -10,7 +10,6 @@
 			<w2:dataCollection baseNode="map">
 				<w2:dataMap baseNode="map" id="dmp_pjtVo" style="">
 					<w2:keyInfo>
-
 						<w2:key dataType="text" id="pageIndex" name="페이지_번호" defaultValue="1"></w2:key>
 						<w2:key dataType="text" id="pageSize" name="페이지_건수" defaultValue="10"></w2:key>
 						<w2:key dataType="text" name="유저ID" id="userId"></w2:key>
@@ -166,8 +165,8 @@ scwin.setProgressStyle = function () {
         let styleValue = "#ffffff";
         if (percent > 0) {
             styleValue = `linear-gradient(to right,
-                #0062ff 0%,
-                #3399ff ${percent}%,
+                #efdbde 0%,
+                #EC9192 ${percent}%,
                 #ffffff ${percent}%,
                 #ffffff 100%)`;
         }
@@ -176,7 +175,7 @@ scwin.setProgressStyle = function () {
             { type: "cell", rowIndex: i, colIndex, styleName: "background", styleValue },
             { type: "cell", rowIndex: i, colIndex, styleName: "border-radius", styleValue: "10px" },
             { type: "cell", rowIndex: i, colIndex, styleName: "text-align", styleValue: "center" },
-            { type: "cell", rowIndex: i, colIndex, styleName: "color", styleValue: "#000" }
+            { type: "cell", rowIndex: i, colIndex, styleName: "color", styleValue: "#ffffff" }
         ];
 
         styles.forEach(style => grd_list.setStyleAll(style));
@@ -205,7 +204,7 @@ scwin.statusFmt = function (data, formattedData, rowIndex, colIndex) {
 scwin.btn_newPjt_onclick = function (e) {
     if ($p.getComponentById("mf_tab_content")) {
         var tabContent = $p.getComponentById("mf_tab_content").getScopeWindow().scwin;
-        tabContent.openTab("pjt/Pjt.xml", "새 프로젝트 생성");
+        tabContent.openTab("pjt/Pjt.xml", "새 프로젝트");
     } else {
         alert("새 프로젝트 생성 페이지를 열 수 없습니다.");
     }
@@ -215,8 +214,10 @@ scwin.btn_newPjt_onclick = function (e) {
 		<xf:group class="sub_contents " id="" style="">
 			<xf:group class="pgtbox" id="" style="">
 				<w2:textbox class="pgt_tit" id="" label="프로젝트 목록" style="" tagname="" />
-				<xf:trigger type="button" id="btn_newPjt" class="rt" style="padding: 8px 16px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer; font-pageSize: 13px;" ev:onclick="scwin.btn_newPjt_onclick">
-					<xf:label><![CDATA[새 프로젝트 등록]]></xf:label>
+				<xf:trigger type="button" id="btn_newPjt" class="btn_cm rt"
+					style="background-color:#98BED6;color: #ffffff !important;height: 36px;font-size: 14px;border: none;"
+					ev:onclick="scwin.btn_newPjt_onclick">
+					<xf:label><![CDATA[새 프로젝트]]></xf:label>
 				</xf:trigger>
 			</xf:group>
 			<xf:group class="titbox" id="" style="">
@@ -265,7 +266,8 @@ scwin.btn_newPjt_onclick = function (e) {
 							<w2:column width="70" inputType="text" style="" id="pjtId" value="" displayMode="label"></w2:column>
 							<w2:column width="200" inputType="text" style="" id="pjtName" value="" displayMode="label"></w2:column>
 							<w2:column width="100" inputType="text" style="" id="pjtAsi" value="" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" style="" id="pjtStatus" value="" displayMode="label" customFormatter="scwin.statusFmt"></w2:column>
+							<w2:column width="100" inputType="text" style="" id="pjtStatus" value="" displayMode="label"
+								customFormatter="scwin.statusFmt"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="pjtDetail" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="createdAt" value="" displayMode="label"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="updatedAt" value="" displayMode="label"></w2:column>
