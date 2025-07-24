@@ -1,0 +1,1021 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
+	xmlns:xf="http://www.w3.org/2002/xforms">
+	<head meta_screenName="단위테스트 케이스 등록" meta_author="개발자">
+		<w2:type>COMPONENT</w2:type>
+		<w2:buildDate />
+		<w2:MSA />
+		
+		<!-- 업무 검색 관련 CSS 스타일 -->
+		<style type="text/css">
+		/* 업무 검색 섹션 스타일 */
+		.task-search-section {
+		    transition: all 0.3s ease;
+		}
+		
+		.task-search-section:hover {
+		    box-shadow: 0 4px 8px rgba(25, 118, 210, 0.1);
+		}
+		
+		/* 검색 입력 필드 스타일 */
+		#inp_taskSearchInPopup {
+		    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+		}
+		
+		#inp_taskSearchInPopup:focus {
+		    border-color: #1976d2 !important;
+		    box-shadow: 0 0 0 2px rgba(25, 118, 210, 0.2);
+		    outline: none;
+		}
+		
+		/* 검색 버튼 호버 효과 */
+		#btn_searchTaskInPopup:hover {
+		    background: #1565c0 !important;
+		    transform: translateY(-1px);
+		    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+		}
+		
+		/* 검색 결과 그리드 스타일 */
+		#grd_taskSearchResult .w2-grid-body .w2-grid-row:hover {
+		    background-color: #e3f2fd !important;
+		    cursor: pointer;
+		}
+		
+		#grd_taskSearchResult .w2-grid-body .w2-grid-row.w2-selected {
+		    background-color: #bbdefb !important;
+		}
+		
+		/* 선택된 업무 표시 영역 스타일 */
+		.selected-task-display {
+		    transition: all 0.3s ease;
+		    position: relative;
+		}
+		
+		.selected-task-display::before {
+		    content: '';
+		    position: absolute;
+		    left: 0;
+		    top: 0;
+		    bottom: 0;
+		    width: 4px;
+		    background: linear-gradient(to bottom, #4caf50, #388e3c);
+		    border-radius: 2px;
+		}
+		
+		/* 업무 미선택 상태 스타일 */
+		.selected-task-display.no-selection {
+		    background: #fff3e0 !important;
+		    border-color: #ff9800 !important;
+		}
+		
+		.selected-task-display.no-selection::before {
+		    background: linear-gradient(to bottom, #ff9800, #f57c00);
+		}
+		
+		/* 선택 해제 버튼 호버 효과 */
+		#btn_clearSelectedTask:hover {
+		    background: #d32f2f !important;
+		    transform: scale(1.05);
+		}
+		</style>
+		
+		<xf:model>
+			<w2:dataCollection baseNode="map">
+                <!-- 업무 검색 관련 -->
+                <w2:dataList baseNode="list" id="dlt_taskList" repeatNode="map" saveRemovedData="true">
+                    <w2:columnInfo>
+                        <w2:column dataType="text" id="taskId" name="업무ID"></w2:column>
+                        <w2:column dataType="text" id="taskName" name="업무명"></w2:column>
+                        <w2:column dataType="text" id="taskDes" name="업무설명"></w2:column>
+                        <w2:column dataType="text" id="taskStatus" name="업무상태"></w2:column>
+                        <w2:column dataType="text" id="taskType" name="업무타입"></w2:column>
+                        <w2:column dataType="text" id="taskAsi" name="담당자"></w2:column>
+                        <w2:column dataType="text" id="taskSelectInPopup" name="선택"></w2:column>
+                    </w2:columnInfo>
+                </w2:dataList>
+
+                <w2:dataMap baseNode="map" id="dmp_taskSearch" style="">
+                    <w2:keyInfo>
+                        <w2:key dataType="text" id="searchTaskName" name="검색업무명"></w2:key>
+                        <w2:key dataType="text" id="selectedTaskId" name="선택된업무ID"></w2:key>
+                        <w2:key dataType="text" id="selectedTaskName" name="선택된업무명"></w2:key>
+                        <w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
+                        <w2:key dataType="text" id="userId" name="사용자ID"></w2:key>
+                    </w2:keyInfo>
+                </w2:dataMap>
+
+				<!-- 테스트 케이스 등록 정보 -->
+				<w2:dataMap baseNode="map" id="dmp_unitTestDetail" style="">
+                    <w2:keyInfo>    
+                        <w2:key dataType="text" id="testCaseId" name="테스트케이스ID"></w2:key>
+                        <w2:key dataType="text" id="taskId" name="업무ID"></w2:key>
+                        <w2:key dataType="text" id="taskName" name="업무명"></w2:key>
+                        <w2:key dataType="text" id="testCaseName" name="테스트케이스명"></w2:key>
+                        <w2:key dataType="text" id="testTarget" name="테스트대상"></w2:key>
+                        <w2:key dataType="text" id="testType" name="테스트타입" defaultValue="NORMAL"></w2:key>
+                        <w2:key dataType="text" id="priority" name="우선순위" defaultValue="MEDIUM"></w2:key>
+                        <w2:key dataType="text" id="description" name="테스트설명"></w2:key>
+                        <w2:key dataType="text" id="testData" name="테스트데이터"></w2:key>
+                        <w2:key dataType="text" id="testStatus" name="테스트상태" defaultValue="SUC"></w2:key>
+                        <w2:key dataType="text" id="executionDate" name="실행일시"></w2:key>
+                        <w2:key dataType="text" id="duration" name="소요시간"></w2:key>
+                        <w2:key dataType="text" id="assignee" name="담당자"></w2:key>
+                        <w2:key dataType="text" id="assigneeName" name="담당자명"></w2:key>
+                        <w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
+                    </w2:keyInfo>
+                </w2:dataMap>
+
+				<!-- 파일 업로드 관련 -->
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_upload" saveRemovedData="true">
+					<w2:columnInfo>
+						<w2:column dataType="text" name="파일명" id="originalFileName"></w2:column>
+						<w2:column dataType="text" name="파일크기" id="fileSize"></w2:column>
+						<w2:column dataType="text" name="파일확장자" id="fileExtension"></w2:column>
+						<w2:column dataType="text" name="상태" id="status"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
+			</w2:dataCollection>
+			<w2:workflowCollection></w2:workflowCollection>
+
+			<!-- 등록 submission -->
+			<xf:submission id="sbm_insertUnitTest" ref='data:json,{"id":"dmp_unitTestDetail","key":"unitTestVo"}'
+                target="" action="/InsWebApp/UNIT001Ins.pwkjson" method="post"
+                mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="등록 중입니다."
+                ev:submit="" ev:submitdone="scwin.sbm_insertUnitTest_submitdone" ev:submiterror="" abortTrigger="">
+            </xf:submission>
+
+            <!-- 업무 검색 submission -->
+            <xf:submission id="sbm_searchTaskByName" 
+                ref='data:json,{"id":"dmp_taskSearch","key":"designVo"}'
+                target='data:json,{"id":"dlt_taskList","key":"designVoList"}' 
+                action="/InsWebApp/TASK001SearchByName.pwkjson" 
+                method="post"
+                mediatype="application/json" 
+                encoding="UTF-8" 
+                mode="asynchronous"
+                processMsg="업무를 검색 중입니다." 
+                ev:submitdone="scwin.sbm_searchTaskByName_submitdone">
+            </xf:submission>
+		</xf:model>
+		<w2:layoutInfo></w2:layoutInfo>
+		<w2:publicInfo method="scwin.registerPopupOnload" />
+		
+		<script lazy="false" type="text/javascript"><![CDATA[scwin.PROJECT_ID = "";
+scwin.USER_ID = "";
+scwin.GROUP_ID = "";
+
+/**
+ * 팝업 로드 시 초기화
+ */
+scwin.registerPopupOnload = function(paramObj) {
+    console.log("등록 팝업 로드 - 전달받은 파라미터:", paramObj);
+    
+    // 전달받은 파라미터 설정
+    if (paramObj) {
+        scwin.PROJECT_ID = paramObj.projectId || "";
+        scwin.USER_ID = paramObj.userId || "";
+        scwin.GROUP_ID = paramObj.groupId || "";
+    }
+    
+    // 데이터 초기화
+    scwin.initializeRegisterData();
+    
+    // 업무 검색 입력 필드에 포커스
+    setTimeout(function() {
+        try {
+            inp_taskSearchInPopup.focus();
+        } catch(e) {
+            console.log("포커스 설정 실패, 무시");
+        }
+    }, 100);
+    
+    console.log("등록 팝업 초기화 완료");
+};
+
+/**
+ * 등록 데이터 초기화
+ */
+scwin.initializeRegisterData = function() {
+    // 데이터 완전 초기화
+    dmp_unitTestDetail.setEmptyValue();
+    dmp_taskSearch.setEmptyValue();
+    dlt_taskList.setJSON([]);
+    
+    // 기본값 설정
+    dmp_unitTestDetail.set("testCaseId", "");
+    dmp_unitTestDetail.set("testStatus", "SUC");
+    dmp_unitTestDetail.set("priority", "MEDIUM");
+    dmp_unitTestDetail.set("testType", "NORMAL");
+    dmp_unitTestDetail.set("assignee", scwin.USER_ID);
+    dmp_unitTestDetail.set("assigneeName", scwin.getCurrentUserName() || "현재 사용자");
+    
+    // 업무 정보는 빈 값으로 설정
+    dmp_unitTestDetail.set("taskId", "");
+    dmp_unitTestDetail.set("taskName", "");
+    
+    // 프로젝트 ID 설정
+    if (scwin.PROJECT_ID && scwin.PROJECT_ID !== "") {
+        dmp_unitTestDetail.set("pjtId", scwin.PROJECT_ID);
+        dmp_taskSearch.set("pjtId", scwin.PROJECT_ID);
+    }
+
+    // 파일 관련 초기화
+    dlt_upload.setJSON([]);
+    
+    // 선택된 업무 표시 초기화
+    scwin.updateSelectedTaskDisplay();
+    
+    console.log("등록 데이터 초기화 완료");
+};
+
+/**
+ * 팝업 내에서 업무 검색
+ */
+scwin.btn_searchTaskInPopup_onclick = function(e) {
+    console.log("팝업 내 업무 검색 버튼 클릭");
+    
+    var searchName = dmp_taskSearch.get("searchTaskName");
+    
+    if (!searchName || searchName.trim() === "") {
+        $c.win.alert("검색할 업무명을 입력해주세요.");
+        try {
+            inp_taskSearchInPopup.focus();
+        } catch(e) {
+            console.log("포커스 설정 실패, 무시");
+        }
+        return;
+    }
+    
+    console.log("검색어:", searchName);
+    
+    // 검색 조건 설정
+    dmp_taskSearch.set("pjtId", scwin.PROJECT_ID || "");
+    dmp_taskSearch.set("userId", scwin.USER_ID || "");
+    dmp_taskSearch.set("scTaskName", searchName); // MyBatis 쿼리에서 사용하는 파라미터명
+    
+    console.log("업무 검색 조건:", dmp_taskSearch.getJSON());
+    
+    // 기존 선택 초기화
+    scwin.clearTaskSelection();
+    
+    // 서버 통신
+    $c.sbm.execute($p, sbm_searchTaskByName);
+};
+
+/**
+ * Enter 키로 검색 실행 (팝업 내)
+ */
+scwin.inp_taskSearchInPopup_onkeyup = function(e) {
+    if (e.keyCode === 13) { // Enter 키
+        scwin.btn_searchTaskInPopup_onclick();
+    }
+};
+
+/**
+ * 업무 검색 완료 콜백 (팝업 내에서 처리)
+ */
+scwin.sbm_searchTaskByName_submitdone = function(e) {
+    console.log("팝업 내 업무 검색 완료:", e);
+    
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+    
+    // 에러 처리
+    if (!elHeader || elHeader.resSuc == false) {
+        $c.win.alert(`검색 실패: ${elHeader ? elHeader.resMsg : "알 수 없는 오류"}`);
+        return;
+    }
+    
+    var taskList = elData.designVoList || []; // DesignListVo를 사용하므로 designVoList
+    
+    if (taskList.length === 0) {
+        $c.win.alert("검색 결과가 없습니다.\n다른 검색어로 시도해보세요.");
+        dlt_taskList.setJSON([]);
+        return;
+    }
+    
+    console.log("검색된 업무 수:", taskList.length);
+    
+    // 검색 결과에 taskType 정보 추가 처리
+    var processedTaskList = taskList.map(function(task) {
+        return {
+            taskId: task.taskId,
+            taskName: task.taskName,
+            taskDes: task.taskDes,
+            taskStatus: task.taskStatus,
+            taskType: task.isDesign === "1" ? "설계" : "개발",
+            taskAsi: task.taskAsi,
+            isDesign: task.isDesign,
+            ptTaskId: task.ptTaskId,
+            pjtId: task.pjtId
+        };
+    });
+    
+    // 검색 결과를 그리드에 설정
+    dlt_taskList.setJSON(processedTaskList);
+    
+    // 그리드 새로고침
+    try {
+        grd_taskSearchResult.refresh();
+    } catch(e) {
+        console.log("그리드 새로고침 실패, 무시");
+    }
+    
+    $c.win.alert(`${taskList.length}개의 업무를 찾았습니다.\n업무를 선택해주세요.`);
+};
+
+/**
+ * 검색 결과 그리드 셀 클릭
+ */
+scwin.grd_taskSearchResult_oncellclick = function(row, col, colId) {
+    console.log("검색 결과 그리드 셀 클릭:", row, colId);
+    scwin.selectTaskInPopup(row);
+};
+
+/**
+ * 검색 결과 그리드 더블클릭 (바로 선택)
+ */
+scwin.grd_taskSearchResult_oncelldblclick = function(row, col, colId) {
+    console.log("검색 결과 그리드 더블클릭:", row, colId);
+    scwin.selectTaskInPopup(row);
+};
+
+/**
+ * 팝업 내에서 업무 선택
+ */
+scwin.selectTaskInPopup = function(rowIndex) {
+    try {
+        var taskData = dlt_taskList.getRowJSON(rowIndex);
+        
+        if (taskData) {
+            console.log("선택된 업무:", taskData);
+            
+            // 선택된 업무 정보 설정
+            dmp_taskSearch.set("selectedTaskId", taskData.taskId);
+            dmp_taskSearch.set("selectedTaskName", `[${taskData.taskId}] ${taskData.taskName}`);
+            
+            // 테스트 케이스 데이터에도 설정
+            dmp_unitTestDetail.set("taskId", taskData.taskId);
+            dmp_unitTestDetail.set("taskName", taskData.taskName);
+            
+            // 그리드에서 라디오 버튼 선택
+            dlt_taskList.setCellData(rowIndex, "taskSelectInPopup", true);
+            
+            // 다른 행의 라디오 버튼 해제
+            var totalRows = dlt_taskList.getTotalRow();
+            for (var i = 0; i < totalRows; i++) {
+                if (i !== rowIndex) {
+                    dlt_taskList.setCellData(i, "taskSelectInPopup", false);
+                }
+            }
+            
+            // 선택된 업무 표시 업데이트
+            scwin.updateSelectedTaskDisplay();
+            
+            console.log("업무 선택 완료:", taskData.taskId, taskData.taskName);
+        }
+    } catch (e) {
+        console.error("업무 선택 오류:", e);
+        $c.win.alert("업무 선택 중 오류가 발생했습니다.");
+    }
+};
+
+/**
+ * 선택된 업무 표시 업데이트
+ */
+scwin.updateSelectedTaskDisplay = function() {
+    try {
+        var selectedTaskId = dmp_unitTestDetail.get("taskId");
+        var selectedTaskName = dmp_unitTestDetail.get("taskName");
+        
+        if (selectedTaskId && selectedTaskName) {
+            var displayText = `[${selectedTaskId}] ${selectedTaskName}`;
+            txt_selectedTaskInPopup.setValue(displayText);
+            
+            // 선택된 업무 영역 스타일 업데이트
+            var selectedArea = document.querySelector('.selected-task-display');
+            if (selectedArea) {
+                selectedArea.style.background = '#e8f5e8';
+                selectedArea.style.borderColor = '#4caf50';
+                selectedArea.classList.remove('no-selection');
+                selectedArea.classList.add('task-selected');
+            }
+        } else {
+            txt_selectedTaskInPopup.setValue("업무를 검색하여 선택해주세요.");
+            
+            // 선택되지 않은 상태 스타일
+            var selectedArea = document.querySelector('.selected-task-display');
+            if (selectedArea) {
+                selectedArea.style.background = '#fff3e0';
+                selectedArea.style.borderColor = '#ff9800';
+                selectedArea.classList.add('no-selection');
+                selectedArea.classList.remove('task-selected');
+            }
+        }
+    } catch (e) {
+        console.error("업무 표시 업데이트 오류:", e);
+    }
+};
+
+/**
+ * 업무 선택 해제
+ */
+scwin.btn_clearSelectedTask_onclick = function(e) {
+    console.log("업무 선택 해제 버튼 클릭");
+    scwin.clearTaskSelection();
+};
+
+/**
+ * 업무 선택 초기화
+ */
+scwin.clearTaskSelection = function() {
+    try {
+        // 선택 정보 초기화
+        dmp_taskSearch.set("selectedTaskId", "");
+        dmp_taskSearch.set("selectedTaskName", "");
+        
+        // 테스트 케이스 데이터 초기화
+        dmp_unitTestDetail.set("taskId", "");
+        dmp_unitTestDetail.set("taskName", "");
+        
+        // 그리드의 라디오 버튼 모두 해제
+        var totalRows = dlt_taskList.getTotalRow();
+        for (var i = 0; i < totalRows; i++) {
+            dlt_taskList.setCellData(i, "taskSelectInPopup", false);
+        }
+        
+        // 표시 업데이트
+        scwin.updateSelectedTaskDisplay();
+        
+        console.log("업무 선택 초기화 완료");
+    } catch (e) {
+        console.error("업무 선택 초기화 오류:", e);
+    }
+};
+
+/**
+ * 저장 버튼 클릭
+ */
+scwin.btn_save_onclick = function(e) {
+    console.log("저장 버튼 클릭");
+    
+    // 유효성 검사
+    if (!scwin.validateForm()) {
+        return;
+    }
+    
+    // 파일이 있는지 확인
+    var hasFiles = false;
+    if (mpd_html5Type && mpd_html5Type.fileArray) {
+        hasFiles = mpd_html5Type.fileArray.length > 0;
+    }
+    
+    if (hasFiles) {
+        // 파일과 함께 등록
+        scwin.saveTestWithFiles();
+    } else {
+        // 일반 등록
+        $c.sbm.execute($p, sbm_insertUnitTest);
+    }
+};
+
+/**
+ * 폼 유효성 검사 (업무 선택 검증 포함)
+ */
+scwin.validateForm = function() {
+    var taskId = dmp_unitTestDetail.get("taskId");
+    var taskName = dmp_unitTestDetail.get("taskName");
+    var testCaseName = dmp_unitTestDetail.get("testCaseName");
+    var testTarget = dmp_unitTestDetail.get("testTarget");
+    
+    // 업무 선택 검증
+    if (!taskId || taskId.trim() === "") {
+        $c.win.alert("업무를 검색하여 선택해주세요.");
+        try {
+            inp_taskSearchInPopup.focus();
+        } catch(e) {
+            console.log("포커스 설정 실패, 무시");
+        }
+        return false;
+    }
+    
+    if (!testCaseName || testCaseName.trim() === "") {
+        $c.win.alert("테스트케이스명을 입력해주세요.");
+        return false;
+    }
+    
+    if (!testTarget || testTarget.trim() === "") {
+        $c.win.alert("테스트 대상을 입력해주세요.");
+        return false;
+    }
+    
+    return true;
+};
+
+/**
+ * 파일과 함께 저장
+ */
+scwin.saveTestWithFiles = function() {
+    console.log("=== 파일과 함께 저장 시작 ===");
+    
+    // 에디터 포커스 해제하여 내용 확정
+    try {
+        if (editor_description && editor_description.blur) {
+            editor_description.blur();
+        }
+        if (editor_testData && editor_testData.blur) {
+            editor_testData.blur();
+        }
+    } catch(e) {
+        console.log("에디터 blur 실패, 무시");
+    }
+    
+    // 잠시 대기 후 저장 실행 (에디터 내용 동기화 시간 확보)
+    setTimeout(function() {
+        scwin.executeFileUploadWithData();
+    }, 100);
+};
+
+/**
+ * 실제 파일 업로드와 데이터 전송 실행
+ */
+scwin.executeFileUploadWithData = function() {
+    console.log("executeFileUploadWithData() 시작됨");
+    
+    // 에디터 내용을 먼저 확실하게 동기화
+    try {
+        var descriptionHTML = "";
+        var testDataHTML = "";
+        
+        // 에디터에서 HTML 내용 가져오기
+        if (editor_description && typeof editor_description.getHTML === 'function') {
+            descriptionHTML = editor_description.getHTML();
+            console.log("테스트설명 HTML:", descriptionHTML);
+        }
+        
+        if (editor_testData && typeof editor_testData.getHTML === 'function') {
+            testDataHTML = editor_testData.getHTML();
+            console.log("테스트데이터 HTML:", testDataHTML);
+        }
+        
+        // 데이터맵에 HTML 내용 직접 설정
+        dmp_unitTestDetail.set("description", descriptionHTML);
+        dmp_unitTestDetail.set("testData", testDataHTML);
+        
+    } catch(e) {
+        console.error("에디터 내용 가져오기 실패:", e);
+    }
+    
+    // FormData 생성 및 데이터 추가
+    var formData = new FormData();
+    
+    // 테스트 케이스 데이터 추가
+    formData.append("taskId", dmp_unitTestDetail.get("taskId") || "");
+    formData.append("taskName", dmp_unitTestDetail.get("taskName") || "");
+    formData.append("testCaseName", dmp_unitTestDetail.get("testCaseName") || "");
+    formData.append("testTarget", dmp_unitTestDetail.get("testTarget") || "");
+    formData.append("testType", dmp_unitTestDetail.get("testType") || "NORMAL");
+    formData.append("priority", dmp_unitTestDetail.get("priority") || "MEDIUM");
+    formData.append("description", dmp_unitTestDetail.get("description") || "");
+    formData.append("testData", dmp_unitTestDetail.get("testData") || "");
+    formData.append("testStatus", dmp_unitTestDetail.get("testStatus") || "SUC");
+    formData.append("executionDate", dmp_unitTestDetail.get("executionDate") || "");
+    formData.append("duration", dmp_unitTestDetail.get("duration") || "");
+    formData.append("assignee", dmp_unitTestDetail.get("assignee") || scwin.USER_ID);
+    formData.append("pjtId", dmp_unitTestDetail.get("pjtId") || scwin.PROJECT_ID);
+    
+    // 파일 추가
+    var hasValidFiles = false;
+    if (mpd_html5Type && mpd_html5Type.fileArray) {
+        var fileList = mpd_html5Type.fileArray;
+        console.log("파일 배열:", fileList);
+        console.log("파일 배열 길이:", fileList ? fileList.length : 0);
+        
+        if (fileList && fileList.length > 0) {
+            for (var i = 0; i < fileList.length; i++) {
+                var fileItem = fileList[i];
+                console.log("파일 아이템 " + i + ":", fileItem);
+                
+                // 실제 File 객체 확인
+                var realFile = fileItem.file || fileItem;
+                
+                if (realFile && realFile instanceof File && realFile.size > 0) {
+                    formData.append("files", realFile);
+                    hasValidFiles = true;
+                    console.log("파일 추가 성공:", realFile.name, "크기:", realFile.size);
+                } else {
+                    console.warn("유효하지 않은 파일:", realFile);
+                }
+            }
+        }
+    }
+    
+    console.log("유효한 파일 존재 여부:", hasValidFiles);
+
+    // FormData 내용 확인 (디버깅용)
+    console.log("=== FormData 내용 확인 ===");
+    for (var pair of formData.entries()) {
+        console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name + ' (' + pair[1].size + ' bytes)' : pair[1]));
+    }
+
+    // 서버로 전송
+    fetch("/InsWebApp/UNIT001InsWithFiles.pwkjson", {
+        method: "POST",
+        body: formData
+    })
+    .then(function(res) { 
+        if (!res.ok) {
+            throw new Error('HTTP ' + res.status + ': ' + res.statusText);
+        }
+        return res.json(); 
+    })
+    .then(function(res) {
+        console.log("서버 응답:", res);
+        
+        // 서버 응답 구조 확인 및 성공 여부 판단
+        var elHeader = res.elHeader;
+        
+        if (elHeader && elHeader.resSuc === true) {
+            // 성공인 경우
+            $c.win.alert("등록되었습니다.");
+            
+            // 파일 목록 초기화
+            dlt_upload.setJSON([]);
+            if (mpd_html5Type && mpd_html5Type.removeAllFiles) {
+                mpd_html5Type.removeAllFiles();
+            }
+            
+            // 부모 페이지에 성공 알림 후 팝업 닫기
+            $c.win.closePopup({result: "success"});
+            
+        } else {
+            // 실패인 경우
+            var errorMsg = "등록에 실패했습니다.";
+            if (elHeader && elHeader.resMsg) {
+                errorMsg += "\n오류메시지: " + elHeader.resMsg;
+            }
+            if (elHeader && elHeader.resCode) {
+                errorMsg += "\n오류코드: " + elHeader.resCode;
+            }
+            $c.win.alert(errorMsg);
+        }
+    })
+    .catch(function(err) {
+        console.error("전송 실패:", err);
+        var errorMsg = "등록 중 오류가 발생했습니다.";
+        if (err.message) {
+            errorMsg += "\n상세 오류: " + err.message;
+        }
+        $c.win.alert(errorMsg);
+    });
+};
+
+/**
+ * 단위테스트 등록 완료
+ */
+scwin.sbm_insertUnitTest_submitdone = function(e) {
+    console.log("단위테스트 등록 완료:", e);
+    
+    var elHeader = e.responseJSON.elHeader;
+    
+    if (!elHeader || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드: ${elHeader.resCode}\n에러메시지: ${elHeader.resMsg}`);
+        return;
+    }
+    
+    $c.win.alert("등록되었습니다.");
+    
+    // 부모 페이지에 성공 알림 후 팝업 닫기
+    $c.win.closePopup({result: "success"});
+};
+
+/**
+ * 초기화 버튼 클릭
+ */
+scwin.btn_reset_onclick = function(e) {
+    console.log("초기화 버튼 클릭");
+    scwin.initializeRegisterData();
+    
+    // 파일 업로드 컴포넌트 초기화
+    if (mpd_html5Type) {
+        try {
+            if (mpd_html5Type.clear) {
+                mpd_html5Type.clear();
+            } else if (mpd_html5Type.removeAllFiles) {
+                mpd_html5Type.removeAllFiles();
+            }
+        } catch(e) {
+            console.log("파일 업로드 컴포넌트 초기화 실패, 무시:", e);
+        }
+    }
+    
+    // 검색 입력 필드에 포커스
+    try {
+        inp_taskSearchInPopup.setValue("");
+        inp_taskSearchInPopup.focus();
+    } catch(e) {
+        console.log("검색 필드 초기화/포커스 실패, 무시");
+    }
+};
+
+/**
+ * 팝업 닫기
+ */
+scwin.btn_close_onclick = function(e) {
+    console.log("팝업 닫기");
+    $c.win.closePopup({result: "cancel"});
+};
+
+/**
+ * 파일 선택 완료 콜백
+ */
+scwin.multiUploadSelectDone = function() {
+    console.log("=== 파일 선택 완료 콜백 실행 ===");
+    
+    // 파일 정보 확인
+    var fileInfos = mpd_html5Type.getFileInfos();
+    console.log("getFileInfos() 결과:", fileInfos);
+    
+    var newFileData = [];
+    
+    // fileInfos 기준으로 그리드 표시용 데이터 생성
+    if (fileInfos && fileInfos.length > 0) {
+        for (var i = 0; i < fileInfos.length; i++) {
+            var file = fileInfos[i];
+            console.log("파일 정보 " + i + ":", file);
+            
+            newFileData.push({
+                originalFileName: file.name,
+                fileSize: file.size,
+                fileExtension: scwin.getFileExtension(file.name),
+                status: "업로드 대기"
+            });
+        }
+    }
+    
+    dlt_upload.setJSON(newFileData);
+    
+    try {
+        grd_uploadList.refresh();
+    } catch(e) {
+        console.log("그리드 새로고침 실패, 무시");
+    }
+    
+    console.log("업로드 대기 파일 수:", newFileData.length);
+    console.log("=== 파일 선택 완료 콜백 종료 ===");
+};
+
+/**
+ * 파일 확장자 추출
+ */
+scwin.getFileExtension = function(fileName) {
+    if (!fileName || fileName.indexOf('.') === -1) return '';
+    return fileName.split('.').pop().toLowerCase();
+};
+
+/**
+ * 현재 사용자명 가져오기
+ */
+scwin.getCurrentUserName = function() {
+    // 부모 창에서 사용자명을 가져오거나 기본값 반환
+    return "현재 사용자";
+};
+
+console.log("등록 팝업 스크립트 로드 완료");]]></script>
+	</head>
+	<body>
+		<xf:group class="pop_container" id="" style="height:100%;">
+			<xf:group class="pop_header" id="" style="">
+				<w2:span class="pop_title" id="spn_popupTitle" style="">단위테스트 케이스 등록</w2:span>
+				<xf:trigger class="btn_pop_close" id="btn_close" style="" type="button" ev:onclick="scwin.btn_close_onclick">
+					<xf:label><![CDATA[×]]></xf:label>
+				</xf:trigger>
+			</xf:group>
+			
+			<xf:group class="pop_contents" id="" style="height:calc(100% - 100px); padding:20px; overflow-y:auto;">
+				
+				<!-- 업무 검색 섹션 -->
+				<xf:group class="task-search-section" id="grp_taskSearchSection" style="margin-bottom:20px; padding:15px; background:#f8f9fa; border:1px solid #dee2e6; border-radius:5px;">
+					<xf:group style="margin-bottom:15px;">
+						<w2:textbox class="section_title" style="font-weight:bold; color:#495057; margin-bottom:10px;" label="1. 업무 검색 및 선택"></w2:textbox>
+					</xf:group>
+					
+					<xf:group style="display:flex; gap:10px; align-items:center; margin-bottom:15px;">
+						<w2:textbox style="width:80px; font-weight:bold;" label="업무명 검색:"></w2:textbox>
+						<xf:input class="form_inp" id="inp_taskSearchInPopup" ref="data:dmp_taskSearch.searchTaskName" style="width:300px;" placeholder="검색할 업무명을 입력하세요" ev:onkeyup="scwin.inp_taskSearchInPopup_onkeyup"></xf:input>
+						<xf:trigger class="btn_cm sch" id="btn_searchTaskInPopup" style="" type="button" ev:onclick="scwin.btn_searchTaskInPopup_onclick">
+							<xf:label><![CDATA[검색]]></xf:label>
+						</xf:trigger>
+					</xf:group>
+					
+					<!-- 검색 결과 그리드 -->
+					<w2:gridView autoFit="allColumn" class="gvTb" dataList="data:dlt_taskList" id="grd_taskSearchResult" readOnly="false" style="height:150px; margin-bottom:15px;" ev:oncellclick="scwin.grd_taskSearchResult_oncellclick" ev:oncelldblclick="scwin.grd_taskSearchResult_oncelldblclick">
+						<w2:caption id="caption4" style="">
+							<w2:summary></w2:summary>
+						</w2:caption>
+						<w2:header id="header4" style="">
+							<w2:row id="row7" style="">
+								<w2:column displayMode="label" id="column1" inputType="text" style="height:30px;text-align:center;" value="선택" width="50"></w2:column>
+								<w2:column displayMode="label" id="column2" inputType="text" style="height:30px;text-align:center;" value="업무ID" width="80"></w2:column>
+								<w2:column displayMode="label" id="column14" inputType="text" style="height:30px;text-align:center;" value="업무명" width="200"></w2:column>
+								<w2:column displayMode="label" id="column15" inputType="text" style="height:30px;text-align:center;" value="업무설명" width="250"></w2:column>
+								<w2:column displayMode="label" id="column16" inputType="text" style="height:30px;text-align:center;" value="업무타입" width="80"></w2:column>
+								<w2:column displayMode="label" id="column27" inputType="text" style="height:30px;text-align:center;" value="담당자" width="100"></w2:column>
+							</w2:row>
+						</w2:header>
+						<w2:gBody id="gBody4" style="">
+							<w2:row id="row8" style="">
+								<w2:column displayMode="label" id="taskSelectInPopup" inputType="radio" style="height:25px;text-align:center;" width="50"></w2:column>
+								<w2:column displayMode="label" id="taskId" inputType="text" style="height:25px;text-align:center;" width="80"></w2:column>
+								<w2:column displayMode="label" id="taskName" inputType="text" style="height:25px;text-align:left;" width="200"></w2:column>
+								<w2:column displayMode="label" id="taskDes" inputType="text" style="height:25px;text-align:left;" width="250"></w2:column>
+								<w2:column displayMode="label" id="taskType" inputType="text" style="height:25px;text-align:center;" width="80"></w2:column>
+								<w2:column displayMode="label" id="taskAsi" inputType="text" style="height:25px;text-align:center;" width="100"></w2:column>
+							</w2:row>
+						</w2:gBody>
+					</w2:gridView>
+					
+					<!-- 선택된 업무 표시 -->
+					<xf:group class="selected-task-display" style="margin-top:10px; padding:10px; border:2px solid #ff9800; border-radius:5px; background:#fff3e0; position:relative;">
+						<xf:group style="display:flex; justify-content:space-between; align-items:center;">
+							<xf:group style="flex:1;">
+								<w2:textbox style="font-weight:bold; margin-bottom:5px;" label="선택된 업무:"></w2:textbox>
+								<w2:textbox class="selected_task_text" id="txt_selectedTaskInPopup" style="font-size:14px; color:#495057;" label="업무를 검색하여 선택해주세요."></w2:textbox>
+							</xf:group>
+							<xf:trigger class="btn_cm" id="btn_clearSelectedTask" style="margin-left:10px;" type="button" ev:onclick="scwin.btn_clearSelectedTask_onclick">
+								<xf:label><![CDATA[선택해제]]></xf:label>
+							</xf:trigger>
+						</xf:group>
+					</xf:group>
+				</xf:group>
+				
+				<!-- 테스트 케이스 정보 입력 -->
+				<xf:group style="margin-bottom:20px;">
+					<w2:textbox class="section_title" style="font-weight:bold; color:#495057; margin-bottom:15px;" label="2. 테스트 케이스 정보"></w2:textbox>
+					
+					<xf:group class="tblbox" id="" style="">
+						<xf:group tagname="table" class="tbl">
+							<xf:group tagname="colgroup">
+								<xf:group tagname="col" style="width:150px;"></xf:group>
+								<xf:group tagname="col" style="width:300px;"></xf:group>
+								<xf:group tagname="col" style="width:150px;"></xf:group>
+								<xf:group tagname="col" style="width:300px;"></xf:group>
+							</xf:group>
+							<xf:group tagname="tbody">
+								<xf:group tagname="tr">
+									<xf:group tagname="th" class="req">테스트케이스명</xf:group>
+									<xf:group tagname="td" class="" colspan="3">
+										<xf:input adjustMaxLength="false" class="form_inp" id="inp_testCaseName" ref="data:dmp_unitTestDetail.testCaseName" style="width:100%;"></xf:input>
+									</xf:group>
+								</xf:group>
+								<xf:group tagname="tr">
+									<xf:group tagname="th" class="req">테스트 대상</xf:group>
+									<xf:group tagname="td" class="" colspan="3">
+										<xf:input adjustMaxLength="false" class="form_inp" id="inp_testTarget" ref="data:dmp_unitTestDetail.testTarget" style="width:100%;"></xf:input>
+									</xf:group>
+								</xf:group>
+								<xf:group tagname="tr">
+									<xf:group tagname="th">테스트 타입</xf:group>
+									<xf:group tagname="td">
+										<xf:select1 appearance="minimal" class="form_sel" id="sel_testType" ref="data:dmp_unitTestDetail.testType" style="width:100%;" submenuSize="auto">
+											<xf:choices>
+												<xf:item>
+													<xf:label><![CDATA[정상케이스]]></xf:label>
+													<xf:value><![CDATA[NORMAL]]></xf:value>
+												</xf:item>
+												<xf:item>
+													<xf:label><![CDATA[경계값]]></xf:label>
+													<xf:value><![CDATA[BOUNDARY]]></xf:value>
+												</xf:item>
+												<xf:item>
+													<xf:label><![CDATA[예외처리]]></xf:label>
+													<xf:value><![CDATA[EXCEPTION]]></xf:value>
+												</xf:item>
+												<xf:item>
+													<xf:label><![CDATA[성능]]></xf:label>
+													<xf:value><![CDATA[PERFORMANCE]]></xf:value>
+												</xf:item>
+											</xf:choices>
+										</xf:select1>
+									</xf:group>
+									<xf:group tagname="th">우선순위</xf:group>
+									<xf:group tagname="td">
+										<xf:select1 appearance="minimal" class="form_sel" id="sel_priority" ref="data:dmp_unitTestDetail.priority" style="width:100%;" submenuSize="auto">
+											<xf:choices>
+												<xf:item>
+													<xf:label><![CDATA[높음]]></xf:label>
+													<xf:value><![CDATA[HIGH]]></xf:value>
+												</xf:item>
+												<xf:item>
+													<xf:label><![CDATA[보통]]></xf:label>
+													<xf:value><![CDATA[MEDIUM]]></xf:value>
+												</xf:item>
+												<xf:item>
+													<xf:label><![CDATA[낮음]]></xf:label>
+													<xf:value><![CDATA[LOW]]></xf:value>
+												</xf:item>
+											</xf:choices>
+										</xf:select1>
+									</xf:group>
+								</xf:group>
+								<xf:group tagname="tr">
+									<xf:group tagname="th">테스트 상태</xf:group>
+									<xf:group tagname="td">
+										<xf:select1 appearance="minimal" class="form_sel" id="sel_testStatus" ref="data:dmp_unitTestDetail.testStatus" style="width:100%;" submenuSize="auto">
+											<xf:choices>
+												<xf:item>
+													<xf:label><![CDATA[성공]]></xf:label>
+													<xf:value><![CDATA[SUC]]></xf:value>
+												</xf:item>
+												<xf:item>
+													<xf:label><![CDATA[실패]]></xf:label>
+													<xf:value><![CDATA[FAI]]></xf:value>
+												</xf:item>
+											</xf:choices>
+										</xf:select1>
+									</xf:group>
+									<xf:group tagname="th">소요시간(분)</xf:group>
+									<xf:group tagname="td">
+										<xf:input adjustMaxLength="false" class="form_inp" id="inp_duration" ref="data:dmp_unitTestDetail.duration" style="width:100%;"></xf:input>
+									</xf:group>
+								</xf:group>
+								<xf:group tagname="tr">
+									<xf:group tagname="th">실행일시</xf:group>
+									<xf:group tagname="td">
+										<w2:inputCalendar calendarValueType="yearMonthDate" class="form_cal" focusOnDateSelect="false" footerDiv="true" id="cal_executionDate" ref="data:dmp_unitTestDetail.executionDate" renderDiv="true" style="width:100%;" weekNumbers="false"></w2:inputCalendar>
+									</xf:group>
+									<xf:group tagname="th">담당자</xf:group>
+									<xf:group tagname="td">
+										<xf:input adjustMaxLength="false" class="form_inp" id="inp_assigneeName" ref="data:dmp_unitTestDetail.assigneeName" style="width:100%;" readOnly="true"></xf:input>
+									</xf:group>
+								</xf:group>
+							</xf:group>
+						</xf:group>
+					</xf:group>
+				</xf:group>
+				
+				<!-- 테스트 설명 -->
+				<xf:group style="margin-bottom:20px;">
+					<w2:textbox class="section_title" style="font-weight:bold; color:#495057;" label="3. 테스트 설명"></w2:textbox>
+					
+					<xf:group style="margin-top:10px;">
+						<w2:htmlEditor id="editor_description" ref="data:dmp_unitTestDetail.description" style="width:100%; height:150px;" toolbarHeight="30"></w2:htmlEditor>
+					</xf:group>
+				</xf:group>
+				
+				<!-- 테스트 데이터 -->
+				<xf:group style="margin-bottom:20px;">
+					<w2:textbox class="section_title" style="font-weight:bold; color:#495057;" label="4. 테스트 데이터"></w2:textbox>
+					
+					<xf:group style="margin-top:10px;">
+						<w2:htmlEditor id="editor_testData" ref="data:dmp_unitTestDetail.testData" style="width:100%; height:150px;" toolbarHeight="30"></w2:htmlEditor>
+					</xf:group>
+				</xf:group>
+				
+				<!-- 파일 업로드 -->
+				<xf:group id="grp_fileUploadArea" style="margin-bottom:20px;">
+					<w2:textbox class="section_title" style="font-weight:bold; color:#495057;" label="5. 첨부파일"></w2:textbox>
+					
+					<xf:group style="margin-top:10px;">
+						<w2:multiUpload id="mpd_html5Type" style="width:100%; height:100px; border:1px solid #ced4da;" uploadType="html5Type" ev:onselectdone="scwin.multiUploadSelectDone"></w2:multiUpload>
+					</xf:group>
+					
+					<!-- 업로드 대기 파일 목록 -->
+					<w2:gridView autoFit="allColumn" class="gvTb" dataList="data:dlt_upload" id="grd_uploadList" readOnly="true" style="height:120px; margin-top:10px;">
+						<w2:caption id="caption5" style="">
+							<w2:summary></w2:summary>
+						</w2:caption>
+						<w2:header id="header5" style="">
+							<w2:row id="row9" style="">
+								<w2:column displayMode="label" id="column40" inputType="text" style="height:30px;text-align:center;" value="파일명" width="300"></w2:column>
+								<w2:column displayMode="label" id="column41" inputType="text" style="height:30px;text-align:center;" value="파일크기" width="100"></w2:column>
+								<w2:column displayMode="label" id="column42" inputType="text" style="height:30px;text-align:center;" value="확장자" width="80"></w2:column>
+								<w2:column displayMode="label" id="column43" inputType="text" style="height:30px;text-align:center;" value="상태" width="100"></w2:column>
+							</w2:row>
+						</w2:header>
+						<w2:gBody id="gBody5" style="">
+							<w2:row id="row10" style="">
+								<w2:column displayMode="label" id="originalFileName" inputType="text" style="height:25px;text-align:left;" width="300"></w2:column>
+								<w2:column displayMode="label" id="fileSize" inputType="text" style="height:25px;text-align:right;" width="100"></w2:column>
+								<w2:column displayMode="label" id="fileExtension" inputType="text" style="height:25px;text-align:center;" width="80"></w2:column>
+								<w2:column displayMode="label" id="status" inputType="text" style="height:25px;text-align:center;" width="100"></w2:column>
+							</w2:row>
+						</w2:gBody>
+					</w2:gridView>
+				</xf:group>
+			</xf:group>
+			
+			<xf:group class="pop_footer" id="" style="text-align:right; padding:15px 20px; border-top:1px solid #dee2e6;">
+				<xf:trigger class="btn_cm" id="btn_reset" style="margin-right:10px;" type="button" ev:onclick="scwin.btn_reset_onclick">
+					<xf:label><![CDATA[초기화]]></xf:label>
+				</xf:trigger>
+				<xf:trigger class="btn_cm reg" id="btn_save" style="margin-right:10px;" type="button" ev:onclick="scwin.btn_save_onclick">
+					<xf:label><![CDATA[저장]]></xf:label>
+				</xf:trigger>
+				<xf:trigger class="btn_cm" id="btn_close_footer" style="" type="button" ev:onclick="scwin.btn_close_onclick">
+					<xf:label><![CDATA[닫기]]></xf:label>
+				</xf:trigger>
+			</xf:group>
+		</xf:group>
+	</body>
+</html>
