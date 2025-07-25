@@ -596,7 +596,7 @@ scwin.setProgressStyle = function () {
         let styleValue = "#ffffff";
         if (percent > 0) {
             styleValue = `linear-gradient(to right,
-                #efdbde 0%,
+                #EC9192 0%,
                 #EC9192 ${percent}%,
                 #ffffff ${percent}%,
                 #ffffff 100%)`;

@@ -663,40 +663,37 @@ scwin.sbm_selectMenuList_submitdone = function (e) {
 	<!-- =============================================== -->
 	<!-- HTML Body 영역 -->
 	<!-- =============================================== -->
-	<body ev:onpageload="scwin.onpageload" style="display: flex; flex-direction: column; height: 100vh; margin: 0; overflow-y: scroll;">
+	<body ev:onpageload="scwin.onpageload" style="display: flex; flex-direction: column; height: 100vh; margin: 0; overflow: hidden; background: #fafafa;">
 
-		<!-- ===== 헤더 영역 (높이 일단 80 고정) ===== -->
+		<!-- ===== 헤더 영역 ===== -->
 		<xf:group id="grp_header"
-			style="background-color: #ffffff;//padding: 10px 10px;display: flex;justify-content: center;align-items: center;border-bottom: 1px solid #dee2e6;flex-shrink: 0;">
+			style="">
 			<w2:pageFrame style="width: 100%;" id="pg_header" src="/InsWebApp/ui/header.xml"></w2:pageFrame>
-
 		</xf:group>
 
-		<!-- ===== 메인 컨텐츠 영역 (남은 공간 모두 차지) ===== -->
+		<!-- ===== 메인 컨텐츠 영역 ===== -->
 		<xf:group id="grp_main"
-			style="flex: 1; display: flex; background: linear-gradient(135deg, #EDFAFF 0%, #E5F7FE 25%, #DDEFFE 50%, #D5E7FD 75%, #CDDFFE 100%);">
+			style="flex: 1; display: flex; background: #fafafa; overflow: hidden;">
 
-			<!-- ===== 사이드바 영역 (높이 자동 확장) ===== -->
-			<xf:group id="grp_menu" class="sidebar"
-				style="width: 240px; background: linear-gradient(145deg, #98BED6 0%, #89B2D1 50%, #7BA6CC 100%); padding: 20px; display: flex; flex-direction: column; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: 2px 0 15px rgba(152, 190, 214, 0.3);">
-				<w2:textbox id="txt_menuTitle"
-					style="font-weight: 700; font-size: 18px; margin-bottom: 24px; border: none; background: transparent; color: #ffffff; text-align: center; text-shadow: 0 2px 4px rgba(0,0,0,0.2);"
-					readOnly="true">
-					<xf:label>MENU</xf:label>
-				</w2:textbox>
-
+			<!-- ===== 사이드바 영역 ===== -->
+			<xf:group id="grp_menu" class="sidebar pinterest-sidebar"
+				style="width: 280px; background: #ffffff; padding: 16px 0; display: flex; flex-direction: column; transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94); overflow-y: auto; box-shadow: 0 0 8px rgba(0,0,0,0.06);">
+				
 				<!-- Generator를 사용한 동적 메뉴 생성 -->
-				<w2:generator tagname="div" id="gen_menu" style="flex: 1;">
+				<w2:generator tagname="div" id="gen_menu" style="flex: 1; padding: 0 16px;">
 					<!-- 1뎁스 메뉴 -->
-					<xf:group class="menu-group">
-						<w2:anchor id="anc_menu" class="menu-item" ev:onclick="scwin.menu_onclick">
+					<xf:group class="pinterest-menu-group" style="margin-bottom: 8px;">
+						<w2:anchor id="anc_menu" class="pinterest-menu-item" ev:onclick="scwin.menu_onclick"
+							style="display: flex; align-items: center; padding: 12px 16px; color: #333333; text-decoration: none; border-radius: 12px; font-weight: 600; font-size: 15px; transition: all 0.2s ease; margin-bottom: 4px; background: #ffffff; border: 1px solid transparent; cursor: pointer;">
 							<xf:label></xf:label>
 						</w2:anchor>
 
 						<!-- 2뎁스 메뉴 Generator -->
-						<w2:generator tagname="div" id="gen_subMenu" class="submenu-container">
-							<xf:group class="submenu-group">
-								<w2:anchor id="anc_subMenu" class="submenu-item" ev:onclick="scwin.submenu_onclick">
+						<w2:generator tagname="div" id="gen_subMenu" class="pinterest-submenu-container" 
+							style="display: none; margin-left: 20px; padding-left: 16px; border-left: 2px solid #efefef; margin-top: 4px;">
+							<xf:group class="pinterest-submenu-group" style="margin-bottom: 2px;">
+								<w2:anchor id="anc_subMenu" class="pinterest-submenu-item" ev:onclick="scwin.submenu_onclick"
+									style="display: flex; align-items: center; padding: 8px 16px; color: #767676; text-decoration: none; border-radius: 8px; font-weight: 500; font-size: 14px; transition: all 0.2s ease; margin-bottom: 2px; background: transparent; cursor: pointer;">
 									<xf:label></xf:label>
 								</w2:anchor>
 							</xf:group>
@@ -705,24 +702,25 @@ scwin.sbm_selectMenuList_submitdone = function (e) {
 				</w2:generator>
 			</xf:group>
 
-			<!-- ===== 컨텐츠 영역 (높이 자동 확장) ===== -->
+			<!-- ===== 컨텐츠 영역 ===== -->
 			<xf:group id="grp_content"
-				style="flex: 1; background-color: white; padding: 20px; display: flex; flex-direction: column; overflow-y: auto;">
+				style="flex: 1; background: #fafafa; display: flex; flex-direction: column; overflow-y: scroll;">
 
-				<!-- 탭 컨트롤과 오버레이 버튼을 포함하는 컨테이너 -->
+				<!-- 탭 컨테이너 (전체 영역 차지) -->
 				<xf:group id="grp_tabContainer"
-					style="flex: 1; position: relative; border-radius: 12px; overflow: hidden; box-shadow: 0 8px 32px rgba(0,0,0,0.12);">
+					style="flex: 1; position: relative; background: #ffffff; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); overflow-y: scroll;">
 
-					<!-- 탭 컨트롤 (남은 공간 모두 차지) -->
-					<w2:tabControl id="tab_content" style="width: 100%; height: 100%; border: 1px solid #e0e0e0;" useTabScroll="true"
-						closable="true">
+					<!-- 탭 컨트롤 -->
+					<w2:tabControl id="tab_content" 
+						style="width: 100%; height: 100%;" 
+						useTabScroll="true" closable="true">
 					</w2:tabControl>
 
-					<!-- 탭 헤더 위에 오버레이되는 버튼 -->
-					<xf:group id="grp_tabOverlay" style="position: absolute; top: 2px; right: 2px; z-index: 1000; pointer-events: none;">
+					<!-- 모든 탭 닫기 버튼 (탭처럼 동작) -->
+					<xf:group id="grp_tabOverlay" style="position: absolute; top: 0; right: 0; z-index: 1000; pointer-events: none;">
 						<xf:trigger id="btn_closeAllTabs" ev:onclick="scwin.btn_closeAllTabs_onclick"
-							style="width: 32px; height: 32px; font-size: 18px; font-weight: bold; background-color: #EC9192; color: white; border: none; border-radius: 6px; cursor: pointer; pointer-events: auto; box-shadow: 0 2px 8px rgba(90, 155, 212, 0.3); display: flex; align-items: center; justify-content: center; transition: all 0.3s ease;">
-							<xf:label>×</xf:label>
+							style="height: 40px; padding: 0 16px; color: var(--ws-gray-600); background-color: var(--ws-gray-100); cursor: pointer; font-size: 20px; font-weight: 500; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; pointer-events: auto; border: none;border-bottom: 1px solid var(--ws-gray-300);">
+							<xf:label>X</xf:label>
 						</xf:trigger>
 					</xf:group>
 

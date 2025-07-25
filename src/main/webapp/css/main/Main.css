@@ -1,172 +1,130 @@
-/* Clean Modern Theme CSS for InsWebApp */
+/* Pinterest Style CSS for PMS */
 
-/* 커스텀 폰트 설정 */
-@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap');
+/* 구글 폰트 임포트 */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
 /* 전체 기본 폰트 설정 */
 * {
-    font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', 'Apple SD Gothic Neo', sans-serif !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+    box-sizing: border-box;
 }
 
-/* 메뉴 전용 폰트 클래스 */
-.sm-menu-font {
-    font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', sans-serif !important;
-    font-weight: 500 !important;
+/* 스크롤바 전역 스타일 */
+::-webkit-scrollbar {
+    width: 6px;
 }
 
-.sm-submenu-font {
-    font-family: 'Noto Sans KR', 'Malgun Gothic', '맑은 고딕', sans-serif !important;
-    font-weight: 400 !important;
+::-webkit-scrollbar-track {
+    background: #f8f9fa;
 }
 
+::-webkit-scrollbar-thumb {
+    background: #e0e0e0;
+    border-radius: 3px;
+}
 
-/* 사이드바 기본 상태 - 팀 색상 테마 적용 */
+::-webkit-scrollbar-thumb:hover {
+    background: #98BED6;
+}
+
+/* Pinterest 스타일 사이드바 */
 .sidebar {
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    width: 240px !important;
+    transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    width: 280px !important;
     flex-shrink: 0;
-    overflow: hidden;
+    overflow-y: auto;
+    overflow-x: hidden;
     position: relative;
 }
 
-.sidebar::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 2px;
-    height: 100%;
-    background: linear-gradient(180deg, rgba(237, 250, 255, 0.3) 0%, rgba(152, 190, 214, 0.5) 50%, rgba(237, 250, 255, 0.3) 100%);
-    box-shadow: 2px 0 8px rgba(152, 190, 214, 0.2);
-}
-
-/* 사이드바 닫힌 상태 - 완전히 숨김 */
+/* 사이드바 닫힌 상태 */
 .sidebar.closed {
     width: 0 !important;
     padding: 0 !important;
     border-right: none !important;
     opacity: 0;
+    overflow: hidden;
 }
 
-/* 1뎁스 메뉴 아이템 기본 스타일 - 상위 메뉴로서 강화된 스타일 */
+/* Pinterest 스타일 메뉴 아이템 */
+.w2anchor.pinterest-menu-item,
 .w2anchor.menu-item {
-    display: block !important;
-    padding: 16px 20px !important;
-    background: linear-gradient(135deg, rgba(237, 250, 255, 0.25) 0%, rgba(237, 250, 255, 0.15) 100%) !important;
-    border: 2px solid rgba(255, 255, 255, 0.3) !important;
-    border-left: 4px solid #EDFAFF !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 12px 16px !important;
+    color: #333333 !important;
+    text-decoration: none !important;
     border-radius: 12px !important;
-    text-decoration: none !important;
-    color: #ffffff !important;
+    font-weight: 600 !important;
+    font-size: 15px !important;
+    transition: all 0.2s ease !important;
+    margin-bottom: 4px !important;
+    background: #ffffff !important;
+    border: 1px solid transparent !important;
     cursor: pointer !important;
-    transition: all 0.3s ease !important;
-    font-weight: 700 !important;
-    font-size: 16px !important;
-    margin-bottom: 12px !important;
     position: relative !important;
-    min-height: 24px !important;
-    font-family: 'Noto Sans KR', '맑은 고딕', 'Malgun Gothic', sans-serif !important;
-    backdrop-filter: blur(8px) !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.2) !important;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.3) !important;
 }
 
-/* 메뉴 아이템 활성 상태 */
-.w2anchor.menu-item.active,  
-.w2anchor.menu-item:active {
-    background: linear-gradient(135deg, #EC9192 0%, #D46566 100%) !important;
-    transform: scale(0.98) !important;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2) !important;
+/* Pinterest 스타일 메뉴 호버 효과 */
+.w2anchor.pinterest-menu-item:hover,
+.w2anchor.menu-item:hover {
+    background: #f1f1f1 !important;
+    transform: translateX(2px) !important;
+    border-color: #e0e0e0 !important;
 }
 
-/* 메뉴 아이템 포커스 상태 */
-.w2anchor.menu-item:focus {
-    outline: 2px solid rgba(237, 250, 255, 0.5) !important;
-    outline-offset: 2px !important;
-}
-
-/* 2뎁스 서브메뉴 아이템 기본 스타일 - 하위 메뉴로서 차별화된 스타일 */
+/* Pinterest 스타일 서브메뉴 아이템 */
+.w2anchor.pinterest-submenu-item,
 .w2anchor.submenu-item {
-    display: block !important;
-    padding: 10px 14px !important;
-    margin-left: 20px !important;
-    background: rgba(152, 190, 214, 0.4) !important;
-    border: 1px solid rgba(152, 190, 214, 0.6) !important;
-    border-left: 3px solid rgba(152, 190, 214, 0.8) !important;
-    border-radius: 6px !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 8px 16px !important;
+    color: #767676 !important;
     text-decoration: none !important;
-    color: rgba(255, 255, 255, 0.9) !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    transition: all 0.2s ease !important;
+    margin-bottom: 2px !important;
+    background: transparent !important;
     cursor: pointer !important;
-    font-size: 13px !important;
-    font-weight: 400 !important;
-    transition: all 0.3s ease !important;
-    margin-bottom: 5px !important;
     position: relative !important;
-    min-height: 18px !important;
-    font-family: 'Noto Sans KR', '맑은 고딕', 'Malgun Gothic', sans-serif !important;
-    backdrop-filter: blur(2px) !important;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
 }
 
-/* 2뎁스 메뉴 앞에 하위메뉴 표시를 위한 가상 요소 */
-.w2anchor.submenu-item::before {
-    content: '';
-    position: absolute;
-    left: -16px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 12px;
-    height: 1px;
-    background: rgba(237, 250, 255, 0.6);
+/* Pinterest 스타일 서브메뉴 호버 효과 */
+.w2anchor.pinterest-submenu-item:hover,
+.w2anchor.submenu-item:hover {
+    background: #f1f1f1 !important;
+    color: #333333 !important;
+    transform: translateX(4px) !important;
 }
 
-.w2anchor.submenu-item::after {
-    content: '';
-    position: absolute;
-    left: -16px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 1px;
-    height: 12px;
-    background: rgba(237, 250, 255, 0.6);
-}
-
-/* 메뉴 그룹 스타일 */
-.menu-group {
+/* Pinterest 스타일 메뉴 컨테이너 */
+.pinterest-menu-group {
     margin-bottom: 8px;
 }
 
-/* 서브메뉴 컨테이너 스타일 - 계층 구조 강화 */
+/* Pinterest 스타일 서브메뉴 컨테이너 */
+.pinterest-submenu-container,
 .submenu-container {
     display: none;
-    margin-top: 10px;
-    margin-left: 0px;
+    margin-left: 20px;
     padding-left: 16px;
-    border-left: 2px solid rgba(237, 250, 255, 0.3);
-    position: relative;
-}
-
-/* 서브메뉴 컨테이너 왼쪽 연결선 */
-.submenu-container::before {
-    content: '';
-    position: absolute;
-    left: -1px;
-    top: 0;
-    bottom: 0;
-    width: 2px;
-    background: linear-gradient(180deg, rgba(237, 250, 255, 0.5) 0%, rgba(152, 190, 214, 0.3) 50%, rgba(237, 250, 255, 0.5) 100%);
+    border-left: 2px solid #efefef;
+    margin-top: 4px;
 }
 
 /* 서브메뉴 표시 상태 */
+.pinterest-submenu-container.submenu-show,
 .submenu-container.submenu-show {
     display: block;
-    animation: slideDown 0.3s ease-out;
+    animation: slideDown 0.2s ease-out;
 }
 
 @keyframes slideDown {
     from {
         opacity: 0;
-        transform: translateY(-10px);
+        transform: translateY(-8px);
     }
     to {
         opacity: 1;
@@ -174,93 +132,125 @@
     }
 }
 
-/* 서브메뉴 그룹 스타일 */
-.submenu-group {
-    margin-bottom: 6px;
-    position: relative;
+/* Pinterest 스타일 서브메뉴 그룹 */
+.pinterest-submenu-group {
+    margin-bottom: 2px;
 }
 
-/* 메뉴 텍스트 색상 강제 적용 - 웹스퀘어 클래스와 조합 */
-.w2anchor.menu-item a,
-.w2anchor.menu-item a:link,
-.w2anchor.menu-item a:visited {
-    color: white !important;
-    text-decoration: none !important;
-    display: flex !important;
-    align-items: center !important;
-    width: 100% !important;
-    height: 100% !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    padding: 12px 16px !important;
-    box-sizing: border-box !important;
-    font-weight: 500 !important;
-    font-size: 15px !important;
-    line-height: 1.4 !important;
+/* Pinterest 스타일 버튼 */
+#btn_closeAllTabs {
+    transition: all 0.2s ease;
 }
 
-/* 서브메뉴 텍스트 색상 강제 적용 - 웹스퀘어 클래스와 조합 */
-.w2anchor.submenu-item a,
-.w2anchor.submenu-item a:link, 
-.w2anchor.submenu-item a:visited {
-    color: white !important;
-    text-decoration: none !important;
-    display: flex !important;
-    align-items: center !important;
-    width: 100% !important;
-    height: 100% !important;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
-    padding: 10px 14px !important;
-    box-sizing: border-box !important;
-    font-size: 14px !important;
-    line-height: 1.3 !important;
-}
-
-/* 메뉴 호버 효과 - 웹스퀘어 클래스와 조합 */
-.w2anchor.menu-item:hover,
-.w2anchor.menu-item a:hover {
-    background: linear-gradient(135deg, #EC9192 0%, #E07B7C 50%, #D46566 100%) !important;
-    color: #ffffff !important;
-    transform: translateX(4px) scale(1.02) !important;
-    box-shadow: 0 4px 16px rgba(236, 145, 146, 0.4) !important;
-    border-color: rgba(255, 255, 255, 0.4) !important;
-}
-
-/* 서브메뉴 호버 효과 - 웹스퀘어 클래스와 조합 */
-.w2anchor.submenu-item:hover,
-.w2anchor.submenu-item a:hover {
-    background: linear-gradient(135deg, rgba(236, 145, 146, 0.7) 0%, rgba(224, 123, 124, 0.6) 100%) !important;
-    color: #ffffff !important;
-    transform: translateX(5px) scale(1.02) !important;
-    box-shadow: 0 2px 8px rgba(236, 145, 146, 0.4) !important;
-    border-left-color: #EC9192 !important;
-    border-left-width: 4px !important;
-}
-
-/* 닫기 버튼 호버 효과 */
 #btn_closeAllTabs:hover {
-    background: linear-gradient(135deg, #D46566 0%, #C85859 100%) !important;
+    background: #89B2D1 !important;
+    transform: scale(1.1) !important;
+    box-shadow: 0 4px 12px rgba(152, 190, 214, 0.5) !important;
+}
+
+/* Pinterest 스타일 헤더 버튼 호버 효과 */
+#btn_sidebarToggle:hover {
+    background: rgba(255,255,255,0.3) !important;
     transform: scale(1.05) !important;
-    box-shadow: 0 4px 16px rgba(236, 145, 146, 0.5) !important;
 }
 
-/* 스크롤바 스타일링 */
-#grp_content::-webkit-scrollbar {
-    width: 6px;
+/* 탭 컨트롤 스타일 */
+.w2tabControl {
+    background: #ffffff !important;
+    border: none !important;
 }
 
-#grp_content::-webkit-scrollbar-track {
-    background: #f8fafc;
+/* 탭 헤더 스타일 */
+.w2tabControl .w2tab_header {
+    background: #ffffff !important;
+    border-bottom: 1px solid #efefef !important;
+    padding: 0 16px !important;
+    position: relative !important;
 }
 
-#grp_content::-webkit-scrollbar-thumb {
-    background: linear-gradient(135deg, #98BED6 0%, #89B2D1 100%);
-    border-radius: 3px;
+/* 탭 버튼 스타일 */
+.w2tabControl .w2tab_header .w2tab_button {
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 12px 16px !important;
+    margin: 0 !important;
+    color: #767676 !important;
+    font-weight: 500 !important;
+    font-size: 14px !important;
+    transition: all 0.2s ease !important;
+    height: 44px !important;
+    display: flex !important;
+    align-items: center !important;
 }
 
-#grp_content::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(135deg, #EC9192 0%, #E07B7C 100%);
+/* 활성 탭 스타일 */
+.w2tabControl .w2tab_header .w2tab_button.w2tab_selected {
+    background: #ffffff !important;
+    color: #333333 !important;
+    font-weight: 600 !important;
+    border-bottom: 2px solid #98BED6 !important;
+}
+
+/* 탭 호버 효과 */
+.w2tabControl .w2tab_header .w2tab_button:hover {
+    background: #f8f8f8 !important;
+    color: #333333 !important;
+}
+
+/* 탭 컨텐츠 스타일 */
+.w2tabControl .w2tab_contents {
+    background: #ffffff !important;
+    padding: 0 !important;
+    overflow-y: scroll !important;
+    overflow-x: hidden !important;
+}
+
+/* 모든 탭 닫기 버튼 호버 효과 업데이트 */
+#btn_closeAllTabs:hover {
+    background: #FF5252 !important;
+    color: white !important;
+    transform: none !important;
+    box-shadow: none !important;
+}
+
+/* 헤더 프로젝트 선택 셀렉트박스 드롭다운 스타일 - 최고 우선순위로 base.css 덮어쓰기 */
+#selectBoxProjectName.custom-project-select + .w2table_sb.w2table_sb {
+    border-radius: 12px !important;
+    overflow: hidden !important;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15) !important;
+    border: 1px solid rgba(255,255,255,0.2) !important;
+    backdrop-filter: blur(10px) !important;
+    background: rgba(255,255,255,0.95) !important;
+    margin-top: 4px !important;
+    padding: 0 !important;
+    z-index: 9999 !important;
+}
+
+#selectBoxProjectName.custom-project-select + .w2table_sb.w2table_sb .w2table_sb_col {
+    padding: 12px 20px !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    color: #333 !important;
+    transition: all 0.2s ease !important;
+    border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+    cursor: pointer !important;
+    border-radius: 0 !important;
+}
+
+#selectBoxProjectName.custom-project-select + .w2table_sb.w2table_sb .w2table_sb_row:last-child .w2table_sb_col {
+    border-bottom: none !important;
+}
+
+#selectBoxProjectName.custom-project-select + .w2table_sb.w2table_sb .w2table_sb_col:hover {
+    background: rgba(152, 190, 214, 0.1) !important;
+    color: #333 !important;
+    border-radius: 0 !important;
+}
+
+#selectBoxProjectName.custom-project-select + .w2table_sb.w2table_sb .w2table_sb_col.w2table_sb_selected {
+    background: rgba(152, 190, 214, 0.2) !important;
+    color: #333 !important;
+    font-weight: 600 !important;
+    border-radius: 0 !important;
 }
