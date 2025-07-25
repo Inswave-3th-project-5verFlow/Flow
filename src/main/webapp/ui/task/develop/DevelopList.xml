@@ -223,6 +223,26 @@ scwin.grd_list_oncellclick = function (row, col, colId) {
     }
 };
 
+scwin.handleTaskIdFromDevelop = function(taskId, taskName) {
+    console.log("개발업무에서 넘어온 업무 ID:", taskId, taskName);
+    
+    // 해당 업무의 테스트 목록 필터링해서 보여주기
+    dmp_search.set("searchTaskId", taskId);
+    scwin.searchUnitTests();
+    
+    // 사용자에게 선택권 제공
+    var message = `업무: ${taskName}\n업무ID: ${taskId}\n\n이 업무의 테스트 목록을 확인하고 있습니다.\n새로운 테스트를 등록하시겠습니까?`;
+    
+    setTimeout(function() {
+        var promise = $c.win.confirm(message);
+        promise.then(function(result) {
+            if (result) {
+                scwin.openTestRegisterWithTask(taskId, taskName);
+            }
+        });
+    }, 500); // 목록 조회 후 확인창 표시
+};
+
 // 개발 업무ID 컬럼 클리시, 개발 업무ID를 넘겨주면서 페이지 이동.
 scwin.navigateToTaskTab = function (rowIndex, flag) {
     try {

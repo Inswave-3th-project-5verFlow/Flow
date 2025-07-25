@@ -81,6 +81,78 @@
 	    ) A
 	    WHERE PAGE = #{pageIndex}
 	</select>
+	
+	 <!-- 실패한 테스트케이스만 조회 (결함 등록용) -->
+    <select id="selectFailedUnitTestList" parameterType="com.demo.proworks.unit.vo.UnitTestVo" resultType="com.demo.proworks.unit.vo.UnitTestVo">
+	    SELECT
+	        ut.id as testCaseId,
+	        ut.task_id as taskId,
+	        ut.task_name as taskName,
+	        ut.test_case_name as testCaseName,
+	        ut.test_target as testTarget,
+	        ut.test_type as testType,
+	        ut.priority,
+	        ut.description,
+	        ut.precondition,
+	        ut.test_data as testData,
+	        ut.test_steps as testSteps,
+	        ut.expected_result as expectedResult,
+	        ut.actual_result as actualResult,
+	        ut.test_status as testStatus,
+	        ut.execution_date as executionDate,
+	        ut.duration,
+	        ut.notes,
+	        ut.requirements,
+	        ut.assignee,
+	        COALESCE(u.name, ut.assignee) as assigneeName,
+	        ut.is_deleted as isDeleted,
+	        ut.created_at as createdAt,
+	        ut.updated_at as updatedAt,
+	        ut.created_by as createdBy,
+	        ut.updated_by as updatedBy,
+	        ut.pjt_id as pjtId
+	    FROM unit_test_case ut
+	    LEFT JOIN users u ON ut.assignee = u.user_id
+	    WHERE ut.is_deleted = 'N'
+	    AND ut.test_status = 'FAIL'  <!-- 실패한 테스트케이스만 -->
+	    <if test="pjtId != null and pjtId != ''">
+	        AND ut.pjt_id = #{pjtId}
+	    </if>
+	    <if test="searchTaskId != null and searchTaskId != ''">
+	        <![CDATA[AND ut.task_id LIKE CONCAT('%', #{searchTaskId}, '%')]]>
+	    </if>
+	    <if test="searchAssignee != null and searchAssignee != ''">
+	        <![CDATA[AND (ut.assignee LIKE CONCAT('%', #{searchAssignee}, '%') OR u.name LIKE CONCAT('%', #{searchAssignee}, '%'))]]>
+	    </if>
+	    <if test="searchTestCaseName != null and searchTestCaseName != ''">
+	        <![CDATA[AND ut.test_case_name LIKE CONCAT('%', #{searchTestCaseName}, '%')]]>
+	    </if>
+	    ORDER BY ut.updated_at DESC, ut.id DESC
+	    <if test="pageSize != null and pageSize > 0">
+	        LIMIT #{pageSize}
+	    </if>
+	</select>
+	
+	<select id="selectFailedUnitTestListCount" parameterType="com.demo.proworks.unit.vo.UnitTestVo" resultType="long">
+	    SELECT COUNT(*)
+	    FROM unit_test_case ut
+	    LEFT JOIN users u ON ut.assignee = u.user_id
+	    WHERE ut.is_deleted = 'N'
+	    AND ut.test_status = 'FAIL'  <!-- 실패한 테스트케이스만 -->
+	    <if test="pjtId != null and pjtId != ''">
+	        AND ut.pjt_id = #{pjtId}
+	    </if>
+	    <if test="searchTaskId != null and searchTaskId != ''">
+	        <![CDATA[AND ut.task_id LIKE CONCAT('%', #{searchTaskId}, '%')]]>
+	    </if>
+	    <if test="searchAssignee != null and searchAssignee != ''">
+	        <![CDATA[AND (ut.assignee LIKE CONCAT('%', #{searchAssignee}, '%') OR u.name LIKE CONCAT('%', #{searchAssignee}, '%'))]]>
+	    </if>
+	    <if test="searchTestCaseName != null and searchTestCaseName != ''">
+	        <![CDATA[AND ut.test_case_name LIKE CONCAT('%', #{searchTestCaseName}, '%')]]>
+	    </if>
+	</select>
+	
 
 
     <!-- 단위테스트 케이스 총 개수 조회 -->

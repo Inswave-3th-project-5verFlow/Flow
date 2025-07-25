@@ -7,14 +7,23 @@
 		<w2:MSA />
 		<xf:model>
 			<w2:dataCollection baseNode="map">
+				<!-- 조회 조건용 dataMap - 기존 OutVo 활용 -->
 				<w2:dataMap baseNode="map" id="dmp_outVo" style="">
 					<w2:keyInfo>
+						<!-- 페이징 관련 -->
 						<w2:key dataType="text" id="pageIndex" name="페이지번호" defaultValue="1"></w2:key>
 						<w2:key dataType="text" id="pageSize" name="페이지사이즈" defaultValue="10"></w2:key>
-						<w2:key dataType="text" id="totalPageCount" name="페이지건수" ></w2:key>
+						<w2:key dataType="text" id="totalPageCount" name="페이지건수"></w2:key>
+						
+						<!-- 조회 조건 (기존 OutVo 필드 활용) -->
+						<w2:key dataType="text" id="pjtId" name="프로젝트 ID"></w2:key>
+						<w2:key dataType="text" id="name" name="산출물명"></w2:key>
+						<w2:key dataType="text" id="outputType" name="산출물 유형"></w2:key>
+						<w2:key dataType="text" id="approvalStatus" name="승인 상태"></w2:key>
 					</w2:keyInfo>
 					<w2:data use="false"></w2:data>
 				</w2:dataMap>
+				
 				<w2:dataList baseNode="list" id="dlt_outVoList" repeatNode="map" saveRemovedData="true" style="">
 					<w2:columnInfo>
 						<w2:column dataType="text" id="id" name="산출물 고유 ID"></w2:column>
@@ -22,11 +31,15 @@
                         <w2:column dataType="text" id="name" name="산출물명"></w2:column>
                         <w2:column dataType="text" id="createdAt" name="등록일시"></w2:column>
                         <w2:column dataType="text" id="updatedAt" name="수정일시"></w2:column>
+                        <w2:column dataType="text" id="approvalStatus" name="승인 상태"></w2:column>
+                        <w2:column dataType="text" id="approvalDate" name="승인일시"></w2:column>
+                        <w2:column dataType="text" id="approvalComment" name="승인/반려 의견"></w2:column>
                         <w2:column dataType="text" id="outputType" name="산출물 유형"></w2:column>
                         <w2:column dataType="text" id="isDeleted" name="삭제 여부"></w2:column>
                         <w2:column dataType="text" id="pjtName" name="프로젝트명"></w2:column>
 					</w2:columnInfo>
 				</w2:dataList>
+				
 				<w2:dataMap baseNode="map" id="dmp_outVoDetail" style="">
 					<w2:keyInfo>
 						<w2:key dataType="text" id="id" name="산출물 고유 ID"></w2:key>
@@ -35,6 +48,9 @@
                         <w2:key dataType="text" id="description" name="상세 설명"></w2:key>
                         <w2:key dataType="text" id="createdAt" name="등록일시"></w2:key>
                         <w2:key dataType="text" id="updatedAt" name="수정일시"></w2:key>
+                        <w2:key dataType="text" id="approvalStatus" name="승인 상태"></w2:key>
+                        <w2:key dataType="text" id="approvalDate" name="승인일시"></w2:key>
+                        <w2:key dataType="text" id="approvalComment" name="승인/반려 의견"></w2:key>
                         <w2:key dataType="text" id="outputType" name="산출물 유형"></w2:key>
                         <w2:key dataType="text" id="isDeleted" name="삭제 여부"></w2:key>
                         <w2:key dataType="text" id="pjtName" name="프로젝트명"></w2:key>
@@ -75,12 +91,42 @@
 					</w2:columnInfo>
 				</w2:dataList>
 
+				<!-- 프로젝트 목록 -->
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_projectList" saveRemovedData="true">
+					<w2:columnInfo>
+						<w2:column dataType="text" name="프로젝트ID" id="pjtId"></w2:column>
+						<w2:column dataType="text" name="프로젝트명" id="pjtName"></w2:column>
+					</w2:columnInfo>
+					<w2:data use="true">
+						<w2:row>
+							<pjtId><![CDATA[]]></pjtId>
+							<pjtName><![CDATA[전체]]></pjtName>
+						</w2:row>
+						<w2:row>
+							<pjtId><![CDATA[6]]></pjtId>
+							<pjtName><![CDATA[ERP 시스템 고도화 프로젝트]]></pjtName>
+						</w2:row>
+						<w2:row>
+							<pjtId><![CDATA[7]]></pjtId>
+							<pjtName><![CDATA[모바일 앱 개발 프로젝트]]></pjtName>
+						</w2:row>
+						<w2:row>
+							<pjtId><![CDATA[8]]></pjtId>
+							<pjtName><![CDATA[빅데이터 분석 플랫폼 구축]]></pjtName>
+						</w2:row>
+					</w2:data>
+				</w2:dataList>
+
 				<w2:dataList baseNode="list" repeatNode="map" id="dlt_outputType" saveRemovedData="true">
 					<w2:columnInfo>
 						<w2:column dataType="text" name="코드" id="code"></w2:column>
 						<w2:column dataType="text" name="산출물유형" id="typeName"></w2:column>
 					</w2:columnInfo>
 					<w2:data use="true">
+						<w2:row>
+							<code><![CDATA[]]></code>
+							<typeName><![CDATA[전체]]></typeName>
+						</w2:row>
 						<w2:row>
 							<code><![CDATA[DOC]]></code>
 							<typeName><![CDATA[문서]]></typeName>
@@ -96,6 +142,32 @@
 						<w2:row>
 							<code><![CDATA[OTH]]></code>
 							<typeName><![CDATA[기타]]></typeName>
+						</w2:row>
+					</w2:data>
+				</w2:dataList>
+
+				<!-- 승인 상태 목록 -->
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_approvalStatus" saveRemovedData="true">
+					<w2:columnInfo>
+						<w2:column dataType="text" name="코드" id="code"></w2:column>
+						<w2:column dataType="text" name="상태명" id="statusName"></w2:column>
+					</w2:columnInfo>
+					<w2:data use="true">
+						<w2:row>
+							<code><![CDATA[]]></code>
+							<statusName><![CDATA[전체]]></statusName>
+						</w2:row>
+						<w2:row>
+							<code><![CDATA[PENDING]]></code>
+							<statusName><![CDATA[검토중]]></statusName>
+						</w2:row>
+						<w2:row>
+							<code><![CDATA[APPROVED]]></code>
+							<statusName><![CDATA[승인]]></statusName>
+						</w2:row>
+						<w2:row>
+							<code><![CDATA[REJECTED]]></code>
+							<statusName><![CDATA[반려]]></statusName>
 						</w2:row>
 					</w2:data>
 				</w2:dataList>
@@ -155,22 +227,41 @@
 	/************************** 조회 관련 함수 *************************/
 	
 	/**
+	 * 조회 조건 초기화
+	 */
+	scwin.btn_reset_onclick = function(e) {
+		// 조회 조건 초기화 (페이징 정보는 유지)
+		var currentPageSize = dmp_outVo.get("pageSize");
+		dmp_outVo.setEmptyValue();
+		dmp_outVo.set("pageIndex", "1");
+		dmp_outVo.set("pageSize", currentPageSize);
+		
+		console.log("조회 조건이 초기화되었습니다.");
+	};
+	
+	/**
 	 * 조회 버튼 클릭 이벤트
 	 */		   
 	scwin.btn_search_onclick = function(e) {
-		// 페이지 번호 초기화
-		dmp_outVo.set("pageIndex","1");
+		// 페이지 번호 초기화 (첫 페이지로)
+		dmp_outVo.set("pageIndex", "1");
 		pgl_outList.setSelectedIndex(1);
+
+		console.log("=== 산출물관리 조회 시작 ===");
+		console.log("조회 조건:", dmp_outVo.getJSON());
 
 		// 서버통신 - 산출물관리 조회
 		$c.sbm.execute($p, sbm_selectOutVoList);
 	};
 	
 	scwin.sbm_outList_submitdone = function(e) {
+		console.log("=== 산출물관리 조회 응답 처리 ===");
+		console.log("응답 데이터:", e.responseJSON);
+		
 		// error 수신시
 		var elData = e.responseJSON.elData;
-		var elHeader  = e.responseJSON.elHeader;
-		if(elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+		var elHeader = e.responseJSON.elHeader;
+		if(elHeader == null || elHeader == "" || elHeader == "undefined" || elHeader.resSuc == false) {
 			$c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
 			return false;
 		}
@@ -189,12 +280,16 @@
         spn_totalPageCount.setValue(totalPageCount);
         spn_pageIndex.setValue(dmp_outVo.get("pageIndex"));
         pgl_outList.setSelectedIndex(dmp_outVo.get("pageIndex"));
+        
+        console.log("조회 완료 - 총 " + elData.totalCount + "건, " + totalPageCount + "페이지");
 	};	
 
 	/**
 	 * 페이지 번호 클릭 이벤트
 	 */
 	scwin.pgl_outList_onclick = function(idx) {
+		console.log("페이지 클릭:", idx);
+		
 		// 페이지 번호 세팅
 		dmp_outVo.set("pageIndex", idx);
 		 
@@ -1161,16 +1256,86 @@
 			<xf:group class="pgtbox" id="" style="">
 				<w2:textbox class="pgt_tit" id="" label="산출물관리" style="" tagname="" />
 			</xf:group>
+			
+			<!-- 조회 조건 영역 -->
 			<xf:group class="schbox" id="search_box" style="">
 				<xf:group class="schbox_inner" id="" style="">
-					<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" id="" style="width:Infinity%;" tagname="table">
+					<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" id="" style="width:100%;" tagname="table">
 						<w2:attributes>
-							<w2:summary />
+							<w2:summary>산출물관리 조회 조건</w2:summary>
 						</w2:attributes>
 						<xf:group tagname="colgroup">
+							<xf:group style="width:120px;" tagname="col"></xf:group>
+							<xf:group style="width:200px;" tagname="col"></xf:group>
+							<xf:group style="width:120px;" tagname="col"></xf:group>
+							<xf:group style="width:200px;" tagname="col"></xf:group>
+							<xf:group style="width:120px;" tagname="col"></xf:group>
+							<xf:group style="" tagname="col"></xf:group>
 						</xf:group>
 						<xf:group class="" id="" style="" tagname="tr">
-							<xf:group class="" id="" style="" tagname="tr">
+							<!-- 프로젝트 -->
+							<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
+								<w2:textbox class="" label="프로젝트" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+								<xf:select1 allOption="" appearance="minimal" chooseOption="" direction="auto" 
+									disabled="false" disabledClass="w2selectbox_disabled" id="sel_search_pjtId" 
+									style="width: 180px; height: 21px;" submenuSize="auto"
+									ref="data:dmp_outVo.pjtId">
+									<xf:choices>
+										<xf:itemset nodeset="data:dlt_projectList">
+											<xf:label ref="pjtName"></xf:label>
+											<xf:value ref="pjtId"></xf:value>
+										</xf:itemset>
+									</xf:choices>
+								</xf:select1>
+							</xf:group>
+							
+							<!-- 산출물 유형 -->
+							<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
+								<w2:textbox class="" label="산출물 유형" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+								<xf:select1 allOption="" appearance="minimal" chooseOption="" direction="auto" 
+									disabled="false" disabledClass="w2selectbox_disabled" id="sel_search_outputType" 
+									style="width: 180px; height: 21px;" submenuSize="auto"
+									ref="data:dmp_outVo.outputType">
+									<xf:choices>
+										<xf:itemset nodeset="data:dlt_outputType">
+											<xf:label ref="typeName"></xf:label>
+											<xf:value ref="code"></xf:value>
+										</xf:itemset>
+									</xf:choices>
+								</xf:select1>
+							</xf:group>
+							
+							<!-- 승인 상태 -->
+							<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
+								<w2:textbox class="" label="승인 상태" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+								<xf:select1 allOption="" appearance="minimal" chooseOption="" direction="auto" 
+									disabled="false" disabledClass="w2selectbox_disabled" id="sel_search_approvalStatus" 
+									style="width: 180px; height: 21px;" submenuSize="auto"
+									ref="data:dmp_outVo.approvalStatus">
+									<xf:choices>
+										<xf:itemset nodeset="data:dlt_approvalStatus">
+											<xf:label ref="statusName"></xf:label>
+											<xf:value ref="code"></xf:value>
+										</xf:itemset>
+									</xf:choices>
+								</xf:select1>
+							</xf:group>
+						</xf:group>
+						
+						<xf:group class="" id="" style="" tagname="tr">
+							<!-- 산출물명 -->
+							<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
+								<w2:textbox class="" label="산출물명" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" style="padding: 8px;" tagname="td" colspan="5">
+								<xf:input class="" id="inp_search_name" placeholder="산출물명을 입력하세요 (부분 검색)" 
+									ref="data:dmp_outVo.name" style="width: 300px; height: 21px;"></xf:input>
 							</xf:group>
 						</xf:group>
 					</xf:group>
@@ -1180,8 +1345,12 @@
 						ev:onclick="scwin.btn_search_onclick" localeRef="COMMON_BUTTON_00001">
 						<xf:label><![CDATA[조회]]></xf:label>
 					</xf:trigger>
+					<xf:trigger class="btn_cm" disabled="" escape="false" id="btn_reset" style="margin-left: 5px;" type="button" 
+						ev:onclick="scwin.btn_reset_onclick">
+						<xf:label><![CDATA[초기화]]></xf:label>
+					</xf:trigger>
 					<xf:trigger class="" disabled="" escape="false" id="reg_btn" localeRef="COMMON_BUTTON_00001"
-						style="background: linear-gradient(to bottom, #5cb85c 0%, #449d44 100%); color: white; border: 1px solid #4cae4c; padding: 8px 16px; font-size: 12px;  height: 30px; border-radius: 3px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 70px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);border-radius: 4px;"
+						style="background: linear-gradient(to bottom, #5cb85c 0%, #449d44 100%); color: white; border: 1px solid #4cae4c; padding: 8px 16px; font-size: 12px;  height: 30px; border-radius: 3px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 70px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);border-radius: 4px; margin-left: 10px;"
 						type="button" ev:onclick="scwin.reg_btn_onclick">
 						<xf:label><![CDATA[등록]]></xf:label>
 					</xf:trigger>
@@ -1205,7 +1374,8 @@
 							<w2:column width="80" inputType="text" style="" id="column1" value="산출물 ID" displayMode="label"></w2:column>
                             <w2:column width="200" inputType="text" style="" id="column3" value="산출물명" displayMode="label"></w2:column>
                             <w2:column width="100" inputType="text" style="" id="column9" value="산출물 유형" displayMode="label"></w2:column>
-                            <w2:column width="200" inputType="text" style="" id="columnPjt" value="프로젝트명" displayMode="label"></w2:column>
+                            <w2:column width="150" inputType="text" style="" id="columnPjt" value="프로젝트명" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" style="" id="columnApproval" value="승인 상태" displayMode="label"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="column4" value="등록일시" displayMode="label"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="column5" value="수정일시" displayMode="label"></w2:column>
 						</w2:row>
@@ -1215,7 +1385,8 @@
 							<w2:column width="80" inputType="text" style="" id="id" value="" displayMode="label"></w2:column>
                             <w2:column width="200" inputType="text" style="" id="name" value="" displayMode="label"></w2:column>
                             <w2:column width="100" inputType="text" style="" id="outputType" value="" displayMode="label"></w2:column>
-                            <w2:column width="200" inputType="text" style="" id="pjtName" value="" displayMode="label"></w2:column>
+                            <w2:column width="150" inputType="text" style="" id="pjtName" value="" displayMode="label"></w2:column>
+                            <w2:column width="100" inputType="text" style="" id="approvalStatus" value="" displayMode="label"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="createdAt" value="" displayMode="label"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="updatedAt" value="" displayMode="label"></w2:column>
 						</w2:row>
@@ -1281,13 +1452,13 @@
 
                                 <!-- 프로젝트명 (항상 readOnly) -->
                                 <xf:group tagname="tr">
-                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                    <xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
                                         <w2:textbox class="" label="프로젝트명" style=""></w2:textbox>
                                         <span style="color: red;">*</span>
                                     </xf:group>
                                     <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
                                         <xf:input class="" id="inp_projectName" readOnly="true" 
-                                            style="width: 100%; height: 25px; background-color: #f5f5f5;"
+                                            style="width: 100%; height: 25px; "
                                             ref="data:dmp_outVoDetail.pjtName" value="ERP 시스템 고도화 프로젝트"></xf:input>
                                         <xf:input type="hidden" ref="data:dmp_outVoDetail.pjtId" value="6"></xf:input>
                                     </xf:group>
@@ -1295,7 +1466,7 @@
 
                                 <!-- 산출물명 -->
                                 <xf:group tagname="tr">
-                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                    <xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
                                         <w2:textbox class="" label="산출물명" style=""></w2:textbox>
                                         <span style="color: red;">*</span>
                                     </xf:group>
@@ -1307,7 +1478,7 @@
 
                                 <!-- 산출물 유형 -->
                                 <xf:group tagname="tr">
-                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+                                    <xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
                                         <w2:textbox class="" label="산출물 유형" style=""></w2:textbox>
                                     </xf:group>
                                     <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">

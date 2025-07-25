@@ -6,6 +6,67 @@
 		<w2:type>COMPONENT</w2:type>
 		<w2:buildDate />
 		<w2:MSA />
+        <style>
+			/* 팝업 전체 컨테이너 */
+			.pop_contents {
+				background-color: white;
+				border: 2px solid #98BED6;
+				border-radius: 8px;
+				box-shadow: 0 4px 12px rgba(152, 190, 214, 0.2);
+			}
+			
+
+			.pop_title {
+				color: #333 !important;
+				font-weight: bold !important;
+			}
+			
+			/* 팝업 바디 */
+			.pop_body {
+				background-color: white;
+			}
+			
+			/* 섹션 타이틀 */
+			.section_title {
+				color: #98BED6 !important;
+				border-bottom: 2px solid #98BED6 !important;
+				padding-bottom: 5px !important;
+			}
+			
+
+			/* 입력 요소들 */
+			input[type="text"], 
+			select, 
+			textarea {
+				border: 1px solid #98BED6 !important;
+				border-radius: 4px !important;
+			}
+			
+			input[type="text"]:focus, 
+			select:focus, 
+			textarea:focus {
+				border-color: #7BA6C4 !important;
+				box-shadow: 0 0 0 2px rgba(152, 190, 214, 0.2) !important;
+			}
+			
+			/* 읽기 전용 입력 */
+			input[readonly] {
+				background-color: #f8f9fa !important;
+			}
+			
+            /* 버튼 박스 - 이 팝업 내부만 적용 */
+			.pop_contents .btnbox {
+				background-color: #f8f9fa;
+				border-top: 1px solid #98BED6;
+				border-radius: 0 0 8px 8px;
+			}
+			
+			/* 달력 입력 */
+			.w2inputcalendar {
+				border: 1px solid #98BED6 !important;
+				border-radius: 4px !important;
+			}
+		</style>
 		<xf:model> 
 			<w2:dataCollection baseNode="map">
                 <w2:dataList baseNode="list" id="dlt_taskList" repeatNode="map" saveRemovedData="true">
@@ -254,7 +315,7 @@
 			<xf:submission id="sbm_selectUnitTestList" ref='data:json,{"id":"dml_unitTestVo","key":"unitTestVo"}'
 				target='data:json,{"id":"dlt_unitTestVoList","key":"unitTestVoList"}' action="/InsWebApp/UNIT001List.pwkjson" method="post"
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-				processMsg="단위테스트 케이스 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestList_submitdone" ev:submiterror="" abortTrigger="">
+				processMsg="테스트 케이스 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestList_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
 			
 			<xf:submission id="sbm_selectUnitTestDetail" ref='data:json,{"id":"dmp_unitTestDetail","key":"unitTestVo"}'
@@ -438,22 +499,122 @@ scwin.onpageload = function() {
     console.log("페이지 로드 완료");
 };
 
+scwin.handleTaskIdFromDevelop = function(taskId, taskName) {
+    console.log("개발업무에서 넘어온 업무 ID:", taskId, taskName);
+    
+    // 해당 업무의 테스트 목록 필터링해서 보여주기
+    dmp_search.set("searchTaskId", taskId);
+    scwin.searchUnitTests();
+    
+    // 사용자에게 선택권 제공
+    var message = `업무: ${taskName}\n업무ID: ${taskId}\n\n이 업무의 테스트 목록을 확인하고 있습니다.\n새로운 테스트를 등록하시겠습니까?`;
+    
+    setTimeout(function() {
+        var promise = $c.win.confirm(message);
+        promise.then(function(result) {
+            if (result) {
+                scwin.openTestRegisterWithTask(taskId, taskName);
+            }
+        });
+    }, 500); // 목록 조회 후 확인창 표시
+};
+
+// DevelopList에서 업무ID 클릭 시 → 테스트 조회 팝업
+scwin.openTestViewPopupWithTask = function(taskId, taskName) {
+    console.log("업무별 테스트 조회 팝업 열기:", taskId, taskName);
+    
+    // 해당 업무의 테스트 목록 필터링
+    dmp_search.set("searchTaskId", taskId);
+    
+    // 먼저 데이터 조회
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        scwin.searchUnitTestsByProject();
+    } else {
+        scwin.searchUnitTests();
+    }
+    
+    // 조회 완료 후 팝업 표시
+    setTimeout(function() {
+        scwin.showTestListViewPopup(taskId, taskName);
+    }, 500);
+};
+
+scwin.showTestListViewPopup = function(taskId, taskName) {
+    console.log(`업무 ${taskName} (${taskId})의 테스트 조회`);
+    
+    // 검색 조건에 해당 업무ID 설정하고 조회
+    dmp_search.set("searchTaskId", taskId);
+    
+    // 기존 검색 함수 호출
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        scwin.searchUnitTestsByProject();
+    } else {
+        scwin.searchUnitTests();
+    }
+    
+    // 조회 완료 후 결과에 따라 처리
+    setTimeout(function() {
+        var successCount = dlt_successList.getTotalRow();
+        var failCount = dlt_failList.getTotalRow();
+        var totalCount = successCount + failCount;
+        
+        if (totalCount == 0) {
+            var promise = $c.win.confirm(`업무 "${taskName}"에 등록된 테스트가 없습니다.\n\n새로운 테스트를 등록하시겠습니까?`);
+            promise.then(function(result) {
+                if (result) {
+                    scwin.openTestRegisterPopupWithTask(taskId, taskName);
+                }
+            });
+        }
+    }, 500);
+};
+
+scwin.openTestViewOnlyPopup = function(taskId, taskName, testList) {
+    console.log("테스트 조회 전용 팝업 열기:", taskId, taskName, testList);
+    
+    // 임시 데이터에 필터링된 테스트 목록 저장
+    scwin.tempFilteredTests = testList;
+    scwin.tempTaskInfo = { taskId: taskId, taskName: taskName };
+    
+    // 기존 팝업을 조회 모드로 설정하고 첫 번째 테스트 표시
+    if (testList.length > 0) {
+        dmp_unitTestDetail.setJSON(testList[0]);
+        scwin.setFormMode("view");
+        pop_overlay.show();
+        
+        setTimeout(function() {
+            try {
+                spn_popupTitle.setValue(`업무: ${taskName} - 테스트 목록 조회 (${testList.length}개)`);
+                
+                // // 팝업에 이전/다음 버튼 추가 (있다면)
+                // scwin.addNavigationButtons();
+            } catch(e) {
+                setTimeout(function() {
+                    spn_popupTitle.setValue(`업무: ${taskName} - 테스트 목록 조회 (${testList.length}개)`);
+                }, 50);
+            }
+        }, 50);
+        
+        // 파일 목록 로드
+        scwin.loadFileList();
+    }
+};
 
 
 scwin.handleTaskIdParam = function() {
     try {
         var developParam = $p.getParameter("tabData");
-        if (developParam &&  developParam.selectedTaskId) {
+        if (developParam && developParam.selectedTaskId) {
             console.log("개발업무에서 전달받은 업무ID :", developParam.selectedTaskId);
             console.log("개발업무에서 전달받은 flag :", developParam.openRegisterPopup);
-            if(developParam.openRegisterPopup){ // 개발 업무 팝업에서 테스트 등록을 누른 경우.
-                // 전달받은 업무ID로 테스트 등록 팝업 열기
+            
+            if(developParam.openRegisterPopup) { 
+                // DevelopPopup.xml에서 등록 버튼을 누른 경우 → 테스트 등록 팝업
                 scwin.openTestRegisterPopupWithTask(developParam.selectedTaskId, developParam.selectedTaskName || "");
             } 
-            else{ // 개발 업무 목록 페이지에서 개발 업무 ID를 클릭해서 넘어온 경우.
-                // 검색 조건에 업무ID 설정하여 필터링
-                dmp_search.set("searchTaskId", developParam.selectedTaskId);
-                scwin.searchUnitTests();
+            else { 
+                // DevelopList.xml에서 업무ID를 클릭한 경우 → 테스트 조회 팝업
+                scwin.openTestViewPopupWithTask(developParam.selectedTaskId, developParam.selectedTaskName || "");
             } 
         }
     } catch (e) {
@@ -477,7 +638,7 @@ scwin.openTestRegisterPopupWithTask = function(taskId, taskName) {
     dmp_unitTestDetail.set("priority", "MEDIUM");
     dmp_unitTestDetail.set("testType", "NORMAL");
     dmp_unitTestDetail.set("taskId", taskId);
-    dmp_unitTestDetail.set("taskName", taskName || "선택된 업무");
+    dmp_unitTestDetail.set("taskName", taskName);
     dmp_unitTestDetail.set("assignee", scwin.CURRENT_USER_ID);
     dmp_unitTestDetail.set("assigneeName", scwin.getCurrentUserName() || "현재 사용자");
     
@@ -494,10 +655,10 @@ scwin.openTestRegisterPopupWithTask = function(taskId, taskName) {
     
     setTimeout(function() {
         try {
-            spn_popupTitle.setValue("새 단위테스트 케이스 등록 (개발업무 연동)");
+            spn_popupTitle.setValue("새 단위테스트 케이스 등록 (업무: " + taskName + ")");
         } catch(e) {
             setTimeout(function() {
-                spn_popupTitle.setValue("새 단위테스트 케이스 등록 (개발업무 연동)");
+                spn_popupTitle.setValue("새 단위테스트 케이스 등록 (업무: " + taskName + ")");
             }, 50);
         }
     }, 50);
@@ -505,48 +666,51 @@ scwin.openTestRegisterPopupWithTask = function(taskId, taskName) {
     scwin.hideAllPreviewPanels();
     scwin.showNoPreview();
     
-    console.log("개발업무 연동 테스트 등록 모드로 초기화 완료:", {
-        업무ID: taskId,
-        업무명: taskName,
-        담당자: scwin.CURRENT_USER_ID
-    });
+    console.log("개발업무 연동 테스트 등록 모드로 초기화 완료");
 };
 
 
 /**
  * 데이터 필터링 (권한 적용)
  */
-scwin.filterDataByPermission = function(data) {
-    if (!data || data.length === 0) {
-        return data;
-    }
+// scwin.filterDataByPermission = function(data) {
+//     if (!data || data.length === 0) {
+//         return data;
+//     }
     
-    // PM인 경우 모든 데이터 반환
-    if (scwin.isPM()) {
-        console.log("PM 권한: 전체 데이터 표시");
-        return data;
-    }
+//     // PM인 경우 모든 데이터 반환
+//     if (scwin.isPM()) {
+//         console.log("PM 권한: 전체 데이터 표시");
+//         return data;
+//     }
     
-    // 일반 사용자인 경우 자신이 담당한 테스트만 필터링
-    var filteredData = data.filter(function(item) {
-        return item.assignee === scwin.CURRENT_USER_ID;
-    });
+//     // 일반 사용자인 경우 자신이 담당한 테스트만 필터링
+//     var filteredData = data.filter(function(item) {
+//         return item.assignee === scwin.CURRENT_USER_ID;
+//     });
     
-    console.log("일반 사용자 권한: 필터링된 데이터", {
-        전체: data.length,
-        필터링후: filteredData.length,
-        담당자: scwin.CURRENT_USER_ID
-    });
+//     console.log("일반 사용자 권한: 필터링된 데이터", {
+//         전체: data.length,
+//         필터링후: filteredData.length,
+//         담당자: scwin.CURRENT_USER_ID
+//     });
     
-    return filteredData;
-};
+//     return filteredData;
+// };
 
 /**
  * 테스트 데이터 처리 (권한 필터링 추가)
  */
 scwin.processTestData = function(allData, totalCount) {
+    console.log("=== 테스트 데이터 처리 시작 ===");
+    console.log("원본 데이터:", allData);
+    console.log("원본 총 개수:", totalCount);
+    
     // 권한에 따른 데이터 필터링
     var filteredData = scwin.filterDataByPermission(allData);
+    
+    console.log("권한 필터링 후 데이터:", filteredData);
+    console.log("권한 필터링 후 개수:", filteredData.length);
     
     // 데이터 저장
     scwin.allDataPageInfo.data = filteredData;
@@ -571,6 +735,9 @@ scwin.processTestData = function(allData, totalCount) {
         }
     }
     
+    console.log("성공 데이터:", successData.length, "개");
+    console.log("실패 데이터:", failData.length, "개");
+    
     // 상태별 데이터 저장
     scwin.successPageInfo.data = successData;
     scwin.successPageInfo.totalCount = successData.length;
@@ -585,6 +752,8 @@ scwin.processTestData = function(allData, totalCount) {
     
     // 페이징 업데이트
     scwin.updatePagination();
+    
+    console.log("=== 테스트 데이터 처리 완료 ===");
 };
 
 /**
@@ -599,7 +768,7 @@ scwin.adjustUIByPermission = function() {
             scwin.enableAllSearchFields();
             
             // 권한 표시
-            scwin.showPermissionIndicator("PM 권한", "#28a745");
+        
             
         } else {
             console.log("일반 사용자 권한: 제한된 기능");
@@ -864,42 +1033,68 @@ scwin.searchUnitTestsByProject = function() {
 scwin.sbm_selectUnitTestListByProject_submitdone = function(e) {
     console.log("프로젝트별 단위테스트 목록 조회 완료", e);
     
-    var elData = e.responseJSON.elData;
-    var elHeader = e.responseJSON.elHeader;
-    
-    // 에러 처리
-    if (!elHeader || elHeader.resSuc == false) {
-        $c.win.alert(`에러코드: ${elHeader.resCode}\n에러메시지: ${elHeader.resMsg}`);
-        return false;
+    try {
+        var elData = e.responseJSON.elData;
+        var elHeader = e.responseJSON.elHeader;
+        
+        // 에러 처리
+        if (!elHeader || elHeader.resSuc == false) {
+            $c.win.alert(`에러코드: ${elHeader.resCode}\n에러메시지: ${elHeader.resMsg}`);
+            return false;
+        }
+        
+        // 데이터 처리
+        var allData = elData.unitTestList || [];
+        var totalCount = elData.totalCount || 0;
+        
+        scwin.globalElData = elData;
+        
+        console.log("프로젝트별 전체 데이터:", allData.length, "개");
+        console.log("프로젝트별 총 개수:", totalCount);
+        console.log("조회된 실제 데이터:", allData);
+        
+        // 검색 조건 확인
+        var searchTaskId = dmp_search.get("searchTaskId");
+        console.log("현재 검색 조건 - taskId:", searchTaskId);
+        
+        // processTestData 호출 전 로그
+        console.log("=== processTestData 호출 시작 ===");
+        
+        // 데이터 분류 및 그리드 업데이트
+        scwin.processTestData(allData, totalCount);
+        
+        console.log("=== processTestData 호출 완료 ===");
+        
+    } catch (error) {
+        console.error("프로젝트별 조회 완료 처리 중 오류:", error);
+        console.error("오류 스택:", error.stack);
     }
-    
-    // 데이터 처리
-    var allData = elData.unitTestList || [];
-    var totalCount = elData.totalCount || 0;
-    
-    scwin.globalElData = elData;
-    
-    console.log("프로젝트별 전체 데이터:", allData.length, "개");
-    console.log("프로젝트별 총 개수:", totalCount);
-    
-    // 데이터 분류 및 그리드 업데이트
-    scwin.processTestData(allData, totalCount);
 };
 
 /**
  * 테스트 데이터 처리 (성공/실패 그리드만)
  */
 scwin.processTestData = function(allData, totalCount) {
+    console.log("=== 테스트 데이터 처리 시작 ===");
+    console.log("원본 데이터:", allData);
+    console.log("원본 총 개수:", totalCount);
+    
+    // 권한에 따른 데이터 필터링 (임시로 비활성화)
+    var filteredData = allData; // 임시로 모든 데이터 사용
+    
+    console.log("권한 필터링 후 데이터:", filteredData);
+    console.log("권한 필터링 후 개수:", filteredData.length);
+    
     // 데이터 저장
-    scwin.allDataPageInfo.data = allData;
-    scwin.allDataPageInfo.totalCount = totalCount;
+    scwin.allDataPageInfo.data = filteredData;
+    scwin.allDataPageInfo.totalCount = filteredData.length;
     
     // 상태별 데이터 필터링 (성공/실패만)
     var successData = [];
     var failData = [];
     
-    for (var i = 0; i < allData.length; i++) {
-        var item = allData[i];
+    for (var i = 0; i < filteredData.length; i++) {
+        var item = filteredData[i];
         
         // 테스트 타입명, 우선순위명 추가
         item.testTypeName = scwin.getTestTypeName(item.testType);
@@ -913,6 +1108,9 @@ scwin.processTestData = function(allData, totalCount) {
         }
     }
     
+    console.log("성공 데이터:", successData.length, "개");
+    console.log("실패 데이터:", failData.length, "개");
+    
     // 상태별 데이터 저장
     scwin.successPageInfo.data = successData;
     scwin.successPageInfo.totalCount = successData.length;
@@ -922,13 +1120,14 @@ scwin.processTestData = function(allData, totalCount) {
     // 그리드 데이터 업데이트
     scwin.updateGridData();
     
-    // 카운트 업데이트
-    scwin.updateCountLabels(totalCount, successData.length, failData.length);
+    // 카운트 업데이트 (필터링된 데이터 기준)
+    scwin.updateCountLabels(filteredData.length, successData.length, failData.length);
     
     // 페이징 업데이트
     scwin.updatePagination();
+    
+    console.log("=== 테스트 데이터 처리 완료 ===");
 };
-
 /**
  * 테스트 타입명 변환
  */
@@ -1051,11 +1250,11 @@ scwin.updateGridData = function() {
     console.log("그리드 데이터 업데이트 시작");
     
     try {
-        // 전체 데이터 그리드
-        var allPageData = scwin.getPageData(scwin.allDataPageInfo.data, scwin.allDataPageInfo);
-        dlt_unitTestVoList.setJSON(allPageData);
+        // 전체 데이터 그리드 업데이트 제거
+        // var allPageData = scwin.getPageData(scwin.allDataPageInfo.data, scwin.allDataPageInfo);
+        // dlt_unitTestVoList.setJSON(allPageData);
         
-        // 상태별 그리드 (성공/실패만)
+        // 상태별 그리드만 업데이트 (성공/실패만)
         var successPageData = scwin.getPageData(scwin.successPageInfo.data, scwin.successPageInfo);
         dlt_successList.setJSON(successPageData);
         
@@ -1086,7 +1285,7 @@ scwin.getPageData = function(data, pageInfo) {
  */
 scwin.updateCountLabels = function(total, success, fail) {
     try {
-        spn_listCnt.setLabel(total);
+        // spn_listCnt.setLabel(total); // 전체 카운트 제거
         spn_successListCnt.setLabel(success);
         spn_failListCnt.setLabel(fail);
     } catch (e) {
@@ -1099,14 +1298,14 @@ scwin.updateCountLabels = function(total, success, fail) {
  */
 scwin.updatePagination = function() {
     try {
-        // 전체 데이터 페이징
-        var totalPages = Math.ceil(scwin.allDataPageInfo.totalCount / scwin.allDataPageInfo.pageSize);
-        if (totalPages > 0) {
-            pgl_testList.setCount(totalPages);
-            pgl_testList.setSelectedIndex(scwin.allDataPageInfo.currentPage);
-        }
+        // 전체 데이터 페이징 제거
+        // var totalPages = Math.ceil(scwin.allDataPageInfo.totalCount / scwin.allDataPageInfo.pageSize);
+        // if (totalPages > 0) {
+        //     pgl_testList.setCount(totalPages);
+        //     pgl_testList.setSelectedIndex(scwin.allDataPageInfo.currentPage);
+        // }
         
-        // 상태별 페이징 (성공/실패만)
+        // 상태별 페이징만 유지 (성공/실패만)
         scwin.updateStatePagination(scwin.successPageInfo, pgl_success);
         scwin.updateStatePagination(scwin.failPageInfo, pgl_fail);
         
@@ -1298,49 +1497,57 @@ scwin.btn_resetTask_onclick = function(e) {
 scwin.setFormMode = function(mode) {
     console.log("폼 모드 전환:", mode);
     
-    if (mode === "edit") {
-        // 수정 모드
-        scwin.setFieldsReadOnly(false);
-        scwin.setEditorMode(true);
-        scwin.showFileUploadSection(true);
-        
-        // 업무명은 수정 모드에서도 선택만 가능 (직접 입력 불가)
-        var taskNameField = $p.getComponentById("inp_taskName");
-        if (taskNameField) {
-            taskNameField.setReadOnly(true);
+    try {
+        if (mode === "edit") {
+            // 수정 모드
+            scwin.setFieldsReadOnly(false);
+            scwin.setEditorMode(true);
+            scwin.showFileUploadSection(true);
+            
+            // 버튼 상태 변경 (안전장치 추가)
+            if (typeof btn_save !== 'undefined' && btn_save.show) {
+                btn_save.show();
+            }
+            if (typeof btn_popup_edit !== 'undefined' && btn_popup_edit.hide) {
+                btn_popup_edit.hide();
+            }
+            
+        } else if (mode === "view") {
+            // 조회 모드
+            scwin.setFieldsReadOnly(true);
+            scwin.setEditorMode(false);
+            scwin.showFileUploadSection(false);
+            
+            // 버튼 상태 변경 (안전장치 추가)
+            if (typeof btn_save !== 'undefined' && btn_save.hide) {
+                btn_save.hide();
+            }
+            if (typeof btn_popup_edit !== 'undefined' && btn_popup_edit.show) {
+                btn_popup_edit.show();
+            }
+            if (typeof btn_popup_delete !== 'undefined' && btn_popup_delete.show) {
+                btn_popup_delete.show();
+            }
+            
+        } else if (mode === "new") {
+            // 등록 모드
+            scwin.setFieldsReadOnly(false);
+            scwin.setEditorMode(true);
+            scwin.showFileUploadSection(true);
+            
+            // 버튼 상태 변경 (안전장치 추가)
+            if (typeof btn_save !== 'undefined' && btn_save.show) {
+                btn_save.show();
+            }
+            if (typeof btn_popup_edit !== 'undefined' && btn_popup_edit.hide) {
+                btn_popup_edit.hide();
+            }
+            if (typeof btn_popup_delete !== 'undefined' && btn_popup_delete.hide) {
+                btn_popup_delete.hide();
+            }
         }
-        
-        // 버튼 상태 변경
-        btn_save.show();
-        btn_popup_edit.hide();
-        
-    } else if (mode === "view") {
-        // 조회 모드
-        scwin.setFieldsReadOnly(true);
-        scwin.setEditorMode(false);
-        scwin.showFileUploadSection(false);
-        
-        // 버튼 상태 변경
-        btn_save.hide();
-        btn_popup_edit.show();
-        btn_popup_delete.show();
-        
-    } else if (mode === "new") {
-        // 등록 모드
-        scwin.setFieldsReadOnly(false);
-        scwin.setEditorMode(true);
-        scwin.showFileUploadSection(true);
-        
-        // 등록 모드에서는 업무명 선택 가능하도록 설정
-        var taskNameField = $p.getComponentById("inp_taskName");
-        if (taskNameField) {
-            taskNameField.setReadOnly(true); // 직접 입력은 불가, 선택만 가능
-        }
-        
-        // 버튼 상태 변경
-        btn_save.show();
-        btn_popup_edit.hide();
-        btn_popup_delete.hide();
+    } catch (e) {
+        console.error("setFormMode 오류:", e);
     }
 };
 
@@ -1438,18 +1645,6 @@ scwin.showDetailPopup = function(mode) {
     
     // 파일 목록 로드
     scwin.loadFileList();
-};
-
-/**
- * 페이지 번호 클릭 이벤트
- */
-scwin.pgl_testList_onclick = function(idx) {
-    console.log("메인 페이지 클릭:", idx);
-    
-    scwin.allDataPageInfo.currentPage = idx;
-    var pageData = scwin.getPageData(scwin.allDataPageInfo.data, scwin.allDataPageInfo);
-    dlt_unitTestVoList.setJSON(pageData);
-    pgl_testList.setSelectedIndex(idx);
 };
 
 /**
@@ -1887,37 +2082,53 @@ scwin.btn_reset_onclick = function(e) {
 scwin.setFormMode = function(mode) {
     console.log("폼 모드 전환:", mode);
     
-    if (mode === "edit") {
-        // 수정 모드
-        scwin.setFieldsReadOnly(false);
-        scwin.setEditorMode(true);
-        scwin.showFileUploadSection(true);
-        
-        // 버튼 상태 변경
-        btn_save.show();
-        btn_popup_edit.hide();
-        
-    } else if (mode === "view") {
-        // 조회 모드
-        scwin.setFieldsReadOnly(true);
-        scwin.setEditorMode(false);
-        scwin.showFileUploadSection(false);
-        
-        // 버튼 상태 변경
-        btn_save.hide();
-        btn_popup_edit.show();
-        btn_popup_delete.show();
-        
-    } else if (mode === "new") {
-        // 등록 모드
-        scwin.setFieldsReadOnly(false);
-        scwin.setEditorMode(true);
-        scwin.showFileUploadSection(true);
-        
-        // 버튼 상태 변경
-        btn_save.show();
-        btn_popup_edit.hide();
-        btn_popup_delete.hide();
+    try {
+        if (mode === "edit") {
+            // 수정 모드
+            scwin.setFieldsReadOnly(false);
+            scwin.setEditorMode(true);
+            scwin.showFileUploadSection(true);
+            
+            // 버튼 상태 변경
+            var saveBtn = $p.getComponentById("btn_save");
+            var editBtn = $p.getComponentById("btn_popup_edit");
+            
+            if (saveBtn && saveBtn.show) saveBtn.show();
+            if (editBtn && editBtn.hide) editBtn.hide();
+            
+        } else if (mode === "view") {
+            // 조회 모드
+            scwin.setFieldsReadOnly(true);
+            scwin.setEditorMode(false);
+            scwin.showFileUploadSection(false);
+            
+            // 버튼 상태 변경
+            var saveBtn = $p.getComponentById("btn_save");
+            var editBtn = $p.getComponentById("btn_popup_edit");
+            var deleteBtn = $p.getComponentById("btn_popup_delete");
+            
+            if (saveBtn && saveBtn.hide) saveBtn.hide();
+            if (editBtn && editBtn.show) editBtn.show();
+            if (deleteBtn && deleteBtn.show) deleteBtn.show();
+            
+        } else if (mode === "new") {
+            // 등록 모드
+            scwin.setFieldsReadOnly(false);
+            scwin.setEditorMode(true);
+            scwin.showFileUploadSection(true);
+            
+            // 버튼 상태 변경
+            var saveBtn = $p.getComponentById("btn_save");
+            var editBtn = $p.getComponentById("btn_popup_edit");
+            var deleteBtn = $p.getComponentById("btn_popup_delete");
+            
+            if (saveBtn && saveBtn.show) saveBtn.show();
+            if (editBtn && editBtn.hide) editBtn.hide();
+            if (deleteBtn && deleteBtn.hide) deleteBtn.hide();
+        }
+    } catch (e) {
+        console.error("setFormMode 오류:", e);
+        // 오류가 발생해도 계속 진행
     }
 };
 
@@ -3222,91 +3433,23 @@ scwin.getCurrentUserName = function() {
 			<xf:group class="titbox" id="" style="margin-bottom: 15px;">
 				<xf:group class="rt" id="" style="float: right;">
 					<xf:trigger class="btn_cm" id="btn_register_main" 
-						style="background: linear-gradient(to bottom, #007bff 0%, #0056b3 100%); color: white; border: 1px solid #0056b3; padding: 10px 20px; font-size: 14px; height: 35px; border-radius: 4px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 100px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); margin-right: 10px;"
+						style="background-color:#98BED6;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 170px;width: auto;padding: 0 10px;width: 170px;border-color: #fff;border: none;"
 						type="button" ev:onclick="scwin.btn_register_onclick">
 						<xf:label><![CDATA[+ 새 테스트 케이스 등록]]></xf:label>
 					</xf:trigger>
                     <xf:trigger class="btn_cm" id="btn_excel_download" 
-                        style="background: linear-gradient(to bottom, #28a745 0%, #1e7e34 100%); color: white; border: 1px solid #1e7e34; padding: 10px 15px; font-size: 14px; height: 35px; border-radius: 4px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 100px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); margin-right: 5px;"
+                        style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 100px;width: auto;padding: 0 10px;width: 100px;border-color: #fff;border: none;"
                         type="button" ev:onclick="scwin.btn_excel_download_onclick">
                         <xf:label><![CDATA[엑셀 다운로드]]></xf:label>
                     </xf:trigger>
 					<xf:trigger class="btn_cm" id="btn_refresh" 
-						style="background: linear-gradient(to bottom, #28a745 0%, #1e7e34 100%); color: white; border: 1px solid #1e7e34; padding: 10px 15px; font-size: 14px; height: 35px; border-radius: 4px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 80px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
+						style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 90px;width: auto;padding: 0 10px;width: 80px;border-color: #fff;border: none;"
 						type="button" ev:onclick="scwin.btn_search_onclick">
 						<xf:label><![CDATA[새로고침]]></xf:label>
 					</xf:trigger>
 				</xf:group>
 			</xf:group>
 
-			<!-- 통계 영역 -->
-			<xf:group class="titbox" id="" style="">
-				<xf:group class="lt" id="" style="">
-					<w2:textbox class="tit" id="" label="테스트 현황" style="" tagname="h3"></w2:textbox>
-				</xf:group>
-				<xf:group class="rt" id="" style="">
-					<w2:textbox id="txt_totalCount" ref="data:dmp_statistics.totalCount" 
-						style="font-weight: bold; color: #333; margin-right: 10px;"></w2:textbox>
-					<w2:textbox label="건 (성공률: " style=""></w2:textbox>
-					<w2:textbox id="txt_successRate" ref="data:dmp_statistics.successRate" 
-						style="font-weight: bold; color: #28a745;"></w2:textbox>
-					<w2:textbox label="%)" style=""></w2:textbox>
-				</xf:group>
-			</xf:group>
-
-			<!-- 전체 목록 -->
-			<xf:group class="titbox" id="" style="">
-				<xf:group class="count" id="">
-					<w2:span id="" label="총" style=""></w2:span>
-					<w2:span class="num" id="spn_listCnt" label="0" ref="" style=""></w2:span>
-					<w2:span id="" label="건" style=""></w2:span>
-				</xf:group>
-			</xf:group>
-			
-			<xf:group class="gvwbox" id="" style="">
-				<w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_unitTestVoList"
-					defaultCellHeight="26" focusMode="row" id="grd_list" readOnly="true" scrollByColumn="false" 
-					style="height: 200px;" visibleRowNum="15" 
-					ev:oncellclick="scwin.grd_list_oncellclick" ev:oncelldblclick="scwin.grd_list_oncelldblclick">
-					<w2:caption style="" id="caption1" value="단위테스트 케이스 목록"></w2:caption>
-					<w2:header style="" id="header1">
-						<w2:row style="" id="row1">
-							<w2:column width="100" inputType="text" id="column1" value="테스트 ID" displayMode="label"></w2:column>
-							<w2:column width="150" inputType="text" id="column2" value="업무명" displayMode="label"></w2:column>
-							<w2:column width="250" inputType="text" id="column3" value="테스트케이스명" displayMode="label"></w2:column>
-							<w2:column width="180" inputType="text" id="column4" value="테스트 대상" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="column5" value="테스트 타입" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="column6" value="우선순위" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="column7" value="상태" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="column8" value="담당자" displayMode="label"></w2:column>
-							<w2:column width="120" inputType="text" id="column9" value="실행일시" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="column10" value="소요시간" displayMode="label"></w2:column>
-							<w2:column width="120" inputType="text" id="column12" value="등록일시" displayMode="label"></w2:column>
-						</w2:row>
-					</w2:header>
-					<w2:gBody style="" id="gBody1">
-						<w2:row style="" id="row2">
-							<w2:column width="100" inputType="text" id="testCaseId" displayMode="label"></w2:column>
-							<w2:column width="150" inputType="text" id="taskName" displayMode="label"></w2:column>
-							<w2:column width="250" inputType="text" id="testCaseName" displayMode="label"></w2:column>
-							<w2:column width="180" inputType="text" id="testTarget" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="testTypeName" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="priorityName" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="testStatus" displayMode="label" customFormatter="scwin.testStatusCodeFmt"></w2:column>
-							<w2:column width="100" inputType="text" id="assigneeName" displayMode="label"></w2:column>
-							<w2:column width="120" inputType="text" id="executionDate" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="duration" displayMode="label"></w2:column>
-							<w2:column width="120" inputType="text" id="createdAt" displayMode="label"></w2:column>
-						</w2:row>
-					</w2:gBody>
-				</w2:gridView>
-			</xf:group>
-			
-			<xf:group class="pglbox" id="" style="">
-				<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_testList" 
-					pageSize="5" pagingType="0" style="" ev:onclick="scwin.pgl_testList_onclick">
-				</w2:pageList>
-			</xf:group>
 
             <xf:group class="titbox" id="" style="">
                 <w2:textbox class="" id="" label="성공한 테스트" style="padding: 5px;" tagname="h4"></w2:textbox>
@@ -3415,34 +3558,49 @@ scwin.getCurrentUserName = function() {
             </xf:group>
 
 			<!-- 단위테스트 케이스 등록/수정 팝업 -->
-			<xf:group class="pop_contents" id="pop_overlay"
-				style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none;">
-				<xf:group class="pop_contents" id="group1"
-					style="background-color: white; position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 8px; max-width: 1400px; width: 95%; max-height: 90vh; overflow-y: auto; border: 1px solid grey;">
-
+			<xf:group id="pop_overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none;">
+                <xf:group class="pop_contents" style="background-color: white; position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 1400px; max-width: 95%; max-height: 90vh; overflow-y: auto;">
 					<!-- 팝업 제목 및 버튼 영역 -->
-					<xf:group class="titbox" id="" style="margin-bottom: 20px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
-						<xf:group id="" style="" tagname="h3">
-							<w2:span class="" id="spn_popupTitle" label="단위테스트 케이스 관리" style="font-size: 18px; font-weight: bold;"></w2:span>
-						</xf:group>
-						<xf:group class="rt" id="" style="float: right;">
-							<xf:trigger class="btn_cm save" id="btn_save" style="" type="button" ev:onclick="scwin.btn_save_onclick">
-								<xf:label><![CDATA[저장]]></xf:label>
-							</xf:trigger>
-							<xf:trigger class="btn_cm refresh" ev:onclick="scwin.btn_reset_onclick" id="btn_popup_reset" style="margin-right: 5px;" type="button">
-								<xf:label><![CDATA[초기화]]></xf:label>
-							</xf:trigger>
-							<xf:trigger class="btn_cm edit" ev:onclick="scwin.btn_popup_edit_onclick" id="btn_popup_edit" style="margin-right: 5px; display: none;" type="button">
-								<xf:label><![CDATA[수정]]></xf:label>
-							</xf:trigger>
-							<xf:trigger class="btn_cm delete" ev:onclick="scwin.btn_popup_delete_onclick" id="btn_popup_delete" style="margin-right: 5px; display: none;" type="button">
-								<xf:label><![CDATA[삭제]]></xf:label>
-							</xf:trigger>
-							<xf:trigger class="btn_cm" id="esc_btn" style="" type="button" ev:onclick="scwin.esc_btn_onclick">
-								<xf:label><![CDATA[닫기]]></xf:label>
-							</xf:trigger>
-						</xf:group>
-					</xf:group>
+                    <xf:group class="pop_header" style="padding:15px; border-bottom:1px solid #ddd; background-color:#f8f9fa; display: flex; justify-content: space-between; align-items: center;">
+                        <!-- 제목 -->
+                        <w2:span class="pop_title" id="spn_popupTitle" label="단위테스트 케이스 관리" style="font-size:18px; font-weight:bold; flex: 1; text-align: center;" />
+                        
+                        <!-- 버튼 그룹 -->
+                        <xf:group style="display: flex; gap: 8px; align-items: center;">
+                            <!-- 조회 모드 버튼들 -->
+                            <xf:trigger class="btn_cm" id="btn_popup_edit" 
+                                style="background-color:#98BED6; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; display: none;"
+                                type="button" ev:onclick="scwin.btn_popup_edit_onclick">
+                                <xf:label>수정</xf:label>
+                            </xf:trigger>
+                            
+                            <xf:trigger class="btn_cm" id="btn_popup_delete" 
+                                style="background-color:#EC9192; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; display: none;"
+                                type="button" ev:onclick="scwin.btn_popup_delete_onclick">
+                                <xf:label>삭제</xf:label>
+                            </xf:trigger>
+                            
+                            <!-- 등록/수정 모드 버튼 -->
+                            <xf:trigger class="btn_cm" id="btn_save" 
+                                style="background-color:#98BED6; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;"
+                                type="button" ev:onclick="scwin.btn_save_onclick">
+                                <xf:label>저장</xf:label>
+                            </xf:trigger>
+                            
+                            <xf:trigger class="btn_cm" id="btn_reset" 
+                                style="background-color:#6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;"
+                                type="button" ev:onclick="scwin.btn_reset_onclick">
+                                <xf:label>초기화</xf:label>
+                            </xf:trigger>
+                            
+                            <!-- 닫기 버튼 -->
+                            <xf:trigger class="btn_cm" id="btn_popup_close" 
+                                style="background-color:#6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;"
+                                type="button" ev:onclick="scwin.esc_btn_onclick">
+                                <xf:label>닫기</xf:label>
+                            </xf:trigger>
+                        </xf:group>
+                    </xf:group>
 
 					<xf:group style="flex: 1; overflow-y: auto; padding: 0; background: #f8f9fa;">
 						<!-- 1. 기본 정보 섹션 -->
@@ -3462,7 +3620,7 @@ scwin.getCurrentUserName = function() {
 
 								<!-- 업무명 -->
                                 <xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="업무명" style=""></w2:textbox>
 										<span style="color: red;">*</span>
 									</xf:group>
@@ -3489,14 +3647,14 @@ scwin.getCurrentUserName = function() {
 
 								<!-- 테스트케이스명, 테스트 대상 -->
 								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="테스트케이스명" style=""></w2:textbox>
 										<span style="color: red;">*</span>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
 										<xf:input class="" id="inp_testCaseName" placeholder="테스트케이스명을 입력하세요" ref="data:dmp_unitTestDetail.testCaseName" style="width: 100%; height: 25px;"></xf:input>
 									</xf:group>
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="테스트 대상" style=""></w2:textbox>
 										<span style="color: red;">*</span>
 									</xf:group>
@@ -3507,7 +3665,7 @@ scwin.getCurrentUserName = function() {
 
 								<!-- 테스트 타입, 우선순위 -->
 								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="테스트 타입" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
@@ -3520,7 +3678,7 @@ scwin.getCurrentUserName = function() {
 											</xf:choices>
 										</xf:select1>
 									</xf:group>
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="우선순위" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
@@ -3537,7 +3695,7 @@ scwin.getCurrentUserName = function() {
 
 								<!-- 테스트 상태, 담당자 -->
 								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="테스트 상태" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
@@ -3550,23 +3708,23 @@ scwin.getCurrentUserName = function() {
 											</xf:choices>
 										</xf:select1>
 									</xf:group>
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="담당자" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-										<xf:input class="" id="inp_assignee" readOnly="true" ref="data:dmp_unitTestDetail.assigneeName" style="width: 100%; height: 25px; background-color: #f5f5f5;"></xf:input>
+										<xf:input class="" id="inp_assignee" readOnly="true" ref="data:dmp_unitTestDetail.assigneeName" style="width: 100%; height: 25px; "></xf:input>
 									</xf:group>
 								</xf:group>
 
 								<!-- 실행일시, 소요시간 -->
 								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="실행일시" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
 										<w2:inputCalendar id="cal_executionDate" style="width: 100%; height: 25px;" calendarValueType="yearMonthDate" ref="data:dmp_unitTestDetail.executionDate"></w2:inputCalendar>
 									</xf:group>
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="소요시간(분)" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">

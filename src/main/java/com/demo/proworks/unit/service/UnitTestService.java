@@ -25,6 +25,15 @@ public interface UnitTestService {
     List<UnitTestVo> selectUnitTestList(UnitTestVo unitTestVo) throws Exception;
     
     /**
+     * 실패한 단위테스트 케이스 목록 조회 (결함 등록용)
+     *
+     * @param unitTestVo 검색 조건
+     * @return 실패한 단위테스트 케이스 목록
+     * @throws Exception
+     */
+    List<UnitTestVo> selectFailedUnitTestList(UnitTestVo unitTestVo) throws Exception;
+    
+    /**
      * 단위테스트 케이스 상세 조회
      *
      * @param unitTestVo 조회 조건 (testCaseId)
@@ -41,6 +50,15 @@ public interface UnitTestService {
      * @throws Exception
      */
     long selectListCountUnitTest(UnitTestVo unitTestVo) throws Exception;
+    
+    /**
+     * 실패한 단위테스트 케이스 목록 조회의 전체 카운트를 조회한다.
+     *
+     * @param  unitTestVo 단위테스트 케이스
+     * @return 실패한 테스트케이스 전체 카운트
+     * @throws Exception
+     */
+    long selectFailedListCountUnitTest(UnitTestVo unitTestVo) throws Exception;
     
     /**
      * 단위테스트 케이스 등록

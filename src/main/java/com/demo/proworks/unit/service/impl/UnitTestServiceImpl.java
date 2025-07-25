@@ -77,13 +77,29 @@ public class UnitTestServiceImpl implements UnitTestService {
 	    return unitTestDao.selectUnitTestList(unitTestVo);
 	}
     
+    /**
+     * 실패한 단위테스트 케이스 목록 조회 (결함 등록용)
+     */
+    @Override
+    public List<UnitTestVo> selectFailedUnitTestList(UnitTestVo unitTestVo) throws Exception {
+        logger.debug("실패한 단위테스트 케이스 목록 조회 시작: {}", unitTestVo);
+        
+        return unitTestDao.selectFailedUnitTestList(unitTestVo);
+    }
+    
     @Override
     public long selectListCountUnitTest(UnitTestVo unitTestVo) throws Exception {
 	    
 	    return unitTestDao.selectUnitTestListCount(unitTestVo);
 	}
 
-
+    /**
+     * 실패한 단위테스트 케이스 총 개수 조회
+     */
+    @Override
+    public long selectFailedListCountUnitTest(UnitTestVo unitTestVo) throws Exception {
+        return unitTestDao.selectFailedUnitTestListCount(unitTestVo);
+    }
     
     /**
      * 단위테스트 케이스 상세 조회

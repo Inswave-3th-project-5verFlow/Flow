@@ -18,9 +18,15 @@ public class UnitTestDao extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstr
     /**
      * 단위테스트 케이스 목록 조회
      */
-    @SuppressWarnings("unchecked")
     public List<UnitTestVo> selectUnitTestList(UnitTestVo unitTestVo) throws ElException {
         return (List<UnitTestVo>) list("com.demo.proworks.unit.selectUnitTestList", unitTestVo);
+    }
+    
+    /**
+     * 실패한 단위테스트 케이스 목록 조회 (결함 등록용)
+     */
+    public List<UnitTestVo> selectFailedUnitTestList(UnitTestVo unitTestVo) throws ElException {
+        return (List<UnitTestVo>) list("com.demo.proworks.unit.selectFailedUnitTestList", unitTestVo);
     }
     
     /**
@@ -28,6 +34,13 @@ public class UnitTestDao extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstr
      */
     public long selectUnitTestListCount(UnitTestVo unitTestVo) throws ElException {
         return (Long)selectByPk("com.demo.proworks.unit.selectUnitTestListCount", unitTestVo);
+    }
+    
+    /**
+     * 실패한 단위테스트 케이스 총 개수 조회 (결함 등록용)
+     */
+    public long selectFailedUnitTestListCount(UnitTestVo unitTestVo) throws ElException {
+        return (Long)selectByPk("com.demo.proworks.unit.selectFailedUnitTestListCount", unitTestVo);
     }
     
     /**
@@ -91,7 +104,6 @@ public class UnitTestDao extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstr
     /**
      * 우선순위별 테스트 케이스 개수 조회
      */
-    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> selectTestCountByPriority(UnitTestVo unitTestVo) throws ElException {
         return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestCountByPriority", unitTestVo);
     }
@@ -99,7 +111,6 @@ public class UnitTestDao extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstr
     /**
      * 테스트 타입별 테스트 케이스 개수 조회
      */
-    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> selectTestCountByType(UnitTestVo unitTestVo) throws ElException {
         return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestCountByType", unitTestVo);
     }
@@ -107,7 +118,6 @@ public class UnitTestDao extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstr
     /**
      * 최근 테스트 실행 이력 조회
      */
-    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> selectRecentTestExecution(UnitTestVo unitTestVo) throws ElException {
         return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectRecentTestExecution", unitTestVo);
     }
@@ -115,7 +125,6 @@ public class UnitTestDao extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstr
     /**
      * 특정 기간 테스트 실행 통계 조회
      */
-    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> selectTestExecutionStatsByDate(UnitTestVo unitTestVo) throws ElException {
         return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestExecutionStatsByDate", unitTestVo);
     }
@@ -123,7 +132,6 @@ public class UnitTestDao extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstr
     /**
      * 테스트 커버리지 통계 조회
      */
-    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> selectTestCoverageStats(UnitTestVo unitTestVo) throws ElException {
         return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestCoverageStats", unitTestVo);
     }
@@ -139,7 +147,6 @@ public class UnitTestDao extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstr
     /**
      * 업무별 테스트 케이스 개수 조회
      */
-    @SuppressWarnings("unchecked")
     public List<Map<String, Object>> selectTestCountByTask(UnitTestVo unitTestVo) throws ElException {
         return (List<Map<String, Object>>) list("com.demo.proworks.unit.selectTestCountByTask", unitTestVo);
     }
