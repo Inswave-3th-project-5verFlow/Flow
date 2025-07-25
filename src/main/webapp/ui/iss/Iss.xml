@@ -33,16 +33,25 @@
 				</w2:dataMap>
 
 				<w2:dataMap baseNode="map" id="dmp_issVo" style="">
-                    <w2:keyInfo>
-                        <w2:key dataType="text" id="pageIndex" name="페이지번호" defaultValue="1"></w2:key>
-                        <w2:key dataType="text" id="pageSize" name="페이지사이즈" defaultValue="10"></w2:key>
-                        <w2:key dataType="text" id="totalPageCount" name="페이지건수"></w2:key>
-                        <!-- 이 두 필드를 추가해야 함 -->
-                        <w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
-                        <w2:key dataType="text" id="userId" name="사용자ID"></w2:key>
-                    </w2:keyInfo>
-                    <w2:data use="false"></w2:data>
-                </w2:dataMap>
+					<w2:keyInfo>
+						<w2:key dataType="text" id="pageIndex" name="페이지번호" defaultValue="1"></w2:key>
+						<w2:key dataType="text" id="pageSize" name="페이지사이즈" defaultValue="10"></w2:key>
+						<w2:key dataType="text" id="totalPageCount" name="페이지건수"></w2:key>
+						<w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
+						<w2:key dataType="text" id="userId" name="사용자ID"></w2:key>
+
+						<!-- 조회조건 필드들 (기존 필드명 사용) -->
+						<w2:key dataType="text" id="name" name="이슈리스크명"></w2:key>
+						<w2:key dataType="text" id="status" name="상태"></w2:key>
+						<w2:key dataType="text" id="priority" name="우선순위"></w2:key>
+						<w2:key dataType="text" id="userName" name="작성자명"></w2:key>
+						<w2:key dataType="text" id="startDate" name="등록일시작"></w2:key>
+						<w2:key dataType="text" id="endDate" name="등록일종료"></w2:key>
+						<w2:key dataType="text" id="dueDateStart" name="완료예정일시작"></w2:key>
+						<w2:key dataType="text" id="dueDateEnd" name="완료예정일종료"></w2:key>
+					</w2:keyInfo>
+					<w2:data use="false"></w2:data>
+				</w2:dataMap>
 				<w2:dataList baseNode="list" id="dlt_issVoList" repeatNode="map" saveRemovedData="true" style="">
 					<w2:columnInfo>
 						<w2:column dataType="text" id="pjtId" name="프로젝트 ID"></w2:column>
@@ -279,11 +288,12 @@
 				ev:submit="scwin.sbm_getIssFileList_submit" ev:submitdone="scwin.sbm_getIssFileList_submitdone">
 			</xf:submission>
 
-            <xf:submission id="sbm_selectIssVoListForExcel" ref='data:json,{"id":"dmp_issVo","key":"issVo"}'
-                target='data:json,{"id":"dlt_issVoList","key":"elData.issVoList"}' action="/InsWebApp/ISS001List.pwkjson" method="post"
-                mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-                processMsg="엑셀 다운로드용 데이터를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectIssVoListForExcel_submitdone" ev:submiterror="" abortTrigger="">
-            </xf:submission>
+			<xf:submission id="sbm_selectIssVoListForExcel" ref='data:json,{"id":"dmp_issVo","key":"issVo"}'
+				target='data:json,{"id":"dlt_issVoList","key":"elData.issVoList"}' action="/InsWebApp/ISS001List.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
+				processMsg="엑셀 다운로드용 데이터를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectIssVoListForExcel_submitdone" ev:submiterror=""
+				abortTrigger="">
+			</xf:submission>
 			<!-- submission 설정 -->
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
@@ -311,18 +321,17 @@ scwin.SELECTED_PROJECT_NAME = "";
 scwin.onpageload = function () {
     console.log("=== 이슈 페이지 로드 ===");
     
-    // 헤더에서 사용자 정보만 한 번 가져오기
+    // 사용자 정보 가져오기
     var headerWindow = $p.getComponentById("mf_pg_header");
     if (headerWindow) {
         scwin.USER_ID = headerWindow.getWindow().scwin.USER_ID;
         scwin.USER_NAME = headerWindow.getWindow().scwin.USER_NAME;
+        console.log("사용자 정보 로드:", scwin.USER_ID, scwin.USER_NAME);
     }
     
     // 버튼 초기화
     btn_save.show("");
-    btn_edit.hide();
-    btn_delete.hide();
-
+    
     // 페이지 정보 초기화
     scwin.initPaginationInfo();
 
@@ -332,16 +341,238 @@ scwin.onpageload = function () {
         search_box.hide();
     }
 
-    // 초기 데이터 조회 (이때 최신 프로젝트 정보 가져옴)
-    scwin.btn_search_onclick();
+    // 1초 후에 조회 버튼 클릭으로 데이터 로드
+    setTimeout(function() {
+        console.log("=== 자동 데이터 로드 시작 ===");
+        scwin.btn_search_onclick();
+    }, 100);
+
+setTimeout(function() {
+        // 1차: WebSquare 컴포넌트 방식
+        try {
+            search_box.show();
+            console.log("WebSquare show() 실행");
+        } catch(e) {
+            console.error("WebSquare show() 실패:", e);
+        }
+        
+        // 2차: DOM 직접 조작
+        try {
+            var searchElement = document.getElementById("search_box");
+            if (searchElement) {
+                searchElement.style.display = "block";
+                searchElement.style.visibility = "visible";
+                console.log("DOM 직접 표시 완료");
+            }
+        } catch(e) {
+            console.error("DOM 조작 실패:", e);
+        }
+        
+        // 3차: 모든 관련 요소 찾아서 표시
+        try {
+            var elements = document.querySelectorAll('[id*="search_box"], .schbox');
+            for (var i = 0; i < elements.length; i++) {
+                elements[i].style.display = "block";
+                elements[i].style.visibility = "visible";
+            }
+            console.log("모든 검색박스 요소 표시 완료:", elements.length, "개");
+        } catch(e) {
+            console.error("전체 요소 표시 실패:", e);
+        }
+    }, 100);
+    
+    // 추가로 1초 후에도 한 번 더 시도
+    setTimeout(function() {
+        search_box.show();
+        console.log("지연 표시 재시도");
+    }, 1000);
 };
+
+
+
+
+/**
+ * 프로젝트 정보를 가져와서 데이터 로드
+ */
+scwin.getProjectInfoAndLoadData = function() {
+    console.log("=== 프로젝트 정보 확인 및 데이터 로드 ===");
+    
+    // 1차: 헤더에서 프로젝트 정보 가져오기 시도
+    var projectFound = scwin.getProjectInfoFromHeader();
+    
+    if (projectFound) {
+        console.log("헤더에서 프로젝트 정보 획득 성공");
+        scwin.loadInitialData();
+        return;
+    }
+    
+    // 2차: 부모 윈도우에서 프로젝트 정보 가져오기 시도
+    projectFound = scwin.getProjectInfoFromParent();
+    
+    if (projectFound) {
+        console.log("부모 윈도우에서 프로젝트 정보 획득 성공");
+        scwin.loadInitialData();
+        return;
+    }
+    
+    // 3차: 지연 로드 시도 (헤더가 아직 로드되지 않은 경우)
+    console.log("프로젝트 정보를 찾을 수 없음. 지연 로드 시도...");
+    setTimeout(function() {
+        scwin.retryProjectInfoLoad();
+    }, 500);
+};
+
+scwin.getProjectInfoFromHeader = function() {
+    try {
+        var headerWindow = $p.getComponentById("mf_pg_header");
+        if (headerWindow) {
+            var headerScwin = headerWindow.getWindow();
+            if (headerScwin && headerScwin.scwin && headerScwin.scwin.selectBoxProjectName) {
+                var currentSelectedProject = headerScwin.scwin.selectBoxProjectName.getValue();
+                
+                if (currentSelectedProject) {
+                    scwin.SELECTED_PROJECT_ID = currentSelectedProject;
+                    
+                    // 프로젝트명도 가져오기
+                    if (headerScwin.scwin.dlt_projectName) {
+                        var projectName = headerScwin.scwin.dlt_projectName.getMatchedColumnData(
+                            "pjtId", currentSelectedProject, "pjtName");
+                        scwin.SELECTED_PROJECT_NAME = projectName;
+                    }
+                    
+                    console.log("헤더에서 프로젝트 정보 획득:", {
+                        id: scwin.SELECTED_PROJECT_ID,
+                        name: scwin.SELECTED_PROJECT_NAME
+                    });
+                    
+                    return true;
+                }
+            }
+        }
+    } catch(e) {
+        console.error("헤더에서 프로젝트 정보 가져오기 실패:", e);
+    }
+    
+    return false;
+};
+
+/**
+ * 부모 윈도우에서 프로젝트 정보 가져오기
+ */
+scwin.getProjectInfoFromParent = function() {
+    try {
+        var parentWindow = $p.getParentWindow();
+        if (parentWindow && parentWindow.scwin) {
+            var parentProjectId = parentWindow.scwin.SEL_PJT_ID;
+            var parentProjectName = parentWindow.scwin.SEL_PJT_NAME;
+            
+            if (parentProjectId) {
+                scwin.SELECTED_PROJECT_ID = parentProjectId;
+                scwin.SELECTED_PROJECT_NAME = parentProjectName || "";
+                
+                console.log("부모 윈도우에서 프로젝트 정보 획득:", {
+                    id: scwin.SELECTED_PROJECT_ID,
+                    name: scwin.SELECTED_PROJECT_NAME
+                });
+                
+                return true;
+            }
+        }
+    } catch(e) {
+        console.error("부모 윈도우에서 프로젝트 정보 가져오기 실패:", e);
+    }
+    
+    return false;
+};
+
+/**
+ * 지연 로드 재시도
+ */
+scwin.retryProjectInfoLoad = function() {
+    console.log("=== 프로젝트 정보 재시도 ===");
+    
+    var projectFound = scwin.getProjectInfoFromHeader() || scwin.getProjectInfoFromParent();
+    
+    if (projectFound) {
+        console.log("재시도로 프로젝트 정보 획득 성공");
+        scwin.loadInitialData();
+    } else {
+        console.log("프로젝트 정보를 찾을 수 없음. 빈 상태로 초기화");
+        scwin.initializeEmptyState();
+        
+        // 한 번 더 재시도 (최대 2초 후)
+        setTimeout(function() {
+            var finalAttempt = scwin.getProjectInfoFromHeader() || scwin.getProjectInfoFromParent();
+            if (finalAttempt) {
+                console.log("최종 재시도로 프로젝트 정보 획득 성공");
+                scwin.loadInitialData();
+            }
+        }, 1500);
+    }
+};
+
+/**
+ * 초기 데이터 로드
+ */
+scwin.loadInitialData = function() {
+    console.log("=== 초기 데이터 로드 시작 ===");
+    console.log("프로젝트 ID:", scwin.SELECTED_PROJECT_ID);
+    console.log("프로젝트명:", scwin.SELECTED_PROJECT_NAME);
+    
+    if (!scwin.SELECTED_PROJECT_ID) {
+        console.warn("프로젝트 ID가 없어서 데이터를 로드할 수 없습니다.");
+        scwin.initializeEmptyState();
+        return;
+    }
+    
+    // 검색 조건 설정
+    dmp_issVo.set("pageIndex", "1");
+    dmp_issVo.set("pageSize", "1000");
+    dmp_issVo.set("pjtId", scwin.SELECTED_PROJECT_ID);
+    dmp_issVo.set("userId", scwin.USER_ID);
+    
+    console.log("초기 검색 조건:", {
+        pjtId: scwin.SELECTED_PROJECT_ID,
+        userId: scwin.USER_ID,
+        pageIndex: "1",
+        pageSize: "1000"
+    });
+
+    // 데이터 조회 실행
+    $c.sbm.execute($p, sbm_selectIssVoList);
+};
+
+/**
+ * 빈 상태로 초기화
+ */
+scwin.initializeEmptyState = function() {
+    console.log("=== 빈 상태로 초기화 ===");
+    
+    // 데이터 초기화
+    dlt_waitingList.setJSON([]);
+    dlt_processingList.setJSON([]);
+    dlt_completedList.setJSON([]);
+    dlt_issVoList.setJSON([]);
+    
+    // 카운트 초기화
+    scwin.updateCountLabels(0, 0, 0, 0);
+    
+    // 폼 초기화
+    dmp_issVoDetail.setEmptyValue();
+    
+    console.log("빈 상태 초기화 완료");
+};
+
+
 
 /**
  * 새로고침 버튼에도 동일 로직 적용
  */
 scwin.btn_refresh_project_onclick = function(e) {
-    console.log("=== 프로젝트 새로고침 ===");
-    scwin.btn_search_onclick(); // 최신 프로젝트 정보로 다시 조회
+    console.log("=== 프로젝트 새로고침 버튼 클릭 ===");
+    
+    // 강제로 최신 프로젝트 정보 다시 가져오기
+    scwin.getProjectInfoAndLoadData();
 };
 
 /**
@@ -474,80 +705,34 @@ scwin.stripHtmlTags = function(htmlString) {
  * 조회 버튼 클릭 이벤트
  */
 scwin.btn_search_onclick = function (e) {
-    console.log("=== 검색 시작 ===");
+    console.log("=== 검색 버튼 클릭 ===");
     
-    // 헤더에서 직접 현재 선택된 값 가져오기
-    var headerWindow = $p.getComponentById("mf_pg_header");
-    if (headerWindow) {
-        var headerScwin = headerWindow.getWindow();
-        if (headerScwin && headerScwin.selectBoxProjectName) {
-            var currentSelectedProject = headerScwin.selectBoxProjectName.getValue();
-            console.log("헤더에서 직접 가져온 프로젝트 ID:", currentSelectedProject);
-            
-            if (currentSelectedProject) {
-                scwin.SELECTED_PROJECT_ID = currentSelectedProject;
-                
-                // 프로젝트명도 가져오기
-                var projectList = headerScwin.dlt_projectName;
-                if (projectList) {
-                    var projectName = projectList.getMatchedColumnData("pjtId", currentSelectedProject, "pjtName");
-                    scwin.SELECTED_PROJECT_NAME = projectName;
-                    console.log("프로젝트명:", scwin.SELECTED_PROJECT_NAME);
-                }
-            }
-        }
-    }
-    // 부모 윈도우 정보와 비교
-    var parentWindow = $p.getParentWindow();
-    if (parentWindow && parentWindow.scwin) {
-        console.log("부모 윈도우 프로젝트 ID:", parentWindow.scwin.SEL_PJT_ID);
-        console.log("헤더에서 가져온 프로젝트 ID:", scwin.SELECTED_PROJECT_ID);
-        
-        // 둘 중 더 최신 정보 사용 (헤더가 더 정확할 가능성 높음)
-        if (!scwin.SELECTED_PROJECT_ID && parentWindow.scwin.SEL_PJT_ID) {
-            scwin.SELECTED_PROJECT_ID = parentWindow.scwin.SEL_PJT_ID;
-        }
+    // 최신 프로젝트 정보 다시 가져오기
+    var projectFound = scwin.getProjectInfoFromHeader() || scwin.getProjectInfoFromParent();
+    
+    if (!projectFound) {
+        console.log("프로젝트가 선택되지 않았습니다.");
+        $c.win.alert("프로젝트를 선택해주세요.");
+        scwin.initializeEmptyState();
+        return;
     }
     
-    console.log("최종 사용할 프로젝트 ID:", scwin.SELECTED_PROJECT_ID);
-    
+    // 페이지 정보 초기화 (필요시)
     if (!scwin.waitingPageInfo) {
         scwin.initPaginationInfo();
     }
-
-    // 프로젝트가 선택되지 않은 경우
-    if (!scwin.SELECTED_PROJECT_ID) {
-        console.log("프로젝트가 선택되지 않았습니다.");
-        // 데이터 초기화
-        dlt_waitingList.setJSON([]);
-        dlt_processingList.setJSON([]);
-        dlt_completedList.setJSON([]);
-        scwin.updateCountLabels(0, 0, 0, 0);
-        return;
-    }
-
-    // 검색 조건 설정 (최신 프로젝트 정보로)
-    dmp_issVo.set("pageIndex", "1");
-    dmp_issVo.set("pageSize", "1000");
-    dmp_issVo.set("pjtId", scwin.SELECTED_PROJECT_ID);
-    dmp_issVo.set("userId", scwin.USER_ID);
     
-    console.log("검색 조건:", {
-        pjtId: scwin.SELECTED_PROJECT_ID,
-        userId: scwin.USER_ID,
-        pageIndex: "1",
-        pageSize: "1000"
-    });
-
-    $c.sbm.execute($p, sbm_selectIssVoList);
+    // 데이터 로드
+    scwin.loadInitialData();
 };
+
 
 /**
  * 서버 조회 결과 처리 콜백
  * @param {Object} e - 서버 응답 이벤트 객체
  */
 scwin.sbm_issList_submitdone = function (e) {
-    console.log("서버 응답 수신", e);
+    console.log("=== 서버 응답 수신 ===", e);
     
     if (!scwin.allDataPageInfo) {
         scwin.initPaginationInfo();
@@ -565,16 +750,18 @@ scwin.sbm_issList_submitdone = function (e) {
         if (elHeader && elHeader.resCode) {
             errorMsg += "\n오류코드: " + elHeader.resCode;
         }
+        console.error("데이터 조회 실패:", errorMsg);
         $c.win.alert(errorMsg);
+        scwin.initializeEmptyState();
         return false;
     }
 
     // 성공 시 데이터 처리
     var allData = elData.issVoList || [];
-    console.log("전체 데이터:", allData.length, "개");
+    console.log("조회된 전체 데이터:", allData.length, "개");
 
     scwin.allDataPageInfo.data = allData;
-    scwin.allDataPageInfo.totalCount = elData.totalCount;
+    scwin.allDataPageInfo.totalCount = elData.totalCount || allData.length;
 
     // 상태별로 데이터 필터링
     var waitingData = [];      // 대기 (PEN)
@@ -607,11 +794,46 @@ scwin.sbm_issList_submitdone = function (e) {
 
     // 그리드 및 UI 업데이트
     scwin.updateGridData();
-    scwin.updatePaginationAll(elData.totalCount);
-    scwin.updateCountLabels(waitingData.length, processingData.length, completedData.length, elData.totalCount);
+    scwin.updatePaginationAll(scwin.allDataPageInfo.totalCount);
+    scwin.updateCountLabels(waitingData.length, processingData.length, completedData.length, scwin.allDataPageInfo.totalCount);
 
     // 폼 초기화
     dmp_issVoDetail.setEmptyValue();
+    
+    console.log("데이터 로드 완료:", {
+        전체: scwin.allDataPageInfo.totalCount,
+        대기: waitingData.length,
+        진행중: processingData.length,
+        완료: completedData.length
+    });
+};
+
+scwin.startProjectChangeMonitoring = function() {
+    // 헤더의 프로젝트 선택박스 변경 이벤트 모니터링
+    setInterval(function() {
+        var currentProjectId = scwin.getCurrentProjectId();
+        if (currentProjectId && currentProjectId !== scwin.SELECTED_PROJECT_ID) {
+            console.log("프로젝트 변경 감지:", scwin.SELECTED_PROJECT_ID, "->", currentProjectId);
+            scwin.SELECTED_PROJECT_ID = currentProjectId;
+            scwin.loadInitialData();
+        }
+    }, 2000); // 2초마다 체크
+};
+
+
+scwin.getCurrentProjectId = function() {
+    try {
+        var headerWindow = $p.getComponentById("mf_pg_header");
+        if (headerWindow && headerWindow.getWindow() && headerWindow.getWindow().scwin) {
+            var headerScwin = headerWindow.getWindow().scwin;
+            if (headerScwin.selectBoxProjectName) {
+                return headerScwin.selectBoxProjectName.getValue();
+            }
+        }
+    } catch(e) {
+        // 무시
+    }
+    return null;
 };
 
 /**
@@ -2512,166 +2734,165 @@ scwin.downloadBlob = function(blob, fileName) {
 			</xf:group>
 			<xf:group class="schbox" id="search_box" style="">
 				<xf:group class="schbox_inner" id="" style="">
-					<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" id="" style="width:Infinity%;" tagname="table">
+					<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" id="" style="width:100%;" tagname="table">
 						<w2:attributes>
 							<w2:summary />
 						</w2:attributes>
 						<xf:group tagname="colgroup">
-
+							<xf:group style="width:120px;" tagname="col"></xf:group>
+							<xf:group style="width:200px;" tagname="col"></xf:group>
+							<xf:group style="width:120px;" tagname="col"></xf:group>
+							<xf:group style="width:200px;" tagname="col"></xf:group>
+							<xf:group style="width:120px;" tagname="col"></xf:group>
+							<xf:group style="" tagname="col"></xf:group>
 						</xf:group>
-						<xf:group class="" id="" style="" tagname="tr">
-							<xf:group class="" id="" style="" tagname="tr">
 
+						<!-- 첫 번째 행: 이슈/리스크명, 상태 -->
+						<xf:group class="" id="" style="" tagname="tr">
+							<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
+								<w2:textbox id="" label="이슈/리스크명" style=""></w2:textbox>
 							</xf:group>
-							<!-- 페이지 크기 설정 영역 / 웹관리자 화면 page 생성 시 주석 해제 -->
-							<!--xf:group class="w2tb_th" style="" tagname="th">
-								<w2:textbox id="" label="페이지 크기" localeRef="COMMON_LABEL_00001" ref="" style="" userData2=""></w2:textbox>
-								</xf:group>
-								<xf:group class="w2tb_td" style="" tagname="td">
-								<xf:select1 allOption="" appearance="minimal" chooseOption="" direction="auto" disabled="false"
-								disabledClass="w2selectbox_disabled" id="sel_pageSize" ref="data:dmp_issVo.pageSize" renderType="native"
-								style="width: 80px;" submenuSize="auto" useItemLocale="false">
-								<xf:choices>
-								<xf:item>
-								<xf:label><![CDATA[5]]></xf:label>
-								<xf:value><![CDATA[5]]></xf:value>
-								</xf:item>
-								<xf:item>
-								<xf:label><![CDATA[10]]></xf:label>
-								<xf:value><![CDATA[10]]></xf:value>
-								</xf:item>
-								<xf:item>
-								<xf:label><![CDATA[20]]></xf:label>
-								<xf:value><![CDATA[20]]></xf:value>
-								</xf:item>
-								<xf:item>
-								<xf:label><![CDATA[30]]></xf:label>
-								<xf:value><![CDATA[30]]></xf:value>
-								</xf:item>
-								<xf:item>
-								<xf:label><![CDATA[50]]></xf:label>
-								<xf:value><![CDATA[50]]></xf:value>
-								</xf:item>
-								<xf:item>
-								<xf:label><![CDATA[100]]></xf:label>
-								<xf:value><![CDATA[100]]></xf:value>
-								</xf:item>
-								</xf:choices>
+							<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+								<xf:input class="" id="inp_search_name" placeholder="이슈/리스크명 검색" ref="data:dmp_issVo.name"
+									style="width: 100%; height: 25px;"></xf:input>
+							</xf:group>
+							<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
+								<w2:textbox id="" label="상태" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+								<xf:select1 allOption="true" allOptionLabel="전체" appearance="minimal" chooseOption="" direction="auto" disabled="false"
+									disabledClass="w2selectbox_disabled" id="sel_search_status" ref="data:dmp_issVo.status" style="width: 100%; height: 25px;"
+									submenuSize="auto" useItemLocale="false">
+									<xf:choices>
+										<xf:itemset nodeset="data:dlt_status">
+											<xf:label ref="status"></xf:label>
+											<xf:value ref="code"></xf:value>
+										</xf:itemset>
+									</xf:choices>
 								</xf:select1>
-								</xf:group -->
+							</xf:group>
+							<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
+								<w2:textbox id="" label="우선순위" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+								<xf:select1 allOption="true" allOptionLabel="전체" appearance="minimal" chooseOption="" direction="auto" disabled="false"
+									disabledClass="w2selectbox_disabled" id="sel_search_priority" ref="data:dmp_issVo.priority" style="width: 100%; height: 25px;"
+									submenuSize="auto" useItemLocale="false">
+									<xf:choices>
+										<xf:itemset nodeset="data:dlt_priority">
+											<xf:label ref="priority"></xf:label>
+											<xf:value ref="code"></xf:value>
+										</xf:itemset>
+									</xf:choices>
+								</xf:select1>
+							</xf:group>
+						</xf:group>
+
+						<!-- 두 번째 행: 작성자, 등록일 범위 -->
+						<xf:group class="" id="" style="" tagname="tr">
+							<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
+								<w2:textbox id="" label="작성자" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+								<xf:input class="" id="inp_search_userName" placeholder="작성자명 검색" ref="data:dmp_issVo.userName"
+									style="width: 100%; height: 25px;"></xf:input>
+							</xf:group>
+							<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
+								<w2:textbox id="" label="등록일(시작)" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+								<w2:inputCalendar id="cal_search_startDate" style="width: 100%; height: 25px;" calendarValueType="yearMonthDate"
+									ref="data:dmp_issVo.startDate"></w2:inputCalendar>
+							</xf:group>
+							<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
+								<w2:textbox id="" label="등록일(종료)" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+								<w2:inputCalendar id="cal_search_endDate" style="width: 100%; height: 25px;" calendarValueType="yearMonthDate"
+									ref="data:dmp_issVo.endDate"></w2:inputCalendar>
+							</xf:group>
+						</xf:group>
+
+						<!-- 세 번째 행: 완료예정일 범위, 페이지 크기 -->
+						<xf:group class="" id="" style="" tagname="tr">
+							<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
+								<w2:textbox id="" label="완료예정일(시작)" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+								<w2:inputCalendar id="cal_search_dueDateStart" style="width: 100%; height: 25px;" calendarValueType="yearMonthDate"
+									ref="data:dmp_issVo.dueDateStart"></w2:inputCalendar>
+							</xf:group>
+							<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
+								<w2:textbox id="" label="완료예정일(종료)" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+								<w2:inputCalendar id="cal_search_dueDateEnd" style="width: 100%; height: 25px;" calendarValueType="yearMonthDate"
+									ref="data:dmp_issVo.dueDateEnd"></w2:inputCalendar>
+							</xf:group>
+							<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
+								<w2:textbox id="" label="페이지 크기" style=""></w2:textbox>
+							</xf:group>
+							<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+								<xf:select1 allOption="" appearance="minimal" chooseOption="" direction="auto" disabled="false"
+									disabledClass="w2selectbox_disabled" id="sel_pageSize" ref="data:dmp_issVo.pageSize" style="width: 100%; height: 25px;"
+									submenuSize="auto" useItemLocale="false">
+									<xf:choices>
+										<xf:item>
+											<xf:label><![CDATA[10]]></xf:label>
+											<xf:value><![CDATA[10]]></xf:value>
+										</xf:item>
+										<xf:item>
+											<xf:label><![CDATA[20]]></xf:label>
+											<xf:value><![CDATA[20]]></xf:value>
+										</xf:item>
+										<xf:item>
+											<xf:label><![CDATA[50]]></xf:label>
+											<xf:value><![CDATA[50]]></xf:value>
+										</xf:item>
+										<xf:item>
+											<xf:label><![CDATA[100]]></xf:label>
+											<xf:value><![CDATA[100]]></xf:value>
+										</xf:item>
+										<xf:item>
+											<xf:label><![CDATA[전체]]></xf:label>
+											<xf:value><![CDATA[1000]]></xf:value>
+										</xf:item>
+									</xf:choices>
+								</xf:select1>
+							</xf:group>
 						</xf:group>
 					</xf:group>
+					<!-- <w2:span id="spn_totalPageCount" label="0" ref="data:dma_issVo.totalPageCount" style=""></w2:span>
+					<w2:span id="span2" label="페이지" localeRef="COMMON_LABEL_00005" style=""></w2:span> -->
 				</xf:group>
-				<xf:group class="btn_schbox" id="" style="">
-                    <xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_search" style="" type="button"
-                        ev:onclick="scwin.btn_search_onclick" localeRef="COMMON_BUTTON_00001">
-                        <xf:label><![CDATA[조회]]></xf:label>
+                <xf:group class="btn_schbox" id="" style="padding: 15px 0; text-align: center; border-radius: 0 0 6px 6px;">
+                    <xf:trigger class="btn_cm reset" disabled="" escape="false" id="btn_search_reset" 
+                        style = "background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 80px;width: auto;padding: 0 10px;width: 80px;border-color: #fff;border: none;"
+                        type="button" ev:onclick="scwin.btn_search_reset_onclick">
+                        <xf:label>초기화</xf:label>
+                    </xf:trigger>
+                    <xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_search" 
+                    style = "background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 80px;width: auto;padding: 0 10px;width: 80px;border-color: #fff;border: none;"
+                        type="button" ev:onclick="scwin.btn_search_onclick">
+                        <xf:label>조회</xf:label>
                     </xf:trigger>
                     <xf:trigger class="btn_cm" disabled="" escape="false" id="btn_refresh_project" 
-                        style="background: #17a2b8; color: white; border: 1px solid #17a2b8;" type="button"
-                        ev:onclick="scwin.btn_refresh_project_onclick">
-                        <xf:label><![CDATA[프로젝트 새로고침]]></xf:label>
+                        style = "background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 122px;width: auto;padding: 0 10px;width: 122px;border-color: #fff;border: none;"
+                        type="button" ev:onclick="scwin.btn_refresh_project_onclick">
+                        <xf:label>프로젝트 새로고침</xf:label>
                     </xf:trigger>
-                    <!-- 엑셀 다운로드 버튼 추가 -->
                     <xf:trigger class="btn_cm" disabled="" escape="false" id="btn_excel_download" 
-                        style="background: #28a745; color: white; border: 1px solid #28a745;" type="button"
-                        ev:onclick="scwin.btn_excel_download_onclick">
-                        <xf:label><![CDATA[엑셀 다운로드]]></xf:label>
+                        style = "background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 100px;width: auto;padding: 0 10px;width: 100px;border-color: #fff;border: none;"
+                        type="button" ev:onclick="scwin.btn_excel_download_onclick">
+                        <xf:label>엑셀 다운로드</xf:label>
                     </xf:trigger>
-                    <xf:trigger class="" disabled="" escape="false" id="reg_btn" localeRef="COMMON_BUTTON_00001"
-                        style="background: linear-gradient(to bottom, #5cb85c 0%, #449d44 100%); color: white; border: 1px solid #4cae4c; padding: 8px 16px; font-size: 12px;  height: 30px; border-radius: 3px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 70px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);border-radius: 4px;"
+                    <xf:trigger class="" disabled="" escape="false" id="reg_btn"
+                        style="background-color:#EC9192;color: #ffffff !important;height: 37px;font-size: 14px;min-width: 80px;width: auto;padding: 0 10px;width: 80px;border-color: #fff;border: none; border-radius : 5px;"
                         type="button" ev:onclick="scwin.reg_btn_onclick">
-                        <xf:label><![CDATA[등록]]></xf:label>
+                        <xf:label>등록</xf:label>
                     </xf:trigger>
                 </xf:group>
 			</xf:group>
-			<xf:group style="margin-bottom:10px;">
-				<xf:trigger id="btn_register"
-					style="background: #28a745; border: 2px solid #28a745; color: white; padding: 10px 20px; font-size: 14px; border-radius: 6px; cursor: pointer;"
-					ev:onclick="scwin.reg_btn_onclick">
-					<xf:label>등록</xf:label>
-					<xf:action ev:event="DOMActivate" type="javascript">
-						scwin.reg_btn_onclick();
-					</xf:action>
-				</xf:trigger>
-			</xf:group>
-
-			<xf:group class="titbox" id="all_count" style="">
-				<xf:group class="count" id="">
-					<w2:span id="" label="총" localeRef="COMMON_LABEL_00002" style=""></w2:span>
-					<w2:span class="num" id="spn_listCnt" label="0" ref="" style=""></w2:span>
-					<w2:span id="" label="건" localeRef="COMMON_LABEL_00003" style=""></w2:span>
-				</xf:group>
-			</xf:group>
-
-			<xf:group adaptiveThreshold="" class="gvwbox" id="" style="">
-				<w2:gridView autoFit="allColumn" checkReadOnlyOnPasteEnable="" class="gvw" dataList="data:dlt_issVoList"
-					defaultCellHeight="26" focusMode="row" id="grd_list" scrollByColumn="false" scrollByColumnAdaptive="false" style="height: 150px;"
-					visibleRowNum="10" ev:oncellclick="scwin.grd_list_oncellclick" readOnly="true" ev:oncelldblclick="scwin.grd_list_oncelldblclick">
-					<w2:caption style="" id="caption2" value="this is a grid caption."></w2:caption>
-					<w2:header style="" id="header2">
-						<w2:row style="" id="row3">
-							<w2:column width="70" localeRef="Iss_COLNAME_00002" inputType="text" id="column2" value="프로젝트 ID" displayMode="label">
-							</w2:column>
-							<w2:column width="70" localeRef="Iss_COLNAME_00003" inputType="text" id="column3" value="이슈/리스크 고유 ID" displayMode="label">
-							</w2:column>
-							<w2:column width="70" localeRef="Iss_COLNAME_00004" inputType="text" id="column4" value="이슈/리스크명" displayMode="label">
-							</w2:column>
-							<w2:column width="70" inputType="text" style="" id="column44" value="작성자 사용자 ID" displayMode="label"></w2:column>
-							<w2:column width="70" localeRef="Iss_COLNAME_00007" inputType="text" id="column7" value="완료 예정일" displayMode="label">
-							</w2:column>
-							<w2:column width="70" inputType="text" style="" id="column46" value="상태" displayMode="label"></w2:column>
-							<w2:column width="70" localeRef="Iss_COLNAME_00009" inputType="text" id="column9" value="우선순위" displayMode="label">
-							</w2:column>
-							<w2:column width="70" localeRef="Iss_COLNAME_00011" inputType="text" id="column11" value="상세 내용" displayMode="label">
-							</w2:column>
-							<w2:column width="70" localeRef="Iss_COLNAME_00012" inputType="text" id="column12" value="등록일시" displayMode="label">
-							</w2:column>
-							<w2:column width="70" localeRef="Iss_COLNAME_00013" inputType="text" id="column13" value="수정일시" displayMode="label">
-							</w2:column>
-							<w2:column width="70" inputType="text" id="column21" value="resolved_date" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="column52" value="response_plan" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="column53" value="is_deleted" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="column54" value="프로젝트명" displayMode="label"></w2:column>
-							<w2:column width="70" localeRef="Iss_COLNAME_00005" inputType="text" id="column5" value="작성자명" displayMode="label">
-							</w2:column>
-						</w2:row>
-					</w2:header>
-					<w2:gBody style="" id="gBody2">
-						<w2:row style="" id="row4">
-							<w2:column width="70" inputType="text" id="pjtId" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" id="id" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" id="name" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="userId" value="" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" id="dueDate" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="status" value="" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" id="priority" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" id="description" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" id="createdAt" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" id="updatedAt" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" id="resolvedDate" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="responsePlan" value="" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="isDeleted" value="" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" style="" id="pjtName" value="" displayMode="label"></w2:column>
-							<w2:column width="70" inputType="text" id="userName" displayMode="label"></w2:column>
-						</w2:row>
-					</w2:gBody>
-				</w2:gridView>
-			</xf:group>
-			<xf:group class="pglbox" id="all_pgl" style="">
-				<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_issList" pageSize="5" pagingType="0" style=""
-					ev:onclick="scwin.pgl_issList_onclick">
-				</w2:pageList>
-				<xf:group class="pgl_count" id="" style="display: none;">
-					<w2:span class="num" id="spn_pageIndex" label="0" ref="data:dma_issVo.pageIndex" style=""></w2:span>
-					<w2:span id="span1" label="/" style=""></w2:span>
-					<w2:span id="spn_totalPageCount" label="0" ref="data:dma_issVo.totalPageCount" style=""></w2:span>
-					<w2:span id="span2" label="페이지" localeRef="COMMON_LABEL_00005" style=""></w2:span>
-				</xf:group>
-			</xf:group>
-
-
-
 			<xf:group class="tblbox" id="grp_issInfo" style=""></xf:group>
 			<xf:group id=""></xf:group>
 			<xf:group class="titbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_03 서브타이틀(h4)"
@@ -2855,11 +3076,11 @@ scwin.downloadBlob = function(blob, fileName) {
 						</w2:row>
 					</w2:gBody>
 				</w2:gridView>
-                <w2:pageList class="pgl" displayButtonType="display" displayFormat="#" ev:onclick="scwin.pgl_com_onclick"
-					id="pgl_com" pageSize="5" pagingType="0" style="">
+				<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" ev:onclick="scwin.pgl_com_onclick" id="pgl_com"
+					pageSize="5" pagingType="0" style="">
 				</w2:pageList>
 			</xf:group>
-            
+
 			<xf:group class="pop_contents" id="pop_overlay"
 				style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;display:none;">
 				<xf:group class="pop_contents" id="group1"
@@ -2901,318 +3122,298 @@ scwin.downloadBlob = function(blob, fileName) {
 							</xf:group>
 							<!-- 기본 정보 테이블 -->
 							<xf:group adaptive="layout" adaptiveThreshold="600" class="w2tb tbl" style="margin-bottom: 25px;" tagname="table">
-                                <w2:attributes>
-                                    <w2:summary></w2:summary>
-                                </w2:attributes>
-                                <xf:group tagname="colgroup">
-                                    <xf:group style="width:140px;" tagname="col"></xf:group>
-                                    <xf:group style="width:220px;" tagname="col"></xf:group>
-                                    <xf:group style="width:140px;" tagname="col"></xf:group>
-                                    <xf:group style="" tagname="col"></xf:group>
-                                </xf:group>
+								<w2:attributes>
+									<w2:summary></w2:summary>
+								</w2:attributes>
+								<xf:group tagname="colgroup">
+									<xf:group style="width:140px;" tagname="col"></xf:group>
+									<xf:group style="width:220px;" tagname="col"></xf:group>
+									<xf:group style="width:140px;" tagname="col"></xf:group>
+									<xf:group style="" tagname="col"></xf:group>
+								</xf:group>
 
-                                <!-- 프로젝트명 (항상 readOnly) -->
-                                <xf:group tagname="tr">
-                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
-                                        <w2:textbox class="" label="프로젝트명" style=""></w2:textbox>
-                                        <span style="color: red;">*</span>
-                                    </xf:group>
-                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td" colspan="3">
-                                        <xf:input class="" id="inp_projectName" readOnly="true" 
-                                            style="width: 100%; height: 25px; background-color: #f5f5f5;"
-                                            ref="data:dmp_issVoDetail.pjtName"></xf:input>
-                                        <xf:input type="hidden" ref="data:dmp_issVoDetail.pjtId" value="6"></xf:input>
-                                    </xf:group>
-                                </xf:group>
+								<!-- 프로젝트명 (항상 readOnly) -->
+								<xf:group tagname="tr">
+									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+										<w2:textbox class="" label="프로젝트명" style=""></w2:textbox>
+										<span style="color: red;">*</span>
+									</xf:group>
+									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td" colspan="3">
+										<xf:input class="" id="inp_projectName" readOnly="true" style="width: 100%; height: 25px; background-color: #f5f5f5;"
+											ref="data:dmp_issVoDetail.pjtName"></xf:input>
+										<xf:input type="hidden" ref="data:dmp_issVoDetail.pjtId" value="6"></xf:input>
+									</xf:group>
+								</xf:group>
 
-                                <!-- 이슈/리스크명, 작성자 -->
-                                <xf:group tagname="tr">
-                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
-                                        <w2:textbox class="" label="이슈/리스크명" style=""></w2:textbox>
-                                        <span style="color: red;">*</span>
-                                    </xf:group>
-                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-                                        <xf:input class="" id="inp_issueName" placeholder="이슈/리스크명을 입력하세요" 
-                                            ref="data:dmp_issVoDetail.name" style="width: 100%; height: 25px;"></xf:input>
-                                    </xf:group>
-                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
-                                        <w2:textbox class="" label="작성자" style=""></w2:textbox>
-                                    </xf:group>
-                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-                                        <xf:input class="" id="inp_userName" readOnly="true" 
-                                            ref="data:dmp_issVoDetail.userName" 
-                                            style="width: 100%; height: 25px; background-color: #f5f5f5;"></xf:input>
-                                        <xf:input type="hidden" ref="data:dmp_issVoDetail.userId" value="1"></xf:input>
-                                    </xf:group>
-                                </xf:group>
+								<!-- 이슈/리스크명, 작성자 -->
+								<xf:group tagname="tr">
+									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+										<w2:textbox class="" label="이슈/리스크명" style=""></w2:textbox>
+										<span style="color: red;">*</span>
+									</xf:group>
+									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+										<xf:input class="" id="inp_issueName" placeholder="이슈/리스크명을 입력하세요" ref="data:dmp_issVoDetail.name"
+											style="width: 100%; height: 25px;"></xf:input>
+									</xf:group>
+									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+										<w2:textbox class="" label="작성자" style=""></w2:textbox>
+									</xf:group>
+									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+										<xf:input class="" id="inp_userName" readOnly="true" ref="data:dmp_issVoDetail.userName"
+											style="width: 100%; height: 25px; background-color: #f5f5f5;"></xf:input>
+										<xf:input type="hidden" ref="data:dmp_issVoDetail.userId" value="1"></xf:input>
+									</xf:group>
+								</xf:group>
 
-                                <!-- 우선순위, 상태 -->
-                                <xf:group tagname="tr">
-                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
-                                        <w2:textbox class="" label="우선순위" style=""></w2:textbox>
-                                    </xf:group>
-                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-                                        <xf:select1 allOption="" appearance="minimal" chooseOption="true" direction="auto" 
-                                            disabled="false" disabledClass="w2selectbox_disabled" id="sel_priority" 
-                                            style="width: 148px;height: 21px;" submenuSize="auto"
-                                            ref="data:dmp_issVoDetail.priority" chooseOptionLabel="">
-                                            <xf:choices>
-                                                <xf:itemset nodeset="data:dlt_priority">
-                                                    <xf:label ref="priority"></xf:label>
-                                                    <xf:value ref="code"></xf:value>
-                                                </xf:itemset>
-                                            </xf:choices>
-                                        </xf:select1>
-                                    </xf:group>
-                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
-                                        <w2:textbox class="" label="상태" style=""></w2:textbox>
-                                    </xf:group>
-                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-                                        <xf:select1 id="sel_status" chooseOption="true" 
-                                            style="width: 148px;height: 21px;" submenuSize="auto" allOption=""
-                                            disabled="false" direction="auto" appearance="minimal" 
-                                            disabledClass="w2selectbox_disabled" chooseOptionLabel=""
-                                            ref="data:dmp_issVoDetail.status">
-                                            <xf:choices>
-                                                <xf:itemset nodeset="data:dlt_status">
-                                                    <xf:label ref="status"></xf:label>
-                                                    <xf:value ref="code"></xf:value>
-                                                </xf:itemset>
-                                            </xf:choices>
-                                        </xf:select1>
-                                    </xf:group>
-                                </xf:group>
+								<!-- 우선순위, 상태 -->
+								<xf:group tagname="tr">
+									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+										<w2:textbox class="" label="우선순위" style=""></w2:textbox>
+									</xf:group>
+									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+										<xf:select1 allOption="" appearance="minimal" chooseOption="true" direction="auto" disabled="false"
+											disabledClass="w2selectbox_disabled" id="sel_priority" style="width: 148px;height: 21px;" submenuSize="auto"
+											ref="data:dmp_issVoDetail.priority" chooseOptionLabel="">
+											<xf:choices>
+												<xf:itemset nodeset="data:dlt_priority">
+													<xf:label ref="priority"></xf:label>
+													<xf:value ref="code"></xf:value>
+												</xf:itemset>
+											</xf:choices>
+										</xf:select1>
+									</xf:group>
+									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+										<w2:textbox class="" label="상태" style=""></w2:textbox>
+									</xf:group>
+									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+										<xf:select1 id="sel_status" chooseOption="true" style="width: 148px;height: 21px;" submenuSize="auto" allOption=""
+											disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled" chooseOptionLabel=""
+											ref="data:dmp_issVoDetail.status">
+											<xf:choices>
+												<xf:itemset nodeset="data:dlt_status">
+													<xf:label ref="status"></xf:label>
+													<xf:value ref="code"></xf:value>
+												</xf:itemset>
+											</xf:choices>
+										</xf:select1>
+									</xf:group>
+								</xf:group>
 
-                                <!-- 완료예정일, 해결일 -->
-                                <xf:group tagname="tr">
-                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
-                                        <w2:textbox class="" label="완료예정일" style=""></w2:textbox>
-                                    </xf:group>
-                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-                                        <w2:inputCalendar id="cal_dueDate" style="width: 100%; height: 25px;" 
-                                            calendarValueType="yearMonthDate" ref="data:dmp_issVoDetail.dueDate"></w2:inputCalendar>
-                                    </xf:group>
-                                    <xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
-                                        <w2:textbox class="" label="해결일" style=""></w2:textbox>
-                                    </xf:group>
-                                    <xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-                                        <w2:inputCalendar id="cal_resolvedDate" style="width: 100%; height: 25px;" 
-                                            calendarValueType="yearMonthDate" ref="data:dmp_issVoDetail.resolvedDate"></w2:inputCalendar>
-                                    </xf:group>
-                                </xf:group>
-                            </xf:group>
-							
-                            <!-- 상세설명 섹션 -->
-                            <xf:group class="description-section" style="margin-bottom: 25px;">
-                                <xf:group class="titbox" style="margin-bottom: 10px;">
-                                    <w2:textbox label="상세설명" style="font-weight: bold; font-size: 14px;" tagname="h4"></w2:textbox>
-                                    <span style="color: red;">*</span>
-                                </xf:group>
+								<!-- 완료예정일, 해결일 -->
+								<xf:group tagname="tr">
+									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+										<w2:textbox class="" label="완료예정일" style=""></w2:textbox>
+									</xf:group>
+									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+										<w2:inputCalendar id="cal_dueDate" style="width: 100%; height: 25px;" calendarValueType="yearMonthDate"
+											ref="data:dmp_issVoDetail.dueDate"></w2:inputCalendar>
+									</xf:group>
+									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+										<w2:textbox class="" label="해결일" style=""></w2:textbox>
+									</xf:group>
+									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
+										<w2:inputCalendar id="cal_resolvedDate" style="width: 100%; height: 25px;" calendarValueType="yearMonthDate"
+											ref="data:dmp_issVoDetail.resolvedDate"></w2:inputCalendar>
+									</xf:group>
+								</xf:group>
+							</xf:group>
 
-                                <!-- 조회 모드: div 영역 (HTML 렌더링) -->
-                                <xf:group id="grp_description_view" style="display: none;">
-                                    <div id="div_description_view" 
-                                        style="width: 100%; min-height: 150px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px; padding: 15px; font-family: inherit; line-height: 1.6; overflow-y: auto; max-height: 300px;">
-                                        <!-- HTML 내용이 여기에 렌더링됩니다 -->
-                                    </div>
-                                </xf:group>
+							<!-- 상세설명 섹션 -->
+							<xf:group class="description-section" style="margin-bottom: 25px;">
+								<xf:group class="titbox" style="margin-bottom: 10px;">
+									<w2:textbox label="상세설명" style="font-weight: bold; font-size: 14px;" tagname="h4"></w2:textbox>
+									<span style="color: red;">*</span>
+								</xf:group>
 
-                                <!-- 편집 모드: w2:editor 영역 -->
-                                <xf:group id="grp_description_edit" style="display: block;">
-                                    <w2:editor id="editor_description" style="width: 100%; height: 250px;"
-                                        ref="data:dmp_issVoDetail.description">
-                                    </w2:editor>
-                                </xf:group>
-                            </xf:group>
+								<!-- 조회 모드: div 영역 (HTML 렌더링) -->
+								<xf:group id="grp_description_view" style="display: none;">
+									<div id="div_description_view"
+										style="width: 100%; min-height: 150px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px; padding: 15px; font-family: inherit; line-height: 1.6; overflow-y: auto; max-height: 300px;">
+										<!-- HTML 내용이 여기에 렌더링됩니다 -->
+									</div>
+								</xf:group>
 
-                            <!-- 대응방안 섹션 -->
-                            <xf:group class="response-section" style="margin-bottom: 25px;">
-                                <xf:group class="titbox" style="margin-bottom: 10px;">
-                                    <w2:textbox label="대응방안" style="font-weight: bold; font-size: 14px;" tagname="h4"></w2:textbox>
-                                </xf:group>
-                                
-                                <!-- 조회 모드: div 영역 (HTML 렌더링) -->
-                                <xf:group id="grp_response_view" style="display: none;">
-                                    <div id="div_response_view" 
-                                        style="width: 100%; min-height: 120px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px; padding: 15px; font-family: inherit; line-height: 1.6; overflow-y: auto; max-height: 250px;">
-                                        <!-- HTML 내용이 여기에 렌더링됩니다 -->
-                                    </div>
-                                </xf:group>
-                                
-                                <!-- 편집 모드: w2:editor 영역 -->
-                                <xf:group id="grp_response_edit" style="display: block;">
-                                    <w2:editor id="editor_responsePlan" style="width: 100%; height: 180px;"
-                                        ref="data:dmp_issVoDetail.responsePlan">
-                                    </w2:editor>
-                                </xf:group>
-                            </xf:group>
+								<!-- 편집 모드: w2:editor 영역 -->
+								<xf:group id="grp_description_edit" style="display: block;">
+									<w2:editor id="editor_description" style="width: 100%; height: 250px;" ref="data:dmp_issVoDetail.description">
+									</w2:editor>
+								</xf:group>
+							</xf:group>
+
+							<!-- 대응방안 섹션 -->
+							<xf:group class="response-section" style="margin-bottom: 25px;">
+								<xf:group class="titbox" style="margin-bottom: 10px;">
+									<w2:textbox label="대응방안" style="font-weight: bold; font-size: 14px;" tagname="h4"></w2:textbox>
+								</xf:group>
+
+								<!-- 조회 모드: div 영역 (HTML 렌더링) -->
+								<xf:group id="grp_response_view" style="display: none;">
+									<div id="div_response_view"
+										style="width: 100%; min-height: 120px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px; padding: 15px; font-family: inherit; line-height: 1.6; overflow-y: auto; max-height: 250px;">
+										<!-- HTML 내용이 여기에 렌더링됩니다 -->
+									</div>
+								</xf:group>
+
+								<!-- 편집 모드: w2:editor 영역 -->
+								<xf:group id="grp_response_edit" style="display: block;">
+									<w2:editor id="editor_responsePlan" style="width: 100%; height: 180px;" ref="data:dmp_issVoDetail.responsePlan">
+									</w2:editor>
+								</xf:group>
+							</xf:group>
 						</xf:group>
 
 						<!-- 2. 파일 첨부 섹션 -->
-                        <!-- 파일 관리 섹션 -->
-                        <xf:group class="section file-section"
-                            style="margin: 0 20px 20px 20px; padding: 25px; border: 1px solid #e9ecef; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+						<!-- 파일 관리 섹션 -->
+						<xf:group class="section file-section"
+							style="margin: 0 20px 20px 20px; padding: 25px; border: 1px solid #e9ecef; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
 
-                            <!-- 파일 업로드 영역 (편집 모드에서만 표시) -->
-                            <xf:group class="upload-area" id="grp_fileUploadArea"
-                                style="margin-bottom: 25px; border: 2px dashed #ddd; padding: 20px; background: #f8f9fa; border-radius: 8px; display: none;">
-                                <xf:group class="titbox" style="margin-bottom: 15px;">
-                                    <w2:textbox label="파일 업로드" style="font-weight: bold; font-size: 16px; display: inline-block;" tagname="h4"></w2:textbox>
-                                    <w2:textbox label="* 최대 10개 파일, 파일당 10MB 이하"
-                                        style="color: #666; font-size: 12px; margin-left: 10px; display: inline-block;"></w2:textbox>
-                                </xf:group>
-                                <xf:group class="upload-buttons" style="margin-bottom: 15px;">
-                                    <xf:group style="position: relative; display: inline-block; margin-right: 10px;">
-                                        <xf:trigger class="btn_cm"
-                                            style="background: #007bff; color: white; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 38px;"
-                                            type="button">
-                                            <xf:label>파일 선택</xf:label>
-                                        </xf:trigger>
-                                        <w2:multiupload ev:ondone="scwin.mpd_html5Type_ondone" id="mpd_html5Type" maxcount="10" maxsize="10485760"
-                                            mode="html5_transparent" selectCallback="scwin.multiUploadSelectDone"
-                                            style="position: absolute;left: 0px;top:0px;width:100%;height: 100%;cursor: pointer;z-index: 999;" 
-                                            uploadButton="" wmode="false"></w2:multiupload>
-                                    </xf:group>
+							<!-- 파일 업로드 영역 (편집 모드에서만 표시) -->
+							<xf:group class="upload-area" id="grp_fileUploadArea"
+								style="margin-bottom: 25px; border: 2px dashed #ddd; padding: 20px; background: #f8f9fa; border-radius: 8px; display: none;">
+								<xf:group class="titbox" style="margin-bottom: 15px;">
+									<w2:textbox label="파일 업로드" style="font-weight: bold; font-size: 16px; display: inline-block;" tagname="h4"></w2:textbox>
+									<w2:textbox label="* 최대 10개 파일, 파일당 10MB 이하"
+										style="color: #666; font-size: 12px; margin-left: 10px; display: inline-block;"></w2:textbox>
+								</xf:group>
+								<xf:group class="upload-buttons" style="margin-bottom: 15px;">
+									<xf:group style="position: relative; display: inline-block; margin-right: 10px;">
+										<xf:trigger class="btn_cm"
+											style="background: #007bff; color: white; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 38px;"
+											type="button">
+											<xf:label>파일 선택</xf:label>
+										</xf:trigger>
+										<w2:multiupload ev:ondone="scwin.mpd_html5Type_ondone" id="mpd_html5Type" maxcount="10" maxsize="10485760"
+											mode="html5_transparent" selectCallback="scwin.multiUploadSelectDone"
+											style="position: absolute;left: 0px;top:0px;width:100%;height: 100%;cursor: pointer;z-index: 999;" uploadButton="" wmode="false"></w2:multiupload>
+									</xf:group>
 
-                                    <xf:trigger class="btn_cm" ev:onclick="scwin.btn_InitMultiupload_onclick"
-                                        style="background: #6c757d; color: white; padding: 10px 15px; border-radius: 4px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 38px;"
-                                        type="button">
-                                        <xf:label>전체 삭제</xf:label>
-                                    </xf:trigger>
-                                </xf:group>
-                                <!-- 업로드 대기 파일 목록 -->
-                                <xf:group class="upload-list" style="margin-top: 5px;">
-                                    <w2:textbox label="선택된 파일" style="font-weight: bold; margin-bottom: 8px;" tagname="h5"></w2:textbox>
-                                    <w2:gridView autoFit="allColumn" class="gvw" dataList="dlt_upload" id="grd_uploadList" 
-                                        noResultMessage="선택된 파일이 없습니다." rowNumVisible="false" 
-                                        style="height: 120px; border: 1px solid #ddd; width: 100%;" visibleRowNum="4">
-                                        <w2:header style="">
-                                            <w2:row style="">
-                                                <w2:column displayMode="label" inputType="text" 
-                                                    style="height:25px; background-color: #e9ecef;" value="파일명" width="250"></w2:column>
-                                                <w2:column displayMode="label" inputType="text" 
-                                                    style="height:25px; background-color: #e9ecef;" value="크기" width="100"></w2:column>
-                                                <w2:column displayMode="label" inputType="text" 
-                                                    style="height:25px; background-color: #e9ecef;" value="상태" width="100"></w2:column>
-                                                <w2:column displayMode="label" inputType="text" 
-                                                    style="height:25px; background-color: #e9ecef;" value="작업" width="60"></w2:column>
-                                            </w2:row>
-                                        </w2:header>
-                                        <w2:gBody style="">
-                                            <w2:row style="">
-                                                <w2:column displayMode="label" id="originalFileName" inputType="text" 
-                                                    style="height:25px; padding: 5px;" textAlign="left" width="250"></w2:column>
-                                                <w2:column dataType="number" displayFormat="#,###" displayMode="label" 
-                                                    id="fileSize" inputType="text" style="height:25px; padding: 5px;" 
-                                                    textAlign="right" width="100"></w2:column>
-                                                <w2:column displayMode="label" id="status" inputType="text" 
-                                                    style="height:25px; padding: 5px; color: #007bff;" textAlign="center" width="100"></w2:column>
-                                                <w2:column displayMode="label" id="action" inputType="text"
-                                                    style="height:25px; padding: 2px; color: #dc3545; cursor: pointer; font-size: 14px; font-weight: bold;" 
-                                                    textAlign="center" width="60" ev:onclick="scwin.removeUploadFile"></w2:column>
-                                            </w2:row>
-                                        </w2:gBody>
-                                    </w2:gridView>
-                                </xf:group>
-                            </xf:group>
-                            
-                            <!-- 기존 첨부파일 목록 (항상 표시) -->
-                            <xf:group class="existing-files" style="">
-                                <xf:group class="titbox" style="margin-bottom: 15px;">
-                                    <w2:textbox label="기존 첨부파일" style="font-weight: bold; font-size: 16px; display: inline-block;" tagname="h4"></w2:textbox>
-                                    <xf:trigger class="btn_cm" ev:onclick="scwin.loadFileList"
-                                        style="margin-left: 10px; background: #28a745; color: white; padding: 5px 10px; border-radius: 3px; font-size: 12px; display: inline-block;"
-                                        type="button">
-                                        <xf:label>새로고침</xf:label>
-                                    </xf:trigger>
-                                </xf:group>
+									<xf:trigger class="btn_cm" ev:onclick="scwin.btn_InitMultiupload_onclick"
+										style="background: #6c757d; color: white; padding: 10px 15px; border-radius: 4px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 38px;"
+										type="button">
+										<xf:label>전체 삭제</xf:label>
+									</xf:trigger>
+								</xf:group>
+								<!-- 업로드 대기 파일 목록 -->
+								<xf:group class="upload-list" style="margin-top: 5px;">
+									<w2:textbox label="선택된 파일" style="font-weight: bold; margin-bottom: 8px;" tagname="h5"></w2:textbox>
+									<w2:gridView autoFit="allColumn" class="gvw" dataList="dlt_upload" id="grd_uploadList" noResultMessage="선택된 파일이 없습니다."
+										rowNumVisible="false" style="height: 120px; border: 1px solid #ddd; width: 100%;" visibleRowNum="4">
+										<w2:header style="">
+											<w2:row style="">
+												<w2:column displayMode="label" inputType="text" style="height:25px; background-color: #e9ecef;" value="파일명"
+													width="250"></w2:column>
+												<w2:column displayMode="label" inputType="text" style="height:25px; background-color: #e9ecef;" value="크기" width="100"></w2:column>
+												<w2:column displayMode="label" inputType="text" style="height:25px; background-color: #e9ecef;" value="상태" width="100"></w2:column>
+												<w2:column displayMode="label" inputType="text" style="height:25px; background-color: #e9ecef;" value="작업" width="60"></w2:column>
+											</w2:row>
+										</w2:header>
+										<w2:gBody style="">
+											<w2:row style="">
+												<w2:column displayMode="label" id="originalFileName" inputType="text" style="height:25px; padding: 5px;"
+													textAlign="left" width="250"></w2:column>
+												<w2:column dataType="number" displayFormat="#,###" displayMode="label" id="fileSize" inputType="text"
+													style="height:25px; padding: 5px;" textAlign="right" width="100"></w2:column>
+												<w2:column displayMode="label" id="status" inputType="text" style="height:25px; padding: 5px; color: #007bff;"
+													textAlign="center" width="100"></w2:column>
+												<w2:column displayMode="label" id="action" inputType="text"
+													style="height:25px; padding: 2px; color: #dc3545; cursor: pointer; font-size: 14px; font-weight: bold;" textAlign="center"
+													width="60" ev:onclick="scwin.removeUploadFile"></w2:column>
+											</w2:row>
+										</w2:gBody>
+									</w2:gridView>
+								</xf:group>
+							</xf:group>
 
-                                <xf:group class="file-grid-container" style="display: flex; gap: 20px;">
-                                    <!-- 파일 목록 그리드 -->
-                                    <xf:group style="flex: 1;">
-                                        <w2:gridView autoFit="lastColumn" class="gvw" dataList="dlt_attVoList" id="grd_fileList"
-                                            noResultMessage="첨부된 파일이 없습니다." rowNumVisible="true" rowNumWidth="30" 
-                                            style="height: 300px; border: 1px solid #ddd;" visibleRowNum="8" 
-                                            ev:oncellclick="scwin.grd_fileList_oncellclick">
-                                            <w2:header style="">
-                                                <w2:row style="">
-                                                    <w2:column displayMode="label" inputType="text"
-                                                        style="height:30px; background-color: #343a40; color: white; font-weight: bold;" 
-                                                        value="파일명" width="200"></w2:column>
-                                                    <w2:column displayMode="label" inputType="text"
-                                                        style="height:30px; background-color: #343a40; color: white; font-weight: bold;" 
-                                                        value="크기" width="80"></w2:column>
-                                                    <w2:column displayMode="label" inputType="text"
-                                                        style="height:30px; background-color: #343a40; color: white; font-weight: bold;" 
-                                                        value="업로드일" width="100"></w2:column>
-                                                    <w2:column displayMode="label" inputType="text"
-                                                        style="height:30px; background-color: #343a40; color: white; font-weight: bold;" 
-                                                        value="작업" width="120"></w2:column>
-                                                </w2:row>
-                                            </w2:header>
-                                            <w2:gBody style="">
-                                                <w2:row style="">
-                                                    <w2:column displayMode="label" id="originalFileName" inputType="text"
-                                                        style="height:30px; padding: 8px; cursor: pointer; color: #007bff; text-decoration: underline;" 
-                                                        textAlign="left" width="200"></w2:column>
-                                                    <w2:column dataType="number" displayFormat="#,###" displayMode="label" 
-                                                        id="fileSize" inputType="text" style="height:30px; padding: 8px;" 
-                                                        textAlign="right" width="80"></w2:column>
-                                                    <w2:column displayMode="label" id="attachedAt" inputType="text" 
-                                                        style="height:30px; padding: 8px;" textAlign="center" width="100"></w2:column>
-                                                    <w2:column displayMode="button" inputType="button" 
-                                                        style="height:30px; padding: 2px;" textAlign="center" width="120"
-                                                        value="다운로드|삭제" ev:onclick="scwin.fileActionClick"></w2:column>
-                                                </w2:row>
-                                            </w2:gBody>
-                                        </w2:gridView>
-                                    </xf:group>
+							<!-- 기존 첨부파일 목록 (항상 표시) -->
+							<xf:group class="existing-files" style="">
+								<xf:group class="titbox" style="margin-bottom: 15px;">
+									<w2:textbox label="기존 첨부파일" style="font-weight: bold; font-size: 16px; display: inline-block;" tagname="h4"></w2:textbox>
+									<xf:trigger class="btn_cm" ev:onclick="scwin.loadFileList"
+										style="margin-left: 10px; background: #28a745; color: white; padding: 5px 10px; border-radius: 3px; font-size: 12px; display: inline-block;"
+										type="button">
+										<xf:label>새로고침</xf:label>
+									</xf:trigger>
+								</xf:group>
 
-                                    <!-- 파일 미리보기 영역 -->
-                                    <xf:group class="preview-panel" style="width: 400px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 8px;">
-                                        <xf:group class="preview-header"
-                                            style="background: #495057; color: white; padding: 10px; font-weight: bold; border-radius: 8px 8px 0 0;">
-                                            <w2:textbox label="파일 미리보기" style="margin: 0;"></w2:textbox>
-                                        </xf:group>
-                                        <xf:group class="preview-content" id="grp_previewContent" style="padding: 15px; min-height: 250px;">
+								<xf:group class="file-grid-container" style="display: flex; gap: 20px;">
+									<!-- 파일 목록 그리드 -->
+									<xf:group style="flex: 1;">
+										<w2:gridView autoFit="lastColumn" class="gvw" dataList="dlt_attVoList" id="grd_fileList"
+											noResultMessage="첨부된 파일이 없습니다." rowNumVisible="true" rowNumWidth="30" style="height: 300px; border: 1px solid #ddd;"
+											visibleRowNum="8" ev:oncellclick="scwin.grd_fileList_oncellclick">
+											<w2:header style="">
+												<w2:row style="">
+													<w2:column displayMode="label" inputType="text"
+														style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="파일명" width="200"></w2:column>
+													<w2:column displayMode="label" inputType="text"
+														style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="크기" width="80"></w2:column>
+													<w2:column displayMode="label" inputType="text"
+														style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="업로드일" width="100"></w2:column>
+													<w2:column displayMode="label" inputType="text"
+														style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="작업" width="120"></w2:column>
+												</w2:row>
+											</w2:header>
+											<w2:gBody style="">
+												<w2:row style="">
+													<w2:column displayMode="label" id="originalFileName" inputType="text"
+														style="height:30px; padding: 8px; cursor: pointer; color: #007bff; text-decoration: underline;" textAlign="left" width="200"></w2:column>
+													<w2:column dataType="number" displayFormat="#,###" displayMode="label" id="fileSize" inputType="text"
+														style="height:30px; padding: 8px;" textAlign="right" width="80"></w2:column>
+													<w2:column displayMode="label" id="attachedAt" inputType="text" style="height:30px; padding: 8px;" textAlign="center"
+														width="100"></w2:column>
+													<w2:column displayMode="button" inputType="button" style="height:30px; padding: 2px;" textAlign="center" width="120"
+														value="다운로드|삭제" ev:onclick="scwin.fileActionClick"></w2:column>
+												</w2:row>
+											</w2:gBody>
+										</w2:gridView>
+									</xf:group>
 
-                                            <!-- 기본 상태 -->
-                                            <w2:group id="grp_noPreview" style="text-align: center; color: #6c757d; padding-top: 80px;">
-                                                <w2:textbox label="파일을 선택하면 미리보기가 표시됩니다." style="font-size: 14px;"></w2:textbox>
-                                            </w2:group>
+									<!-- 파일 미리보기 영역 -->
+									<xf:group class="preview-panel" style="width: 400px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 8px;">
+										<xf:group class="preview-header"
+											style="background: #495057; color: white; padding: 10px; font-weight: bold; border-radius: 8px 8px 0 0;">
+											<w2:textbox label="파일 미리보기" style="margin: 0;"></w2:textbox>
+										</xf:group>
+										<xf:group class="preview-content" id="grp_previewContent" style="padding: 15px; min-height: 250px;">
 
-                                            <!-- 이미지 미리보기 -->
-                                            <w2:group id="grp_imagePreview" style="display: none; text-align: center;">
-                                                <w2:textbox id="txt_previewFileName" style="font-weight: bold; margin-bottom: 10px; word-break: break-all;"></w2:textbox>
-                                                <img id="img_preview" style="width: 150px; height: 150px; object-fit: cover; border: 1px solid #ddd; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 4px;" />
-                                                <xf:group style="margin-top: 10px;">
-                                                    <xf:trigger
-                                                        style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin: 2px;"
-                                                        ev:onclick="scwin.downloadCurrentFile">
-                                                        <xf:label>다운로드</xf:label>
-                                                    </xf:trigger>
-                                                </xf:group>
-                                            </w2:group>
+											<!-- 기본 상태 -->
+											<w2:group id="grp_noPreview" style="text-align: center; color: #6c757d; padding-top: 80px;">
+												<w2:textbox label="파일을 선택하면 미리보기가 표시됩니다." style="font-size: 14px;"></w2:textbox>
+											</w2:group>
 
-                                            <!-- 텍스트 파일 미리보기 -->
-                                            <w2:group id="grp_textPreview" style="display: none;">
-                                                <w2:textbox id="txt_textFileName" style="font-weight: bold; margin-bottom: 10px; word-break: break-all;"></w2:textbox>
-                                                <xf:textarea id="txt_textContent" readOnly="true"
-                                                    style="width: 100%; height: 200px; border: 1px solid #ccc; font-family: monospace; font-size: 12px; background: white; padding: 8px; border-radius: 4px;"></xf:textarea>
-                                                <xf:group style="margin-top: 10px;">
-                                                    <xf:trigger
-                                                        style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin: 2px;"
-                                                        ev:onclick="scwin.downloadCurrentFile">
-                                                        <xf:label>다운로드</xf:label>
-                                                    </xf:trigger>
-                                                </xf:group>
-                                            </w2:group>
+											<!-- 이미지 미리보기 -->
+											<w2:group id="grp_imagePreview" style="display: none; text-align: center;">
+												<w2:textbox id="txt_previewFileName" style="font-weight: bold; margin-bottom: 10px; word-break: break-all;"></w2:textbox>
+												<img id="img_preview"
+													style="width: 150px; height: 150px; object-fit: cover; border: 1px solid #ddd; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 4px;" />
+												<xf:group style="margin-top: 10px;">
+													<xf:trigger
+														style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin: 2px;"
+														ev:onclick="scwin.downloadCurrentFile">
+														<xf:label>다운로드</xf:label>
+													</xf:trigger>
+												</xf:group>
+											</w2:group>
 
-                                        </xf:group>
-                                    </xf:group>
-                                </xf:group>
-                            </xf:group>
-                        </xf:group>
+											<!-- 텍스트 파일 미리보기 -->
+											<w2:group id="grp_textPreview" style="display: none;">
+												<w2:textbox id="txt_textFileName" style="font-weight: bold; margin-bottom: 10px; word-break: break-all;"></w2:textbox>
+												<xf:textarea id="txt_textContent" readOnly="true"
+													style="width: 100%; height: 200px; border: 1px solid #ccc; font-family: monospace; font-size: 12px; background: white; padding: 8px; border-radius: 4px;"></xf:textarea>
+												<xf:group style="margin-top: 10px;">
+													<xf:trigger
+														style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin: 2px;"
+														ev:onclick="scwin.downloadCurrentFile">
+														<xf:label>다운로드</xf:label>
+													</xf:trigger>
+												</xf:group>
+											</w2:group>
+
+										</xf:group>
+									</xf:group>
+								</xf:group>
+							</xf:group>
+						</xf:group>
 
 
 

@@ -14,6 +14,7 @@
 	===========================================================
 	2025/07/07              우민지             최초 생성
 	2025/07/22              우민지             ID 자동생성 추가
+	2025/07/24              우민지             조회 조건 개선
  -->
 <mapper namespace="com.demo.proworks.out">
     <insert id="insertOut" parameterType="com.demo.proworks.out.vo.OutVo" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
@@ -25,6 +26,9 @@
             <if test="name            != null and name != ''"> , NAME </if>
             <if test="createdAt      != null and createdAt != ''"> , CREATED_AT </if>
             <if test="updatedAt      != null and updatedAt != ''"> , UPDATED_AT </if>
+            <if test="approvalStatus != null and approvalStatus != ''"> , APPROVAL_STATUS </if>
+            <if test="approvalDate   != null and approvalDate != ''"> , APPROVAL_DATE </if>
+            <if test="approvalComment != null and approvalComment != ''"> , APPROVAL_COMMENT </if>
             <if test="outputType     != null and outputType != ''"> , OUTPUT_TYPE </if>
             <if test="isDeleted      != null and isDeleted != ''"> , IS_DELETED </if>
         )
@@ -34,6 +38,9 @@
             <if test="name            != null and name != ''"> , #{name} </if>
             <if test="createdAt      != null and createdAt != ''"> , #{createdAt} </if>
             <if test="updatedAt      != null and updatedAt != ''"> , #{updatedAt} </if>
+            <if test="approvalStatus != null and approvalStatus != ''"> , #{approvalStatus} </if>
+            <if test="approvalDate   != null and approvalDate != ''"> , #{approvalDate} </if>
+            <if test="approvalComment != null and approvalComment != ''"> , #{approvalComment} </if>
             <if test="outputType     != null and outputType != ''"> , #{outputType} </if>
             <if test="isDeleted      != null and isDeleted != ''"> , #{isDeleted} </if> 
         )          
@@ -48,6 +55,9 @@
             <if test="name            != null"> , NAME             = #{name} </if>
             <if test="createdAt      != null"> , CREATED_AT       = #{createdAt} </if>
             <if test="updatedAt      != null"> , UPDATED_AT       = #{updatedAt} </if>
+            <if test="approvalStatus != null"> , APPROVAL_STATUS  = #{approvalStatus} </if>
+            <if test="approvalDate   != null"> , APPROVAL_DATE    = #{approvalDate} </if>
+            <if test="approvalComment != null"> , APPROVAL_COMMENT = #{approvalComment} </if>
             <if test="outputType     != null"> , OUTPUT_TYPE      = #{outputType} </if>
             <if test="isDeleted      != null"> , IS_DELETED       = #{isDeleted} </if>                 
         WHERE   
@@ -65,20 +75,25 @@
     <select id="selectOut" parameterType="com.demo.proworks.out.vo.OutVo" resultType="com.demo.proworks.out.vo.OutVo">
     	<!-- 산출물관리를 상세 조회한다. -->	
         SELECT     /* QueryID : com.demo.proworks.out.selectOut */
-            ID as id, 
-            PJT_ID as pjtId, 
-            NAME as name, 
-            CREATED_AT as createdAt, 
-            UPDATED_AT as updatedAt, 
-            OUTPUT_TYPE as outputType, 
-            IS_DELETED as isDeleted
-        FROM OUTPUT 
+            o.ID as id, 
+            o.PJT_ID as pjtId, 
+            o.NAME as name, 
+            o.CREATED_AT as createdAt, 
+            o.UPDATED_AT as updatedAt, 
+            o.APPROVAL_STATUS as approvalStatus,
+            o.APPROVAL_DATE as approvalDate,
+            o.APPROVAL_COMMENT as approvalComment,
+            o.OUTPUT_TYPE as outputType, 
+            o.IS_DELETED as isDeleted,
+            pjt.PJT_NAME as pjtName
+        FROM OUTPUT o
+        LEFT JOIN PJT pjt ON o.PJT_ID = pjt.PJT_ID
         WHERE 
-            ID = #{id}              			
+            o.ID = #{id}              			
     </select>
 	
     <select id="selectListOut" parameterType="com.demo.proworks.out.vo.OutVo" resultType="com.demo.proworks.out.vo.OutVo">
-    	<!-- 산출물관리 목록을 조회한다. -->
+    	<!-- 산출물관리 목록을 조회한다. (조건별 검색 지원) -->
         SELECT /* QueryID : com.demo.proworks.out.selectListOut */
             ID as id, 
             PJT_ID as pjtId, 
@@ -86,6 +101,9 @@
             NAME as name, 
             CREATED_AT as createdAt, 
             UPDATED_AT as updatedAt, 
+            APPROVAL_STATUS as approvalStatus,
+            APPROVAL_DATE as approvalDate,
+            APPROVAL_COMMENT as approvalComment,
             OUTPUT_TYPE as outputType, 
             IS_DELETED as isDeleted
         FROM (
@@ -106,12 +124,23 @@
                 FROM OUTPUT o
                 LEFT JOIN PJT pjt ON o.PJT_ID = pjt.PJT_ID
                 WHERE 1=1
+                <!-- 프로젝트 ID 조건 -->
                 <if test="pjtId != null and pjtId != ''">
                 AND o.PJT_ID = #{pjtId}
                 </if>
+                <!-- 산출물명 조건 (부분 검색) -->
+                <if test="name != null and name != ''">
+                AND o.NAME LIKE CONCAT('%', #{name}, '%')
+                </if>
+                <!-- 산출물 유형 조건 -->
                 <if test="outputType != null and outputType != ''">
                 AND o.OUTPUT_TYPE = #{outputType}
                 </if>
+                <!-- 승인 상태 조건 -->
+                <if test="approvalStatus != null and approvalStatus != ''">
+                AND o.APPROVAL_STATUS = #{approvalStatus}
+                </if>
+                <!-- 삭제되지 않은 데이터만 조회 -->
                 AND (o.IS_DELETED IS NULL OR o.IS_DELETED = 'N')
                 ORDER BY o.CREATED_AT DESC
             ) S, (SELECT @ROWNUM := 0) TMP
@@ -120,19 +149,31 @@
     </select>
 	
     <select id="selectListCountOut" parameterType="com.demo.proworks.out.vo.OutVo" resultType="long">
-    <!-- 산출물관리 목록의 카운트를 조회한다. -->
+    <!-- 산출물관리 목록의 카운트를 조회한다. (조건별 검색 지원) -->
     
         SELECT /* QueryID : com.demo.proworks.out.selectListCountOut */
             COUNT(*) totcnt  		                  
-        FROM OUTPUT
+        FROM OUTPUT o
+        LEFT JOIN PJT pjt ON o.PJT_ID = pjt.PJT_ID
         WHERE 1=1
+        <!-- 프로젝트 ID 조건 -->
         <if test="pjtId != null and pjtId != ''">
-        AND PJT_ID = #{pjtId}
+        AND o.PJT_ID = #{pjtId}
         </if>
+        <!-- 산출물명 조건 (부분 검색) -->
+        <if test="name != null and name != ''">
+        AND o.NAME LIKE CONCAT('%', #{name}, '%')
+        </if>
+        <!-- 산출물 유형 조건 -->
         <if test="outputType != null and outputType != ''">
-        AND OUTPUT_TYPE = #{outputType}
+        AND o.OUTPUT_TYPE = #{outputType}
         </if>
-        AND (IS_DELETED IS NULL OR IS_DELETED = 'N')
+        <!-- 승인 상태 조건 -->
+        <if test="approvalStatus != null and approvalStatus != ''">
+        AND o.APPROVAL_STATUS = #{approvalStatus}
+        </if>
+        <!-- 삭제되지 않은 데이터만 조회 -->
+        AND (o.IS_DELETED IS NULL OR o.IS_DELETED = 'N')
 
     </select>
 

@@ -81,7 +81,7 @@ public class UnitTestController {
     @ElDescription(sub = "프로젝트별 단위테스트 케이스 목록 조회", desc = "특정 프로젝트의 단위테스트 케이스 목록을 조회한다.")
     public UnitTestListVo selectUnitTestListByProject(UnitTestVo unitTestVo) throws Exception {
 
-        logger.debug("프로젝트별 단위테스트 케이스 목록 조회 요청: {}", unitTestVo);
+        AppLog.debug("프로젝트별 단위테스트 케이스 목록 조회 요청: {}", unitTestVo);
 
         List<UnitTestVo> unitTestList = unitTestService.selectUnitTestList(unitTestVo);
         long totCnt = unitTestService.selectListCountUnitTest(unitTestVo);
@@ -92,7 +92,38 @@ public class UnitTestController {
         retUnitTestList.setPageSize(unitTestVo.getPageSize());
         retUnitTestList.setPageIndex(unitTestVo.getPageIndex());
 
-        logger.debug("프로젝트별 목록 조회 완료: {} 건", totCnt);
+        AppLog.debug("프로젝트별 목록 조회 완료: {} 건", totCnt);
+
+        return retUnitTestList;
+    }
+
+    /**
+     * 실패한 단위테스트 케이스 목록 조회 (결함 등록용)
+     */
+    @ElService(key = "UNIT001FailedList")
+    @RequestMapping(value = "UNIT001FailedList")
+    @ElDescription(sub = "실패한 단위테스트 케이스 목록 조회", desc = "결함 등록을 위해 실패한 단위테스트 케이스 목록을 조회한다.")
+    public UnitTestListVo selectFailedUnitTestList(UnitTestVo unitTestVo) throws Exception {
+
+        AppLog.debug("실패한 단위테스트 케이스 목록 조회 요청: {}", unitTestVo);
+
+        // 기본값 설정 - 실패한 테스트케이스만 조회
+        if (unitTestVo.getPageSize() == 0) {
+            unitTestVo.setPageSize(1000); // 충분히 큰 값으로 설정
+        }
+
+        List<UnitTestVo> failedUnitTestList = unitTestService.selectFailedUnitTestList(unitTestVo);
+        
+        // 카운트는 조회된 리스트의 크기로 설정 (별도 카운트 쿼리 실행하지 않음)
+        long totCnt = failedUnitTestList != null ? failedUnitTestList.size() : 0;
+
+        UnitTestListVo retUnitTestList = new UnitTestListVo();
+        retUnitTestList.setUnitTestList(failedUnitTestList);
+        retUnitTestList.setTotalCount(totCnt);
+        retUnitTestList.setPageSize(unitTestVo.getPageSize());
+        retUnitTestList.setPageIndex(unitTestVo.getPageIndex());
+
+        AppLog.debug("실패한 테스트케이스 목록 조회 완료: {} 건", totCnt);
 
         return retUnitTestList;
     }
@@ -126,7 +157,7 @@ public class UnitTestController {
     @ElDescription(sub = "단위테스트 케이스 파일 등록처리", desc = "단위테스트 케이스를 파일과 함께 등록 처리 한다.")
     public void insertUnitTestWithFiles(HttpServletRequest request) throws Exception {
 
-        logger.debug("=== 단위테스트 케이스 파일 등록 시작 ===");
+        AppLog.debug("=== 단위테스트 케이스 파일 등록 시작 ===");
 
         // MultipartHttpServletRequest로 캐스팅
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -161,11 +192,11 @@ public class UnitTestController {
         unitTestVo.setRequirements(request.getParameter("requirements"));
         unitTestVo.setPjtId(request.getParameter("pjtId"));
 
-        logger.debug("단위테스트 케이스 정보: {}", unitTestVo);
+        AppLog.debug("단위테스트 케이스 정보: {}", unitTestVo);
 
         // 2. 실제 파일 객체들 받아오기
         List<MultipartFile> fileList = multipartRequest.getFiles("files");
-        logger.debug("받은 파일 개수: {}", (fileList != null ? fileList.size() : 0));
+        AppLog.debug("받은 파일 개수: {}", (fileList != null ? fileList.size() : 0));
 
         // 3. MultipartFile 배열로 변환 (null이 아닌 파일만)
         List<MultipartFile> validFiles = new ArrayList<>();
@@ -173,7 +204,9 @@ public class UnitTestController {
             for (MultipartFile file : fileList) {
                 if (file != null && !file.isEmpty()) {
                     validFiles.add(file);
-                    logger.debug("유효한 파일: {} (크기: {})", file.getOriginalFilename(), file.getSize());
+                    AppLog.debug("유효한 파일: {} (크기: {})"+ file.getOriginalFilename(), file.getSize());
+                } else {
+                    AppLog.debug("유효하지 않은 파일");
                 }
             }
         }
@@ -183,7 +216,7 @@ public class UnitTestController {
         // 4. 서비스 호출 (기존 방식 사용)
         unitTestService.insertUnitTestWithFiles(unitTestVo, files);
         
-        logger.debug("=== 단위테스트 케이스 파일 등록 완료 ===");
+        AppLog.debug("=== 단위테스트 케이스 파일 등록 완료 ===");
     }
 
     /**
@@ -204,7 +237,7 @@ public class UnitTestController {
     @ElDescription(sub = "단위테스트 케이스 파일 갱신처리", desc = "단위테스트 케이스를 파일과 함께 갱신 처리 한다.")
     public void updateUnitTestWithFiles(HttpServletRequest request) throws Exception {
 
-        logger.debug("=== 단위테스트 케이스 파일 수정 시작 ===");
+        AppLog.debug("=== 단위테스트 케이스 파일 수정 시작 ===");
         
         // MultipartHttpServletRequest로 캐스팅
         MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
@@ -232,8 +265,8 @@ public class UnitTestController {
         unitTestVo.setRequirements(request.getParameter("requirements"));
         unitTestVo.setPjtId(request.getParameter("pjtId"));
 
-        logger.debug("수정할 단위테스트 케이스 정보: {}", unitTestVo);
-        logger.debug("테스트 케이스 ID: {}", unitTestVo.getTestCaseId());
+        AppLog.debug("수정할 단위테스트 케이스 정보: {}", unitTestVo);
+        AppLog.debug("테스트 케이스 ID: {}", unitTestVo.getTestCaseId());
 
         // testCaseId가 없으면 오류
         if (unitTestVo.getTestCaseId() == null || unitTestVo.getTestCaseId().trim().isEmpty()) {
@@ -242,7 +275,7 @@ public class UnitTestController {
 
         // 2. 실제 파일 객체들 받아오기
         List<MultipartFile> fileList = multipartRequest.getFiles("files");
-        logger.debug("받은 파일 개수: {}", (fileList != null ? fileList.size() : 0));
+        AppLog.debug("받은 파일 개수: {}", (fileList != null ? fileList.size() : 0));
 
         // 3. MultipartFile 배열로 변환 (null이 아닌 파일만)
         List<MultipartFile> validFiles = new ArrayList<>();
@@ -250,7 +283,7 @@ public class UnitTestController {
             for (MultipartFile file : fileList) {
                 if (file != null && !file.isEmpty()) {
                     validFiles.add(file);
-                    logger.debug("유효한 파일: {} (크기: {})", file.getOriginalFilename(), file.getSize());
+                    AppLog.debug("유효한 파일: {} (크기: {})" + file.getOriginalFilename() + "," + file.getSize());
                 }
             }
         }
@@ -260,7 +293,7 @@ public class UnitTestController {
         // 4. 서비스 호출 (수정 메서드)
         unitTestService.updateUnitTestWithFiles(unitTestVo, files);
         
-        logger.debug("=== 단위테스트 케이스 파일 수정 완료 ===");
+        AppLog.debug("=== 단위테스트 케이스 파일 수정 완료 ===");
     }
 
     /**
@@ -285,15 +318,15 @@ public class UnitTestController {
     public List<AttVo> uploadUnitTestFiles(@RequestParam("files") MultipartFile[] files,
             @RequestParam("testCaseId") String testCaseId) throws Exception {
 
-        logger.debug("=== 단위테스트 케이스 별도 파일 업로드 ===");
-        logger.debug("테스트 케이스 ID: {}", testCaseId);
-        logger.debug("파일 개수: {}", files.length);
+        AppLog.debug("=== 단위테스트 케이스 별도 파일 업로드 ===");
+        AppLog.debug("테스트 케이스 ID: {}", testCaseId);
+        AppLog.debug("파일 개수: {}", files.length);
 
         try {
             // AttService에 위임
             return attService.uploadFiles(files, "UNIT_TEST", testCaseId);
         } catch (Exception e) {
-            logger.error("단위테스트 케이스 파일 업로드 실패: {}", e.getMessage());
+            AppLog.error("단위테스트 케이스 파일 업로드 실패: {}", e.getMessage());
             throw new ElException("파일 업로드 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
@@ -306,12 +339,12 @@ public class UnitTestController {
     @ElDescription(sub = "단위테스트 케이스 파일 목록 조회", desc = "단위테스트 케이스의 파일 목록을 조회한다.")
     public AttListVo getUnitTestFileList(UnitTestVo unitTestVo) throws Exception {
 	    
-	    logger.debug("=== 단위테스트 케이스 파일 목록 조회 ===");
-	    logger.debug("요청 데이터: {}", unitTestVo != null ? unitTestVo.toString() : "null");
+	    AppLog.debug("=== 단위테스트 케이스 파일 목록 조회 ===");
+	    AppLog.debug("요청 데이터: {}", unitTestVo != null ? unitTestVo.toString() : "null");
 	    
 	    // null 체크
 	    if (unitTestVo == null) {
-	        logger.warn("unitTestVo가 null입니다.");
+	        AppLog.warn("unitTestVo가 null입니다.");
 	        AttListVo emptyResult = new AttListVo();
 	        emptyResult.setAttVoList(new ArrayList<>());
 	        return emptyResult;
@@ -322,15 +355,15 @@ public class UnitTestController {
 	    fileParam.setRefType("UNIT_TEST");
 	    fileParam.setRefId(unitTestVo.getTestCaseId());
 	    
-	    logger.debug("파일 조회 파라미터: refType={}, refId={}", fileParam.getRefType(), fileParam.getRefId());
+	    AppLog.debug("파일 조회 파라미터: refType={}, refId={}" + fileParam.getRefType() + ", " + fileParam.getRefId());
 	    
 	    List<AttVo> attList = attService.getFileList(fileParam);
-	    logger.debug("조회된 파일 개수: {}", (attList != null ? attList.size() : 0));
-	
+	    AppLog.debug("조회된 파일 개수: {}", (attList != null ? attList.size() : 0));
+
 	    AttListVo retAttList = new AttListVo();
 	    retAttList.setAttVoList(attList != null ? attList : new ArrayList<>());
 	    
-	    logger.debug("=== 단위테스트 케이스 파일 목록 조회 완료 ===");
+	    AppLog.debug("=== 단위테스트 케이스 파일 목록 조회 완료 ===");
 	    return retAttList;
 	}
 
@@ -342,15 +375,15 @@ public class UnitTestController {
     @ElDescription(sub = "단위테스트 케이스 파일 삭제", desc = "단위테스트 케이스의 파일을 삭제한다.")
     @ResponseBody
     public void deleteUnitTestFile(@RequestParam("fileId") String fileId) throws Exception {
-        logger.debug("=== 단위테스트 케이스 파일 삭제 ===");
-        logger.debug("파일 ID: {}", fileId);
+        AppLog.debug("=== 단위테스트 케이스 파일 삭제 ===");
+        AppLog.debug("파일 ID: {}", fileId);
 
         try {
             // AttService에 위임
             attService.deleteFile(fileId);
-            logger.debug("단위테스트 케이스 파일 삭제 성공");
+            AppLog.debug("단위테스트 케이스 파일 삭제 성공");
         } catch (Exception e) {
-            logger.error("단위테스트 케이스 파일 삭제 실패: {}", e.getMessage());
+            AppLog.error("단위테스트 케이스 파일 삭제 실패: {}", e.getMessage());
             throw new ElException("파일 삭제 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
@@ -363,11 +396,11 @@ public class UnitTestController {
     @ElDescription(sub = "테스트 상태별 통계 조회", desc = "테스트 상태별 통계를 조회한다.")
     public Map<String, Object> selectUnitTestStatistics(UnitTestVo unitTestVo) throws Exception {
 
-        logger.debug("통계 조회 요청: {}", unitTestVo);
+        AppLog.debug("통계 조회 요청: {}", unitTestVo);
         
         Map<String, Object> statistics = unitTestService.selectUnitTestStatistics(unitTestVo);
         
-        logger.debug("통계 조회 완료: {}", statistics);
+        AppLog.debug("통계 조회 완료: {}", statistics);
 
         return statistics;
     }
@@ -380,11 +413,11 @@ public class UnitTestController {
     @ElDescription(sub = "프로젝트별 테스트 상태별 통계 조회", desc = "특정 프로젝트의 테스트 상태별 통계를 조회한다.")
     public Map<String, Object> selectUnitTestStatisticsByProject(UnitTestVo unitTestVo) throws Exception {
 
-        logger.debug("프로젝트별 통계 조회 요청: {}", unitTestVo);
+        AppLog.debug("프로젝트별 통계 조회 요청: {}", unitTestVo);
         
         Map<String, Object> statistics = unitTestService.selectUnitTestStatistics(unitTestVo);
         
-        logger.debug("프로젝트별 통계 조회 완료: {}", statistics);
+        AppLog.debug("프로젝트별 통계 조회 완료: {}", statistics);
 
         return statistics;
     }
@@ -397,7 +430,7 @@ public class UnitTestController {
     @ElDescription(sub = "테스트 실행 상태 업데이트", desc = "테스트 실행 상태를 업데이트한다.")
     public void updateTestStatus(UnitTestVo unitTestVo) throws Exception {
         
-        logger.debug("테스트 상태 업데이트 요청: {}", unitTestVo);
+        AppLog.debug("테스트 상태 업데이트 요청: {}", unitTestVo);
 
         int result = unitTestService.updateTestStatus(unitTestVo);
 
@@ -405,7 +438,7 @@ public class UnitTestController {
             throw new Exception("상태 업데이트에 실패했습니다.");
         }
         
-        logger.debug("테스트 상태 업데이트 완료: {}", unitTestVo.getTestCaseId());
+        AppLog.debug("테스트 상태 업데이트 완료: {}", unitTestVo.getTestCaseId());
     }
 
     /**
@@ -416,7 +449,7 @@ public class UnitTestController {
     @ElDescription(sub = "테스트 결과 업데이트", desc = "테스트 결과를 업데이트한다.")
     public void updateTestResult(UnitTestVo unitTestVo) throws Exception {
         
-        logger.debug("테스트 결과 업데이트 요청: {}", unitTestVo);
+        AppLog.debug("테스트 결과 업데이트 요청: {}", unitTestVo);
 
         int result = unitTestService.updateTestResult(unitTestVo);
 
@@ -424,6 +457,6 @@ public class UnitTestController {
             throw new Exception("결과 업데이트에 실패했습니다.");
         }
         
-        logger.debug("테스트 결과 업데이트 완료: {}", unitTestVo.getTestCaseId());
+        AppLog.debug("테스트 결과 업데이트 완료: {}", unitTestVo.getTestCaseId());
     }
 }
