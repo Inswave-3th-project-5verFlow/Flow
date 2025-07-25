@@ -143,24 +143,24 @@ public class DesignServiceImpl implements DesignService {
 	public int insertDesign(DesignVo designVo) throws Exception {
 		// 1. 기존 Design 로직으로 업무 등록 (중복 삽입 방지)
 		int result = designDAO.insertDesign(designVo);
-		
+
 		// 2. WBS 로직 추가: 업무 삽입 후 상태 전파 및 진척률 계산
 		if (result > 0 && designVo.getTaskId() != null) {
 			try {
 				WbsVo wbsVo = DesignWbsConverter.toWbsVo(designVo);
-				
+
 				// 하위 업무 추가 시 상위 업무 상태 자동 조정
 				wbsStatusPropagationService.propagateOnChildInsert(wbsVo);
-				
+
 				// 진척률 계산 및 업데이트
 				wbsProgressService.calculateAndUpdateProgress(wbsVo.getTaskId(), wbsVo.getPjtId());
-				
+
 			} catch (Exception e) {
 				System.err.println("insertDesign 후 WBS 로직 처리 오류: " + e.getMessage());
 				// WBS 로직 실패해도 기본 삽입은 성공으로 처리
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -183,7 +183,7 @@ public class DesignServiceImpl implements DesignService {
 		// 1. 기존 Design 로직으로 업무 수정 (상위업무 변경 등 기존 로직 유지)
 		boolean isParentChanged = isParentTaskChanged(currentData, designVo);
 		int result;
-		
+
 		if (isParentChanged) {
 			System.out.println("상위업무 변경 감지 : taskName=" + designVo.getTaskName() + ", taskId=" + designVo.getTaskId()
 					+ ", 이전상위=" + currentData.getPtTaskId() + ", 새상위=" + designVo.getPtTaskId());
@@ -195,35 +195,68 @@ public class DesignServiceImpl implements DesignService {
 			int result2 = updateChildTasksDepth(designVo);
 
 			System.out.println("기본업데이트=" + result + ", 하위업데이트=" + result2);
+
+			// 3) 상위업무 변경 시 WBS 로직 처리
+			if (result > 0) {
+				try {
+					WbsVo wbsVo = DesignWbsConverter.toWbsVo(designVo);
+
+					// 새로운 상위 업무에 하위 업무가 추가되었음을 알림
+					if (designVo.getPtTaskId() != null && !designVo.getPtTaskId().equals("0")) {
+						wbsStatusPropagationService.propagateOnChildInsert(wbsVo);
+					}
+
+					// 이전 상위 업무에서 하위 업무가 제거되었으므로 진척률 재계산
+					if (currentData.getPtTaskId() != null && !currentData.getPtTaskId().equals("0")) {
+						wbsProgressService.calculateAndUpdateProgress(currentData.getPtTaskId(),
+								currentData.getPjtId());
+					}
+
+					// 현재 업무의 진척률도 재계산
+					wbsProgressService.calculateAndUpdateProgress(wbsVo.getTaskId(), wbsVo.getPjtId());
+
+				} catch (Exception e) {
+					System.err.println("상위업무 변경 시 WBS 로직 처리 오류: " + e.getMessage());
+					// WBS 로직 실패해도 기본 수정은 성공으로 처리
+				}
+			}
+
 		} else {
 			result = designDAO.updateDesign(designVo);
 		}
-		
-		// 2. WBS 로직 추가: 업무 수정 후 상태 전파 및 진척률 계산
+
+		AppLog.debug("result : " + result);
+
+		// 2. WBS 로직 추가: 업무 수정 후 상태 전파 및 진척률 계산 (상태 변경의 경우)
 		if (result > 0) {
 			try {
 				WbsVo wbsVo = DesignWbsConverter.toWbsVo(designVo);
+				AppLog.debug("wbsVo : " + wbsVo);
 				String oldStatus = currentData.getTaskStatus() != null ? currentData.getTaskStatus() : "대기";
 				String newStatus = designVo.getTaskStatus() != null ? designVo.getTaskStatus() : "대기";
-				
+				AppLog.debug("oldStatus : " + oldStatus);
+				AppLog.debug("newStatus : " + newStatus);
+
 				// 상태 변경이 있는 경우 상태 전파 처리
 				if (!oldStatus.equals(newStatus)) {
 					// 상위 업무에 영향을 주는 상태 전파 (하위 업무 상태 변경)
 					wbsStatusPropagationService.propagateOnChildUpdate(wbsVo);
-					
+
 					// 하위 업무에 영향을 주는 상태 전파 (상위 업무 상태 변경)
 					wbsStatusPropagationService.propagateOnParentUpdate(wbsVo, oldStatus, newStatus);
+
+					// 상태 변경 시에만 진척률 재계산 (상위업무 변경이 아닌 경우)
+					if (!isParentChanged) {
+						wbsProgressService.calculateAndUpdateProgress(wbsVo.getTaskId(), wbsVo.getPjtId());
+					}
 				}
-				
-				// 진척률 재계산
-				wbsProgressService.calculateAndUpdateProgress(wbsVo.getTaskId(), wbsVo.getPjtId());
-				
+
 			} catch (Exception e) {
 				System.err.println("updateDesign 후 WBS 로직 처리 오류: " + e.getMessage());
 				// WBS 로직 실패해도 기본 수정은 성공으로 처리
 			}
 		}
-		
+
 		return result;
 	}
 
@@ -285,29 +318,29 @@ public class DesignServiceImpl implements DesignService {
 	public int deleteDesign(DesignVo designVo) throws Exception {
 		// 0. 삭제 전 현재 업무 정보 조회 (WBS 로직용)
 		DesignVo currentData = designDAO.selectDesign(designVo);
-		
+
 		// 1. 기존 Design 로직으로 업무 삭제 (중복 삭제 방지)
 		int result = designDAO.deleteDesign(designVo);
-		
+
 		// 2. WBS 로직 추가: 업무 삭제 후 상태 전파 및 진척률 계산
 		if (result > 0 && currentData != null) {
 			try {
 				WbsVo wbsVo = DesignWbsConverter.toWbsVo(currentData);
-				
+
 				// 업무 삭제 시 관련 업무들의 상태 조정
 				wbsStatusPropagationService.propagateOnTaskDelete(wbsVo);
-				
+
 				// 부모 업무의 진척률 재계산 (삭제된 업무가 있었다면)
 				if (currentData.getPtTaskId() != null) {
 					wbsProgressService.calculateAndUpdateProgress(currentData.getPtTaskId(), currentData.getPjtId());
 				}
-				
+
 			} catch (Exception e) {
 				System.err.println("deleteDesign 후 WBS 로직 처리 오류: " + e.getMessage());
 				// WBS 로직 실패해도 기본 삭제는 성공으로 처리
 			}
 		}
-		
+
 		return result;
 	}
 

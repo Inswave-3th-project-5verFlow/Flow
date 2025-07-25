@@ -6,6 +6,78 @@
         <w2:type>COMPONENT</w2:type>
         <w2:buildDate/>
         <w2:MSA/>
+        
+        <style>
+            /* 전체 팝업 */
+            .pop_contents {
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: #EDFAFF;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            
+            /* 선택된 업무 정보 */
+            .selected_info {
+                background: #ffffff;
+                padding: 15px;
+                border-bottom: 1px solid #ddd;
+                border-left: 3px solid #98BED6;
+            }
+            
+            .selected_info xf:output[style*="color:#007bff"] {
+                color: #98BED6 !important;
+                font-weight: bold !important;
+            }
+            
+            /* TreeView 영역 */
+            .tvwbox {
+                background: #ffffff;
+                padding: 15px;
+                margin: 0;
+            }
+            
+            .tvw {
+                border: 1px solid #ddd !important;
+                border-radius: 5px !important;
+                background: #ffffff !important;
+            }
+            
+            /* 버튼 영역 */
+            .btn_area {
+                background: #f8f9fa;
+                padding: 15px;
+                text-align: center;
+                border-top: 1px solid #ddd;
+            }
+            
+            .btn_cm {
+                padding: 10px 25px;
+                border: none;
+                border-radius: 5px;
+                font-weight: bold;
+                cursor: pointer;
+                margin: 0 5px;
+            }
+            
+            .btn_cm#btn_confirm {
+                background: #98BED6;
+                color: #FFFFFF;
+            }
+            
+            .btn_cm#btn_confirm:hover {
+                background: #7DACC8;
+            }
+            
+            .btn_cm#btn_cancel {
+                background: #454F5B;
+                color: #FFFFFF;
+            }
+            
+            .btn_cm#btn_cancel:hover {
+                background: #3a424c;
+            }
+        </style>
+        
         <xf:model>
         	<w2:dataCollection baseNode="map">
         		<w2:dataMap baseNode="map" id="dmp_projectId">
@@ -50,13 +122,17 @@
         
         <script lazy="false" type="text/javascript"><![CDATA[
 scwin.onpageload = function () {
-
     btn_search.hide();
     var taskData = $p.getParameter("taskData");
     console.log(taskData);
     dmp_projectId.set("pjtId", taskData.currentPjtId);
 
     $c.sbm.execute(sbm_designTaskTreeList);
+    
+    // 현재 업무 스타일 적용
+    setTimeout(function() {
+        scwin.applyCurrentTaskStyle();
+    }, 500);
 };
 
 scwin.sbm_designTaskTreeList_submitdone = function (e) {
@@ -69,22 +145,25 @@ scwin.sbm_designTaskTreeList_submitdone = function (e) {
     }
 
     scwin.buildTreeView(elData.designVoList);
+    
+    // 현재 업무 스타일 적용
+    setTimeout(function() {
+        scwin.applyCurrentTaskStyle();
+    }, 300);
 };
 
 scwin.buildTreeView = function (originalData) {
     var treeData = [];
-    var currentTaskId = $p.getParameter("taskData").currentTaskId
-
+    var currentTaskId = $p.getParameter("taskData").currentTaskId;
 
     for (var i = 0; i < originalData.length; i++) {
         var rowData = originalData[i];
-        var taskName = rowData.taskName
-        var taskId = rowData.taskId
+        var taskName = rowData.taskName;
+        var taskId = rowData.taskId;
 
         if (taskId === currentTaskId) {
-            taskName = `[${taskId}] ` + rowData.taskName + " [현재 업무]★";
-        }
-        else{
+            taskName = `[${taskId}] ` + rowData.taskName + " [현재 업무]";
+        } else {
             taskName = `[${taskId}] ` + rowData.taskName;
         }
 
@@ -100,10 +179,30 @@ scwin.buildTreeView = function (originalData) {
     dlt_taskTreeList.setJSON(treeData);
 };
 
+// 현재 업무만 강조 표시
+scwin.applyCurrentTaskStyle = function() {
+    try {
+        var rowCount = dlt_taskTreeList.getRowCount();
+        
+        for (var i = 0; i < rowCount; i++) {
+            var rowData = dlt_taskTreeList.getRowJSON(i);
+            var taskName = rowData.taskName;
+            
+            // 현재 업무인지 확인
+            if (taskName.indexOf("[현재 업무]") > -1) {
+                trv_taskTree.setLabelStyle(i + 1, "color", "#EC9192");
+                trv_taskTree.setLabelStyle(i + 1, "font-weight", "bold");
+            }
+        }
+    } catch (e) {
+        console.error("현재 업무 스타일 적용 중 오류:", e);
+    }
+};
+
 scwin.trv_taskTree_onlabelclick = function (value, node, index) {
     if (node && node.label) {
         dmp_selectedTask.set("selectedTaskId", value);
-        dmp_selectedTask.set("selectedTaskName", node.label.replace(/^\[.*?\]\s*/, ''));
+        dmp_selectedTask.set("selectedTaskName", node.label.replace(/^\[.*?\]\s*/, '').replace(/\s*\[현재 업무\]$/, ''));
 
         var rowIndex = scwin.findRowIndexByTaskId(value);
         if (rowIndex >= 0) {
@@ -151,8 +250,7 @@ scwin.btn_confirm_onclick = function (e) {
 
         $p.parent().scwin.receiveTaskData(returnData);
         $p.closePopup();
-    }
-    else {
+    } else {
         $c.win.alert("업무를 선택해주세요.");
     }
 };
@@ -160,8 +258,6 @@ scwin.btn_confirm_onclick = function (e) {
 scwin.btn_cancel_onclick = function (e) {
     $p.closePopup();
 };
-
-
 ]]></script>
     </head>
     
@@ -172,7 +268,7 @@ scwin.btn_cancel_onclick = function (e) {
     		<!-- 검색 영역 -->
     		<xf:group class="search_area" style="padding:10px; border-bottom:1px solid #ddd;">
     			<xf:trigger class="btn_cm search icon" id="btn_search" type="button" ev:onclick="scwin.btn_search_onclick">
-    				<xf:label><![CDATA[조회]]></xf:label>
+    				<xf:label><![CDATA[업무 조회]]></xf:label>
     			</xf:trigger>
     		</xf:group>
     		
