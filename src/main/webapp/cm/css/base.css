@@ -773,7 +773,7 @@ span.w2autoComplete_label {padding:0 0 0 8px;text-align:left;color:var(--ws-form
 .w2tb.w2tb_adaptive_layout .w2tb_tr:last-child .w2tb_td:last-child {border-bottom:0}
 
 /* tabcontrol */
-.w2tabcontrol {border:1px solid var(--ws-gray-300)}
+.w2tabcontrol {border:none}
 .w2tabcontrol > .w2tabcontrol_tabhost {display:flex;flex:none;position:relative;height:40px;background:var(--ws-gray-100);box-sizing:border-box}
 .w2tabcontrol > .w2tabcontrol_tabhost > .w2tabcontrol_li {flex-shrink:0;margin:0;padding:0 32px;border:0;border-right:1px solid var(--ws-gray-300);background-color:var(--ws-gray-100);box-sizing:border-box;cursor:pointer}
 .w2tabcontrol > .w2tabcontrol_tabhost > .w2tabcontrol_over {background-color:var(--ws-gray-200)}

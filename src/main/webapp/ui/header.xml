@@ -103,6 +103,9 @@ scwin.sbm_selectUsersMapping_submitdone = function (e) {
     
     // TextBox에 그룹명 초기값 Bind
     textGrpName.setValue("");
+    
+    // 초기에는 그룹 정보 영역 숨김
+    grpInfo.setStyle("display", "none");
 
     // TextBox와 사용자명 Bind
     textName1.setValue(scwin.USER_NAME);
@@ -167,6 +170,13 @@ scwin.selectBoxProjectName_onchange = function (info) {
     // TextBox와 선택한 프로젝트에 따른 그룹명 표시
     var grpName = dlt_projectName.getMatchedColumnData("pjtId", selectedPjtId, "grpName"); // pjtId로 데이터 리스트에서 그룹명 조회
     textGrpName.setValue(grpName);
+    
+    // 그룹명이 있을 때만 그룹 정보 영역 표시
+    if (grpName && grpName != '') {
+        grpInfo.setStyle("display", "flex");
+    } else {
+        grpInfo.setStyle("display", "none");
+    }
 
     var parentScwin = $p.getParentWindow().scwin;
 
@@ -197,31 +207,56 @@ scwin.btn_sidebarToggle_onclick = function(e) {
 ]]></script>
     </head>
     <body ev:onpageload="scwin.onpageload">
-    	<xf:group class="sub_contents" id="sub_content1" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true"
-    		meta_snippetName="0_01 페이지시작" style="background: #98BED6;">
-    		<xf:group class="pgtbox" id="" meta_snippetCategory="02_타이틀" meta_snippetKeyComponent="true" meta_snippetName="2_01 페이지타이틀"
-    			style="">
+    	<!-- Pinterest 스타일 헤더 -->
+    	<xf:group style="height: 64px; display: flex; align-items: center; padding: 0 24px;background: linear-gradient(90deg, #98BED6 0%, #89B2D1 100%);">
+    		
+    		<!-- 왼쪽 영역: 메뉴 토글 + 로고 + 프로젝트 선택 -->
+    		<xf:group style="display: flex; align-items: center; gap: 16px; flex: 1;">
+    			<!-- 메뉴 토글 버튼 -->
     			<xf:trigger ev:onclick="scwin.btn_sidebarToggle_onclick"
-    				style="width: 40px; height: 40px; background-color: #6c757d; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px;"
+    				style="width: 40px; height: 40px; background: rgba(255,255,255,0.2); color: white; border: none; border-radius: 20px; cursor: pointer; font-size: 18px; font-weight: 600; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; backdrop-filter: blur(10px);"
     				id="btn_sidebarToggle">
     				<xf:label>☰</xf:label>
     			</xf:trigger>
-    			<xf:image src="/InsWebApp/ui/mainLogo.jpg" style="width: 40px;height: 40px;margin-left: 20px;" id="image1"></xf:image>
-    			<xf:select1 id="selectBoxProjectName" chooseOption="true" style="width: 300px;height: 30px; margin-left: 30px;"
-    				submenuSize="auto" allOption="" disabled="false" direction="auto" appearance="minimal" disabledClass="w2selectbox_disabled"
-    				ev:onchange="scwin.selectBoxProjectName_onchange" chooseOptionLabel="$blank" ref="">
+    			
+    			<!-- 로고 -->
+    			<xf:group style="display: flex; align-items: center; gap: 12px;">
+    				<xf:image src="/InsWebApp/ui/mainLogo.jpg" style="width: 36px; height: 36px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);" id="mainLogoImg"></xf:image>
+    				<w2:span style="color: white; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.2);" label="Flow"></w2:span>
+    			</xf:group>
+    			
+    			<!-- 프로젝트 선택 -->
+    			<xf:select1 id="selectBoxProjectName" class="custom-project-select" chooseOption="true" 
+    				style="width: 280px; height: 42px; background: rgba(255,255,255,0.95); border: none; border-radius: 21px; padding: 0 20px; font-size: 15px; font-weight: 500; color: #333; box-shadow: 0 2px 8px rgba(0,0,0,0.1); backdrop-filter: blur(10px);"
+    				submenuSize="auto" allOption="" disabled="false" direction="auto" appearance="minimal" 
+    				ev:onchange="scwin.selectBoxProjectName_onchange" chooseOptionLabel="프로젝트를 선택하세요" ref="">
     				<xf:choices></xf:choices>
     			</xf:select1>
-    			<xf:group style="width:572px;height:40px;" id="" class="rt">
-    				<w2:span style="min-width:100px; font-weight:bold;" id="textGrpName" label="#GRP_NAME#" class=""></w2:span>
-    				<w2:span style="min-width:100px; font-weight:bold;" id="textName1" label="#NAME#" class=""></w2:span>
-    				<w2:span style="margin-left: 50px; margin-right: 5px; font-weight:bold;" id="span6" label="접속시간 : "></w2:span>
-    				<w2:span style="font-weight:bold;" id="serverTime" label="#SERVER_TIME#"></w2:span>
-    				<xf:image src="/InsWebApp/ui/user.png" ev:onclick="scwin.accountImg_onclick" style="width: 40px;height: 40px;" id="accountImg"
-    					class="rt">
+    		</xf:group>
+    		
+    		<!-- 오른쪽 영역: 사용자 정보 -->
+    		<xf:group style="display: flex; align-items: center; gap: 12px; margin-left: auto;">
+    			<!-- 그룹 정보 -->
+    			<xf:group id="grpInfo" style="display: none; align-items: center; gap: 8px; padding: 6px 12px; background: rgba(255,255,255,0.1); border-radius: 8px; backdrop-filter: blur(10px);">
+    				<w2:span style="color: rgba(255,255,255,0.9); font-size: 12px; font-weight: 500;" id="textGrpName" label=""></w2:span>
+    			</xf:group>
+    			
+    			<!-- 사용자 정보 그룹 -->
+    			<xf:group style="display: flex; align-items: center; gap: 12px; padding: 4px 12px 4px 4px; background: rgba(255,255,255,0.15); border-radius: 16px; backdrop-filter: blur(10px); box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+    				<!-- 사용자 아바타 -->
+    				<xf:image src="/InsWebApp/ui/user.png" ev:onclick="scwin.accountImg_onclick" 
+    					style="width: 28px; height: 28px; border-radius: 14px; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(0,0,0,0.2);" 
+    					id="accountImg">
     				</xf:image>
+    				
+    				<!-- 사용자 정보 텍스트 -->
+    				<xf:group style="display: flex; flex-direction: column; gap: 1px;">
+    					<w2:span style="color: white; font-size: 13px; font-weight: 600; line-height: 1;" id="textName1" label=""></w2:span>
+    					<w2:span style="color: rgba(255,255,255,0.8); font-size: 10px; font-weight: 400; line-height: 1;" id="serverTime" label=""></w2:span>
+    				</xf:group>
     			</xf:group>
     		</xf:group>
+    		
     	</xf:group>
     </body>
 </html>

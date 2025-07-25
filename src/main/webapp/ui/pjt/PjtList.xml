@@ -166,17 +166,23 @@ scwin.setProgressStyle = function () {
         let styleValue = "#ffffff";
         if (percent > 0) {
             styleValue = `linear-gradient(to right,
-                #efdbde 0%,
+                #EC9192 0%,
                 #EC9192 ${percent}%,
                 #ffffff ${percent}%,
                 #ffffff 100%)`;
+        }
+
+        // 진척률에 따른 글자 색상 결정 (배경 대비 잘 보이도록)
+        let textColor = "#333333"; // 기본 어두운 색 (흰색/연한 배경용)
+        if (percent > 50) {
+            textColor = "#ffffff"; // 진척률이 50% 초과시 흰색 (어두운 배경용)
         }
 
         const styles = [
             { type: "cell", rowIndex: i, colIndex, styleName: "background", styleValue },
             { type: "cell", rowIndex: i, colIndex, styleName: "border-radius", styleValue: "10px" },
             { type: "cell", rowIndex: i, colIndex, styleName: "text-align", styleValue: "center" },
-            { type: "cell", rowIndex: i, colIndex, styleName: "color", styleValue: "#ffffff" }
+            { type: "cell", rowIndex: i, colIndex, styleName: "color", styleValue: textColor }
         ];
 
         styles.forEach(style => grd_list.setStyleAll(style));
