@@ -3047,11 +3047,6 @@ scwin.getCurrentUserName = function() {
                         type="button" ev:onclick="scwin.btn_excel_download_onclick">
                         <xf:label><![CDATA[엑셀 다운로드]]></xf:label>
                     </xf:trigger>
-                    <xf:trigger class="btn_cm" id="btn_csv_download" 
-                        style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 100px;width: auto;padding: 0 10px;width: 100px;border-color: #fff;border: none;"
-                        type="button" ev:onclick="scwin.btn_csv_download_onclick">
-                        <xf:label><![CDATA[CSV 다운로드]]></xf:label>
-                    </xf:trigger>
 					<xf:trigger class="btn_cm" id="btn_refresh" 
 						style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 100px;width: auto;padding: 0 10px;width: 100px;border-color: #fff;border: none;"
 						type="button" ev:onclick="scwin.btn_search_onclick">

@@ -400,7 +400,7 @@
             <xf:submission id="sbm_selectUnitTestList" ref='data:json,{"id":"dmp_search","key":"unitTestVo"}'
                 target='data:json,{"id":"dlt_unitTestVoList","key":"unitTestList"}' action="/InsWebApp/UNIT001List.pwkjson" method="post"
                 mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-                processMsg="단위테스트 케이스 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestList_submitdone" ev:submiterror="" abortTrigger="">
+                processMsg="테스트 케이스 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestList_submitdone" ev:submiterror="" abortTrigger="">
             </xf:submission>
 
             <xf:submission id="sbm_selectUnitTestListByProject" 
@@ -655,10 +655,10 @@ scwin.openTestRegisterPopupWithTask = function(taskId, taskName) {
     
     setTimeout(function() {
         try {
-            spn_popupTitle.setValue("새 단위테스트 케이스 등록 (업무: " + taskName + ")");
+            spn_popupTitle.setValue("새 테스트 케이스 등록 (업무: " + taskName + ")");
         } catch(e) {
             setTimeout(function() {
-                spn_popupTitle.setValue("새 단위테스트 케이스 등록 (업무: " + taskName + ")");
+                spn_popupTitle.setValue("새 테스트 케이스 등록 (업무: " + taskName + ")");
             }, 50);
         }
     }, 50);
@@ -1004,7 +1004,7 @@ scwin.getProjectIdFromParent = function() {
 };
 
 /**
- * 프로젝트별 단위테스트 목록 조회
+ * 프로젝트별 테스트 목록 조회
  */
 scwin.searchUnitTestsByProject = function() {
     if (!scwin.CURRENT_PROJECT_ID || scwin.CURRENT_PROJECT_ID === "") {
@@ -1013,7 +1013,7 @@ scwin.searchUnitTestsByProject = function() {
         return;
     }
     
-    console.log("프로젝트별 단위테스트 목록 조회 시작: " + scwin.CURRENT_PROJECT_ID);
+    console.log("프로젝트별 테스트 목록 조회 시작: " + scwin.CURRENT_PROJECT_ID);
     
     // 프로젝트 ID 설정 - 중요: pjt_id로 설정
     dmp_search.set("pjtId", scwin.CURRENT_PROJECT_ID);
@@ -1028,10 +1028,10 @@ scwin.searchUnitTestsByProject = function() {
 };
 
 /**
- * 프로젝트별 단위테스트 목록 조회 완료
+ * 프로젝트별 테스트 목록 조회 완료
  */
 scwin.sbm_selectUnitTestListByProject_submitdone = function(e) {
-    console.log("프로젝트별 단위테스트 목록 조회 완료", e);
+    console.log("프로젝트별 테스트 목록 조회 완료", e);
     
     try {
         var elData = e.responseJSON.elData;
@@ -1215,10 +1215,10 @@ scwin.initializeData = function() {
 };
 
 /**
- * 단위테스트 목록 조회 완료
+ * 테스트 목록 조회 완료
  */
 scwin.sbm_selectUnitTestList_submitdone = function(e) {
-    console.log("단위테스트 목록 조회 완료", e);
+    console.log("테스트 목록 조회 완료", e);
     
     var elData = e.responseJSON.elData;
     var elHeader = e.responseJSON.elHeader;
@@ -1408,10 +1408,10 @@ scwin.btn_register_onclick = function(e) {
     
     setTimeout(function() {
         try {
-            spn_popupTitle.setValue("새 단위테스트 케이스 등록");
+            spn_popupTitle.setValue("새 테스트 케이스 등록");
         } catch(e) {
             setTimeout(function() {
-                spn_popupTitle.setValue("새 단위테스트 케이스 등록");
+                spn_popupTitle.setValue("새 테스트 케이스 등록");
             }, 50);
         }
     }, 50);
@@ -1596,9 +1596,22 @@ scwin.grd_list_oncelldblclick = function(row, col, colId) {
 scwin.success_grd_oncelldblclick = function(row, col, colId) {
     console.log("성공그리드 클릭")
     var selectedData = dlt_successList.getRowJSON(row);
+    
+    console.log("선택된 데이터:", selectedData);
+    
+    // DataMap에 데이터 설정
     dmp_unitTestDetail.setJSON(selectedData);
-    scwin.showDetailPopup("view");
+    
+    // 현재 mode를 전역 변수로 설정
+    scwin.currentMode = "view";
+    
+    // 상세 조회 실행 (서버에서 최신 데이터 가져오기)
+    $c.sbm.execute($p, sbm_selectUnitTestDetail);
+    
+    // 팝업 표시는 서버 응답 후에 처리됨
+    // scwin.showDetailPopup("view"); // 이 줄은 제거
 };
+
 
 /**
  * 실패 그리드 더블클릭
@@ -1606,10 +1619,18 @@ scwin.success_grd_oncelldblclick = function(row, col, colId) {
 scwin.fail_grd_oncelldblclick = function(row, col, colId) {
     console.log("실패그리드 클릭")
     var selectedData = dlt_failList.getRowJSON(row);
+    
+    console.log("선택된 데이터:", selectedData);
+    
+    // DataMap에 데이터 설정
     dmp_unitTestDetail.setJSON(selectedData);
-    scwin.showDetailPopup("view");
+    
+    // 현재 mode를 전역 변수로 설정
+    scwin.currentMode = "view";
+    
+    // 상세 조회 실행
+    $c.sbm.execute($p, sbm_selectUnitTestDetail);
 };
-
 /**
  * 상세보기 팝업 표시
  */
@@ -1627,17 +1648,17 @@ scwin.showDetailPopup = function(mode) {
     // 팝업 표시
     pop_overlay.show();
     
-    // 모드 설정
+    // 모드 설정 (에디터 데이터도 함께 설정됨)
     scwin.setFormMode(mode);
     
     // 제목 설정
     setTimeout(function() {
         try {
-            var title = mode === "view" ? "단위테스트 케이스 상세정보" : "단위테스트 케이스 수정";
+            var title = mode === "view" ? "테스트 케이스 상세정보" : "테스트 케이스 수정";
             spn_popupTitle.setValue(title);
         } catch(e) {
             setTimeout(function() {
-                var title = mode === "view" ? "단위테스트 케이스 상세정보" : "단위테스트 케이스 수정";
+                var title = mode === "view" ? "테스트 케이스 상세정보" : "테스트 케이스 수정";
                 spn_popupTitle.setValue(title);
             }, 50);
         }
@@ -1645,6 +1666,13 @@ scwin.showDetailPopup = function(mode) {
     
     // 파일 목록 로드
     scwin.loadFileList();
+    
+    // 에디터 데이터 설정 (추가 지연)
+    setTimeout(function() {
+        if (mode === "edit" || mode === "view") {
+            scwin.setEditorContent();
+        }
+    }, 500);
 };
 
 /**
@@ -1675,26 +1703,31 @@ scwin.pgl_fail_onclick = function(idx) {
  * 저장 버튼 클릭
  */
 scwin.btn_save_onclick = function(e) {
-    console.log("저장 버튼 클릭");
+    console.log("저장 버튼 클릭됨 - 현재 모드:", scwin.currentMode);
     
-    // 유효성 검사
-    if (!scwin.validateForm()) {
-        return;
+    // 에디터 내용 동기화
+    var syncSuccess = scwin.syncEditorContentBeforeSave();
+    if (!syncSuccess) {
+        console.error("에디터 동기화 실패");
     }
     
-    // 파일이 있는지 확인
-    var hasFiles = false;
-    if (mpd_html5Type && mpd_html5Type.fileArray) {
-        hasFiles = mpd_html5Type.fileArray.length > 0;
-    }
-    
-    if (hasFiles) {
-        // 파일과 함께 등록
+    // 잠시 대기 후 저장 실행 (에디터 내용 동기화 시간 확보)
+    setTimeout(function() {
+        var testCaseName = dmp_unitTestDetail.get("testCaseName");
+        if (!testCaseName || testCaseName.trim() === "") {
+            $c.win.alert("테스트케이스명을 입력해주세요.");
+            return;
+        }
+
+        // 유효성 검사
+        if (!scwin.validateForm()) {
+            return;
+        }
+        
+        // 파일 처리 포함 저장
         scwin.saveTestWithFiles();
-    } else {
-        // 일반 등록
-        $c.sbm.execute($p, sbm_insertUnitTest);
-    }
+        
+    }, 300); // 동기화 시간을 더 확보
 };
 
 /**
@@ -1725,10 +1758,10 @@ scwin.validateForm = function() {
 };
 
 /**
- * 일반 단위테스트 목록 조회
+ * 일반 테스트 목록 조회
  */
 scwin.searchUnitTests = function() {
-    console.log("일반 단위테스트 목록 조회 시작");
+    console.log("일반 테스트 목록 조회 시작");
     
     dmp_search.set("pageIndex", "1");
     dmp_search.set("pageSize", "1000");
@@ -1760,36 +1793,63 @@ scwin.saveTestWithFiles = function() {
         scwin.executeFileUploadWithData();
     }, 100);
 };
-
+scwin.debugEditor = function() {
+    console.log("=== 에디터 디버깅 ===");
+    
+    try {
+        console.log("editor_description 객체:", editor_description);
+        console.log("editor_description type:", typeof editor_description);
+        
+        if (editor_description) {
+            console.log("editor_description 메소드들:");
+            console.log("- setHTML:", typeof editor_description.setHTML);
+            console.log("- getHTML:", typeof editor_description.getHTML);
+            console.log("- blur:", typeof editor_description.blur);
+            
+            if (typeof editor_description.getHTML === 'function') {
+                var content = editor_description.getHTML();
+                console.log("현재 Description 내용:", content);
+            }
+        }
+        
+        console.log("editor_testData 객체:", editor_testData);
+        console.log("editor_testData type:", typeof editor_testData);
+        
+        if (editor_testData) {
+            console.log("editor_testData 메소드들:");
+            console.log("- setHTML:", typeof editor_testData.setHTML);
+            console.log("- getHTML:", typeof editor_testData.getHTML);
+            console.log("- blur:", typeof editor_testData.blur);
+            
+            if (typeof editor_testData.getHTML === 'function') {
+                var content = editor_testData.getHTML();
+                console.log("현재 TestData 내용:", content);
+            }
+        }
+        
+        console.log("DataMap 내용:");
+        console.log("- description:", dmp_unitTestDetail.get("description"));
+        console.log("- testData:", dmp_unitTestDetail.get("testData"));
+        
+    } catch(e) {
+        console.error("에디터 디버깅 중 오류:", e);
+    }
+};
 /**
  * 실제 파일 업로드와 데이터 전송 실행
  */
 scwin.executeFileUploadWithData = function() {
     console.log("executeFileUploadWithData() 시작됨");
     
-    // 에디터 내용을 먼저 확실하게 동기화
-    try {
-        var descriptionHTML = "";
-        var testDataHTML = "";
-        
-        // 에디터에서 HTML 내용 가져오기
-        if (editor_description && typeof editor_description.getHTML === 'function') {
-            descriptionHTML = editor_description.getHTML();
-            console.log("테스트설명 HTML:", descriptionHTML);
-        }
-        
-        if (editor_testData && typeof editor_testData.getHTML === 'function') {
-            testDataHTML = editor_testData.getHTML();
-            console.log("테스트데이터 HTML:", testDataHTML);
-        }
-        
-        // 데이터맵에 HTML 내용 직접 설정
-        dmp_unitTestDetail.set("description", descriptionHTML);
-        dmp_unitTestDetail.set("testData", testDataHTML);
-        
-    } catch(e) {
-        console.error("에디터 내용 가져오기 실패:", e);
-    }
+    // 에디터 내용을 한 번 더 확실하게 동기화
+    var editorContent = scwin.getEditorContent();
+    
+    // 데이터맵에 최종 설정
+    dmp_unitTestDetail.set("description", editorContent.description);
+    dmp_unitTestDetail.set("testData", editorContent.testData);
+    
+    console.log("최종 저장될 Description:", editorContent.description);
+    console.log("최종 저장될 TestData:", editorContent.testData);
     
     // FormData 생성 및 데이터 추가
     var formData = new FormData();
@@ -1801,51 +1861,52 @@ scwin.executeFileUploadWithData = function() {
     formData.append("testTarget", dmp_unitTestDetail.get("testTarget") || "");
     formData.append("testType", dmp_unitTestDetail.get("testType") || "NORMAL");
     formData.append("priority", dmp_unitTestDetail.get("priority") || "MEDIUM");
-    formData.append("description", dmp_unitTestDetail.get("description") || "");
-    formData.append("testData", dmp_unitTestDetail.get("testData") || "");
+    formData.append("description", editorContent.description);  // 에디터에서 가져온 내용
+    formData.append("testData", editorContent.testData);        // 에디터에서 가져온 내용
     formData.append("testStatus", dmp_unitTestDetail.get("testStatus") || "SUC");
     formData.append("executionDate", dmp_unitTestDetail.get("executionDate") || "");
     formData.append("duration", dmp_unitTestDetail.get("duration") || "");
     formData.append("assignee", dmp_unitTestDetail.get("assignee") || scwin.CURRENT_USER_ID);
     formData.append("pjtId", dmp_unitTestDetail.get("pjtId") || scwin.CURRENT_PROJECT_ID);
     
-    // 파일 추가 - 이슈리스크 방식으로 수정
+    // 수정 모드인 경우 ID 추가
+    if (scwin.currentMode === "edit") {
+        formData.append("testCaseId", dmp_unitTestDetail.get("testCaseId") || "");
+    }
+    
+    // 파일 추가 (기존 로직 유지)
     var hasValidFiles = false;
     if (mpd_html5Type && mpd_html5Type.fileArray) {
         var fileList = mpd_html5Type.fileArray;
-        console.log("파일 배열:", fileList);
-        console.log("파일 배열 길이:", fileList ? fileList.length : 0);
-        
         if (fileList && fileList.length > 0) {
             for (var i = 0; i < fileList.length; i++) {
                 var fileItem = fileList[i];
-                console.log("파일 아이템 " + i + ":", fileItem);
-                
-                // 실제 File 객체 확인 (이슈리스크에서는 fileItem 자체가 File 객체)
                 var realFile = fileItem.file || fileItem;
                 
                 if (realFile && realFile instanceof File && realFile.size > 0) {
                     formData.append("files", realFile);
                     hasValidFiles = true;
-                    console.log("파일 추가 성공:", realFile.name, "크기:", realFile.size);
-                } else {
-                    console.warn("유효하지 않은 파일:", realFile);
                 }
             }
         }
     }
     
-    // 파일이 없어도 일단 진행 (단순 등록)
-    console.log("유효한 파일 존재 여부:", hasValidFiles);
-
     // FormData 내용 확인 (디버깅용)
     console.log("=== FormData 내용 확인 ===");
     for (var pair of formData.entries()) {
-        console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name + ' (' + pair[1].size + ' bytes)' : pair[1]));
+        if (pair[1] instanceof File) {
+            console.log(pair[0] + ': ' + pair[1].name + ' (' + pair[1].size + ' bytes)');
+        } else {
+            console.log(pair[0] + ': ' + pair[1]);
+        }
     }
 
     // 서버로 전송
-    fetch("/InsWebApp/UNIT001InsWithFiles.pwkjson", {
+    var actionUrl = scwin.currentMode === "edit" ? 
+        "/InsWebApp/UNIT001UpdWithFiles.pwkjson" : 
+        "/InsWebApp/UNIT001InsWithFiles.pwkjson";
+    
+    fetch(actionUrl, {
         method: "POST",
         body: formData
     })
@@ -1858,31 +1919,26 @@ scwin.executeFileUploadWithData = function() {
     .then(function(res) {
         console.log("서버 응답:", res);
         
-        // 서버 응답 구조 확인 및 성공 여부 판단
         var elHeader = res.elHeader;
         
         if (elHeader && elHeader.resSuc === true) {
-            // 성공인 경우
-            $c.win.alert("등록되었습니다.");
+            var message = scwin.currentMode === "edit" ? "수정되었습니다." : "등록되었습니다.";
+            $c.win.alert(message);
             
-            // 파일 목록 초기화
             dlt_upload.setJSON([]);
             if (mpd_html5Type && mpd_html5Type.removeAllFiles) {
                 mpd_html5Type.removeAllFiles();
             }
             
-            // 팝업 닫기
             pop_overlay.hide();
             
-            // 목록 새로고침
             if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
                 scwin.searchUnitTestsByProject();
             } else {
                 scwin.searchUnitTests();
             }
         } else {
-            // 실패인 경우
-            var errorMsg = "등록에 실패했습니다.";
+            var errorMsg = scwin.currentMode === "edit" ? "수정에 실패했습니다." : "등록에 실패했습니다.";
             if (elHeader && elHeader.resMsg) {
                 errorMsg += "\n오류메시지: " + elHeader.resMsg;
             }
@@ -1894,7 +1950,7 @@ scwin.executeFileUploadWithData = function() {
     })
     .catch(function(err) {
         console.error("전송 실패:", err);
-        var errorMsg = "등록 중 오류가 발생했습니다.";
+        var errorMsg = scwin.currentMode === "edit" ? "수정 중 오류가 발생했습니다." : "등록 중 오류가 발생했습니다.";
         if (err.message) {
             errorMsg += "\n상세 오류: " + err.message;
         }
@@ -1903,11 +1959,12 @@ scwin.executeFileUploadWithData = function() {
 };
 
 
+
 /**
- * 단위테스트 등록 완료
+ * 테스트 등록 완료
  */
 scwin.sbm_insertUnitTest_submitdone = function(e) {
-    console.log("단위테스트 등록 완료:", e);
+    console.log("테스트 등록 완료:", e);
     
     var elHeader = e.responseJSON.elHeader;
     
@@ -1954,10 +2011,10 @@ scwin.btn_update_onclick = function(e) {
 };
 
 /**
- * 단위테스트 수정 완료
+ * 테스트 수정 완료
  */
 scwin.sbm_updateUnitTest_submitdone = function(e) {
-    console.log("단위테스트 수정 완료:", e);
+    console.log("테스트 수정 완료:", e);
     
     var elHeader = e.responseJSON.elHeader;
     
@@ -1999,10 +2056,10 @@ scwin.btn_popup_delete_onclick = function(e) {
 };
 
 /**
- * 단위테스트 삭제 완료
+ * 테스트 삭제 완료
  */
 scwin.sbm_deleteUnitTest_submitdone = function(e) {
-    console.log("단위테스트 삭제 완료:", e);
+    console.log("테스트 삭제 완료:", e);
     
     var elHeader = e.responseJSON.elHeader;
     
@@ -2030,6 +2087,21 @@ scwin.esc_btn_onclick = function(e) {
     pop_overlay.hide();
 };
 
+scwin.sanitizeAndDisplayHTML = function(htmlContent) {
+    if (!htmlContent || htmlContent.trim() === "") {
+        return "<p style='color: #999; font-style: italic;'>내용이 없습니다.</p>";
+    }
+    
+    // 기본적인 HTML 태그는 허용하되, 스크립트 등 위험한 요소는 제거
+    var cleanHtml = htmlContent
+        .replace(/<script[^>]*>.*?<\/script>/gi, '')
+        .replace(/<style[^>]*>.*?<\/style>/gi, '')
+        .replace(/on\w+\s*=\s*["'][^"']*["']/gi, '')
+        .replace(/javascript:/gi, '');
+    
+    return cleanHtml;
+};
+
 /**
  * 초기화 버튼 클릭
  */
@@ -2043,20 +2115,33 @@ scwin.btn_reset_onclick = function(e) {
     dmp_unitTestDetail.set("testStatus", "SUC");
     dmp_unitTestDetail.set("priority", "MEDIUM");
     dmp_unitTestDetail.set("testType", "NORMAL");
-    dmp_unitTestDetail.set("taskId", "1");
-    dmp_unitTestDetail.set("taskName", "ERP 시스템 고도화 프로젝트");
+    dmp_unitTestDetail.set("taskId", "");
+    dmp_unitTestDetail.set("taskName", "");
     dmp_unitTestDetail.set("assignee", scwin.CURRENT_USER_ID);
+    dmp_unitTestDetail.set("assigneeName", scwin.getCurrentUserName() || "현재 사용자");
     
-    // 수정: pjtId로 설정
     if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
         dmp_unitTestDetail.set("pjtId", scwin.CURRENT_PROJECT_ID);
     }
+    
+    // 에디터 내용도 완전히 초기화
+    setTimeout(function() {
+        try {
+            if (editor_description && editor_description.setHTML) {
+                editor_description.setHTML("");
+            }
+            if (editor_testData && editor_testData.setHTML) {
+                editor_testData.setHTML("");
+            }
+        } catch(e) {
+            console.log("에디터 초기화 실패, 무시:", e);
+        }
+    }, 100);
     
     // 파일 관련 초기화
     dlt_upload.setJSON([]);
     dlt_attVoList.setEmptyValue();
     
-    // 파일 업로드 컴포넌트 초기화
     if (mpd_html5Type) {
         try {
             if (mpd_html5Type.clear) {
@@ -2075,6 +2160,7 @@ scwin.btn_reset_onclick = function(e) {
     
     console.log("완전 초기화 완료");
 };
+
 
 /**
  * 폼 모드 설정
@@ -2178,15 +2264,262 @@ scwin.setEditorMode = function(isEditMode) {
         grp_description_view.hide();
         grp_testData_edit.show();
         grp_testData_view.hide();
+        
+        // 에디터에 데이터 설정
+        setTimeout(function() {
+            scwin.setEditorContent();
+        }, 200);
+        
     } else {
-        // 조회 모드: 읽기 전용 표시
+        // 조회 모드: 안전한 텍스트 방식 사용
         grp_description_edit.hide();
         grp_description_view.show();
         grp_testData_edit.hide();
         grp_testData_view.show();
         
-        // 내용 업데이트
-        scwin.updateViewContent();
+        // 간단한 텍스트 방식으로 내용 표시
+        setTimeout(function() {
+            console.log("조회 모드 - 간단한 방식으로 내용 표시");
+            scwin.updateViewContentSimple();
+        }, 300);
+    }
+};
+
+scwin.updateViewContentWithHTML = function() {
+    try {
+        var description = dmp_unitTestDetail.get("description") || "";
+        var testData = dmp_unitTestDetail.get("testData") || "";
+        
+        console.log("조회 모드 데이터 확인:");
+        console.log("Description 원본:", description);
+        console.log("TestData 원본:", testData);
+        
+        // 데이터가 실제로 있는지 다시 확인
+        var allData = dmp_unitTestDetail.getJSON();
+        console.log("전체 데이터:", allData);
+        
+        // HTML을 안전하게 정제하고 표시
+        var cleanDescription = scwin.sanitizeAndDisplayHTML(description);
+        var cleanTestData = scwin.sanitizeAndDisplayHTML(testData);
+        
+        console.log("정제된 Description:", cleanDescription);
+        console.log("정제된 TestData:", cleanTestData);
+        
+        // div 요소에 HTML 직접 삽입 (지연 실행으로 DOM 준비 대기)
+        setTimeout(function() {
+            scwin.renderHTMLContent("div_description_view", cleanDescription);
+            scwin.renderHTMLContent("div_testData_view", cleanTestData);
+        }, 200);
+        
+    } catch(e) {
+        console.error("HTML 내용 업데이트 실패:", e);
+        // 오류 시 기존 방식으로 폴백
+        scwin.updateViewContentAsText();
+    }
+};
+
+scwin.updateViewContentAsText = function() {
+    try {
+        var description = dmp_unitTestDetail.get("description") || "";
+        var testData = dmp_unitTestDetail.get("testData") || "";
+        
+        // HTML 태그 제거하고 텍스트만 표시
+        var descriptionText = scwin.stripHtmlTags(description) || "내용이 없습니다.";
+        var testDataText = scwin.stripHtmlTags(testData) || "내용이 없습니다.";
+        
+        console.log("폴백 텍스트 업데이트:");
+        console.log("Description Text:", descriptionText);
+        console.log("TestData Text:", testDataText);
+        
+        // 여러 방법으로 요소에 텍스트 설정 시도
+        try {
+            // 방법 1: getElementById로 직접 설정
+            var descElement = document.getElementById("div_description_view");
+            var testElement = document.getElementById("div_testData_view");
+            
+            if (descElement) {
+                descElement.textContent = descriptionText;
+                descElement.style.padding = "15px";
+                descElement.style.border = "1px solid #ddd";
+                descElement.style.backgroundColor = "#f9f9f9";
+                console.log("Description DOM 요소에 텍스트 설정 완료");
+            }
+            
+            if (testElement) {
+                testElement.textContent = testDataText;
+                testElement.style.padding = "15px";
+                testElement.style.border = "1px solid #ddd";
+                testElement.style.backgroundColor = "#f9f9f9";
+                console.log("TestData DOM 요소에 텍스트 설정 완료");
+            }
+            
+        } catch(e2) {
+            console.log("DOM 직접 접근 실패:", e2);
+        }
+        
+    } catch(e) {
+        console.error("텍스트 내용 업데이트 실패:", e);
+    }
+};
+// 7. 저장 시 에디터 내용 동기화 강화
+scwin.syncEditorContentBeforeSave = function() {
+    try {
+        // 에디터 포커스 해제
+        if (editor_description && editor_description.blur) {
+            editor_description.blur();
+        }
+        if (editor_testData && editor_testData.blur) {
+            editor_testData.blur();
+        }
+        
+        // 에디터 내용 가져와서 데이터맵에 설정
+        setTimeout(function() {
+            var descriptionHTML = "";
+            var testDataHTML = "";
+            
+            if (editor_description && typeof editor_description.getHTML === 'function') {
+                descriptionHTML = editor_description.getHTML();
+            }
+            
+            if (editor_testData && typeof editor_testData.getHTML === 'function') {
+                testDataHTML = editor_testData.getHTML();
+            }
+            
+            // 데이터맵에 설정
+            dmp_unitTestDetail.set("description", descriptionHTML);
+            dmp_unitTestDetail.set("testData", testDataHTML);
+            
+            console.log("에디터 내용 동기화 완료:");
+            console.log("Description HTML:", descriptionHTML);
+            console.log("TestData HTML:", testDataHTML);
+            
+        }, 100);
+        
+    } catch(e) {
+        console.error("에디터 내용 동기화 실패:", e);
+    }
+};
+
+scwin.sbm_selectUnitTestDetail_submitdone = function(e) {
+    console.log("상세 조회 완료", e);
+    
+    var elData = e.responseJSON.elData;
+    var elHeader = e.responseJSON.elHeader;
+    
+    if (!elHeader || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드: ${elHeader.resCode}\n에러메시지: ${elHeader.resMsg}`);
+        return;
+    }
+    
+    console.log("서버에서 받은 데이터:", elData);
+    console.log("Description 서버 데이터:", elData.description);
+    console.log("TestData 서버 데이터:", elData.testData);
+    
+    // 데이터 설정
+    dmp_unitTestDetail.setJSON(elData);
+    
+    // 설정 후 확인
+    var setDescription = dmp_unitTestDetail.get("description");
+    var setTestData = dmp_unitTestDetail.get("testData");
+    console.log("설정 후 Description:", setDescription);
+    console.log("설정 후 TestData:", setTestData);
+    
+    // 파일 목록 로드
+    scwin.loadFileList();
+    
+    // 조회 모드인 경우 HTML 내용 업데이트 (더 긴 지연)
+    setTimeout(function() {
+        var currentMode = grp_description_edit.getStyle("display");
+        if (currentMode === "none") { // 조회 모드
+            console.log("조회 모드에서 HTML 내용 업데이트 시작");
+            scwin.updateViewContentWithHTML();
+        } else { // 편집 모드
+            console.log("편집 모드에서 에디터 내용 설정");
+            scwin.setEditorContent();
+        }
+    }, 500);
+    setTimeout(function() {
+        // 팝업 표시
+        pop_overlay.show();
+        
+        // 모드 설정
+        scwin.setFormMode("view");
+        
+        // 제목 설정
+        setTimeout(function() {
+            try {
+                spn_popupTitle.setValue("테스트 케이스 상세정보");
+            } catch(e) {
+                setTimeout(function() {
+                    spn_popupTitle.setValue("테스트 케이스 상세정보");
+                }, 50);
+            }
+        }, 50);
+    }, 600); // 데이터 설정 후 팝업 표시
+    
+};
+scwin.getEditorContent = function() {
+    try {
+        var descriptionHTML = "";
+        var testDataHTML = "";
+        
+        // WebSquare 에디터 올바른 사용법
+        if (editor_description && typeof editor_description.getHTML === 'function') {
+            descriptionHTML = editor_description.getHTML();
+            console.log("Description HTML 가져오기 성공:", descriptionHTML);
+        } else {
+            console.log("editor_description getHTML 함수가 없음");
+            // 폴백: dataMap에서 직접 가져오기
+            descriptionHTML = dmp_unitTestDetail.get("description") || "";
+        }
+        
+        if (editor_testData && typeof editor_testData.getHTML === 'function') {
+            testDataHTML = editor_testData.getHTML();
+            console.log("TestData HTML 가져오기 성공:", testDataHTML);
+        } else {
+            console.log("editor_testData getHTML 함수가 없음");
+            // 폴백: dataMap에서 직접 가져오기
+            testDataHTML = dmp_unitTestDetail.get("testData") || "";
+        }
+        
+        return {
+            description: descriptionHTML,
+            testData: testDataHTML
+        };
+    } catch(e) {
+        console.error("에디터 내용 가져오기 실패:", e);
+        return {
+            description: dmp_unitTestDetail.get("description") || "",
+            testData: dmp_unitTestDetail.get("testData") || ""
+        };
+    }
+};
+
+scwin.setEditorContent = function() {
+    try {
+        var description = dmp_unitTestDetail.get("description") || "";
+        var testData = dmp_unitTestDetail.get("testData") || "";
+        
+        console.log("에디터 콘텐츠 설정:");
+        console.log("Description:", description);
+        console.log("TestData:", testData);
+        
+        // WebSquare 에디터 올바른 사용법
+        if (editor_description && typeof editor_description.setHTML === 'function') {
+            editor_description.setHTML(description);
+            console.log("Description 에디터 설정 완료");
+        } else {
+            console.log("editor_description 객체 또는 setHTML 함수가 없음:", editor_description);
+        }
+        
+        if (editor_testData && typeof editor_testData.setHTML === 'function') {
+            editor_testData.setHTML(testData);
+            console.log("TestData 에디터 설정 완료");
+        } else {
+            console.log("editor_testData 객체 또는 setHTML 함수가 없음:", editor_testData);
+        }
+    } catch(e) {
+        console.error("에디터 콘텐츠 설정 실패:", e);
     }
 };
 
@@ -2213,14 +2546,256 @@ scwin.updateViewContent = function() {
         var description = dmp_unitTestDetail.get("description") || "";
         var testData = dmp_unitTestDetail.get("testData") || "";
         
-        // HTML 태그 제거
-        txt_description_view.setValue(scwin.stripHtmlTags(description));
-        txt_testData_view.setValue(scwin.stripHtmlTags(testData));
+        console.log("조회 모드 HTML 콘텐츠 업데이트:");
+        console.log("Description HTML:", description);
+        console.log("TestData HTML:", testData);
+        
+        // HTML을 안전하게 정제하고 표시 (이슈리스크 방식 적용)
+        var cleanDescription = scwin.sanitizeAndDisplayHTML(description);
+        var cleanTestData = scwin.sanitizeAndDisplayHTML(testData);
+        
+        // div 요소에 HTML 직접 삽입 (이슈리스크와 동일한 방식)
+        scwin.renderHTMLContent("div_description_view", cleanDescription);
+        scwin.renderHTMLContent("div_testData_view", cleanTestData);
+        
+        console.log("조회 모드 HTML 설정 완료");
         
     } catch(e) {
-        console.error("내용 업데이트 실패:", e);
+        console.error("HTML 내용 업데이트 실패:", e);
+        // 실패 시 기본 텍스트로 표시
+        scwin.setTextContent("div_description_view", scwin.stripHtmlTags(description));
+        scwin.setTextContent("div_testData_view", scwin.stripHtmlTags(testData));
     }
 };
+scwin.updateViewContentSimple = function() {
+    try {
+        var description = dmp_unitTestDetail.get("description") || "";
+        var testData = dmp_unitTestDetail.get("testData") || "";
+        
+        console.log("간단한 방식으로 내용 업데이트:");
+        console.log("Description:", description);
+        console.log("TestData:", testData);
+        
+        // HTML 태그 제거해서 텍스트만 표시
+        var descriptionText = scwin.stripHtmlTags(description) || "내용이 없습니다.";
+        var testDataText = scwin.stripHtmlTags(testData) || "내용이 없습니다.";
+        
+        // WebSquare 텍스트박스 컴포넌트 사용 (안전한 방법)
+        try {
+            // 텍스트박스 컴포넌트가 있는지 확인하고 사용
+            var descTextBox = $p.getComponentById("txt_description_view");
+            var testTextBox = $p.getComponentById("txt_testData_view");
+            
+            if (descTextBox && descTextBox.setValue) {
+                descTextBox.setValue(descriptionText);
+                console.log("Description 텍스트박스 설정 완료");
+            }
+            
+            if (testTextBox && testTextBox.setValue) {
+                testTextBox.setValue(testDataText);
+                console.log("TestData 텍스트박스 설정 완료");
+            }
+            
+            // 또는 기존 방식 사용
+            if (!descTextBox || !testTextBox) {
+                console.log("텍스트박스 컴포넌트가 없어서 기존 방식 시도");
+                scwin.updateViewContentAsText();
+            }
+            
+        } catch(e) {
+            console.error("간단한 방식 실패:", e);
+            scwin.updateViewContentAsText();
+        }
+        
+    } catch(e) {
+        console.error("간단한 내용 업데이트 실패:", e);
+    }
+};
+
+// 3. HTML 렌더링 함수 추가 (이슈리스크에서 가져옴)
+scwin.renderHTMLContent = function(elementId, htmlContent) {
+    // 무한 루프 방지를 위한 재시도 카운터
+    if (!scwin.retryCount) {
+        scwin.retryCount = {};
+    }
+    
+    if (!scwin.retryCount[elementId]) {
+        scwin.retryCount[elementId] = 0;
+    }
+    
+    // 최대 3번만 재시도
+    if (scwin.retryCount[elementId] >= 3) {
+        console.log("최대 재시도 횟수 초과:", elementId);
+        scwin.retryCount[elementId] = 0; // 카운터 리셋
+        return;
+    }
+    
+    try {
+        console.log("렌더링 시도:", elementId, "재시도:", scwin.retryCount[elementId]);
+        
+        // DOM 요소 찾기
+        var element = document.getElementById(elementId);
+        
+        if (!element) {
+            console.log("요소를 찾을 수 없음:", elementId);
+            scwin.retryCount[elementId]++;
+            
+            // 1초 후 재시도 (최대 3번)
+            setTimeout(function() {
+                scwin.renderHTMLContent(elementId, htmlContent);
+            }, 1000);
+            return;
+        }
+        
+        // 요소 찾기 성공
+        console.log("요소 찾기 성공:", elementId);
+        scwin.retryCount[elementId] = 0; // 카운터 리셋
+        
+        // 빈 내용 처리
+        if (!htmlContent || htmlContent.trim() === "") {
+            htmlContent = "<p style='color: #999; font-style: italic;'>내용이 없습니다.</p>";
+        }
+        
+        // HTML 내용 설정
+        element.innerHTML = htmlContent;
+        element.style.padding = "15px";
+        element.style.border = "1px solid #ddd";
+        element.style.borderRadius = "4px";
+        element.style.backgroundColor = "#f9f9f9";
+        element.style.minHeight = "80px";
+        element.style.maxHeight = "300px";
+        element.style.overflowY = "auto";
+        element.style.lineHeight = "1.6";
+        element.style.fontFamily = "inherit";
+        element.style.wordWrap = "break-word";
+        
+        console.log("HTML 내용 렌더링 완료:", elementId);
+        
+    } catch(e) {
+        console.error("HTML 렌더링 오류:", elementId, e);
+        scwin.retryCount[elementId] = 0; // 카운터 리셋
+    }
+};
+
+
+
+// 4. 스타일 정제 함수 추가 (이슈리스크에서 가져옴)
+scwin.sanitizeStyles = function(htmlString, allowedStyles) {
+    try {
+        return htmlString.replace(/style\s*=\s*["']([^"']*)["']/gi, function(match, styleContent) {
+            var styles = styleContent.split(';');
+            var cleanStyles = [];
+            
+            for (var i = 0; i < styles.length; i++) {
+                var style = styles[i].trim();
+                if (style) {
+                    var colonIndex = style.indexOf(':');
+                    if (colonIndex > 0) {
+                        var property = style.substring(0, colonIndex).trim();
+                        var value = style.substring(colonIndex + 1).trim();
+                        
+                        // 허용된 스타일 속성인지 확인
+                        if (allowedStyles.indexOf(property.toLowerCase()) !== -1) {
+                            // 위험한 값 제거 (expression, javascript 등)
+                            if (!value.toLowerCase().includes('javascript') && 
+                                !value.toLowerCase().includes('expression') &&
+                                !value.toLowerCase().includes('url(')) {
+                                cleanStyles.push(property + ': ' + value);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return cleanStyles.length > 0 ? 'style="' + cleanStyles.join('; ') + '"' : '';
+        });
+    } catch(e) {
+        console.error("스타일 정제 실패:", e);
+        return htmlString;
+    }
+};
+
+
+scwin.setHTMLContent = function(elementId, htmlContent) {
+    try {
+        // WebSquare 컴포넌트 방식으로 먼저 시도
+        var component = $p.getComponentById(elementId);
+        if (component && component.getElement) {
+            var element = component.getElement();
+            if (element) {
+                element.innerHTML = htmlContent;
+                return;
+            }
+        }
+        
+        // 일반 DOM 방식으로 시도
+        var element = document.getElementById(elementId);
+        if (element) {
+            element.innerHTML = htmlContent;
+        } else {
+            console.warn("요소를 찾을 수 없음:", elementId);
+        }
+    } catch(e) {
+        console.error("HTML 내용 설정 실패:", elementId, e);
+    }
+};
+
+// 텍스트 내용을 DOM 요소에 설정하는 함수 (fallback)
+scwin.setTextContent = function(elementId, textContent) {
+    try {
+        var component = $p.getComponentById(elementId);
+        if (component && component.getElement) {
+            var element = component.getElement();
+            if (element) {
+                element.textContent = textContent;
+                return;
+            }
+        }
+        
+        var element = document.getElementById(elementId);
+        if (element) {
+            element.textContent = textContent;
+        }
+    } catch(e) {
+        console.error("텍스트 내용 설정 실패:", elementId, e);
+    }
+};
+
+scwin.sanitizeStyles = function(htmlString, allowedStyles) {
+    try {
+        return htmlString.replace(/style\s*=\s*["']([^"']*)["']/gi, function(match, styleContent) {
+            var styles = styleContent.split(';');
+            var cleanStyles = [];
+            
+            for (var i = 0; i < styles.length; i++) {
+                var style = styles[i].trim();
+                if (style) {
+                    var colonIndex = style.indexOf(':');
+                    if (colonIndex > 0) {
+                        var property = style.substring(0, colonIndex).trim();
+                        var value = style.substring(colonIndex + 1).trim();
+                        
+                        // 허용된 스타일 속성인지 확인
+                        if (allowedStyles.indexOf(property.toLowerCase()) !== -1) {
+                            // 위험한 값 제거 (expression, javascript 등)
+                            if (!value.toLowerCase().includes('javascript') && 
+                                !value.toLowerCase().includes('expression') &&
+                                !value.toLowerCase().includes('url(')) {
+                                cleanStyles.push(property + ': ' + value);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            return cleanStyles.length > 0 ? 'style="' + cleanStyles.join('; ') + '"' : '';
+        });
+    } catch(e) {
+        console.error("스타일 정제 실패:", e);
+        return htmlString;
+    }
+};
+
 
 /**
  * HTML 태그 제거
@@ -2255,6 +2830,68 @@ scwin.testStatusCodeFmt = function(data, formattedData, rowIndex, colIndex) {
     }
     
     return `<span class="test-status-tag ${statusClass}">${statusText}</span>`;
+};
+
+scwin.isEditorContentEmpty = function(htmlContent) {
+    if (!htmlContent || htmlContent.trim() === "") {
+        return true;
+    }
+    
+    // HTML 태그를 제거하고 실제 텍스트 내용만 확인
+    var textOnly = htmlContent
+        .replace(/<[^>]*>/g, '')  // 모든 HTML 태그 제거
+        .replace(/&nbsp;/g, ' ') // &nbsp; → 공백 변환
+        .replace(/&lt;/g, '<')   // HTML 엔티티 디코딩
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&')
+        .replace(/&quot;/g, '"')
+        .replace(/\s+/g, ' ')    // 연속된 공백을 하나로
+        .trim();                 // 앞뒤 공백 제거
+    
+    // 실제 텍스트 내용이 없으면 빈 것으로 판단
+    return textOnly === '' || textOnly.length === 0;
+};
+
+// 2. 에디터에서 생성되는 기본 HTML 태그들을 정리하는 함수
+scwin.cleanupEditorHTML = function(htmlContent) {
+    if (!htmlContent) {
+        return '';
+    }
+    
+    // 실질적으로 비어있으면 빈 문자열 반환
+    if (scwin.isEditorContentEmpty(htmlContent)) {
+        return '';
+    }
+    
+    var cleaned = htmlContent
+        // 빈 p 태그 제거
+        .replace(/<p[^>]*>\s*<\/p>/gi, '')
+        .replace(/<p[^>]*>\s*&nbsp;\s*<\/p>/gi, '')
+        
+        // 빈 div 태그 제거
+        .replace(/<div[^>]*>\s*<\/div>/gi, '')
+        .replace(/<div[^>]*>\s*&nbsp;\s*<\/div>/gi, '')
+        
+        // 빈 span 태그 제거
+        .replace(/<span[^>]*>\s*<\/span>/gi, '')
+        
+        // 연속된 빈 태그들 제거
+        .replace(/(<br\s*\/?>\s*){2,}/gi, '<br>')
+        
+        // 맨 앞과 뒤의 불필요한 br 태그 제거
+        .replace(/^(\s*<br\s*\/?>)+/i, '')
+        .replace(/(<br\s*\/?>)+\s*$/i, '')
+        
+        // 연속된 공백 정리
+        .replace(/\s+/g, ' ')
+        .trim();
+    
+    // 정리 후에도 실질적으로 비어있으면 빈 문자열 반환
+    if (scwin.isEditorContentEmpty(cleaned)) {
+        return '';
+    }
+    
+    return cleaned;
 };
 
 /**
@@ -2920,7 +3557,7 @@ scwin.btn_excel_combined_download_onclick = function (e) {
         dlt_successList.setJSON(successData);
 
         var successOptions = {
-            fileName: "단위테스트_성공실패_통합_" + new Date().toISOString().slice(0, 10).replace(/-/g, "") + "_성공시트",
+            fileName: "테스트_성공실패_통합_" + new Date().toISOString().slice(0, 10).replace(/-/g, "") + "_성공시트",
             sheetName: "성공한_테스트", 
             useStyle: true,
             headerFontBold: true,
@@ -2961,7 +3598,7 @@ scwin.downloadFailDataAfterSuccess = function() {
     dlt_failList.setJSON(failData);
 
     var failOptions = {
-        fileName: "단위테스트_성공실패_통합_" + new Date().toISOString().slice(0, 10).replace(/-/g, "") + "_실패시트",
+        fileName: "테스트_성공실패_통합_" + new Date().toISOString().slice(0, 10).replace(/-/g, "") + "_실패시트",
         sheetName: "실패한_테스트",
         useStyle: true,
         headerFontBold: true,
@@ -3025,7 +3662,7 @@ scwin.btn_csv_download_onclick = function(e) {
     var link = document.createElement("a");
     var url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", "단위테스트_목록_" + new Date().toISOString().slice(0, 10) + ".csv");
+    link.setAttribute("download", "테스트_목록_" + new Date().toISOString().slice(0, 10) + ".csv");
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -3043,7 +3680,7 @@ scwin.btn_basic_excel_download_onclick = function(e) {
     }
     
     // 기본 엑셀 다운로드 (옵션 최소화)
-    grd_list.excelDownload("단위테스트_목록_" + new Date().toISOString().slice(0, 10));
+    grd_list.excelDownload("테스트_목록_" + new Date().toISOString().slice(0, 10));
     
     setTimeout(function() {
         $c.win.alert("엑셀 파일 다운로드가 완료되었습니다.");
@@ -3090,7 +3727,7 @@ scwin.btn_json_download_onclick = function(e) {
     var link = document.createElement("a");
     var url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", "단위테스트_목록_" + new Date().toISOString().slice(0, 10) + ".json");
+    link.setAttribute("download", "테스트_목록_" + new Date().toISOString().slice(0, 10) + ".json");
     link.style.visibility = 'hidden';
     document.body.appendChild(link);
     link.click();
@@ -3161,7 +3798,7 @@ scwin.sbm_selectUnitTestListForExcel_submitdone = function (e) {
     dlt_unitTestVoList.setJSON(processedData);
 
     var options = {
-        fileName: "단위테스트_케이스_목록_" + new Date().toISOString().slice(0, 10).replace(/-/g, ""),
+        fileName: "테스트_케이스_목록_" + new Date().toISOString().slice(0, 10).replace(/-/g, ""),
         useStyle: true,
         headerFontBold: true,
         bodyFontBold: false,
@@ -3199,7 +3836,7 @@ scwin.btn_excel_success_download_onclick = function (e) {
     dlt_successList.setJSON(successData);
 
     var options = {
-        fileName: "단위테스트_성공_목록_" + new Date().toISOString().slice(0, 10).replace(/-/g, ""),
+        fileName: "테스트_성공_목록_" + new Date().toISOString().slice(0, 10).replace(/-/g, ""),
         useStyle: true,
         headerFontBold: true,
         bodyFontBold: false,
@@ -3236,7 +3873,7 @@ scwin.btn_excel_fail_download_onclick = function (e) {
     dlt_failList.setJSON(failData);
 
     var options = {
-        fileName: "단위테스트_실패_목록_" + new Date().toISOString().slice(0, 10).replace(/-/g, ""),
+        fileName: "테스트_실패_목록_" + new Date().toISOString().slice(0, 10).replace(/-/g, ""),
         useStyle: true,
         headerFontBold: true,
         bodyFontBold: false,
@@ -3289,7 +3926,7 @@ scwin.btn_excel_template_download_onclick = function (e) {
     dlt_unitTestVoList.setJSON(sampleData);
 
     var options = {
-        fileName: "단위테스트_업로드_템플릿_" + new Date().toISOString().slice(0, 10).replace(/-/g, ""),
+        fileName: "테스트_업로드_템플릿_" + new Date().toISOString().slice(0, 10).replace(/-/g, ""),
         useStyle: true,
         headerFontBold: true,
         bodyFontBold: false,
@@ -3357,12 +3994,62 @@ scwin.getCurrentUserName = function() {
         console.error("사용자 이름 가져오기 실패:", e);
         return "사용자";
     }
-};]]></script>
+};
+
+scwin.editor_description_onblur = function() {
+    console.log("Description 에디터 blur 이벤트");
+    try {
+        if (editor_description && typeof editor_description.getHTML === 'function') {
+            var htmlContent = editor_description.getHTML();
+            var cleanedHTML = scwin.cleanupEditorHTML(htmlContent);
+            
+            console.log("Raw HTML:", htmlContent);
+            console.log("Cleaned HTML:", cleanedHTML);
+            
+            dmp_unitTestDetail.set("description", cleanedHTML);
+            
+            // 정리된 내용으로 에디터 업데이트 (선택사항)
+            if (cleanedHTML !== htmlContent) {
+                setTimeout(function() {
+                    editor_description.setHTML(cleanedHTML);
+                }, 100);
+            }
+        }
+    } catch(e) {
+        console.error("Description blur 처리 실패:", e);
+    }
+};
+
+scwin.editor_testData_onblur = function() {
+    console.log("TestData 에디터 blur 이벤트");
+    try {
+        if (editor_testData && typeof editor_testData.getHTML === 'function') {
+            var htmlContent = editor_testData.getHTML();
+            var cleanedHTML = scwin.cleanupEditorHTML(htmlContent);
+            
+            console.log("Raw HTML:", htmlContent);
+            console.log("Cleaned HTML:", cleanedHTML);
+            
+            dmp_unitTestDetail.set("testData", cleanedHTML);
+            
+            // 정리된 내용으로 에디터 업데이트 (선택사항)
+            if (cleanedHTML !== htmlContent) {
+                setTimeout(function() {
+                    editor_testData.setHTML(cleanedHTML);
+                }, 100);
+            }
+        }
+    } catch(e) {
+        console.error("TestData blur 처리 실패:", e);
+    }
+};
+
+]]></script>
     </head>
 	<body ev:onpageload="scwin.onpageload">
 		<xf:group class="sub_contents" id="" style="">
 			<xf:group class="pgtbox" id="" style="">
-				<w2:textbox class="pgt_tit" id="" label="단위테스트 케이스 관리" style="" tagname="" />
+				<w2:textbox class="pgt_tit" id="" label="테스트 케이스 관리" style="" tagname="" />
 			</xf:group>
 			
 			<!-- 검색 영역 -->
@@ -3557,13 +4244,13 @@ scwin.getCurrentUserName = function() {
                 </w2:pageList>
             </xf:group>
 
-			<!-- 단위테스트 케이스 등록/수정 팝업 -->
+			<!-- 테스트 케이스 등록/수정 팝업 -->
 			<xf:group id="pop_overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none;">
                 <xf:group class="pop_contents" style="background-color: white; position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 1400px; max-width: 95%; max-height: 90vh; overflow-y: auto;">
 					<!-- 팝업 제목 및 버튼 영역 -->
                     <xf:group class="pop_header" style="padding:15px; border-bottom:1px solid #ddd; background-color:#f8f9fa; display: flex; justify-content: space-between; align-items: center;">
                         <!-- 제목 -->
-                        <w2:span class="pop_title" id="spn_popupTitle" label="단위테스트 케이스 관리" style="font-size:18px; font-weight:bold; flex: 1; text-align: center;" />
+                        <w2:span class="pop_title" id="spn_popupTitle" label="테스트 케이스 관리" style="font-size:18px; font-weight:bold; flex: 1; text-align: center;" />
                         
                         <!-- 버튼 그룹 -->
                         <xf:group style="display: flex; gap: 8px; align-items: center;">
@@ -3742,13 +4429,16 @@ scwin.getCurrentUserName = function() {
 
 								<!-- 조회 모드 -->
 								<xf:group id="grp_description_view" style="display: none;">
-									<xf:textarea id="txt_description_view" readOnly="true" style="width: 100%; height: 80px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px; padding: 10px; font-family: inherit; line-height: 1.5;" ref="data:dmp_unitTestDetail.description"></xf:textarea>
-								</xf:group>
+                                     <xf:textarea id="txt_description_view" readOnly="true" 
+        style="width: 100%; min-height: 80px; padding: 15px; border: 1px solid #ddd; background: #f9f9f9; white-space: pre-wrap;"></xf:textarea>
+                                </xf:group>
 
 								<!-- 편집 모드 -->
 								<xf:group id="grp_description_edit" style="display: block;">
-									<w2:editor id="editor_description" style="width: 100%; height: 120px;" ref="data:dmp_unitTestDetail.description"></w2:editor>
-								</xf:group>
+                                    <w2:editor id="editor_description" style="width: 100%; height: 120px;" 
+                                            ref="data:dmp_unitTestDetail.description"
+                                            ev:onblur="scwin.editor_description_onblur"></w2:editor>
+                                </xf:group>
 							</xf:group>
 
 							<!-- 테스트 데이터 섹션 -->
@@ -3758,12 +4448,15 @@ scwin.getCurrentUserName = function() {
 								</xf:group>
 
 								<xf:group id="grp_testData_view" style="display: none;">
-									<xf:textarea id="txt_testData_view" readOnly="true" style="width: 100%; height: 80px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px; padding: 10px; font-family: inherit; line-height: 1.5;" ref="data:dmp_unitTestDetail.testData"></xf:textarea>
+									 <xf:textarea id="txt_testData_view" readOnly="true" 
+        style="width: 100%; min-height: 80px; padding: 15px; border: 1px solid #ddd; background: #f9f9f9; white-space: pre-wrap;"></xf:textarea>
 								</xf:group>
 
 								<xf:group id="grp_testData_edit" style="display: block;">
-									<w2:editor id="editor_testData" style="width: 100%; height: 100px;" ref="data:dmp_unitTestDetail.testData"></w2:editor>
-								</xf:group>
+                                    <w2:editor id="editor_testData" style="width: 100%; height: 100px;" 
+                                            ref="data:dmp_unitTestDetail.testData"
+                                            ev:onblur="scwin.editor_testData_onblur"></w2:editor>
+                                </xf:group>
 							</xf:group>
 						</xf:group>
 

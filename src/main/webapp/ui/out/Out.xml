@@ -1310,7 +1310,7 @@
 							</xf:group>
 							
 							<!-- 승인 상태 -->
-							<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
+							<!-- <xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 								<w2:textbox class="" label="승인 상태" style=""></w2:textbox>
 							</xf:group>
 							<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
@@ -1325,7 +1325,7 @@
 										</xf:itemset>
 									</xf:choices>
 								</xf:select1>
-							</xf:group>
+							</xf:group> -->
 						</xf:group>
 						
 						<xf:group class="" id="" style="" tagname="tr">
@@ -1341,16 +1341,19 @@
 					</xf:group>
 				</xf:group>
 				<xf:group class="btn_schbox" id="" style="">
-					<xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_search" style="" type="button" 
+					<xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_search" type="button" 
+                    style = "background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 100px;width: auto;padding: 0 10px;width: 100px;border-color: #fff;border: none;"
 						ev:onclick="scwin.btn_search_onclick" localeRef="COMMON_BUTTON_00001">
 						<xf:label><![CDATA[조회]]></xf:label>
 					</xf:trigger>
-					<xf:trigger class="btn_cm" disabled="" escape="false" id="btn_reset" style="margin-left: 5px;" type="button" 
+					<xf:trigger class="btn_cm" disabled="" escape="false" id="btn_reset" 
+                    style = "background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 100px;width: auto;padding: 0 10px;width: 100px;border-color: #fff;border: none;"
+                    type="button" 
 						ev:onclick="scwin.btn_reset_onclick">
 						<xf:label><![CDATA[초기화]]></xf:label>
 					</xf:trigger>
 					<xf:trigger class="" disabled="" escape="false" id="reg_btn" localeRef="COMMON_BUTTON_00001"
-						style="background: linear-gradient(to bottom, #5cb85c 0%, #449d44 100%); color: white; border: 1px solid #4cae4c; padding: 8px 16px; font-size: 12px;  height: 30px; border-radius: 3px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 70px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);border-radius: 4px; margin-left: 10px;"
+						style="background-color:#EC9192;color: #ffffff !important;height: 37px;font-size: 14px;min-width: 80px;width: auto;padding: 0 10px;width: 80px;border-color: #fff;border: none; border-radius : 5px;"
 						type="button" ev:onclick="scwin.reg_btn_onclick">
 						<xf:label><![CDATA[등록]]></xf:label>
 					</xf:trigger>
@@ -1375,7 +1378,7 @@
                             <w2:column width="200" inputType="text" style="" id="column3" value="산출물명" displayMode="label"></w2:column>
                             <w2:column width="100" inputType="text" style="" id="column9" value="산출물 유형" displayMode="label"></w2:column>
                             <w2:column width="150" inputType="text" style="" id="columnPjt" value="프로젝트명" displayMode="label"></w2:column>
-                            <w2:column width="100" inputType="text" style="" id="columnApproval" value="승인 상태" displayMode="label"></w2:column>
+                            <!-- <w2:column width="100" inputType="text" style="" id="columnApproval" value="승인 상태" displayMode="label"></w2:column> -->
                             <w2:column width="120" inputType="text" style="" id="column4" value="등록일시" displayMode="label"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="column5" value="수정일시" displayMode="label"></w2:column>
 						</w2:row>
@@ -1386,7 +1389,7 @@
                             <w2:column width="200" inputType="text" style="" id="name" value="" displayMode="label"></w2:column>
                             <w2:column width="100" inputType="text" style="" id="outputType" value="" displayMode="label"></w2:column>
                             <w2:column width="150" inputType="text" style="" id="pjtName" value="" displayMode="label"></w2:column>
-                            <w2:column width="100" inputType="text" style="" id="approvalStatus" value="" displayMode="label"></w2:column>
+                            <!-- <w2:column width="100" inputType="text" style="" id="approvalStatus" value="" displayMode="label"></w2:column> -->
                             <w2:column width="120" inputType="text" style="" id="createdAt" value="" displayMode="label"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="updatedAt" value="" displayMode="label"></w2:column>
 						</w2:row>
