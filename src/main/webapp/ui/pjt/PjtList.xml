@@ -56,9 +56,9 @@
  */
 scwin.onpageload = function () {
     var usrId = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_ID;
-    var isAdmin = $p.getComponentById("mf_pg_header").getWindow().scwin.IS_ADMIN;
-    // isAdmin 의 값 0 또는 1에 따라서 btn_newPjt 를 보여주거나 감추기
-    if (isAdmin === 1 || isAdmin === "1") {
+    var isCreate = $p.getComponentById("mf_pg_header").getWindow().scwin.IS_CREATE;
+    // isCreate 의 값 0 또는 1에 따라서 btn_newPjt 를 보여주거나 감추기
+    if (isCreate === 1 || isCreate === "1") {
         // 관리자인 경우 새 프로젝트 생성 버튼 표시
         btn_newPjt.show();
     } else {
@@ -91,7 +91,6 @@ scwin.sbm_pjtList_submitdone = function (e) {
     spn_listCnt.setLabel(elData.totalCount);
     dlt_pjtVoList.setJSON(elData.pjtVoList);
 
-    scwin.setProgressRate();
     scwin.setProgressStyle();
 
     var totalPageCount = Math.ceil(elData.totalCount / dmp_pjtVo.get("pageSize"));
@@ -121,33 +120,6 @@ scwin.pgl_pjtList_onclick = function (idx) {
     $c.sbm.execute(sbm_selectPjtVoList);
 };
 
-/**
- * @method
- * @name scwin.setProgressRate
- * @description 각 프로젝트의 시작일과 종료일 기준으로 진행률을 계산하여 pjtProgress 컬럼에 설정한다.
- * @memberOf scwin
- * @date 2025.07.06
- */
-scwin.setProgressRate = function () {
-    const list = dlt_pjtVoList.getAllJSON();
-
-    list.forEach(row => {
-        const st = new Date(row.pjtSt);
-        const et = new Date(row.pjtEt);
-        const now = new Date();
-        let percent = 0;
-
-        if (!isNaN(st) && !isNaN(et) && st < et) {
-            const total = et - st;
-            const passed = Math.min(Math.max(now - st, 0), total);
-            percent = Math.floor((passed / total) * 100);
-        }
-
-        row.pjtProgress = percent;
-    });
-
-    dlt_pjtVoList.setJSON(list);
-};
 
 /**
  * @method

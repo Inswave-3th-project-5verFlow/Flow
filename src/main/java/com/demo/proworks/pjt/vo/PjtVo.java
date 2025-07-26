@@ -46,6 +46,9 @@ public class PjtVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElDtoField(logicalName = "메뉴그룹아이디", physicalName = "grpId", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String grpId;
 
+    @ElDtoField(logicalName = "진척률", physicalName = "pjtProgress", type = "Integer", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private Integer pjtProgress;
+
     @ElVoField(physicalName = "pjtId")
     public String getPjtId(){
         String ret = this.pjtId;
@@ -167,6 +170,17 @@ public class PjtVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.grpId = grpId;
     }
 
+    @ElVoField(physicalName = "pjtProgress")
+    public Integer getPjtProgress(){
+        Integer ret = this.pjtProgress;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "pjtProgress")
+    public void setPjtProgress(Integer pjtProgress){
+        this.pjtProgress = pjtProgress;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -181,7 +195,8 @@ public class PjtVo extends com.demo.proworks.cmmn.ProworksCommVO {
         sb.append("pjtSt").append("=").append(pjtSt).append(",");
         sb.append("pjtEt").append("=").append(pjtEt).append(",");
         sb.append("userId").append("=").append(userId).append(",");
-        sb.append("grpId").append("=").append(grpId);
+        sb.append("grpId").append("=").append(grpId).append(",");
+        sb.append("pjtProgress").append("=").append(pjtProgress);
         sb.append("]");
         return sb.toString();
 
