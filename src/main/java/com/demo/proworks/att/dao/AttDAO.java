@@ -125,5 +125,39 @@ public class AttDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
         return delete("com.demo.proworks.att.deleteTempFiles", tempRefId);
     }
     
-
+    /**
+     * 파일첨부 정보를 완전 삭제한다. (Hard Delete - 새로 추가)
+     *  
+     * @param  String fileId
+     * @return int 삭제 결과
+     * @throws ElException
+     */
+    public int hardDeleteFileAttachment(String fileId) throws ElException {
+        return delete("com.demo.proworks.att.hardDeleteFileAttachment", fileId);
+    }
+    
+    /**
+     * 파일 정보 완전 삭제 (Hard Delete - 새로 추가)
+     *  
+     * @param  String fileId
+     * @return int 삭제 결과
+     * @throws ElException
+     */
+    public int hardDeleteFile(String fileId) throws ElException {
+        return delete("com.demo.proworks.att.hardDeleteFile", fileId);
+    }
+    
+    
+        /**
+     * 특정 참조타입/참조ID의 모든 파일 완전 삭제 (UnitTest 등에서 사용)
+     *  
+     * @param  Map<String, String> refType, refId
+     * @return int 삭제 결과
+     * @throws ElException
+     */
+    public int hardDeleteFilesByRef(Map<String, String> paramMap) throws ElException {
+        return delete("com.demo.proworks.att.hardDeleteFilesByRef", paramMap);
+    }
+    
+    
 }

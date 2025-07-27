@@ -64,6 +64,9 @@ public class DefVo extends com.demo.proworks.cmmn.ProworksCommVO {
     @ElDtoField(logicalName = "검색 종료일", physicalName = "dateTo", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
     private String dateTo;
 
+    @ElDtoField(logicalName = "작성자이름", physicalName = "assigneeName", type = "String", typeKind = "", fldYn = "", delimeterYn = "", cryptoGbn = "", cryptoKind = "", length = 0, dotLen = 0, baseValue = "", desc = "", attr = "")
+    private String assigneeName;
+
     @ElVoField(physicalName = "id")
     public String getId(){
         String ret = this.id;
@@ -251,6 +254,17 @@ public class DefVo extends com.demo.proworks.cmmn.ProworksCommVO {
         this.dateTo = dateTo;
     }
 
+    @ElVoField(physicalName = "assigneeName")
+    public String getAssigneeName(){
+        String ret = this.assigneeName;
+        return ret;
+    }
+
+    @ElVoField(physicalName = "assigneeName")
+    public void setAssigneeName(String assigneeName){
+        this.assigneeName = assigneeName;
+    }
+
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -271,7 +285,8 @@ public class DefVo extends com.demo.proworks.cmmn.ProworksCommVO {
         sb.append("updatedAt").append("=").append(updatedAt).append(",");
         sb.append("pjtId").append("=").append(pjtId).append(",");
         sb.append("dateFrom").append("=").append(dateFrom).append(",");
-        sb.append("dateTo").append("=").append(dateTo);
+        sb.append("dateTo").append("=").append(dateTo).append(",");
+        sb.append("assigneeName").append("=").append(assigneeName);
         sb.append("]");
         return sb.toString();
 

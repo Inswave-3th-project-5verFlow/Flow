@@ -68,7 +68,7 @@ public class UnitTestDao extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstr
      * 단위테스트 케이스 삭제 (논리삭제)
      */
     public int deleteUnitTest(UnitTestVo unitTestVo) throws ElException {
-        return update("com.demo.proworks.unit.deleteUnitTest", unitTestVo);
+        return delete("com.demo.proworks.unit.deleteUnitTest", unitTestVo);
     }
     
     /**

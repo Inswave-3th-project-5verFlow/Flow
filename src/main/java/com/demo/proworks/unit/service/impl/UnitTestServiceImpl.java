@@ -128,7 +128,7 @@ public class UnitTestServiceImpl implements UnitTestService {
     /**
      * 단위테스트 케이스 등록
      */
-    @Transactional(rollbackFor = Exception.class)
+   
     @Override
     public String insertUnitTest(UnitTestVo unitTestVo) throws Exception {
 	    AppLog.debug("단위테스트 케이스 등록 시작: {}", unitTestVo);
@@ -168,7 +168,7 @@ public class UnitTestServiceImpl implements UnitTestService {
     /**
      * 단위테스트 케이스와 파일 함께 등록
      */
-    @Transactional(rollbackFor = Exception.class)
+   
     @Override
     public UnitTestVo insertUnitTestWithFiles(UnitTestVo unitTestVo, MultipartFile[] files) throws Exception {
         List<String> uploadedS3Keys = new ArrayList<>();
@@ -214,7 +214,7 @@ public class UnitTestServiceImpl implements UnitTestService {
     /**
      * 단위테스트 케이스 수정
      */
-    @Transactional(rollbackFor = Exception.class)
+   
     @Override
     public int updateUnitTest(UnitTestVo unitTestVo) throws Exception {
         AppLog.debug("단위테스트 케이스 수정: {}", unitTestVo);
@@ -237,7 +237,7 @@ public class UnitTestServiceImpl implements UnitTestService {
     /**
      * 단위테스트 케이스와 파일 함께 수정
      */
-    @Transactional(rollbackFor = Exception.class)
+   
     @Override
     public UnitTestVo updateUnitTestWithFiles(UnitTestVo unitTestVo, MultipartFile[] files) throws Exception {
         List<String> uploadedS3Keys = new ArrayList<>();
@@ -294,39 +294,8 @@ public class UnitTestServiceImpl implements UnitTestService {
         }
     }
     
-    /**
-     * 단위테스트 케이스 삭제 (논리삭제)
-     */
-    @Transactional(rollbackFor = Exception.class)
-    @Override
-    public int deleteUnitTest(UnitTestVo unitTestVo) throws Exception {
-        AppLog.debug("단위테스트 케이스 삭제: {}", unitTestVo);
-        
-        String testCaseId = unitTestVo.getTestCaseId();
-        if (isEmpty(testCaseId)) {
-            throw new Exception("삭제할 테스트 케이스 ID가 필요합니다.");
-        }
-        
-        // 첨부파일도 함께 논리삭제
-        UnitTestVo fileParam = new UnitTestVo();
-        fileParam.setTestCaseId(testCaseId);
-        
-        // 파일 목록 조회 후 논리 삭제
-        List<AttVo> fileList = selectUnitTestFileList(fileParam);
-        for (AttVo fileInfo : fileList) {
-            deleteUnitTestFile(fileInfo.getFileId());
-        }
-        
-        // 테스트 케이스 논리삭제
-        int result = unitTestDao.deleteUnitTest(unitTestVo);
-        
-        if (result == 0) {
-            throw new Exception("해당 테스트 케이스를 찾을 수 없거나 삭제할 수 없습니다.");
-        }
-        
-        AppLog.debug("단위테스트 케이스 삭제 완료: {}", testCaseId);
-        return result;
-    }
+    
+    
     
     /**
      * 단위테스트 케이스 첨부파일 목록 조회
@@ -348,22 +317,186 @@ public class UnitTestServiceImpl implements UnitTestService {
     
     /**
      * 단위테스트 케이스 첨부파일 삭제
+     * @throws Exception 
      */
-    @Transactional(rollbackFor = Exception.class)
     @Override
-    public int deleteUnitTestFile(String fileId) throws Exception {
-        AppLog.debug("첨부파일 삭제: {}", fileId);
+    public int deleteUnitTestFile(String fileId) throws Exception{
+        AppLog.debug("첨부파일 Hard Delete: {}", fileId);
         
         if (isEmpty(fileId)) {
             throw new Exception("삭제할 파일 ID가 필요합니다.");
         }
         
-        // AttService를 통해 파일 삭제
-        attService.deleteFile(fileId);
-        
-        AppLog.debug("첨부파일 삭제 완료: {}", fileId);
-        return 1; // 성공 시 1 반환
+        try {
+            // AttService를 통해 파일 완전 삭제 (S3 + DB)
+            attService.deleteFile(fileId);
+            
+            AppLog.debug("첨부파일 Hard Delete 완료: {}", fileId);
+            return 1;
+            
+        } catch (Exception e) {
+            AppLog.error("첨부파일 삭제 실패: {} - {}");
+            throw new RuntimeException("파일 삭제 중 오류 발생: " + e.getMessage(), e);
+        }
     }
+    
+    @Override
+    public int deleteUnitTest(UnitTestVo unitTestVo) throws Exception {
+	    AppLog.debug("단위테스트 케이스 삭제 시작: {}", unitTestVo);
+	    
+	    String testCaseId = unitTestVo.getTestCaseId();
+	    if (isEmpty(testCaseId)) {
+	        throw new Exception("삭제할 테스트 케이스 ID가 필요합니다.");
+	    }
+	    
+	    // 1. 테스트 케이스 존재 여부 확인
+	    UnitTestVo existingTest = unitTestDao.selectUnitTestDetail(unitTestVo);
+	    if (existingTest == null) {
+	        throw new Exception("해당 테스트 케이스를 찾을 수 없습니다.");
+	    }
+	    
+	    AppLog.debug("삭제 대상 테스트 케이스: {}", existingTest.getTestCaseName());
+	    
+	    // 2. 관련 파일 삭제 시도 (실패해도 무시)
+	    try {
+	        deleteRelatedFilesSafely(testCaseId);
+	        AppLog.debug("관련 파일 삭제 완료");
+	    } catch (Exception e) {
+	        AppLog.warn("관련 파일 삭제 실패 (무시하고 계속): {}", e.getMessage());
+	        // 파일 삭제 실패해도 테스트 케이스는 삭제 진행
+	    }
+	    
+	    // 3. 테스트 케이스 삭제
+	    int result = unitTestDao.deleteUnitTest(unitTestVo);
+	    
+	    if (result == 0) {
+	        throw new Exception("테스트 케이스 삭제에 실패했습니다.");
+	    }
+	    
+	    AppLog.debug("단위테스트 케이스 삭제 완료: {}", testCaseId);
+	    return result;
+	}
+	
+	/**
+	 * 안전한 파일 삭제 (트랜잭션 없음)
+	 */
+	private void deleteRelatedFilesSafely(String testCaseId) {
+	    try {
+	        AppLog.debug("관련 파일 삭제 시작: {}", testCaseId);
+	        
+	        // 1. 해당 테스트 케이스의 모든 파일 목록 조회
+	        ProworksCommVO searchVo = new ProworksCommVO();
+	        searchVo.setRefType("UNIT_TEST");
+	        searchVo.setRefId(testCaseId);
+	        
+	        List<AttVo> fileList = attDAO.selectFileListByRef(searchVo);
+	        AppLog.debug("삭제 대상 파일 수: {}", fileList.size());
+	
+	        // 2. 각 파일을 개별적으로 삭제
+	        for (AttVo fileVo : fileList) {
+	            try {
+	                // S3에서 파일 삭제
+	                if (fileVo.getS3Key() != null && !fileVo.getS3Key().trim().isEmpty()) {
+	                    amazonS3.deleteObject(bucketName, fileVo.getS3Key());
+	                    AppLog.debug("S3 파일 삭제 성공: {}", fileVo.getOriginalFileName());
+	                }
+	                
+	                // DB에서 file_attachments 삭제
+	                attDAO.hardDeleteFileAttachment(fileVo.getFileId());
+	                AppLog.debug("file_attachments 삭제 성공: {}", fileVo.getFileId());
+	                
+	                // DB에서 file 삭제
+	                attDAO.hardDeleteFile(fileVo.getFileId());
+	                AppLog.debug("file 테이블 삭제 성공: {}", fileVo.getFileId());
+	                
+	            } catch (Exception fileException) {
+	                AppLog.error("개별 파일 삭제 실패: {} - {}");
+	                // 개별 파일 삭제 실패해도 다른 파일은 계속 처리
+	            }
+	        }
+	        
+	        AppLog.debug("관련 파일 삭제 처리 완료");
+	        
+	    } catch (Exception e) {
+	        AppLog.error("파일 삭제 중 오류: {}", e.getMessage());
+	        // 예외를 던지지 않음 - 파일 삭제 실패해도 테스트 케이스 삭제는 계속 진행
+	    }
+	}
+    /**
+	 * 파일 삭제 (트랜잭션 없음)
+	 */
+	private void deleteRelatedFilesWithoutTransaction(String testCaseId) {
+	    try {
+	        AppLog.debug("관련 파일 삭제 시작 (비트랜잭션): {}", testCaseId);
+	        
+	        // 1. 해당 테스트 케이스의 모든 파일 목록 조회
+	        ProworksCommVO searchVo = new ProworksCommVO();
+	        searchVo.setRefType("UNIT_TEST");
+	        searchVo.setRefId(testCaseId);
+	        
+	        List<AttVo> fileList = attDAO.selectFileListByRef(searchVo);
+	        AppLog.debug("삭제 대상 파일 수: {}", fileList.size());
+	
+	        // 2. S3에서 각 파일들 물리 삭제
+	        for (AttVo fileVo : fileList) {
+	            try {
+	                if (fileVo.getS3Key() != null && !fileVo.getS3Key().trim().isEmpty()) {
+	                    amazonS3.deleteObject(bucketName, fileVo.getS3Key());
+	                    AppLog.debug("S3 파일 삭제: {}", fileVo.getOriginalFileName());
+	                }
+	            } catch (Exception s3Exception) {
+	                AppLog.error("S3 파일 삭제 실패: {} - {}", fileVo.getOriginalFileName());
+	                // S3 삭제 실패해도 계속 진행
+	            }
+	        }
+	
+	        // 3. DB에서 파일 레코드들 개별 삭제
+	        for (AttVo fileVo : fileList) {
+	            try {
+	                // file_attachments 먼저 삭제
+	                attDAO.hardDeleteFileAttachment(fileVo.getFileId());
+	                AppLog.debug("file_attachments 삭제: {}", fileVo.getFileId());
+	                
+	                // file 테이블 삭제
+	                attDAO.hardDeleteFile(fileVo.getFileId());
+	                AppLog.debug("file 테이블 삭제: {}", fileVo.getFileId());
+	                
+	            } catch (Exception dbException) {
+	                AppLog.error("DB 파일 레코드 삭제 실패: {} - {}", fileVo.getFileId());
+	                // 개별 삭제 실패해도 계속 진행
+	            }
+	        }
+	        
+	        AppLog.debug("관련 파일 삭제 처리 완료");
+	        
+	    } catch (Exception e) {
+	        AppLog.error("관련 파일 삭제 실패: {}", e.getMessage());
+	        // 예외를 던지지 않음 (테스트 케이스 삭제는 계속 진행)
+	    }
+	}
+	
+	/**
+	 * 테스트 케이스만 삭제 (트랜잭션 적용)
+	 */
+	@Transactional(rollbackFor = Exception.class)
+	public int deleteUnitTestCaseOnly(UnitTestVo unitTestVo) throws Exception {
+	    AppLog.debug("테스트 케이스 DB 삭제 시작: {}", unitTestVo.getTestCaseId());
+	    
+	    try {
+	        int result = unitTestDao.deleteUnitTest(unitTestVo);
+	        
+	        if (result == 0) {
+	            throw new Exception("테스트 케이스 삭제에 실패했습니다.");
+	        }
+	        
+	        AppLog.debug("테스트 케이스 DB 삭제 성공: {} (영향받은 행: {})", unitTestVo.getTestCaseId());
+	        return result;
+	        
+	    } catch (Exception e) {
+	        AppLog.error("테스트 케이스 DB 삭제 실패: {} - {}", unitTestVo.getTestCaseId());
+	        throw e; // 트랜잭션 롤백을 위해 예외 재발생
+	    }
+	}
     
     /**
      * 테스트 상태별 통계 조회
@@ -426,7 +559,7 @@ public class UnitTestServiceImpl implements UnitTestService {
     /**
      * 테스트 실행 상태 업데이트
      */
-    @Transactional(rollbackFor = Exception.class)
+   
     @Override
     public int updateTestStatus(UnitTestVo unitTestVo) throws Exception {
         AppLog.debug("테스트 상태 업데이트: {}", unitTestVo);
@@ -448,7 +581,7 @@ public class UnitTestServiceImpl implements UnitTestService {
     /**
      * 테스트 결과 업데이트
      */
-    @Transactional(rollbackFor = Exception.class)
+   
     @Override
     public int updateTestResult(UnitTestVo unitTestVo) throws Exception {
         AppLog.debug("테스트 결과 업데이트: {}", unitTestVo);

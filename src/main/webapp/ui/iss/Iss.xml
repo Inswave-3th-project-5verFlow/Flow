@@ -3134,12 +3134,12 @@ scwin.downloadBlob = function(blob, fileName) {
 
 								<!-- 프로젝트명 (항상 readOnly) -->
 								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="프로젝트명" style=""></w2:textbox>
 										<span style="color: red;">*</span>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td" colspan="3">
-										<xf:input class="" id="inp_projectName" readOnly="true" style="width: 100%; height: 25px; background-color: #f5f5f5;"
+										<xf:input class="" id="inp_projectName" readOnly="true" style="width: 100%; height: 25px; "
 											ref="data:dmp_issVoDetail.pjtName"></xf:input>
 										<xf:input type="hidden" ref="data:dmp_issVoDetail.pjtId" value="6"></xf:input>
 									</xf:group>
@@ -3147,7 +3147,7 @@ scwin.downloadBlob = function(blob, fileName) {
 
 								<!-- 이슈/리스크명, 작성자 -->
 								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="이슈/리스크명" style=""></w2:textbox>
 										<span style="color: red;">*</span>
 									</xf:group>
@@ -3155,19 +3155,19 @@ scwin.downloadBlob = function(blob, fileName) {
 										<xf:input class="" id="inp_issueName" placeholder="이슈/리스크명을 입력하세요" ref="data:dmp_issVoDetail.name"
 											style="width: 100%; height: 25px;"></xf:input>
 									</xf:group>
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="작성자" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
 										<xf:input class="" id="inp_userName" readOnly="true" ref="data:dmp_issVoDetail.userName"
-											style="width: 100%; height: 25px; background-color: #f5f5f5;"></xf:input>
+											style="width: 100%; height: 25px; "></xf:input>
 										<xf:input type="hidden" ref="data:dmp_issVoDetail.userId" value="1"></xf:input>
 									</xf:group>
 								</xf:group>
 
 								<!-- 우선순위, 상태 -->
 								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="우선순위" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
@@ -3182,7 +3182,7 @@ scwin.downloadBlob = function(blob, fileName) {
 											</xf:choices>
 										</xf:select1>
 									</xf:group>
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="상태" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
@@ -3201,14 +3201,14 @@ scwin.downloadBlob = function(blob, fileName) {
 
 								<!-- 완료예정일, 해결일 -->
 								<xf:group tagname="tr">
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="완료예정일" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
 										<w2:inputCalendar id="cal_dueDate" style="width: 100%; height: 25px;" calendarValueType="yearMonthDate"
 											ref="data:dmp_issVoDetail.dueDate"></w2:inputCalendar>
 									</xf:group>
-									<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="해결일" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">

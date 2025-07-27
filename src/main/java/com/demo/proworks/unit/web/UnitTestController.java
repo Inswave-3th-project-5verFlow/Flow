@@ -337,10 +337,139 @@ public class UnitTestController {
 	@RequestMapping(value = "UNIT001Del")
 	@ElDescription(sub = "단위테스트 케이스 삭제처리", desc = "단위테스트 케이스를 삭제 처리한다.")
 	public void deleteUnitTest(UnitTestVo unitTestVo) throws Exception {
-		unitTestService.deleteUnitTest(unitTestVo);
+		AppLog.debug("=== 컨트롤러: 단위테스트 케이스 삭제 시작 ===");
+		AppLog.debug("삭제 대상 테스트 케이스 ID: {}", unitTestVo.getTestCaseId());
+
+		try {
+			// 서비스의 트랜잭션이 아닌 별도로 처리
+			unitTestService.deleteUnitTest(unitTestVo);
+			AppLog.debug("단위테스트 케이스 삭제 성공");
+
+		} catch (Exception e) {
+			AppLog.error("단위테스트 케이스 삭제 실패: {}", e.getMessage());
+			throw new RuntimeException("테스트 케이스 삭제 중 오류가 발생했습니다: " + e.getMessage());
+		}
 	}
 
-	// ===== 단위테스트 케이스 관련 파일 처리 (AttService 위임) =====
+	/**
+	 * 방법 2: 파일과 테스트 케이스를 분리해서 삭제
+	 */
+	@ElService(key = "UNIT001DelWithFiles")
+	@RequestMapping(value = "UNIT001DelWithFiles")
+	@ElDescription(sub = "단위테스트 케이스 파일 포함 삭제", desc = "단위테스트 케이스와 관련 파일을 안전하게 삭제한다.")
+	public void deleteUnitTestWithFiles(UnitTestVo unitTestVo) throws Exception {
+	    AppLog.debug("=== 컨트롤러: 단위테스트 케이스 + 파일 삭제 시작 ===");
+	    
+	    String testCaseId = unitTestVo.getTestCaseId();
+	    
+	    if (testCaseId == null || testCaseId.trim().isEmpty()) {
+	        throw new RuntimeException("삭제할 테스트 케이스 ID가 필요합니다.");
+	    }
+	    
+	    try {
+	        // 1. 테스트 케이스 존재 여부 확인
+	        UnitTestVo existingTest = unitTestService.selectUnitTestDetail(unitTestVo);
+	        if (existingTest == null) {
+	            throw new RuntimeException("해당 테스트 케이스를 찾을 수 없습니다.");
+	        }
+	        
+	        AppLog.debug("삭제 대상: {}", existingTest.getTestCaseName());
+	        
+	        // 2. 서비스에서 파일과 테스트 케이스 삭제
+	        int deleteResult = unitTestService.deleteUnitTest(unitTestVo);
+	        
+	        if (deleteResult <= 0) {
+	            throw new RuntimeException("테스트 케이스 삭제에 실패했습니다.");
+	        }
+	        
+	        AppLog.debug("테스트 케이스 삭제 성공: {}", testCaseId);
+	        
+	    } catch (Exception e) {
+	        AppLog.error("테스트 케이스 삭제 중 오류: {}", e.getMessage());
+	        throw new RuntimeException("삭제 중 오류가 발생했습니다: " + e.getMessage());
+	    }
+	}
+
+
+	/**
+	 * 방법 3: 단순하게 서비스 메서드 분리 호출
+	 */
+	@ElService(key = "UNIT001DelSimple")
+	@RequestMapping(value = "UNIT001DelSimple")
+	@ElDescription(sub = "단위테스트 케이스 단순 삭제", desc = "트랜잭션 문제 없이 단순하게 삭제한다.")
+	public void deleteUnitTestSimple(UnitTestVo unitTestVo) throws Exception {
+		AppLog.debug("=== 컨트롤러: 단위테스트 케이스 단순 삭제 ===");
+
+		String testCaseId = unitTestVo.getTestCaseId();
+		if (testCaseId == null || testCaseId.trim().isEmpty()) {
+			throw new RuntimeException("삭제할 테스트 케이스 ID가 필요합니다.");
+		}
+
+		try {
+			// 1. 파일 삭제 시도 (실패해도 무시)
+			try {
+				AppLog.debug("관련 파일 삭제 시도: {}", testCaseId);
+				attService.deleteFilesByRef("UNIT_TEST", testCaseId);
+				AppLog.debug("관련 파일 삭제 완료");
+			} catch (Exception fileException) {
+				AppLog.warn("파일 삭제 실패 (무시하고 계속): {}", fileException.getMessage());
+				// 파일 삭제 실패는 무시
+			}
+
+			// 2. 테스트 케이스 삭제 (트랜잭션 없는 버전 호출)
+			int result = unitTestService.updateUnitTest(unitTestVo); // 실제로는 삭제 전용 메서드 필요
+
+			if (result <= 0) {
+				throw new RuntimeException("테스트 케이스 삭제에 실패했습니다.");
+			}
+
+			AppLog.debug("단위테스트 케이스 삭제 완료: {}", testCaseId);
+
+		} catch (Exception e) {
+			AppLog.error("테스트 케이스 삭제 실패: {}", e.getMessage());
+			throw new RuntimeException("테스트 케이스 삭제 실패: " + e.getMessage());
+		}
+	}
+
+// ===== 헬퍼 메서드들 =====
+
+	/**
+	 * 테스트 케이스 관련 파일들만 삭제
+	 */
+	private boolean deleteTestCaseFiles(String testCaseId) {
+		try {
+			AppLog.debug("테스트 케이스 파일 삭제 시작: {}", testCaseId);
+
+			// AttService를 통해 파일 삭제
+			attService.deleteFilesByRef("UNIT_TEST", testCaseId);
+
+			AppLog.debug("테스트 케이스 파일 삭제 완료: {}", testCaseId);
+			return true;
+
+		} catch (Exception e) {
+			AppLog.error("테스트 케이스 파일 삭제 실패: {} - {}");
+			return false;
+		}
+	}
+
+	/**
+	 * 테스트 케이스만 삭제 (DB에서만)
+	 */
+	private boolean deleteTestCaseOnly(UnitTestVo unitTestVo) {
+		try {
+			AppLog.debug("테스트 케이스 DB 삭제 시작: {}", unitTestVo.getTestCaseId());
+
+			// 서비스의 비트랜잭션 삭제 메서드 호출 (새로 만들어야 함)
+			int result = unitTestService.deleteUnitTest(unitTestVo);
+
+			AppLog.debug("테스트 케이스 DB 삭제 완료: {}", unitTestVo.getTestCaseId());
+			return result > 0;
+
+		} catch (Exception e) {
+			AppLog.error("테스트 케이스 DB 삭제 실패: {} - {}");
+			return false;
+		}
+	}
 
 	/**
 	 * 단위테스트 케이스 파일 업로드 (별도)

@@ -433,18 +433,48 @@
 				mediatype="application/json" encoding="UTF-8" mode="asynchronous" processMsg="개발업무를 조회 중입니다."
 				ev:submitdone="scwin.sbm_selectDevelopTaskList_submitdone">
 			</xf:submission>
-
-			<xf:submission id="sbm_searchTaskByName" ref='data:json,{"id":"dmp_taskSearch","key":"taskSearchVo"}'
-				target='data:json,{"id":"dlt_taskList","key":"taskList"}' action="/InsWebApp/TASK001SearchByName.pwkjson" method="post"
-				mediatype="application/json" encoding="UTF-8" mode="asynchronous" processMsg="업무를 검색 중입니다."
-				ev:submitdone="scwin.sbm_searchTaskByName_submitdone">
-			</xf:submission>
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
 		<w2:publicInfo method="" />
 		<script lazy="false" type="text/javascript"><![CDATA[scwin.CURRENT_PROJECT_ID = "";
 scwin.CURRENT_USER_ID = "";
 scwin.CURRENT_USER_GROUP_ID = "";
+
+
+scwin.fullyDecodeHtml = function(str) {
+    if (!str) return str;
+    
+    var result = str;
+    var attempts = 0;
+    var maxAttempts = 5;
+    
+    while (attempts < maxAttempts && (result.includes('&lt;') || result.includes('&gt;') || result.includes('&quot;'))) {
+        attempts++;
+        var previousResult = result;
+        
+        try {
+            var tempDiv = document.createElement('div');
+            tempDiv.innerHTML = result;
+            result = tempDiv.innerHTML;
+        } catch(e) {
+            // 브라우저 방식 실패 시 수동 처리
+        }
+        
+        result = result
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
+            .replace(/&apos;/g, "'")
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&');
+        
+        if (result === previousResult) break;
+    }
+    
+    return result;
+};
+
 
 /**
  * 우선순위별 배지 스타일 적용
@@ -1673,6 +1703,7 @@ scwin.btn_register_onclick = function(e) {
     
     console.log("새 케이스 등록 모드로 초기화 완료");
 };
+
 /**
  * 업무 선택 팝업 열기
  */
@@ -1932,14 +1963,13 @@ scwin.showDetailPopup = function(mode) {
  * 상세 조회 완료 후 에디터 내용 설정
  */
 scwin.sbm_selectUnitTestDetail_submitdone = function(e) {
-    console.log("=== 상세 조회 완료 ===", e);
+    console.log("=== 상세 조회 완료 (수정된 버전) ===", e);
     
     try {
         var responseData = e.responseJSON;
         var elData = responseData ? responseData.elData : null;
         var elHeader = responseData ? responseData.elHeader : null;
         
-        // 성공 여부 확인
         if (!elHeader || elHeader.resSuc !== true) {
             var errorMsg = "상세 정보 조회에 실패했습니다.";
             if (elHeader && elHeader.resMsg) {
@@ -1950,32 +1980,18 @@ scwin.sbm_selectUnitTestDetail_submitdone = function(e) {
             return;
         }
         
-        // 조회된 데이터 확인
         console.log("=== 서버에서 조회된 데이터 ===");
         console.log("전체 응답:", elData);
-        console.log("description:", elData.description);
-        console.log("testData:", elData.testData);
-        console.log("description 길이:", elData.description ? elData.description.length : 0);
-        console.log("testData 길이:", elData.testData ? elData.testData.length : 0);
+        console.log("원본 description:", elData.description);
+        console.log("원본 testData:", elData.testData);
         
         // 데이터맵에 서버 데이터 설정
         dmp_unitTestDetail.setJSON(elData);
         
-        // 에디터에 내용 설정 (지연 실행으로 확실하게)
+        // HTML 엔티티 디코딩 후 에디터에 내용 설정
         setTimeout(function() {
             scwin.setEditorContent(elData.description, elData.testData);
         }, 300);
-        
-        // 제목 설정
-        setTimeout(function() {
-            try {
-                var mode = dmp_unitTestDetail.get("testCaseId") ? "view" : "new";
-                var title = mode === "view" ? "단위테스트 케이스 상세정보" : "단위테스트 케이스 수정";
-                spn_popupTitle.setValue(title);
-            } catch(e) {
-                console.error("제목 설정 실패:", e);
-            }
-        }, 50);
         
         // 파일 목록 로드
         scwin.loadFileList();
@@ -1990,55 +2006,42 @@ scwin.sbm_selectUnitTestDetail_submitdone = function(e) {
  * 에디터 내용 설정 (별도 함수로 분리)
  */
 scwin.setEditorContent = function(description, testData) {
-    console.log("=== 에디터 내용 설정 시작 ===");
-    console.log("설정할 description:", description);
-    console.log("설정할 testData:", testData);
-    
     try {
-        // description 에디터 설정
         if (editor_description) {
             var descContent = description || "";
             
-            // 빈 값이면 기본 메시지 설정 (테스트용)
+            if (descContent && (descContent.includes('&lt;') || descContent.includes('&gt;') || descContent.includes('&quot;'))) {
+                descContent = scwin.fullyDecodeHtml(descContent);
+            }
+            
             if (!descContent || descContent.trim() === "") {
                 descContent = "<p>테스트 설명이 없습니다.</p>";
             }
             
             if (editor_description.setHTML) {
                 editor_description.setHTML(descContent);
-                console.log("description 에디터 설정 완료:", descContent);
-            } else {
-                console.error("editor_description.setHTML 메서드가 없습니다.");
             }
-        } else {
-            console.error("editor_description 객체가 없습니다.");
         }
         
-        // testData 에디터 설정
         if (editor_testData) {
             var testDataContent = testData || "";
             
-            // 빈 값이면 기본 메시지 설정 (테스트용)
+            if (testDataContent && (testDataContent.includes('&lt;') || testDataContent.includes('&gt;') || testDataContent.includes('&quot;'))) {
+                testDataContent = scwin.fullyDecodeHtml(testDataContent);
+            }
+            
             if (!testDataContent || testDataContent.trim() === "") {
                 testDataContent = "<p>테스트 데이터가 없습니다.</p>";
             }
             
             if (editor_testData.setHTML) {
                 editor_testData.setHTML(testDataContent);
-                console.log("testData 에디터 설정 완료:", testDataContent);
-            } else {
-                console.error("editor_testData.setHTML 메서드가 없습니다.");
             }
-        } else {
-            console.error("editor_testData 객체가 없습니다.");
         }
-        
-        console.log("=== 에디터 내용 설정 완료 ===");
         
     } catch (error) {
         console.error("에디터 내용 설정 중 오류:", error);
         
-        // 대안: 간단한 텍스트로라도 설정 시도
         try {
             if (editor_description && editor_description.setHTML) {
                 editor_description.setHTML(description || "<p>내용을 불러올 수 없습니다.</p>");
@@ -2051,6 +2054,7 @@ scwin.setEditorContent = function(description, testData) {
         }
     }
 };
+
 
 /**
  * 성공 페이지 번호 클릭 이벤트

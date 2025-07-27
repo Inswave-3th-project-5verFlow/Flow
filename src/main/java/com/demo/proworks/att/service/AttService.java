@@ -87,4 +87,6 @@ public interface AttService {
      */
 	public AttVo getFileInfo(String fileId) throws Exception;
 	
+	void deleteFilesByRef(String refType, String refId) throws Exception;
+	
 }

@@ -191,9 +191,12 @@
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg=""
 				ev:submit="" ev:submitdone="scwin.sbm_insertOutVo_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
-			<xf:submission id="sbm_selectOutVo" ref="" target="" action="/InsWebApp/OUT001UpdView.pwkjson" method="post"
+			
+			<!-- 상세 조회 submission 추가 -->
+			<xf:submission id="sbm_selectOutVoDetail" ref='data:json,{"id":"dmp_outVoDetail","key":"outVo"}'
+				target='data:json,{"id":"dmp_outVoDetail","key":""}' action="/InsWebApp/OUT001UpdView.pwkjson" method="post"
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-				processMsg="산출물관리를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectOutVo_submitdone" ev:submiterror="" abortTrigger="">
+				processMsg="상세 정보를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectOutVoDetail_submitdone" ev:submiterror="" abortTrigger="">
 			</xf:submission>
 
 			<!-- 파일 관련 submission -->
@@ -306,23 +309,130 @@
 		var selectedData = dlt_outVoList.getRowJSON(row);
 		dmp_outVoDetail.setJSON(selectedData);
 		
+		// 상세 조회
+		scwin.showDetailPopup("view");
+	};
+
+	/**
+	 * 상세보기 팝업 표시 (Test.xml과 동일한 방식)
+	 */
+	scwin.showDetailPopup = function(mode) {
+		console.log("상세보기 팝업 표시:", mode);
+		
+		var selectedData = dmp_outVoDetail.getJSON();
+		
+		console.log("=== 선택된 데이터 상세 확인 ===");
+		console.log("전체 데이터:", selectedData);
+		console.log("description 값:", selectedData.description);
+		
+		// 팝업 표시
 		pop_overlay.show();
 		
-		// 조회 모드로 설정
-		scwin.setFormMode("view");
+		// 모드 설정
+		scwin.setFormMode(mode);
 		
-		setTimeout(function() {
-			try {
-				spn_popupTitle.setValue("산출물 상세정보");
-			} catch(e) {
-				setTimeout(function() {
-					spn_popupTitle.setValue("산출물 상세정보");
-				}, 50);
+		// 서버에서 최신 데이터 다시 조회
+		console.log("서버에서 최신 데이터 조회 시작");
+		$c.sbm.execute($p, sbm_selectOutVoDetail);
+	};
+
+	/**
+	 * 상세 조회 완료 후 에디터 내용 설정
+	 */
+	scwin.sbm_selectOutVoDetail_submitdone = function(e) {
+		console.log("=== 상세 조회 완료 ===", e);
+		
+		try {
+			var responseData = e.responseJSON;
+			var elData = responseData ? responseData.elData : null;
+			var elHeader = responseData ? responseData.elHeader : null;
+			
+			// 성공 여부 확인
+			if (!elHeader || elHeader.resSuc !== true) {
+				var errorMsg = "상세 정보 조회에 실패했습니다.";
+				if (elHeader && elHeader.resMsg) {
+					errorMsg += "\n오류메시지: " + elHeader.resMsg;
+				}
+				console.error("상세 조회 실패:", errorMsg);
+				$c.win.alert(errorMsg);
+				return;
 			}
-		}, 50);
+			
+			// 조회된 데이터 확인
+			console.log("=== 서버에서 조회된 데이터 ===");
+			console.log("전체 응답:", elData);
+			console.log("description:", elData.description);
+			console.log("description 길이:", elData.description ? elData.description.length : 0);
+			
+			// 데이터맵에 서버 데이터 설정
+			dmp_outVoDetail.setJSON(elData);
+			
+			// 에디터에 내용 설정 (지연 실행으로 확실하게)
+			setTimeout(function() {
+				scwin.setEditorContent(elData.description);
+			}, 300);
+			
+			// 제목 설정
+			setTimeout(function() {
+				try {
+					var mode = dmp_outVoDetail.get("id") ? "view" : "new";
+					var title = mode === "view" ? "산출물 상세정보" : "산출물 등록";
+					spn_popupTitle.setValue(title);
+				} catch(e) {
+					console.error("제목 설정 실패:", e);
+				}
+			}, 50);
+			
+			// 파일 목록 로드
+			scwin.loadFileList();
+			
+		} catch (error) {
+			console.error("상세 조회 응답 처리 중 오류:", error);
+			$c.win.alert("상세 정보 처리 중 오류가 발생했습니다.");
+		}
+	};
+
+	/**
+	 * 에디터 내용 설정 (Test.xml과 동일한 방식)
+	 */
+	scwin.setEditorContent = function(description) {
+		console.log("=== 에디터 내용 설정 시작 ===");
+		console.log("설정할 description:", description);
 		
-		// 파일 목록 로드
-		scwin.loadFileList();
+		try {
+			// description 에디터 설정
+			if (editor_description) {
+				var descContent = description || "";
+				
+				// 빈 값이면 기본 메시지 설정 (테스트용)
+				if (!descContent || descContent.trim() === "") {
+					descContent = "<p>설명이 없습니다.</p>";
+				}
+				
+				if (editor_description.setHTML) {
+					editor_description.setHTML(descContent);
+					console.log("description 에디터 설정 완료:", descContent);
+				} else {
+					console.error("editor_description.setHTML 메서드가 없습니다.");
+				}
+			} else {
+				console.error("editor_description 객체가 없습니다.");
+			}
+			
+			console.log("=== 에디터 내용 설정 완료 ===");
+			
+		} catch (error) {
+			console.error("에디터 내용 설정 중 오류:", error);
+			
+			// 대안: 간단한 텍스트로라도 설정 시도
+			try {
+				if (editor_description && editor_description.setHTML) {
+					editor_description.setHTML(description || "<p>내용을 불러올 수 없습니다.</p>");
+				}
+			} catch (fallbackError) {
+				console.error("대안 방법도 실패:", fallbackError);
+			}
+		}
 	};
 
 	/************************** 팝업 관련 이벤트 *************************/
@@ -337,6 +447,18 @@
 		dmp_outVoDetail.set("pjtId", "6");
 		dmp_outVoDetail.set("pjtName", "ERP 시스템 고도화 프로젝트");
 		dmp_outVoDetail.set("outputType", "DOC");
+		
+		// 에디터 초기화
+		setTimeout(function() {
+			try {
+				if (editor_description && editor_description.setHTML) {
+					editor_description.setHTML("");
+				}
+				console.log("에디터 초기화 완료");
+			} catch(e) {
+				console.error("에디터 초기화 실패:", e);
+			}
+		}, 100);
 		
 		// 파일 관련 초기화
 		dlt_upload.setJSON([]);
@@ -450,71 +572,66 @@
 	};
 
 	/**
-	 * 에디터 모드 전환 함수
+	 * 에디터 모드 전환 함수 (Test.xml과 동일한 방식)
 	 */
 	scwin.setEditorMode = function(isEditMode) {
 		console.log("에디터 모드 전환:", isEditMode ? "편집" : "조회");
 		
-		if (isEditMode) {
-			// 편집 모드: 에디터 표시, 읽기 전용 숨김
-			grp_description_edit.show();
-			grp_description_view.hide();
-		} else {
-			// 조회 모드: 읽기 전용 표시, 에디터 숨김
-			grp_description_edit.hide();
-			grp_description_view.show();
+		// 에디터는 항상 표시하되, 읽기전용 여부만 변경
+		try {
+			if (editor_description && editor_description.setReadOnly) {
+				editor_description.setReadOnly(!isEditMode);
+				console.log("description 에디터 readOnly:", !isEditMode);
+			}
 			
-			// HTML 내용을 텍스트로 변환하여 표시
-			scwin.updateViewContent();
+			// 내용 업데이트 (조회 모드일 때)
+			if (!isEditMode) {
+				scwin.updateViewContent();
+			}
+			
+		} catch(e) {
+			console.error("에디터 읽기전용 설정 실패:", e);
 		}
 	};
 
 	/**
-	 * 조회 모드에서 HTML 내용을 텍스트로 변환
+	 * 조회 모드 내용 업데이트 (Test.xml과 동일한 방식)
 	 */
 	scwin.updateViewContent = function() {
 		try {
 			var description = dmp_outVoDetail.get("description") || "";
 			
-			// HTML 태그 제거하고 텍스트만 추출
-			var descriptionText = scwin.stripHtmlTags(description);
+			// HTML을 그대로 표시 (웹스퀘어 에디터의 setHTML 방식 사용)
+			if (editor_description && editor_description.setHTML) {
+				editor_description.setHTML(description);
+			}
 			
-			// 조회 영역에 설정
-			txt_description_view.setValue(descriptionText);
+			console.log("조회 모드 내용 업데이트 완료");
 			
 		} catch(e) {
 			console.error("내용 업데이트 실패:", e);
 		}
 	};
 
-	/**
-	 * HTML 태그 제거 함수
-	 */
-	scwin.stripHtmlTags = function(htmlString) {
-		if (!htmlString) return "";
-		
-		// HTML 태그 제거
-		var text = htmlString.replace(/<[^>]*>/g, "");
-		
-		// HTML 엔티티 디코딩
-		text = text.replace(/&nbsp;/g, " ");
-		text = text.replace(/&lt;/g, "<");
-		text = text.replace(/&gt;/g, ">");
-		text = text.replace(/&amp;/g, "&");
-		text = text.replace(/&quot;/g, '"');
-		
-		// 여러 개의 공백이나 줄바꿈을 하나로 정리
-		text = text.replace(/\s+/g, " ").trim();
-		
-		return text;
-	};
-
 	/************************** CRUD 트랜잭션 이벤트 *************************/
 
 	/**
-	 * 저장 버튼 클릭 이벤트
+	 * 저장 버튼 클릭 이벤트 (Test.xml과 동일한 방식)
 	 */	
 	scwin.btn_save_onclick = function(e) {
+		console.log("저장 버튼 클릭");
+		
+		// 에디터 내용을 먼저 데이터맵에 저장
+		try {
+			if (editor_description && editor_description.getHTML) {
+				var descriptionHTML = editor_description.getHTML();
+				dmp_outVoDetail.set("description", descriptionHTML);
+				console.log("저장 시 description:", descriptionHTML);
+			}
+		} catch(e) {
+			console.error("에디터 내용 저장 실패:", e);
+		}
+		
 		var outputName = dmp_outVoDetail.get("name");
 		if (!outputName || outputName.trim() === "") {
 			$c.win.alert("산출물명을 입력해주세요.");
@@ -537,6 +654,61 @@
 	 */
 	scwin.sendOutputAndFiles = function() {
 		console.log("sendOutputAndFiles() 시작됨");
+		
+		// 에디터 포커스 해제하여 내용 확정
+		try {
+			if (editor_description && editor_description.blur) {
+				editor_description.blur();
+			}
+		} catch(e) {
+			console.log("에디터 blur 실패, 무시");
+		}
+		
+		// 웹스퀘어 에디터에서 내용 즉시 가져오기
+		try {
+			var descriptionHTML = "";
+			
+			if (editor_description && editor_description.getHTML) {
+				descriptionHTML = editor_description.getHTML();
+				dmp_outVoDetail.set("description", descriptionHTML);
+				console.log("description 저장됨:", descriptionHTML);
+			}
+		} catch(e) {
+			console.error("에디터 내용 가져오기 실패:", e);
+		}
+		
+		// 잠시 대기 후 저장 실행 (에디터 내용 동기화 시간 확보)
+		setTimeout(function() {
+			scwin.executeFileUploadWithData();
+		}, 100);
+	};
+
+	/**
+	 * 실제 파일 업로드와 데이터 전송 실행
+	 */
+	scwin.executeFileUploadWithData = function() {
+		console.log("executeFileUploadWithData() 시작됨");
+		
+		// 에디터 내용을 먼저 확실하게 동기화
+		try {
+			var descriptionHTML = "";
+			
+			if (editor_description && editor_description.getHTML) {
+				descriptionHTML = editor_description.getHTML();
+				console.log("description HTML:", descriptionHTML);
+			}
+			
+			// 데이터맵에 HTML 내용 직접 설정
+			if (descriptionHTML) {
+				dmp_outVoDetail.set("description", descriptionHTML);
+			}
+			
+			console.log("에디터 내용 동기화 완료");
+			console.log("- description:", descriptionHTML ? "있음" : "없음");
+			
+		} catch(e) {
+			console.error("에디터 내용 가져오기 실패:", e);
+		}
 		
 		var formData = new FormData();
 
@@ -590,6 +762,19 @@
 	 */
 	scwin.sendOutputAndFilesForUpdate = function() {
 		console.log("sendOutputAndFilesForUpdate() 시작됨");
+		
+		// 에디터 내용을 먼저 확실하게 동기화
+		try {
+			var descriptionHTML = "";
+			
+			if (editor_description && editor_description.getHTML) {
+				descriptionHTML = editor_description.getHTML();
+				dmp_outVoDetail.set("description", descriptionHTML);
+				console.log("수정 시 description:", descriptionHTML);
+			}
+		} catch(e) {
+			console.error("에디터 내용 저장 실패:", e);
+		}
 		
 		var formData = new FormData();
 
@@ -1308,24 +1493,6 @@
 									</xf:choices>
 								</xf:select1>
 							</xf:group>
-							
-							<!-- 승인 상태 -->
-							<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
-								<w2:textbox class="" label="승인 상태" style=""></w2:textbox>
-							</xf:group>
-							<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-								<xf:select1 allOption="" appearance="minimal" chooseOption="" direction="auto" 
-									disabled="false" disabledClass="w2selectbox_disabled" id="sel_search_approvalStatus" 
-									style="width: 180px; height: 21px;" submenuSize="auto"
-									ref="data:dmp_outVo.approvalStatus">
-									<xf:choices>
-										<xf:itemset nodeset="data:dlt_approvalStatus">
-											<xf:label ref="statusName"></xf:label>
-											<xf:value ref="code"></xf:value>
-										</xf:itemset>
-									</xf:choices>
-								</xf:select1>
-							</xf:group>
 						</xf:group>
 						
 						<xf:group class="" id="" style="" tagname="tr">
@@ -1340,7 +1507,7 @@
 						</xf:group>
 					</xf:group>
 				</xf:group>
-				<xf:group class="btn_schbox" id="" style="">
+				<xf:group class="btn_schbox" id="" style="margin-top : 30px ">
 					<xf:trigger class="btn_cm sch" disabled="" escape="false" id="btn_search" style="" type="button" 
 						ev:onclick="scwin.btn_search_onclick" localeRef="COMMON_BUTTON_00001">
 						<xf:label><![CDATA[조회]]></xf:label>
@@ -1350,7 +1517,7 @@
 						<xf:label><![CDATA[초기화]]></xf:label>
 					</xf:trigger>
 					<xf:trigger class="" disabled="" escape="false" id="reg_btn" localeRef="COMMON_BUTTON_00001"
-						style="background: linear-gradient(to bottom, #5cb85c 0%, #449d44 100%); color: white; border: 1px solid #4cae4c; padding: 8px 16px; font-size: 12px;  height: 30px; border-radius: 3px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 70px; box-shadow: 0 1px 2px rgba(0,0,0,0.2);border-radius: 4px; margin-left: 10px;"
+                    style="background-color:#EC9192;color: #ffffff !important;height: 30px;font-size: 14px;min-width: 70px;width: auto;padding: 0 10px;width: 70px;border-color: #fff;border: none; border-radius : 5px;"
 						type="button" ev:onclick="scwin.reg_btn_onclick">
 						<xf:label><![CDATA[등록]]></xf:label>
 					</xf:trigger>
@@ -1375,7 +1542,6 @@
                             <w2:column width="200" inputType="text" style="" id="column3" value="산출물명" displayMode="label"></w2:column>
                             <w2:column width="100" inputType="text" style="" id="column9" value="산출물 유형" displayMode="label"></w2:column>
                             <w2:column width="150" inputType="text" style="" id="columnPjt" value="프로젝트명" displayMode="label"></w2:column>
-                            <w2:column width="100" inputType="text" style="" id="columnApproval" value="승인 상태" displayMode="label"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="column4" value="등록일시" displayMode="label"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="column5" value="수정일시" displayMode="label"></w2:column>
 						</w2:row>
@@ -1386,7 +1552,6 @@
                             <w2:column width="200" inputType="text" style="" id="name" value="" displayMode="label"></w2:column>
                             <w2:column width="100" inputType="text" style="" id="outputType" value="" displayMode="label"></w2:column>
                             <w2:column width="150" inputType="text" style="" id="pjtName" value="" displayMode="label"></w2:column>
-                            <w2:column width="100" inputType="text" style="" id="approvalStatus" value="" displayMode="label"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="createdAt" value="" displayMode="label"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="updatedAt" value="" displayMode="label"></w2:column>
 						</w2:row>
@@ -1497,25 +1662,15 @@
                                 </xf:group>
                             </xf:group>
 							
-                            <!-- 상세설명 섹션 -->
-                            <xf:group class="description-section" style="margin-bottom: 25px; max-height: 350px;">
+                            <!-- 상세설명 섹션 - Test.xml과 동일한 에디터만 사용 -->
+                            <xf:group class="description-section" style="margin-bottom: 130px;">
                                 <xf:group class="titbox" style="margin-bottom: 10px;">
                                     <w2:textbox label="상세설명" style="font-weight: bold; font-size: 14px;" tagname="h4"></w2:textbox>
                                 </xf:group>
 
-                                <!-- 조회 모드: textarea 영역 -->
-                                <xf:group id="grp_description_view" style="display: none;">
-                                    <xf:textarea id="txt_description_view" readOnly="true"
-                                        style="width: 100%; height: 120px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px; padding: 10px; font-family: inherit; line-height: 1.5; resize: none;"
-                                        ref="data:dmp_outVoDetail.description">
-                                    </xf:textarea>
-                                </xf:group>
-
-                                <!-- 편집 모드: w2:editor 영역 -->
-                                <xf:group id="grp_description_edit" style="display: block; height: 250px; overflow: hidden;">
-                                    <w2:editor id="editor_description" style="width: 98%; height: 180px; max-height: 180px;"
-                                        ref="data:dmp_outVoDetail.description">
-                                    </w2:editor>
+                                <!-- 에디터만 사용 (Test.xml과 동일) -->
+                                <xf:group id="grp_description_edit" style="display: block;">
+                                    <w2:editor id="editor_description" style="width: 100%; height: 200px;" ref="data:dmp_outVoDetail.description"></w2:editor>
                                 </xf:group>
                             </xf:group>
 						</xf:group>
@@ -1578,9 +1733,9 @@
                                                     textAlign="right" width="100"></w2:column>
                                                 <w2:column displayMode="label" id="status" inputType="text" 
                                                     style="height:25px; padding: 5px; color: #007bff;" textAlign="center" width="100"></w2:column>
-                                                <w2:column displayMode="label" id="action" inputType="text"
+                                                <w2:column displayMode="button" inputType="button"
                                                     style="height:25px; padding: 2px; color: #dc3545; cursor: pointer; font-size: 14px; font-weight: bold;" 
-                                                    textAlign="center" width="60" ev:onclick="scwin.removeUploadFile"></w2:column>
+                                                    textAlign="center" width="60" value="삭제" ev:onclick="scwin.removeUploadFile"></w2:column>
                                             </w2:row>
                                         </w2:gBody>
                                     </w2:gridView>

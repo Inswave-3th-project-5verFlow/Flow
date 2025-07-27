@@ -64,7 +64,7 @@ public class AttServiceImpl implements AttService {
      * @return 업로드된 파일 목록 List<AttVo>
      * @throws Exception
      */
-    @Transactional(rollbackFor = Exception.class)
+   
 	@Override
 	public List<AttVo> uploadFiles(MultipartFile[] files, String refType, String refId) throws Exception {
         System.out.println("=== AttService: 멀티파일 업로드 시작 ===");
@@ -112,7 +112,7 @@ public class AttServiceImpl implements AttService {
      * 단일 파일 업로드 처리 (public)
      * 외부에서 단일 파일 업로드 시 사용
      */
-    @Transactional(rollbackFor = Exception.class)
+   
     @Override
     public AttVo uploadSingleFile(MultipartFile file, String refType, String refId) throws Exception {
         System.out.println("=== AttService: 단일 파일 업로드 ===");
@@ -281,7 +281,7 @@ public class AttServiceImpl implements AttService {
      * 파일 삭제 처리
      * DB에서 논리 삭제 후 S3에서 물리 삭제
      */
-    @Transactional(rollbackFor = Exception.class)
+   
     @Override
     public void deleteFile(String fileId) throws Exception {
         System.out.println("=== AttService: 파일 삭제 ===");
@@ -342,5 +342,52 @@ public class AttServiceImpl implements AttService {
             return "";
         }
         return fileName.substring(lastDotIndex + 1).toLowerCase();
+    }
+    
+    /**
+     * 특정 참조의 모든 파일 완전 삭제 (UnitTest 등에서 사용)
+     * 
+     * @param refType 참조 타입 (예: UNIT_TEST)
+     * @param refId 참조 ID (예: TC_001)
+     * @throws Exception
+     */
+    public void deleteFilesByRef(String refType, String refId){
+        System.out.println("=== AttService: 참조별 파일 Hard Delete ===");
+        System.out.println("참조 타입: " + refType + ", 참조 ID: " + refId);
+        
+        try {
+            // 1. 해당 참조의 모든 파일 목록 조회
+            ProworksCommVO searchVo = new ProworksCommVO();
+            searchVo.setRefType(refType);
+            searchVo.setRefId(refId);
+            
+            List<AttVo> fileList = attDAO.selectFileListByRef(searchVo);
+            System.out.println("삭제 대상 파일 수: " + fileList.size());
+
+            // 2. S3에서 각 파일들 물리 삭제
+            for (AttVo fileVo : fileList) {
+                try {
+                    if (fileVo.getS3Key() != null && !fileVo.getS3Key().trim().isEmpty()) {
+                        amazonS3.deleteObject(bucketName, fileVo.getS3Key());
+                        System.out.println("S3 파일 삭제: " + fileVo.getOriginalFileName());
+                    }
+                } catch (Exception s3Exception) {
+                    System.err.println("S3 파일 삭제 실패: " + fileVo.getOriginalFileName() + " - " + s3Exception.getMessage());
+                    // S3 삭제 실패해도 계속 진행 (이미 삭제된 파일일 수 있음)
+                }
+            }
+
+            // 3. DB에서 파일 레코드들 Hard Delete
+            Map<String, String> paramMap = new HashMap<>();
+            paramMap.put("refType", refType);
+            paramMap.put("refId", refId);
+            
+            int deleteCount = attDAO.hardDeleteFilesByRef(paramMap);
+            System.out.println("DB 파일 레코드 삭제 완료: " + deleteCount + "건");
+            
+        } catch (Exception e) {
+            System.err.println("참조별 파일 Hard Delete 실패: " + e.getMessage());
+            throw new RuntimeException("파일 삭제 중 오류 발생: " + e.getMessage(), e);
+        }
     }
 }

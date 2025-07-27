@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper      
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"      
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--
+	@subject     : 코멘트 관리 관련 처리를 담당하는 Sql Mapper
+	@description : 코멘트 관리 관련 처리를 담당하는 Sql Mapper
+	@author      : 우민지
+	@since       : 2025/07/27
+	@modification
+	===========================================================
+	DATE              AUTHOR             DESC
+	===========================================================
+	2025/07/27              우민지             최초 생성
+ -->
+<mapper namespace="com.demo.proworks.def">
+    <insert id="insertCmt" parameterType="com.demo.proworks.def.vo.CmtVo">
+    	<!-- 코멘트 관리를 등록한다. -->	
+    		
+        INSERT INTO CMT   /* QueryID : com.demo.proworks.def.insertCmt */
+        ( 
+            ID
+            <if test="issueId  != null"> , ISSUE_ID   </if>
+            <if test="defectId != null"> , DEFECT_ID  </if>
+            <if test="parentId != null"> , PARENT_ID  </if>
+            <if test="content   != null"> , CONTENT    </if>
+            <if test="createdAt!= null"> , CREATED_AT </if>
+            <if test="updatedAt!= null"> , UPDATED_AT </if>
+            <if test="userId   != null"> , USER_ID    </if>
+            <if test="depth     != null"> , DEPTH      </if>
+            <if test="isDeleted!= null"> , IS_DELETED </if>
+        )
+        VALUES  
+        ( 
+            #{id}
+            <if test="issueId  != null"> , #{issueId}   </if>
+            <if test="defectId != null"> , #{defectId}  </if>
+            <if test="parentId != null"> , #{parentId}  </if>
+            <if test="content   != null"> , #{content}    </if>
+            <if test="createdAt!= null"> , #{createdAt} </if>
+            <if test="updatedAt!= null"> , #{updatedAt} </if>
+            <if test="userId   != null"> , #{userId}    </if>
+            <if test="depth     != null"> , #{depth}      </if>
+            <if test="isDeleted!= null"> , #{isDeleted} </if> 
+        )          
+    </insert>	
+	
+    <update id="updateCmt" parameterType="com.demo.proworks.def.vo.CmtVo">
+    	<!-- 코멘트 관리를 갱신한다. -->
+    	
+        UPDATE CMT    /* QueryID : com.demo.proworks.def.updateCmt */      
+      	  SET  
+                ID         = #{id}                	                       
+            <if test="issueId  != null"> , ISSUE_ID   = #{issueId}   </if>
+            <if test="defectId != null"> , DEFECT_ID  = #{defectId}  </if>
+            <if test="parentId != null"> , PARENT_ID  = #{parentId}  </if>
+            <if test="content   != null"> , CONTENT    = #{content}    </if>
+            <if test="createdAt!= null"> , CREATED_AT = #{createdAt} </if>
+            <if test="updatedAt!= null"> , UPDATED_AT = #{updatedAt} </if>
+            <if test="userId   != null"> , USER_ID    = #{userId}    </if>
+            <if test="depth     != null"> , DEPTH      = #{depth}      </if>
+            <if test="isDeleted!= null"> , IS_DELETED = #{isDeleted} </if>                 
+        WHERE   
+                ID         = #{id}        
+    </update>
+	
+    <delete id="deleteCmt" parameterType="com.demo.proworks.def.vo.CmtVo">
+    	<!-- 코멘트 관리를 삭제한다. -->
+    	
+        DELETE FROM CMT   /* QueryID : com.demo.proworks.def.deleteCmt */ 
+        WHERE   
+                ID         = #{id}                
+    </delete>
+	
+    <select id="selectCmt" parameterType="com.demo.proworks.def.vo.CmtVo" resultType="com.demo.proworks.def.vo.CmtVo">
+    	<!-- 코멘트 관리를 상세 조회한다. -->	
+        SELECT     /* QueryID : com.demo.proworks.def.selectCmt */
+            ID as id, ISSUE_ID as issueId, DEFECT_ID as defectId, PARENT_ID as parentId, CONTENT as content, CREATED_AT as createdAt, UPDATED_AT as updatedAt, USER_ID as userId, DEPTH as depth, IS_DELETED as isDeleted
+        FROM CMT 
+        WHERE 
+                ID         = #{id}        			
+    </select>
+	
+    <select id="selectListCmt" parameterType="com.demo.proworks.def.vo.CmtVo" resultType="com.demo.proworks.def.vo.CmtVo">
+    	<!-- 코멘트 관리 목록을 조회한다. -->
+           SELECT    /* QueryID : com.demo.proworks.def.selectListCmt */
+               ID as id, ISSUE_ID as issueId, DEFECT_ID as defectId, PARENT_ID as parentId, CONTENT as content, CREATED_AT as createdAt, UPDATED_AT as updatedAt, USER_ID as userId, DEPTH as depth, IS_DELETED as isDeleted		       
+           FROM (
+               SELECT  S.*, CEIL( (@ROWNUM:=@ROWNUM+1) / #{pageSize} ) AS PAGE
+               FROM (				
+                   SELECT 
+                       *  		                  
+                   FROM CMT
+                   WHERE  1=1    		
+	     																														
+               ) S, (SELECT @ROWNUM := 0) TMP
+           ) A
+            WHERE PAGE = #{pageIndex}
+    </select>
+	
+    <select id="selectListCountCmt" parameterType="com.demo.proworks.def.vo.CmtVo" resultType="long">
+    <!-- 코멘트 관리 목록의 카운트를 조회한다. -->
+    
+         SELECT    /* QueryID : com.demo.proworks.def.selectListCountCmt */
+             COUNT(*) totcnt  		                  
+         FROM CMT
+         WHERE  1=1    		
+
+    </select>
+
+</mapper>
