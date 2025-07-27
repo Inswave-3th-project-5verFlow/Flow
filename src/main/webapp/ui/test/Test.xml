@@ -6,199 +6,199 @@
 		<w2:type>COMPONENT</w2:type>
 		<w2:buildDate />
 		<w2:MSA />
-        <style>
+		<style>
 			/* 팝업 전체 컨테이너 */
 			.pop_contents {
-				background-color: white;
-				border: 2px solid #98BED6;
-				border-radius: 8px;
-				box-shadow: 0 4px 12px rgba(152, 190, 214, 0.2);
+			background-color: white;
+			border: 2px solid #98BED6;
+			border-radius: 8px;
+			box-shadow: 0 4px 12px rgba(152, 190, 214, 0.2);
 			}
-			
+
 
 			.pop_title {
-				color: #333 !important;
-				font-weight: bold !important;
+			color: #333 !important;
+			font-weight: bold !important;
 			}
-			
+
 			/* 팝업 바디 */
 			.pop_body {
-				background-color: white;
+			background-color: white;
 			}
-			
+
 			/* 섹션 타이틀 */
 			.section_title {
-				color: #98BED6 !important;
-				border-bottom: 2px solid #98BED6 !important;
-				padding-bottom: 5px !important;
+			color: #98BED6 !important;
+			border-bottom: 2px solid #98BED6 !important;
+			padding-bottom: 5px !important;
 			}
-			
+
 
 			/* 입력 요소들 */
-			input[type="text"], 
-			select, 
+			input[type="text"],
+			select,
 			textarea {
-				border: 1px solid #98BED6 !important;
-				border-radius: 4px !important;
+			border: 1px solid #98BED6 !important;
+			border-radius: 4px !important;
 			}
-			
-			input[type="text"]:focus, 
-			select:focus, 
+
+			input[type="text"]:focus,
+			select:focus,
 			textarea:focus {
-				border-color: #7BA6C4 !important;
-				box-shadow: 0 0 0 2px rgba(152, 190, 214, 0.2) !important;
+			border-color: #7BA6C4 !important;
+			box-shadow: 0 0 0 2px rgba(152, 190, 214, 0.2) !important;
 			}
-			
+
 			/* 읽기 전용 입력 */
 			input[readonly] {
-				background-color: #f8f9fa !important;
+			background-color: #f8f9fa !important;
 			}
-			
-            /* 버튼 박스 - 이 팝업 내부만 적용 */
+
+			/* 버튼 박스 - 이 팝업 내부만 적용 */
 			.pop_contents .btnbox {
-				background-color: #f8f9fa;
-				border-top: 1px solid #98BED6;
-				border-radius: 0 0 8px 8px;
+			background-color: #f8f9fa;
+			border-top: 1px solid #98BED6;
+			border-radius: 0 0 8px 8px;
 			}
-			
+
 			/* 달력 입력 */
 			.w2inputcalendar {
-				border: 1px solid #98BED6 !important;
-				border-radius: 4px !important;
+			border: 1px solid #98BED6 !important;
+			border-radius: 4px !important;
 			}
 		</style>
-		<xf:model> 
+		<xf:model>
 			<w2:dataCollection baseNode="map">
-                <w2:dataList baseNode="list" id="dlt_taskList" repeatNode="map" saveRemovedData="true">
-                    <w2:columnInfo>
-                        <w2:column dataType="text" id="taskId" name="업무ID"></w2:column>
-                        <w2:column dataType="text" id="taskName" name="업무명"></w2:column>
-                        <w2:column dataType="text" id="taskDes" name="업무설명"></w2:column>
-                        <w2:column dataType="text" id="taskStatus" name="업무상태"></w2:column>
-                    </w2:columnInfo>
-                </w2:dataList>
+				<w2:dataList baseNode="list" id="dlt_taskList" repeatNode="map" saveRemovedData="true">
+					<w2:columnInfo>
+						<w2:column dataType="text" id="taskId" name="업무ID"></w2:column>
+						<w2:column dataType="text" id="taskName" name="업무명"></w2:column>
+						<w2:column dataType="text" id="taskDes" name="업무설명"></w2:column>
+						<w2:column dataType="text" id="taskStatus" name="업무상태"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
 
-                <w2:dataMap baseNode="map" id="dmp_taskSearch" style="">
-                    <w2:keyInfo>
-                        <w2:key dataType="text" id="searchTaskName" name="검색업무명"></w2:key>
-                        <w2:key dataType="text" id="selectedTaskId" name="선택된업무ID"></w2:key>
-                        <w2:key dataType="text" id="selectedTaskName" name="선택된업무명"></w2:key>
-                    </w2:keyInfo>
-                </w2:dataMap>
-                <w2:dataList baseNode="list" id="dlt_successList" repeatNode="map" saveRemovedData="true">
-                    <w2:columnInfo>
-                        <w2:column dataType="text" id="testCaseId" name="테스트케이스ID"></w2:column>
-                        <w2:column dataType="text" id="taskId" name="업무ID"></w2:column>
-                        <w2:column dataType="text" id="taskName" name="업무명"></w2:column>
-                        <w2:column dataType="text" id="testCaseName" name="테스트케이스명"></w2:column>
-                        <w2:column dataType="text" id="testTarget" name="테스트대상"></w2:column>
-                        <w2:column dataType="text" id="testType" name="테스트타입"></w2:column>
-                        <w2:column dataType="text" id="priority" name="우선순위"></w2:column>
-                        <w2:column dataType="text" id="assignee" name="담당자"></w2:column>
-                        <w2:column dataType="text" id="assigneeName" name="담당자명"></w2:column>
-                        <w2:column dataType="text" id="executionDate" name="실행일시"></w2:column>
-                        <w2:column dataType="text" id="duration" name="소요시간"></w2:column>
-                        <w2:column dataType="text" id="testTypeName" name="테스트타입명"></w2:column>
-                        <w2:column dataType="text" id="priorityName" name="우선순위명"></w2:column>
-                    </w2:columnInfo>
-                </w2:dataList>
+				<w2:dataMap baseNode="map" id="dmp_taskSearch" style="">
+					<w2:keyInfo>
+						<w2:key dataType="text" id="searchTaskName" name="검색업무명"></w2:key>
+						<w2:key dataType="text" id="selectedTaskId" name="선택된업무ID"></w2:key>
+						<w2:key dataType="text" id="selectedTaskName" name="선택된업무명"></w2:key>
+					</w2:keyInfo>
+				</w2:dataMap>
+				<w2:dataList baseNode="list" id="dlt_successList" repeatNode="map" saveRemovedData="true">
+					<w2:columnInfo>
+						<w2:column dataType="text" id="testCaseId" name="테스트케이스ID"></w2:column>
+						<w2:column dataType="text" id="taskId" name="업무ID"></w2:column>
+						<w2:column dataType="text" id="taskName" name="업무명"></w2:column>
+						<w2:column dataType="text" id="testCaseName" name="테스트케이스명"></w2:column>
+						<w2:column dataType="text" id="testTarget" name="테스트대상"></w2:column>
+						<w2:column dataType="text" id="testType" name="테스트타입"></w2:column>
+						<w2:column dataType="text" id="priority" name="우선순위"></w2:column>
+						<w2:column dataType="text" id="assignee" name="담당자"></w2:column>
+						<w2:column dataType="text" id="assigneeName" name="담당자명"></w2:column>
+						<w2:column dataType="text" id="executionDate" name="실행일시"></w2:column>
+						<w2:column dataType="text" id="duration" name="소요시간"></w2:column>
+						<w2:column dataType="text" id="testTypeName" name="테스트타입명"></w2:column>
+						<w2:column dataType="text" id="priorityName" name="우선순위명"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
 
-                <w2:dataList baseNode="list" id="dlt_failList" repeatNode="map" saveRemovedData="true">
-                    <w2:columnInfo>
-                        <w2:column dataType="text" id="testCaseId" name="테스트케이스ID"></w2:column>
-                        <w2:column dataType="text" id="taskId" name="업무ID"></w2:column>
-                        <w2:column dataType="text" id="taskName" name="업무명"></w2:column>
-                        <w2:column dataType="text" id="testCaseName" name="테스트케이스명"></w2:column>
-                        <w2:column dataType="text" id="testTarget" name="테스트대상"></w2:column>
-                        <w2:column dataType="text" id="testType" name="테스트타입"></w2:column>
-                        <w2:column dataType="text" id="priority" name="우선순위"></w2:column>
-                        <w2:column dataType="text" id="assignee" name="담당자"></w2:column>
-                        <w2:column dataType="text" id="assigneeName" name="담당자명"></w2:column>
-                        <w2:column dataType="text" id="executionDate" name="실행일시"></w2:column>
-                        <w2:column dataType="text" id="duration" name="소요시간"></w2:column>
-                        <w2:column dataType="text" id="testTypeName" name="테스트타입명"></w2:column>
-                        <w2:column dataType="text" id="priorityName" name="우선순위명"></w2:column>
-                    </w2:columnInfo>
-                </w2:dataList>
-                
-                <w2:dataMap baseNode="map" id="dmp_search" style="">
-                    <w2:keyInfo>
-                        <w2:key dataType="text" id="searchTaskId" name="업무ID"></w2:key>
-                        <w2:key dataType="text" id="searchTestStatus" name="테스트상태"></w2:key>
-                        <w2:key dataType="text" id="searchAssignee" name="담당자"></w2:key>
-                        <w2:key dataType="text" id="searchTestCaseName" name="테스트케이스명"></w2:key>
-                        <w2:key dataType="text" id="searchTestTarget" name="테스트대상"></w2:key>
-                        <w2:key dataType="text" id="searchTestType" name="테스트타입"></w2:key>
-                        <w2:key dataType="text" id="searchPriority" name="우선순위"></w2:key>
-                        <w2:key dataType="text" id="dateFrom" name="시작일"></w2:key>
-                        <w2:key dataType="text" id="dateTo" name="종료일"></w2:key>
-                        <w2:key dataType="text" id="pageIndex" name="페이지번호" defaultValue="1"></w2:key>
-                        <w2:key dataType="text" id="pageSize" name="페이지사이즈" defaultValue="10"></w2:key>
-                        <w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
-                    </w2:keyInfo>
-                </w2:dataMap>
+				<w2:dataList baseNode="list" id="dlt_failList" repeatNode="map" saveRemovedData="true">
+					<w2:columnInfo>
+						<w2:column dataType="text" id="testCaseId" name="테스트케이스ID"></w2:column>
+						<w2:column dataType="text" id="taskId" name="업무ID"></w2:column>
+						<w2:column dataType="text" id="taskName" name="업무명"></w2:column>
+						<w2:column dataType="text" id="testCaseName" name="테스트케이스명"></w2:column>
+						<w2:column dataType="text" id="testTarget" name="테스트대상"></w2:column>
+						<w2:column dataType="text" id="testType" name="테스트타입"></w2:column>
+						<w2:column dataType="text" id="priority" name="우선순위"></w2:column>
+						<w2:column dataType="text" id="assignee" name="담당자"></w2:column>
+						<w2:column dataType="text" id="assigneeName" name="담당자명"></w2:column>
+						<w2:column dataType="text" id="executionDate" name="실행일시"></w2:column>
+						<w2:column dataType="text" id="duration" name="소요시간"></w2:column>
+						<w2:column dataType="text" id="testTypeName" name="테스트타입명"></w2:column>
+						<w2:column dataType="text" id="priorityName" name="우선순위명"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
+
+				<w2:dataMap baseNode="map" id="dmp_search" style="">
+					<w2:keyInfo>
+						<w2:key dataType="text" id="searchTaskId" name="업무ID"></w2:key>
+						<w2:key dataType="text" id="searchTestStatus" name="테스트상태"></w2:key>
+						<w2:key dataType="text" id="searchAssignee" name="담당자"></w2:key>
+						<w2:key dataType="text" id="searchTestCaseName" name="테스트케이스명"></w2:key>
+						<w2:key dataType="text" id="searchTestTarget" name="테스트대상"></w2:key>
+						<w2:key dataType="text" id="searchTestType" name="테스트타입"></w2:key>
+						<w2:key dataType="text" id="searchPriority" name="우선순위"></w2:key>
+						<w2:key dataType="text" id="dateFrom" name="시작일"></w2:key>
+						<w2:key dataType="text" id="dateTo" name="종료일"></w2:key>
+						<w2:key dataType="text" id="pageIndex" name="페이지번호" defaultValue="1"></w2:key>
+						<w2:key dataType="text" id="pageSize" name="페이지사이즈" defaultValue="10"></w2:key>
+						<w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
+					</w2:keyInfo>
+				</w2:dataMap>
 
 				<!-- 메인 테스트 목록 -->
 				<w2:dataList baseNode="list" id="dlt_unitTestVoList" repeatNode="map" saveRemovedData="true">
-                    <w2:columnInfo>
-                        <w2:column dataType="text" id="testCaseId" name="테스트케이스ID"></w2:column>
-                        <w2:column dataType="text" id="taskId" name="업무ID"></w2:column>
-                        <w2:column dataType="text" id="taskName" name="업무명"></w2:column>
-                        <w2:column dataType="text" id="testCaseName" name="테스트케이스명"></w2:column>
-                        <w2:column dataType="text" id="testTarget" name="테스트대상"></w2:column>
-                        <w2:column dataType="text" id="testType" name="테스트타입"></w2:column>
-                        <w2:column dataType="text" id="priority" name="우선순위"></w2:column>
-                        <w2:column dataType="text" id="description" name="테스트설명"></w2:column>
-                        <w2:column dataType="text" id="testData" name="테스트데이터"></w2:column>
-                        <w2:column dataType="text" id="testStatus" name="테스트상태"></w2:column>
-                        <w2:column dataType="text" id="executionDate" name="실행일시"></w2:column>
-                        <w2:column dataType="text" id="duration" name="소요시간"></w2:column>
-                        <w2:column dataType="text" id="assignee" name="담당자"></w2:column>
-                        <w2:column dataType="text" id="assigneeName" name="담당자명"></w2:column>
-                        <w2:column dataType="text" id="isDeleted" name="삭제여부"></w2:column>
-                        <w2:column dataType="text" id="createdAt" name="생성일시"></w2:column>
-                        <w2:column dataType="text" id="updatedAt" name="수정일시"></w2:column>
-                        <w2:column dataType="text" id="createdBy" name="생성자"></w2:column>
-                        <w2:column dataType="text" id="updatedBy" name="수정자"></w2:column>
-                    </w2:columnInfo>
-                </w2:dataList>
+					<w2:columnInfo>
+						<w2:column dataType="text" id="testCaseId" name="테스트케이스ID"></w2:column>
+						<w2:column dataType="text" id="taskId" name="업무ID"></w2:column>
+						<w2:column dataType="text" id="taskName" name="업무명"></w2:column>
+						<w2:column dataType="text" id="testCaseName" name="테스트케이스명"></w2:column>
+						<w2:column dataType="text" id="testTarget" name="테스트대상"></w2:column>
+						<w2:column dataType="text" id="testType" name="테스트타입"></w2:column>
+						<w2:column dataType="text" id="priority" name="우선순위"></w2:column>
+						<w2:column dataType="text" id="description" name="테스트설명"></w2:column>
+						<w2:column dataType="text" id="testData" name="테스트데이터"></w2:column>
+						<w2:column dataType="text" id="testStatus" name="테스트상태"></w2:column>
+						<w2:column dataType="text" id="executionDate" name="실행일시"></w2:column>
+						<w2:column dataType="text" id="duration" name="소요시간"></w2:column>
+						<w2:column dataType="text" id="assignee" name="담당자"></w2:column>
+						<w2:column dataType="text" id="assigneeName" name="담당자명"></w2:column>
+						<w2:column dataType="text" id="isDeleted" name="삭제여부"></w2:column>
+						<w2:column dataType="text" id="createdAt" name="생성일시"></w2:column>
+						<w2:column dataType="text" id="updatedAt" name="수정일시"></w2:column>
+						<w2:column dataType="text" id="createdBy" name="생성자"></w2:column>
+						<w2:column dataType="text" id="updatedBy" name="수정자"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
 
 				<!-- 테스트 케이스 상세 정보 -->
 				<w2:dataMap baseNode="map" id="dmp_unitTestDetail" style="">
-                    <w2:keyInfo>    
-                        <w2:key dataType="text" id="testCaseId" name="테스트케이스ID"></w2:key>
-                        <w2:key dataType="text" id="taskId" name="업무ID" defaultValue="1"></w2:key>
-                        <w2:key dataType="text" id="taskName" name="업무명" defaultValue="ERP 시스템 고도화 프로젝트"></w2:key>
-                        <w2:key dataType="text" id="testCaseName" name="테스트케이스명"></w2:key>
-                        <w2:key dataType="text" id="testTarget" name="테스트대상"></w2:key>
-                        <w2:key dataType="text" id="testType" name="테스트타입" defaultValue="NORMAL"></w2:key>
-                        <w2:key dataType="text" id="priority" name="우선순위" defaultValue="MEDIUM"></w2:key>
-                        <w2:key dataType="text" id="description" name="테스트설명"></w2:key>
-                        <w2:key dataType="text" id="testData" name="테스트데이터"></w2:key>
-                        <w2:key dataType="text" id="testStatus" name="테스트상태" defaultValue="SUC"></w2:key>
-                        <w2:key dataType="text" id="executionDate" name="실행일시"></w2:key>
-                        <w2:key dataType="text" id="duration" name="소요시간"></w2:key>
-                        <w2:key dataType="text" id="assignee" name="담당자" defaultValue="1"></w2:key>
-                        <w2:key dataType="text" id="assigneeName" name="담당자명"></w2:key>
-                        <w2:key dataType="text" id="isDeleted" name="삭제여부"></w2:key>
-                        <w2:key dataType="text" id="createdAt" name="생성일시"></w2:key>
-                        <w2:key dataType="text" id="updatedAt" name="수정일시"></w2:key>
-                        <w2:key dataType="text" id="createdBy" name="생성자"></w2:key>
-                        <w2:key dataType="text" id="updatedBy" name="수정자"></w2:key>
-                        <w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
-                    </w2:keyInfo>
-                </w2:dataMap>
+					<w2:keyInfo>
+						<w2:key dataType="text" id="testCaseId" name="테스트케이스ID"></w2:key>
+						<w2:key dataType="text" id="taskId" name="업무ID" defaultValue="1"></w2:key>
+						<w2:key dataType="text" id="taskName" name="업무명" defaultValue="ERP 시스템 고도화 프로젝트"></w2:key>
+						<w2:key dataType="text" id="testCaseName" name="테스트케이스명"></w2:key>
+						<w2:key dataType="text" id="testTarget" name="테스트대상"></w2:key>
+						<w2:key dataType="text" id="testType" name="테스트타입" defaultValue="NORMAL"></w2:key>
+						<w2:key dataType="text" id="priority" name="우선순위" defaultValue="MEDIUM"></w2:key>
+						<w2:key dataType="text" id="description" name="테스트설명"></w2:key>
+						<w2:key dataType="text" id="testData" name="테스트데이터"></w2:key>
+						<w2:key dataType="text" id="testStatus" name="테스트상태" defaultValue="SUC"></w2:key>
+						<w2:key dataType="text" id="executionDate" name="실행일시"></w2:key>
+						<w2:key dataType="text" id="duration" name="소요시간"></w2:key>
+						<w2:key dataType="text" id="assignee" name="담당자" defaultValue="1"></w2:key>
+						<w2:key dataType="text" id="assigneeName" name="담당자명"></w2:key>
+						<w2:key dataType="text" id="isDeleted" name="삭제여부"></w2:key>
+						<w2:key dataType="text" id="createdAt" name="생성일시"></w2:key>
+						<w2:key dataType="text" id="updatedAt" name="수정일시"></w2:key>
+						<w2:key dataType="text" id="createdBy" name="생성자"></w2:key>
+						<w2:key dataType="text" id="updatedBy" name="수정자"></w2:key>
+						<w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
+					</w2:keyInfo>
+				</w2:dataMap>
 
 				<!-- 파일 관리 관련 dataMap -->
 				<w2:dataList baseNode="list" repeatNode="map" id="dlt_attVoList" saveRemovedData="true">
-                    <w2:columnInfo>
-                        <w2:column dataType="text" name="파일ID" id="fileId"></w2:column>
-                        <w2:column dataType="text" name="원본파일명" id="originalFileName"></w2:column>
-                        <w2:column dataType="text" name="파일크기" id="fileSize"></w2:column>
-                        <w2:column dataType="text" name="파일확장자" id="fileExtension"></w2:column>
-                        <w2:column dataType="text" name="업로드일시" id="attachedAt"></w2:column>
-                    </w2:columnInfo>
-                </w2:dataList>
+					<w2:columnInfo>
+						<w2:column dataType="text" name="파일ID" id="fileId"></w2:column>
+						<w2:column dataType="text" name="원본파일명" id="originalFileName"></w2:column>
+						<w2:column dataType="text" name="파일크기" id="fileSize"></w2:column>
+						<w2:column dataType="text" name="파일확장자" id="fileExtension"></w2:column>
+						<w2:column dataType="text" name="업로드일시" id="attachedAt"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
 
 				<w2:dataMap id="dmp_currentFile" style="">
 					<w2:keyInfo>
@@ -315,160 +315,121 @@
 			<xf:submission id="sbm_selectUnitTestList" ref='data:json,{"id":"dml_unitTestVo","key":"unitTestVo"}'
 				target='data:json,{"id":"dlt_unitTestVoList","key":"unitTestVoList"}' action="/InsWebApp/UNIT001List.pwkjson" method="post"
 				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-				processMsg="테스트 케이스 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestList_submitdone" ev:submiterror="" abortTrigger="">
+				processMsg="테스트 케이스 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestList_submitdone" ev:submiterror=""
+				abortTrigger="">
 			</xf:submission>
-			
-			<xf:submission id="sbm_selectUnitTestDetail" ref='data:json,{"id":"dmp_unitTestDetail","key":"unitTestVo"}'
-                target='data:json,{"id":"dmp_unitTestDetail","key":""}' action="/InsWebApp/UNIT001UpdView.pwkjson" method="post"
-                mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-                processMsg="상세 정보를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestDetail_submitdone" ev:submiterror="" abortTrigger="">
-            </xf:submission>
-			
-			<xf:submission id="sbm_selectUnitTestFileList" 
-                ref='data:json,["dmp_unitTestDetail",{"id":"dmp_unitTestDetail","key":"unitTestVo"}]'
-                target='data:json,{"id":"dlt_attVoList","key":"elData.attVoList"}' 
-                action="/InsWebApp/UNIT001FileList.pwkjson" 
-                method="post"
-                mediatype="application/json" 
-                encoding="UTF-8" 
-                mode="asynchronous"
-                processMsg="파일 목록을 조회 중입니다." 
-                ev:submitdone="scwin.sbm_selectUnitTestFileList_submitdone" 
-                ev:submiterror="scwin.sbm_selectUnitTestFileList_submiterror">
-            </xf:submission>
 
-			
-			<xf:submission id="sbm_updateUnitTest" ref='data:json,{"id":"dmp_unitTestDetail","key":"unitTestVo"}'
-                target="" action="/InsWebApp/UNIT001Upd.pwkjson" method="post"
-                mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="수정 중입니다."
-                ev:submit="" ev:submitdone="scwin.sbm_updateUnitTest_submitdone" ev:submiterror="" abortTrigger="">
-            </xf:submission>
-			
-			<xf:submission id="sbm_deleteUnitTest" ref='data:json,{"id":"dmp_unitTestDetail","key":"unitTestVo"}'
-                target="" action="/InsWebApp/UNIT001Del.pwkjson" method="post"
-                mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg="삭제 중입니다."
-                ev:submit="" ev:submitdone="scwin.sbm_deleteUnitTest_submitdone" ev:submiterror="" abortTrigger="">
-            </xf:submission>
+			<xf:submission id="sbm_selectUnitTestDetail" ref='data:json,{"id":"dmp_unitTestDetail","key":"unitTestVo"}'
+				target='data:json,{"id":"dmp_unitTestDetail","key":""}' action="/InsWebApp/UNIT001UpdView.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
+				processMsg="상세 정보를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestDetail_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+
+			<xf:submission id="sbm_selectUnitTestFileList"
+				ref='data:json,["dmp_unitTestDetail",{"id":"dmp_unitTestDetail","key":"unitTestVo"}]'
+				target='data:json,{"id":"dlt_attVoList","key":"elData.attVoList"}' action="/InsWebApp/UNIT001FileList.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" mode="asynchronous" processMsg="파일 목록을 조회 중입니다."
+				ev:submitdone="scwin.sbm_selectUnitTestFileList_submitdone" ev:submiterror="scwin.sbm_selectUnitTestFileList_submiterror">
+			</xf:submission>
+
+
+			<xf:submission id="sbm_updateUnitTest" ref='data:json,{"id":"dmp_unitTestDetail","key":"unitTestVo"}' target=""
+				action="/InsWebApp/UNIT001Upd.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace=""
+				errorHandler="" customHandler="" mode="asynchronous" processMsg="수정 중입니다." ev:submit=""
+				ev:submitdone="scwin.sbm_updateUnitTest_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+
+			<xf:submission id="sbm_deleteUnitTest" ref='data:json,{"id":"dmp_unitTestDetail","key":"unitTestVo"}' target=""
+				action="/InsWebApp/UNIT001Del.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace=""
+				errorHandler="" customHandler="" mode="asynchronous" processMsg="삭제 중입니다." ev:submit=""
+				ev:submitdone="scwin.sbm_deleteUnitTest_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
 
 			<!-- 파일 관련 submission -->
 			<xf:submission id="sbm_selectUnitTestFileList" ref='data:json,{"id":"dmp_unitTestDetail","key":"unitTestVo"}'
-                target='data:json,{"id":"dlt_attVoList","key":"attVoList"}' action="/InsWebApp/UNIT001FileList.pwkjson" method="post"
-                mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-                processMsg="파일 목록을 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestFileList_submitdone" ev:submiterror="" abortTrigger="">
-            </xf:submission>
-			
-			<xf:submission id="sbm_selectUnitTestFileList" 
-                ref='data:json,["dmp_unitTestDetail",{"id":"dmp_unitTestDetail","key":"unitTestVo"}]'
-                target='data:json,{"id":"dlt_attVoList","key":"elData.attVoList"}' 
-                action="/InsWebApp/UNIT001FileList.pwkjson" 
-                method="post"
-                mediatype="application/json" 
-                encoding="UTF-8" 
-                mode="asynchronous"
-                processMsg="파일 목록을 조회 중입니다." 
-                ev:submitdone="scwin.sbm_selectUnitTestFileList_submitdone" 
-                ev:submiterror="scwin.sbm_selectUnitTestFileList_submiterror">
-            </xf:submission>
-			
-			<xf:submission id="sbm_deleteUnitTestFile" 
-                action="/InsWebApp/UNIT001FileDelete.pwkjson" method="post"
-                mediatype="application/x-www-form-urlencoded" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-                processMsg="파일을 삭제 중입니다." ev:submit="scwin.sbm_deleteUnitTestFile_submit" ev:submitdone="scwin.sbm_deleteUnitTestFile_submitdone" ev:submiterror="" abortTrigger="">
-            </xf:submission>
+				target='data:json,{"id":"dlt_attVoList","key":"attVoList"}' action="/InsWebApp/UNIT001FileList.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
+				processMsg="파일 목록을 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestFileList_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+
+			<xf:submission id="sbm_selectUnitTestFileList"
+				ref='data:json,["dmp_unitTestDetail",{"id":"dmp_unitTestDetail","key":"unitTestVo"}]'
+				target='data:json,{"id":"dlt_attVoList","key":"elData.attVoList"}' action="/InsWebApp/UNIT001FileList.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" mode="asynchronous" processMsg="파일 목록을 조회 중입니다."
+				ev:submitdone="scwin.sbm_selectUnitTestFileList_submitdone" ev:submiterror="scwin.sbm_selectUnitTestFileList_submiterror">
+			</xf:submission>
+
+			<xf:submission id="sbm_deleteUnitTestFile" action="/InsWebApp/UNIT001FileDelete.pwkjson" method="post"
+				mediatype="application/x-www-form-urlencoded" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler=""
+				mode="asynchronous" processMsg="파일을 삭제 중입니다." ev:submit="scwin.sbm_deleteUnitTestFile_submit"
+				ev:submitdone="scwin.sbm_deleteUnitTestFile_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
 
 			<!-- 통계 관련 submission -->
 			<xf:submission id="sbm_selectUnitTestStatistics" ref='data:json,{"id":"dmp_search","key":"unitTestVo"}'
-                target='data:json,{"id":"dmp_statistics","key":""}' action="/InsWebApp/UNIT001Statistics.pwkjson" method="post"
-                mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-                processMsg="통계를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestStatistics_submitdone" ev:submiterror="" abortTrigger="">
-            </xf:submission>
+				target='data:json,{"id":"dmp_statistics","key":""}' action="/InsWebApp/UNIT001Statistics.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
+				processMsg="통계를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestStatistics_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
 
 			<!-- 상태 업데이트 submission -->
-			<xf:submission id="sbm_updateTestStatus" ref='data:json,{"id":"dmp_unitTestDetail","key":"unitTestVo"}'
-                target="" action="/InsWebApp/UNIT001UpdateStatus.pwkjson" method="post"
-                mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-                processMsg="상태를 업데이트 중입니다." ev:submit="" ev:submitdone="scwin.sbm_updateTestStatus_submitdone" ev:submiterror="" abortTrigger="">
-            </xf:submission>
+			<xf:submission id="sbm_updateTestStatus" ref='data:json,{"id":"dmp_unitTestDetail","key":"unitTestVo"}' target=""
+				action="/InsWebApp/UNIT001UpdateStatus.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace=""
+				errorHandler="" customHandler="" mode="asynchronous" processMsg="상태를 업데이트 중입니다." ev:submit=""
+				ev:submitdone="scwin.sbm_updateTestStatus_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
 
-			<xf:submission id="sbm_updateTestResult" ref='data:json,{"id":"dmp_unitTestDetail","key":"unitTestVo"}'
-                target="" action="/InsWebApp/UNIT001UpdateResult.pwkjson" method="post"
-                mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-                processMsg="결과를 업데이트 중입니다." ev:submit="" ev:submitdone="scwin.sbm_updateTestResult_submitdone" ev:submiterror="" abortTrigger="">
-            </xf:submission>
+			<xf:submission id="sbm_updateTestResult" ref='data:json,{"id":"dmp_unitTestDetail","key":"unitTestVo"}' target=""
+				action="/InsWebApp/UNIT001UpdateResult.pwkjson" method="post" mediatype="application/json" encoding="UTF-8" instance="" replace=""
+				errorHandler="" customHandler="" mode="asynchronous" processMsg="결과를 업데이트 중입니다." ev:submit=""
+				ev:submitdone="scwin.sbm_updateTestResult_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
 
 
-            <xf:submission id="sbm_selectUnitTestList" ref='data:json,{"id":"dmp_search","key":"unitTestVo"}'
-                target='data:json,{"id":"dlt_unitTestVoList","key":"unitTestList"}' action="/InsWebApp/UNIT001List.pwkjson" method="post"
-                mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-                processMsg="단위테스트 케이스 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestList_submitdone" ev:submiterror="" abortTrigger="">
-            </xf:submission>
+			<xf:submission id="sbm_selectUnitTestList" ref='data:json,{"id":"dmp_search","key":"unitTestVo"}'
+				target='data:json,{"id":"dlt_unitTestVoList","key":"unitTestList"}' action="/InsWebApp/UNIT001List.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
+				processMsg="단위테스트 케이스 리스트를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestList_submitdone" ev:submiterror=""
+				abortTrigger="">
+			</xf:submission>
 
-            <xf:submission id="sbm_selectUnitTestListByProject" 
-                ref='data:json,{"id":"dmp_search","key":"unitTestVo"}'
-                target='data:json,{"id":"dlt_unitTestVoList","key":"unitTestList"}' 
-                action="/InsWebApp/UNIT001ListByProject.pwkjson" 
-                method="post"
-                mediatype="application/json" 
-                encoding="UTF-8" 
-                mode="asynchronous"
-                processMsg="프로젝트별 목록을 조회 중입니다."
-                ev:submitdone="scwin.sbm_selectUnitTestListByProject_submitdone">
-            </xf:submission>
+			<xf:submission id="sbm_selectUnitTestListByProject" ref='data:json,{"id":"dmp_search","key":"unitTestVo"}'
+				target='data:json,{"id":"dlt_unitTestVoList","key":"unitTestList"}' action="/InsWebApp/UNIT001ListByProject.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" mode="asynchronous" processMsg="프로젝트별 목록을 조회 중입니다."
+				ev:submitdone="scwin.sbm_selectUnitTestListByProject_submitdone">
+			</xf:submission>
 
-            <xf:submission id="sbm_selectUnitTestStatisticsByProject" 
-                ref='data:json,{"id":"dmp_search","key":"unitTestVo"}'
-                target='data:json,{"id":"dmp_statistics","key":""}' 
-                action="/InsWebApp/UNIT001StatisticsByProject.pwkjson" 
-                method="post"
-                mediatype="application/json" 
-                encoding="UTF-8" 
-                mode="asynchronous"
-                processMsg="프로젝트별 통계를 조회 중입니다." 
-                ev:submitdone="scwin.sbm_selectUnitTestStatisticsByProject_submitdone">
-            </xf:submission>
+			<xf:submission id="sbm_selectUnitTestStatisticsByProject" ref='data:json,{"id":"dmp_search","key":"unitTestVo"}'
+				target='data:json,{"id":"dmp_statistics","key":""}' action="/InsWebApp/UNIT001StatisticsByProject.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" mode="asynchronous" processMsg="프로젝트별 통계를 조회 중입니다."
+				ev:submitdone="scwin.sbm_selectUnitTestStatisticsByProject_submitdone">
+			</xf:submission>
 
-            <!-- 엑셀 다운로드용 전체 데이터 조회 submission -->
-            <xf:submission id="sbm_selectUnitTestListForExcel" ref='data:json,{"id":"dmp_search","key":"unitTestVo"}'
-                target='data:json,{"id":"dlt_unitTestVoList","key":"elData.unitTestList"}' action="/InsWebApp/UNIT001List.pwkjson" method="post"
-                mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
-                processMsg="엑셀 다운로드용 전체 데이터를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestListForExcel_submitdone" ev:submiterror="" abortTrigger="">
-            </xf:submission>
+			<!-- 엑셀 다운로드용 전체 데이터 조회 submission -->
+			<xf:submission id="sbm_selectUnitTestListForExcel" ref='data:json,{"id":"dmp_search","key":"unitTestVo"}'
+				target='data:json,{"id":"dlt_unitTestVoList","key":"elData.unitTestList"}' action="/InsWebApp/UNIT001List.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous"
+				processMsg="엑셀 다운로드용 전체 데이터를 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUnitTestListForExcel_submitdone" ev:submiterror=""
+				abortTrigger="">
+			</xf:submission>
 
-            <xf:submission id="sbm_searchTaskByName" 
-                ref='data:json,{"id":"dmp_taskSearch","key":"taskSearchVo"}'
-                target='data:json,{"id":"dlt_taskList","key":"taskList"}' 
-                action="/InsWebApp/TASK001SearchByName.pwkjson" 
-                method="post"
-                mediatype="application/json" 
-                encoding="UTF-8" 
-                mode="asynchronous"
-                processMsg="업무를 검색 중입니다." 
-                ev:submitdone="scwin.sbm_searchTaskByName_submitdone">
-            </xf:submission>
+			<xf:submission id="sbm_searchTaskByName" ref='data:json,{"id":"dmp_taskSearch","key":"taskSearchVo"}'
+				target='data:json,{"id":"dlt_taskList","key":"taskList"}' action="/InsWebApp/TASK001SearchByName.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" mode="asynchronous" processMsg="업무를 검색 중입니다."
+				ev:submitdone="scwin.sbm_searchTaskByName_submitdone">
+			</xf:submission>
 
-            <xf:submission id="sbm_selectDevelopTaskList" 
-                ref='data:json,{"id":"dmp_taskSearch","key":"taskSearchVo"}'
-                target='data:json,{"id":"dlt_taskList","key":"designVoList"}' 
-                action="/InsWebApp/DEVELOP001List.pwkjson" 
-                method="post"
-                mediatype="application/json" 
-                encoding="UTF-8" 
-                mode="asynchronous"
-                processMsg="개발업무를 조회 중입니다." 
-                ev:submitdone="scwin.sbm_selectDevelopTaskList_submitdone">
-            </xf:submission>
+			<xf:submission id="sbm_selectDevelopTaskList" ref='data:json,{"id":"dmp_taskSearch","key":"taskSearchVo"}'
+				target='data:json,{"id":"dlt_taskList","key":"designVoList"}' action="/InsWebApp/DEVELOP001List.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" mode="asynchronous" processMsg="개발업무를 조회 중입니다."
+				ev:submitdone="scwin.sbm_selectDevelopTaskList_submitdone">
+			</xf:submission>
 
-            <xf:submission id="sbm_searchTaskByName" 
-                ref='data:json,{"id":"dmp_taskSearch","key":"taskSearchVo"}'
-                target='data:json,{"id":"dlt_taskList","key":"taskList"}' 
-                action="/InsWebApp/TASK001SearchByName.pwkjson" 
-                method="post"
-                mediatype="application/json" 
-                encoding="UTF-8" 
-                mode="asynchronous"
-                processMsg="업무를 검색 중입니다." 
-                ev:submitdone="scwin.sbm_searchTaskByName_submitdone">
-            </xf:submission>
+			<xf:submission id="sbm_searchTaskByName" ref='data:json,{"id":"dmp_taskSearch","key":"taskSearchVo"}'
+				target='data:json,{"id":"dlt_taskList","key":"taskList"}' action="/InsWebApp/TASK001SearchByName.pwkjson" method="post"
+				mediatype="application/json" encoding="UTF-8" mode="asynchronous" processMsg="업무를 검색 중입니다."
+				ev:submitdone="scwin.sbm_searchTaskByName_submitdone">
+			</xf:submission>
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
 		<w2:publicInfo method="" />
@@ -646,6 +607,21 @@ scwin.openTestRegisterPopupWithTask = function(taskId, taskName) {
         dmp_unitTestDetail.set("pjtId", scwin.CURRENT_PROJECT_ID);
     }
 
+    // 에디터 초기화
+    setTimeout(function() {
+        try {
+            if (editor_description && editor_description.setHTML) {
+                editor_description.setHTML("");
+            }
+            if (editor_testData && editor_testData.setHTML) {
+                editor_testData.setHTML("");
+            }
+            console.log("개발업무 연동 시 에디터 초기화 완료");
+        } catch(e) {
+            console.error("에디터 초기화 실패:", e);
+        }
+    }, 100);
+
     // 파일 관련 초기화
     dlt_upload.setJSON([]);
     dlt_attVoList.setJSON([]);
@@ -668,7 +644,6 @@ scwin.openTestRegisterPopupWithTask = function(taskId, taskName) {
     
     console.log("개발업무 연동 테스트 등록 모드로 초기화 완료");
 };
-
 
 /**
  * 데이터 필터링 (권한 적용)
@@ -1379,6 +1354,9 @@ scwin.btn_search_onclick = function(e) {
 /**
  * 등록 버튼 클릭 (assignee를 userId로 설정)
  */
+/**
+ * 등록 버튼 클릭 (assignee를 userId로 설정)
+ */
 scwin.btn_register_onclick = function(e) {
     console.log("등록 버튼 클릭");
     
@@ -1398,6 +1376,22 @@ scwin.btn_register_onclick = function(e) {
     if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
         dmp_unitTestDetail.set("pjtId", scwin.CURRENT_PROJECT_ID);
     }
+
+    // 에디터 초기화
+    setTimeout(function() {
+        try {
+            if (editor_description && editor_description.setHTML) {
+                editor_description.setHTML("");
+                console.log("테스트설명 에디터 초기화");
+            }
+            if (editor_testData && editor_testData.setHTML) {
+                editor_testData.setHTML("");
+                console.log("테스트데이터 에디터 초기화");
+            }
+        } catch(e) {
+            console.error("에디터 초기화 실패:", e);
+        }
+    }, 100);
 
     // 파일 관련 초기화
     dlt_upload.setJSON([]);
@@ -1421,7 +1415,6 @@ scwin.btn_register_onclick = function(e) {
     
     console.log("새 케이스 등록 모드로 초기화 완료");
 };
-
 /**
  * 업무 선택 팝업 열기
  */
@@ -1593,30 +1586,72 @@ scwin.grd_list_oncelldblclick = function(row, col, colId) {
 /**
  * 성공 그리드 더블클릭
  */
+/**
+ * 성공 그리드 더블클릭 (수정된 버전)
+ */
 scwin.success_grd_oncelldblclick = function(row, col, colId) {
-    console.log("성공그리드 클릭")
+    console.log("성공그리드 더블클릭 - 행:", row);
+    
     var selectedData = dlt_successList.getRowJSON(row);
+    console.log("선택된 성공 데이터:", selectedData);
+    
+    // 데이터맵에 확실하게 설정
     dmp_unitTestDetail.setJSON(selectedData);
+    
+    // 테스트케이스ID가 있는지 확인
+    if (!selectedData.testCaseId) {
+        console.error("테스트케이스ID가 없습니다:", selectedData);
+        $c.win.alert("유효하지 않은 데이터입니다.");
+        return;
+    }
+    
+    console.log("설정된 testCaseId:", dmp_unitTestDetail.get("testCaseId"));
+    
+    // 상세 조회 팝업 표시
     scwin.showDetailPopup("view");
 };
 
 /**
  * 실패 그리드 더블클릭
  */
+/**
+ * 실패 그리드 더블클릭 (수정된 버전)
+ */
 scwin.fail_grd_oncelldblclick = function(row, col, colId) {
-    console.log("실패그리드 클릭")
+    console.log("실패그리드 더블클릭 - 행:", row);
+    
     var selectedData = dlt_failList.getRowJSON(row);
+    console.log("선택된 실패 데이터:", selectedData);
+    
+    // 데이터맵에 확실하게 설정
     dmp_unitTestDetail.setJSON(selectedData);
+    
+    // 테스트케이스ID가 있는지 확인
+    if (!selectedData.testCaseId) {
+        console.error("테스트케이스ID가 없습니다:", selectedData);
+        $c.win.alert("유효하지 않은 데이터입니다.");
+        return;
+    }
+    
+    console.log("설정된 testCaseId:", dmp_unitTestDetail.get("testCaseId"));
+    
+    // 상세 조회 팝업 표시
     scwin.showDetailPopup("view");
 };
 
 /**
- * 상세보기 팝업 표시
+ * 상세보기 팝업 표시 (수정된 버전)
  */
 scwin.showDetailPopup = function(mode) {
     console.log("상세보기 팝업 표시:", mode);
     
     var selectedData = dmp_unitTestDetail.getJSON();
+    
+    // 데이터 상세 확인
+    console.log("=== 선택된 데이터 상세 확인 ===");
+    console.log("전체 데이터:", selectedData);
+    console.log("description 값:", selectedData.description);
+    console.log("testData 값:", selectedData.testData);
     
     // 수정 모드일 때 권한 확인
     if (mode === "edit" && !scwin.checkEditPermission(selectedData)) {
@@ -1630,21 +1665,133 @@ scwin.showDetailPopup = function(mode) {
     // 모드 설정
     scwin.setFormMode(mode);
     
-    // 제목 설정
-    setTimeout(function() {
-        try {
-            var title = mode === "view" ? "단위테스트 케이스 상세정보" : "단위테스트 케이스 수정";
-            spn_popupTitle.setValue(title);
-        } catch(e) {
-            setTimeout(function() {
+    // 서버에서 최신 데이터 다시 조회
+    console.log("서버에서 최신 데이터 조회 시작");
+    $c.sbm.execute($p, sbm_selectUnitTestDetail);
+};
+
+/**
+ * 상세 조회 완료 후 에디터 내용 설정
+ */
+scwin.sbm_selectUnitTestDetail_submitdone = function(e) {
+    console.log("=== 상세 조회 완료 ===", e);
+    
+    try {
+        var responseData = e.responseJSON;
+        var elData = responseData ? responseData.elData : null;
+        var elHeader = responseData ? responseData.elHeader : null;
+        
+        // 성공 여부 확인
+        if (!elHeader || elHeader.resSuc !== true) {
+            var errorMsg = "상세 정보 조회에 실패했습니다.";
+            if (elHeader && elHeader.resMsg) {
+                errorMsg += "\n오류메시지: " + elHeader.resMsg;
+            }
+            console.error("상세 조회 실패:", errorMsg);
+            $c.win.alert(errorMsg);
+            return;
+        }
+        
+        // 조회된 데이터 확인
+        console.log("=== 서버에서 조회된 데이터 ===");
+        console.log("전체 응답:", elData);
+        console.log("description:", elData.description);
+        console.log("testData:", elData.testData);
+        console.log("description 길이:", elData.description ? elData.description.length : 0);
+        console.log("testData 길이:", elData.testData ? elData.testData.length : 0);
+        
+        // 데이터맵에 서버 데이터 설정
+        dmp_unitTestDetail.setJSON(elData);
+        
+        // 에디터에 내용 설정 (지연 실행으로 확실하게)
+        setTimeout(function() {
+            scwin.setEditorContent(elData.description, elData.testData);
+        }, 300);
+        
+        // 제목 설정
+        setTimeout(function() {
+            try {
+                var mode = dmp_unitTestDetail.get("testCaseId") ? "view" : "new";
                 var title = mode === "view" ? "단위테스트 케이스 상세정보" : "단위테스트 케이스 수정";
                 spn_popupTitle.setValue(title);
-            }, 50);
-        }
-    }, 50);
+            } catch(e) {
+                console.error("제목 설정 실패:", e);
+            }
+        }, 50);
+        
+        // 파일 목록 로드
+        scwin.loadFileList();
+        
+    } catch (error) {
+        console.error("상세 조회 응답 처리 중 오류:", error);
+        $c.win.alert("상세 정보 처리 중 오류가 발생했습니다.");
+    }
+};
+
+/**
+ * 에디터 내용 설정 (별도 함수로 분리)
+ */
+scwin.setEditorContent = function(description, testData) {
+    console.log("=== 에디터 내용 설정 시작 ===");
+    console.log("설정할 description:", description);
+    console.log("설정할 testData:", testData);
     
-    // 파일 목록 로드
-    scwin.loadFileList();
+    try {
+        // description 에디터 설정
+        if (editor_description) {
+            var descContent = description || "";
+            
+            // 빈 값이면 기본 메시지 설정 (테스트용)
+            if (!descContent || descContent.trim() === "") {
+                descContent = "<p>테스트 설명이 없습니다.</p>";
+            }
+            
+            if (editor_description.setHTML) {
+                editor_description.setHTML(descContent);
+                console.log("description 에디터 설정 완료:", descContent);
+            } else {
+                console.error("editor_description.setHTML 메서드가 없습니다.");
+            }
+        } else {
+            console.error("editor_description 객체가 없습니다.");
+        }
+        
+        // testData 에디터 설정
+        if (editor_testData) {
+            var testDataContent = testData || "";
+            
+            // 빈 값이면 기본 메시지 설정 (테스트용)
+            if (!testDataContent || testDataContent.trim() === "") {
+                testDataContent = "<p>테스트 데이터가 없습니다.</p>";
+            }
+            
+            if (editor_testData.setHTML) {
+                editor_testData.setHTML(testDataContent);
+                console.log("testData 에디터 설정 완료:", testDataContent);
+            } else {
+                console.error("editor_testData.setHTML 메서드가 없습니다.");
+            }
+        } else {
+            console.error("editor_testData 객체가 없습니다.");
+        }
+        
+        console.log("=== 에디터 내용 설정 완료 ===");
+        
+    } catch (error) {
+        console.error("에디터 내용 설정 중 오류:", error);
+        
+        // 대안: 간단한 텍스트로라도 설정 시도
+        try {
+            if (editor_description && editor_description.setHTML) {
+                editor_description.setHTML(description || "<p>내용을 불러올 수 없습니다.</p>");
+            }
+            if (editor_testData && editor_testData.setHTML) {
+                editor_testData.setHTML(testData || "<p>내용을 불러올 수 없습니다.</p>");
+            }
+        } catch (fallbackError) {
+            console.error("대안 방법도 실패:", fallbackError);
+        }
+    }
 };
 
 /**
@@ -1677,26 +1824,59 @@ scwin.pgl_fail_onclick = function(idx) {
 scwin.btn_save_onclick = function(e) {
     console.log("저장 버튼 클릭");
     
+    // 에디터 내용을 먼저 데이터맵에 저장
+    try {
+        if (editor_description && editor_description.getHTML) {
+            var descriptionHTML = editor_description.getHTML();
+            dmp_unitTestDetail.set("description", descriptionHTML);
+            console.log("저장 시 테스트설명:", descriptionHTML);
+        }
+        
+        if (editor_testData && editor_testData.getHTML) {
+            var testDataHTML = editor_testData.getHTML();
+            dmp_unitTestDetail.set("testData", testDataHTML);
+            console.log("저장 시 테스트데이터:", testDataHTML);
+        }
+    } catch(e) {
+        console.error("에디터 내용 저장 실패:", e);
+    }
+    
     // 유효성 검사
     if (!scwin.validateForm()) {
         return;
     }
     
-    // 파일이 있는지 확인
-    var hasFiles = false;
-    if (mpd_html5Type && mpd_html5Type.fileArray) {
-        hasFiles = mpd_html5Type.fileArray.length > 0;
-    }
+    // 현재 모드 확인 (testCaseId가 있으면 수정, 없으면 등록)
+    var testCaseId = dmp_unitTestDetail.get("testCaseId");
+    var isEditMode = testCaseId && testCaseId.trim() !== "";
     
-    if (hasFiles) {
-        // 파일과 함께 등록
-        scwin.saveTestWithFiles();
+    console.log("현재 모드:", isEditMode ? "수정" : "등록", "testCaseId:", testCaseId);
+    
+    if (isEditMode) {
+        // 수정 모드
+        var promise = $c.win.confirm("수정하시겠습니까?");
+        promise.then(function(result) {
+            if (result) {
+                $c.sbm.execute($p, sbm_updateUnitTest);
+            }
+        });
     } else {
-        // 일반 등록
-        $c.sbm.execute($p, sbm_insertUnitTest);
+        // 등록 모드
+        // 파일이 있는지 확인
+        var hasFiles = false;
+        if (mpd_html5Type && mpd_html5Type.fileArray) {
+            hasFiles = mpd_html5Type.fileArray.length > 0;
+        }
+        
+        if (hasFiles) {
+            // 파일과 함께 등록
+            scwin.saveTestWithFiles();
+        } else {
+            // 일반 등록 (submission 사용)
+            $c.sbm.execute($p, sbm_insertUnitTest);
+        }
     }
 };
-
 /**
  * 폼 유효성 검사
  */
@@ -1755,6 +1935,26 @@ scwin.saveTestWithFiles = function() {
         console.log("에디터 blur 실패, 무시");
     }
     
+    // 웹스퀘어 에디터에서 내용 즉시 가져오기
+    try {
+        var descriptionHTML = "";
+        var testDataHTML = "";
+        
+        if (editor_description && editor_description.getHTML) {
+            descriptionHTML = editor_description.getHTML();
+            dmp_unitTestDetail.set("description", descriptionHTML);
+            console.log("테스트설명 저장됨:", descriptionHTML);
+        }
+        
+        if (editor_testData && editor_testData.getHTML) {
+            testDataHTML = editor_testData.getHTML();
+            dmp_unitTestDetail.set("testData", testDataHTML);
+            console.log("테스트데이터 저장됨:", testDataHTML);
+        }
+    } catch(e) {
+        console.error("에디터 내용 가져오기 실패:", e);
+    }
+    
     // 잠시 대기 후 저장 실행 (에디터 내용 동기화 시간 확보)
     setTimeout(function() {
         scwin.executeFileUploadWithData();
@@ -1772,20 +1972,40 @@ scwin.executeFileUploadWithData = function() {
         var descriptionHTML = "";
         var testDataHTML = "";
         
-        // 에디터에서 HTML 내용 가져오기
-        if (editor_description && typeof editor_description.getHTML === 'function') {
-            descriptionHTML = editor_description.getHTML();
-            console.log("테스트설명 HTML:", descriptionHTML);
+        // 웹스퀘어 에디터에서 HTML 내용 가져오기
+        try {
+            if (editor_description && editor_description.getHTML) {
+                descriptionHTML = editor_description.getHTML();
+                console.log("테스트설명 HTML:", descriptionHTML);
+            } else {
+                console.log("editor_description.getHTML() 메서드가 없습니다.");
+            }
+        } catch(editorError) {
+            console.error("테스트설명 에디터 내용 가져오기 실패:", editorError);
         }
         
-        if (editor_testData && typeof editor_testData.getHTML === 'function') {
-            testDataHTML = editor_testData.getHTML();
-            console.log("테스트데이터 HTML:", testDataHTML);
+        try {
+            if (editor_testData && editor_testData.getHTML) {
+                testDataHTML = editor_testData.getHTML();
+                console.log("테스트데이터 HTML:", testDataHTML);
+            } else {
+                console.log("editor_testData.getHTML() 메서드가 없습니다.");
+            }
+        } catch(editorError) {
+            console.error("테스트데이터 에디터 내용 가져오기 실패:", editorError);
         }
         
         // 데이터맵에 HTML 내용 직접 설정
-        dmp_unitTestDetail.set("description", descriptionHTML);
-        dmp_unitTestDetail.set("testData", testDataHTML);
+        if (descriptionHTML) {
+            dmp_unitTestDetail.set("description", descriptionHTML);
+        }
+        if (testDataHTML) {
+            dmp_unitTestDetail.set("testData", testDataHTML);
+        }
+        
+        console.log("에디터 내용 동기화 완료");
+        console.log("- description:", descriptionHTML ? "있음" : "없음");
+        console.log("- testData:", testDataHTML ? "있음" : "없음");
         
     } catch(e) {
         console.error("에디터 내용 가져오기 실패:", e);
@@ -1941,6 +2161,23 @@ scwin.btn_popup_edit_onclick = function(e) {
 scwin.btn_update_onclick = function(e) {
     console.log("수정 저장 버튼 클릭");
     
+    // 에디터 내용을 먼저 데이터맵에 저장
+    try {
+        if (editor_description && editor_description.getHTML) {
+            var descriptionHTML = editor_description.getHTML();
+            dmp_unitTestDetail.set("description", descriptionHTML);
+            console.log("수정 시 테스트설명:", descriptionHTML);
+        }
+        
+        if (editor_testData && editor_testData.getHTML) {
+            var testDataHTML = editor_testData.getHTML();
+            dmp_unitTestDetail.set("testData", testDataHTML);
+            console.log("수정 시 테스트데이터:", testDataHTML);
+        }
+    } catch(e) {
+        console.error("에디터 내용 저장 실패:", e);
+    }
+    
     if (!scwin.validateForm()) {
         return;
     }
@@ -2033,6 +2270,9 @@ scwin.esc_btn_onclick = function(e) {
 /**
  * 초기화 버튼 클릭
  */
+/**
+ * 초기화 버튼 클릭
+ */
 scwin.btn_reset_onclick = function(e) {
     console.log("초기화 버튼 클릭");
     
@@ -2043,13 +2283,26 @@ scwin.btn_reset_onclick = function(e) {
     dmp_unitTestDetail.set("testStatus", "SUC");
     dmp_unitTestDetail.set("priority", "MEDIUM");
     dmp_unitTestDetail.set("testType", "NORMAL");
-    dmp_unitTestDetail.set("taskId", "1");
-    dmp_unitTestDetail.set("taskName", "ERP 시스템 고도화 프로젝트");
+    dmp_unitTestDetail.set("taskId", "");
+    dmp_unitTestDetail.set("taskName", "");
     dmp_unitTestDetail.set("assignee", scwin.CURRENT_USER_ID);
+    dmp_unitTestDetail.set("assigneeName", scwin.getCurrentUserName() || "현재 사용자");
     
-    // 수정: pjtId로 설정
     if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
         dmp_unitTestDetail.set("pjtId", scwin.CURRENT_PROJECT_ID);
+    }
+    
+    // 에디터 초기화
+    try {
+        if (editor_description && editor_description.setHTML) {
+            editor_description.setHTML("");
+        }
+        if (editor_testData && editor_testData.setHTML) {
+            editor_testData.setHTML("");
+        }
+        console.log("에디터 내용 초기화 완료");
+    } catch(e) {
+        console.error("에디터 초기화 실패:", e);
     }
     
     // 파일 관련 초기화
@@ -2167,26 +2420,30 @@ scwin.setFieldsReadOnly = function(readOnly) {
 };
 
 /**
- * 에디터 모드 설정
+ * 에디터 모드 설정 (수정된 버전)
  */
 scwin.setEditorMode = function(isEditMode) {
     console.log("에디터 모드 전환:", isEditMode ? "편집" : "조회");
     
-    if (isEditMode) {
-        // 편집 모드: 에디터 표시
-        grp_description_edit.show();
-        grp_description_view.hide();
-        grp_testData_edit.show();
-        grp_testData_view.hide();
-    } else {
-        // 조회 모드: 읽기 전용 표시
-        grp_description_edit.hide();
-        grp_description_view.show();
-        grp_testData_edit.hide();
-        grp_testData_view.show();
+    // 에디터는 항상 표시하되, 읽기전용 여부만 변경
+    try {
+        if (editor_description && editor_description.setReadOnly) {
+            editor_description.setReadOnly(!isEditMode);
+            console.log("테스트설명 에디터 readOnly:", !isEditMode);
+        }
         
-        // 내용 업데이트
-        scwin.updateViewContent();
+        if (editor_testData && editor_testData.setReadOnly) {
+            editor_testData.setReadOnly(!isEditMode);
+            console.log("테스트데이터 에디터 readOnly:", !isEditMode);
+        }
+        
+        // 내용 업데이트 (조회 모드일 때)
+        if (!isEditMode) {
+            scwin.updateViewContent();
+        }
+        
+    } catch(e) {
+        console.error("에디터 읽기전용 설정 실패:", e);
     }
 };
 
@@ -2204,7 +2461,6 @@ scwin.showFileUploadSection = function(show) {
         console.error("파일 업로드 섹션 표시 오류:", e);
     }
 };
-
 /**
  * 조회 모드 내용 업데이트
  */
@@ -2213,31 +2469,22 @@ scwin.updateViewContent = function() {
         var description = dmp_unitTestDetail.get("description") || "";
         var testData = dmp_unitTestDetail.get("testData") || "";
         
-        // HTML 태그 제거
-        txt_description_view.setValue(scwin.stripHtmlTags(description));
-        txt_testData_view.setValue(scwin.stripHtmlTags(testData));
+        // HTML을 그대로 표시 (웹스퀘어 에디터의 setHTML 방식 사용)
+        if (editor_description && editor_description.setHTML) {
+            editor_description.setHTML(description);
+        }
+        
+        if (editor_testData && editor_testData.setHTML) {
+            editor_testData.setHTML(testData);
+        }
+        
+        console.log("조회 모드 내용 업데이트 완료");
         
     } catch(e) {
         console.error("내용 업데이트 실패:", e);
     }
 };
 
-/**
- * HTML 태그 제거
- */
-scwin.stripHtmlTags = function(htmlString) {
-    if (!htmlString) return "";
-    
-    var text = htmlString.replace(/<[^>]*>/g, "");
-    text = text.replace(/&nbsp;/g, " ");
-    text = text.replace(/&lt;/g, "<");
-    text = text.replace(/&gt;/g, ">");
-    text = text.replace(/&amp;/g, "&");
-    text = text.replace(/&quot;/g, '"');
-    text = text.replace(/\s+/g, " ").trim();
-    
-    return text;
-};
 
 /**
  * 테스트 상태 포맷터
@@ -3358,13 +3605,13 @@ scwin.getCurrentUserName = function() {
         return "사용자";
     }
 };]]></script>
-    </head>
+	</head>
 	<body ev:onpageload="scwin.onpageload">
 		<xf:group class="sub_contents" id="" style="">
 			<xf:group class="pgtbox" id="" style="">
 				<w2:textbox class="pgt_tit" id="" label="단위테스트 케이스 관리" style="" tagname="" />
 			</xf:group>
-			
+
 			<!-- 검색 영역 -->
 			<xf:group class="schbox" id="search_box" style="">
 				<xf:group class="schbox_inner" id="" style="">
@@ -3383,8 +3630,8 @@ scwin.getCurrentUserName = function() {
 								<w2:textbox label="테스트 상태" style=""></w2:textbox>
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
-								<xf:select1 id="sel_searchTestStatus" ref="data:dmp_search.searchTestStatus" 
-									style="width:150px;" appearance="minimal" chooseOption="true" chooseOptionLabel="전체">
+								<xf:select1 id="sel_searchTestStatus" ref="data:dmp_search.searchTestStatus" style="width:150px;" appearance="minimal"
+									chooseOption="true" chooseOptionLabel="전체">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_testStatus">
 											<xf:label ref="status"></xf:label>
@@ -3397,8 +3644,7 @@ scwin.getCurrentUserName = function() {
 								<w2:textbox label="담당자" style=""></w2:textbox>
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
-								<xf:input id="inp_searchAssignee" ref="data:dmp_search.searchAssignee" 
-									style="width:150px;" placeholder="담당자명 입력"></xf:input>
+								<xf:input id="inp_searchAssignee" ref="data:dmp_search.searchAssignee" style="width:150px;" placeholder="담당자명 입력"></xf:input>
 							</xf:group>
 						</xf:group>
 						<xf:group tagname="tr">
@@ -3406,15 +3652,14 @@ scwin.getCurrentUserName = function() {
 								<w2:textbox label="테스트케이스명" style=""></w2:textbox>
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
-								<xf:input id="inp_searchTestCaseName" ref="data:dmp_search.searchTestCaseName" 
-									style="width:150px;" placeholder="테스트케이스명 입력"></xf:input>
+								<xf:input id="inp_searchTestCaseName" ref="data:dmp_search.searchTestCaseName" style="width:150px;"
+									placeholder="테스트케이스명 입력"></xf:input>
 							</xf:group>
 							<xf:group class="w2tb_th" tagname="th">
 								<w2:textbox label="테스트 대상" style=""></w2:textbox>
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
-								<xf:input id="inp_searchTestTarget" ref="data:dmp_search.searchTestTarget" 
-									style="width:150px;" placeholder="테스트 대상 입력"></xf:input>
+								<xf:input id="inp_searchTestTarget" ref="data:dmp_search.searchTestTarget" style="width:150px;" placeholder="테스트 대상 입력"></xf:input>
 							</xf:group>
 						</xf:group>
 					</xf:group>
@@ -3432,17 +3677,17 @@ scwin.getCurrentUserName = function() {
 			<!-- 액션 버튼 영역 -->
 			<xf:group class="titbox" id="" style="margin-bottom: 15px;">
 				<xf:group class="rt" id="" style="float: right;">
-					<xf:trigger class="btn_cm" id="btn_register_main" 
+					<xf:trigger class="btn_cm" id="btn_register_main"
 						style="background-color:#98BED6;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 170px;width: auto;padding: 0 10px;width: 170px;border-color: #fff;border: none;"
 						type="button" ev:onclick="scwin.btn_register_onclick">
 						<xf:label><![CDATA[+ 새 테스트 케이스 등록]]></xf:label>
 					</xf:trigger>
-                    <xf:trigger class="btn_cm" id="btn_excel_download" 
-                        style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 100px;width: auto;padding: 0 10px;width: 100px;border-color: #fff;border: none;"
-                        type="button" ev:onclick="scwin.btn_excel_download_onclick">
-                        <xf:label><![CDATA[엑셀 다운로드]]></xf:label>
-                    </xf:trigger>
-					<xf:trigger class="btn_cm" id="btn_refresh" 
+					<xf:trigger class="btn_cm" id="btn_excel_download"
+						style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 100px;width: auto;padding: 0 10px;width: 100px;border-color: #fff;border: none;"
+						type="button" ev:onclick="scwin.btn_excel_download_onclick">
+						<xf:label><![CDATA[엑셀 다운로드]]></xf:label>
+					</xf:trigger>
+					<xf:trigger class="btn_cm" id="btn_refresh"
 						style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 90px;width: auto;padding: 0 10px;width: 80px;border-color: #fff;border: none;"
 						type="button" ev:onclick="scwin.btn_search_onclick">
 						<xf:label><![CDATA[새로고침]]></xf:label>
@@ -3451,161 +3696,166 @@ scwin.getCurrentUserName = function() {
 			</xf:group>
 
 
-            <xf:group class="titbox" id="" style="">
-                <w2:textbox class="" id="" label="성공한 테스트" style="padding: 5px;" tagname="h4"></w2:textbox>
-                <xf:group class="count" id="">
-                    <w2:span id="" label="총" style=""></w2:span>
-                    <w2:span class="num" id="spn_successListCnt" label="0" ref="" style=""></w2:span>
-                    <w2:span id="" label="건" style=""></w2:span>
-                </xf:group>
-            </xf:group>
+			<xf:group class="titbox" id="" style="">
+				<w2:textbox class="" id="" label="성공한 테스트" style="padding: 5px;" tagname="h4"></w2:textbox>
+				<xf:group class="count" id="">
+					<w2:span id="" label="총" style=""></w2:span>
+					<w2:span class="num" id="spn_successListCnt" label="0" ref="" style=""></w2:span>
+					<w2:span id="" label="건" style=""></w2:span>
+				</xf:group>
+			</xf:group>
 
-            <xf:group class="gvwbox" id="" style="">
-                <w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_successList"
-                    defaultCellHeight="26" focusMode="row" id="success_grd" readOnly="true" scrollByColumn="false" 
-                    style="height: 150px;" visibleRowNum="10" ev:oncelldblclick="scwin.success_grd_oncelldblclick">
-                    <w2:caption id="caption4" style="" value="성공한 테스트 목록">
-                        <xf:group class="rt" id="" style="float: right;">
-                            <xf:trigger class="btn_cm" id="btn_excel_success_download" 
-                                style="background: linear-gradient(to bottom, #28a745 0%, #1e7e34 100%); color: white; border: 1px solid #1e7e34; padding: 8px 12px; font-size: 12px; height: 30px; border-radius: 4px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 80px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
-                                type="button" ev:onclick="scwin.btn_excel_success_download_onclick">
-                                <xf:label><![CDATA[엑셀 다운로드]]></xf:label>
-                            </xf:trigger>
-                        </xf:group>
-                    </w2:caption>
-                    <w2:header id="header4" style="">
-                        <w2:row id="row7" style="">
-                            <w2:column width="100" inputType="text" id="column29" value="테스트 ID" displayMode="label"></w2:column>
-                            <w2:column width="150" inputType="text" id="column30" value="업무명" displayMode="label"></w2:column>
-                            <w2:column width="200" inputType="text" id="column31" value="테스트케이스명" displayMode="label"></w2:column>
-                            <w2:column width="150" inputType="text" id="column32" value="테스트 대상" displayMode="label"></w2:column>
-                            <w2:column width="100" inputType="text" id="column33" value="테스트 타입" displayMode="label"></w2:column>
-                            <w2:column width="80" inputType="text" id="column34" value="우선순위" displayMode="label"></w2:column>
-                            <w2:column width="100" inputType="text" id="column35" value="담당자" displayMode="label"></w2:column>
-                            <w2:column width="120" inputType="text" id="column36" value="실행일시" displayMode="label"></w2:column>
-                            <w2:column width="80" inputType="text" id="column37" value="소요시간" displayMode="label"></w2:column>
-                        </w2:row>
-                    </w2:header>
-                    <w2:gBody id="gBody4" style="">
-                        <w2:row id="row8" style="">
-                            <w2:column width="100" inputType="text" id="testCaseId" displayMode="label"></w2:column>
-                            <w2:column width="150" inputType="text" id="taskName" displayMode="label"></w2:column>
-                            <w2:column width="200" inputType="text" id="testCaseName" displayMode="label"></w2:column>
-                            <w2:column width="150" inputType="text" id="testTarget" displayMode="label"></w2:column>
-                            <w2:column width="100" inputType="text" id="testTypeName" displayMode="label"></w2:column>
-                            <w2:column width="80" inputType="text" id="priorityName" displayMode="label"></w2:column>
-                            <w2:column width="100" inputType="text" id="assigneeName" displayMode="label"></w2:column>
-                            <w2:column width="120" inputType="text" id="executionDate" displayMode="label"></w2:column>
-                            <w2:column width="80" inputType="text" id="duration" displayMode="label"></w2:column>
-                        </w2:row>
-                    </w2:gBody>
-                </w2:gridView>
-            </xf:group>
+			<xf:group class="gvwbox" id="" style="">
+				<w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_successList" defaultCellHeight="26" focusMode="row"
+					id="success_grd" readOnly="true" scrollByColumn="false" style="height: 150px;" visibleRowNum="10"
+					ev:oncelldblclick="scwin.success_grd_oncelldblclick">
+					<w2:caption id="caption4" style="" value="성공한 테스트 목록">
+						<xf:group class="rt" id="" style="float: right;">
+							<xf:trigger class="btn_cm" id="btn_excel_success_download"
+								style="background: linear-gradient(to bottom, #28a745 0%, #1e7e34 100%); color: white; border: 1px solid #1e7e34; padding: 8px 12px; font-size: 12px; height: 30px; border-radius: 4px; cursor: pointer; font-family: 'Malgun Gothic', sans-serif; min-width: 80px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);"
+								type="button" ev:onclick="scwin.btn_excel_success_download_onclick">
+								<xf:label><![CDATA[엑셀 다운로드]]></xf:label>
+							</xf:trigger>
+						</xf:group>
+					</w2:caption>
+					<w2:header id="header4" style="">
+						<w2:row id="row7" style="">
+							<w2:column width="100" inputType="text" id="column29" value="테스트 ID" displayMode="label"></w2:column>
+							<w2:column width="150" inputType="text" id="column30" value="업무명" displayMode="label"></w2:column>
+							<w2:column width="200" inputType="text" id="column31" value="테스트케이스명" displayMode="label"></w2:column>
+							<w2:column width="150" inputType="text" id="column32" value="테스트 대상" displayMode="label"></w2:column>
+							<w2:column width="100" inputType="text" id="column33" value="테스트 타입" displayMode="label"></w2:column>
+							<w2:column width="80" inputType="text" id="column34" value="우선순위" displayMode="label"></w2:column>
+							<w2:column width="100" inputType="text" id="column35" value="담당자" displayMode="label"></w2:column>
+							<w2:column width="120" inputType="text" id="column36" value="실행일시" displayMode="label"></w2:column>
+							<w2:column width="80" inputType="text" id="column37" value="소요시간" displayMode="label"></w2:column>
+						</w2:row>
+					</w2:header>
+					<w2:gBody id="gBody4" style="">
+						<w2:row id="row8" style="">
+							<w2:column width="100" inputType="text" id="testCaseId" displayMode="label"></w2:column>
+							<w2:column width="150" inputType="text" id="taskName" displayMode="label"></w2:column>
+							<w2:column width="200" inputType="text" id="testCaseName" displayMode="label"></w2:column>
+							<w2:column width="150" inputType="text" id="testTarget" displayMode="label"></w2:column>
+							<w2:column width="100" inputType="text" id="testTypeName" displayMode="label"></w2:column>
+							<w2:column width="80" inputType="text" id="priorityName" displayMode="label"></w2:column>
+							<w2:column width="100" inputType="text" id="assigneeName" displayMode="label"></w2:column>
+							<w2:column width="120" inputType="text" id="executionDate" displayMode="label"></w2:column>
+							<w2:column width="80" inputType="text" id="duration" displayMode="label"></w2:column>
+						</w2:row>
+					</w2:gBody>
+				</w2:gridView>
+			</xf:group>
 
-            <xf:group class="pglbox" id="" style="">
-                <w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_success" 
-                    pageSize="5" pagingType="0" style="" ev:onclick="scwin.pgl_success_onclick">
-                </w2:pageList>
-            </xf:group>
+			<xf:group class="pglbox" id="" style="">
+				<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_success" pageSize="5" pagingType="0" style=""
+					ev:onclick="scwin.pgl_success_onclick">
+				</w2:pageList>
+			</xf:group>
 
-            <xf:group class="titbox" id="" style="">
-                <w2:textbox class="" id="" label="실패한 테스트" style="padding: 5px;" tagname="h4"></w2:textbox>
-                <xf:group class="count" id="">
-                    <w2:span id="" label="총" style=""></w2:span>
-                    <w2:span class="num" id="spn_failListCnt" label="0" ref="" style=""></w2:span>
-                    <w2:span id="" label="건" style=""></w2:span>
-                </xf:group>
-            </xf:group>
+			<xf:group class="titbox" id="" style="">
+				<w2:textbox class="" id="" label="실패한 테스트" style="padding: 5px;" tagname="h4"></w2:textbox>
+				<xf:group class="count" id="">
+					<w2:span id="" label="총" style=""></w2:span>
+					<w2:span class="num" id="spn_failListCnt" label="0" ref="" style=""></w2:span>
+					<w2:span id="" label="건" style=""></w2:span>
+				</xf:group>
+			</xf:group>
 
-            <xf:group class="gvwbox" id="" style="">
-                <w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_failList"
-                    defaultCellHeight="26" focusMode="row" id="fail_grd" readOnly="true" scrollByColumn="false" 
-                    style="height: 150px;" visibleRowNum="10" ev:oncelldblclick="scwin.fail_grd_oncelldblclick">
-                    <w2:caption id="caption5" style="" value="실패한 테스트 목록"></w2:caption>
-                    <w2:header id="header5" style="">
-                        <w2:row id="row9" style="">
-                            <w2:column width="100" inputType="text" id="column38" value="테스트 ID" displayMode="label"></w2:column>
-                            <w2:column width="150" inputType="text" id="column39" value="업무명" displayMode="label"></w2:column>
-                            <w2:column width="200" inputType="text" id="column40" value="테스트케이스명" displayMode="label"></w2:column>
-                            <w2:column width="150" inputType="text" id="column41" value="테스트 대상" displayMode="label"></w2:column>
-                            <w2:column width="100" inputType="text" id="column42" value="테스트 타입" displayMode="label"></w2:column>
-                            <w2:column width="80" inputType="text" id="column43" value="우선순위" displayMode="label"></w2:column>
-                            <w2:column width="100" inputType="text" id="column44" value="담당자" displayMode="label"></w2:column>
-                            <w2:column width="120" inputType="text" id="column45" value="실행일시" displayMode="label"></w2:column>
-                            <w2:column width="80" inputType="text" id="column46" value="소요시간" displayMode="label"></w2:column>
-                        </w2:row>
-                    </w2:header>
-                    <w2:gBody id="gBody5" style="">
-                        <w2:row id="row10" style="">
-                            <w2:column width="100" inputType="text" id="testCaseId" displayMode="label"></w2:column>
-                            <w2:column width="150" inputType="text" id="taskName" displayMode="label"></w2:column>
-                            <w2:column width="200" inputType="text" id="testCaseName" displayMode="label"></w2:column>
-                            <w2:column width="150" inputType="text" id="testTarget" displayMode="label"></w2:column>
-                            <w2:column width="100" inputType="text" id="testTypeName" displayMode="label"></w2:column>
-                            <w2:column width="80" inputType="text" id="priorityName" displayMode="label"></w2:column>
-                            <w2:column width="100" inputType="text" id="assigneeName" displayMode="label"></w2:column>
-                            <w2:column width="120" inputType="text" id="executionDate" displayMode="label"></w2:column>
-                            <w2:column width="80" inputType="text" id="duration" displayMode="label"></w2:column>
-                        </w2:row>
-                    </w2:gBody>
-                </w2:gridView>
-            </xf:group>
+			<xf:group class="gvwbox" id="" style="">
+				<w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_failList" defaultCellHeight="26" focusMode="row"
+					id="fail_grd" readOnly="true" scrollByColumn="false" style="height: 150px;" visibleRowNum="10"
+					ev:oncelldblclick="scwin.fail_grd_oncelldblclick">
+					<w2:caption id="caption5" style="" value="실패한 테스트 목록"></w2:caption>
+					<w2:header id="header5" style="">
+						<w2:row id="row9" style="">
+							<w2:column width="100" inputType="text" id="column38" value="테스트 ID" displayMode="label"></w2:column>
+							<w2:column width="150" inputType="text" id="column39" value="업무명" displayMode="label"></w2:column>
+							<w2:column width="200" inputType="text" id="column40" value="테스트케이스명" displayMode="label"></w2:column>
+							<w2:column width="150" inputType="text" id="column41" value="테스트 대상" displayMode="label"></w2:column>
+							<w2:column width="100" inputType="text" id="column42" value="테스트 타입" displayMode="label"></w2:column>
+							<w2:column width="80" inputType="text" id="column43" value="우선순위" displayMode="label"></w2:column>
+							<w2:column width="100" inputType="text" id="column44" value="담당자" displayMode="label"></w2:column>
+							<w2:column width="120" inputType="text" id="column45" value="실행일시" displayMode="label"></w2:column>
+							<w2:column width="80" inputType="text" id="column46" value="소요시간" displayMode="label"></w2:column>
+						</w2:row>
+					</w2:header>
+					<w2:gBody id="gBody5" style="">
+						<w2:row id="row10" style="">
+							<w2:column width="100" inputType="text" id="testCaseId" displayMode="label"></w2:column>
+							<w2:column width="150" inputType="text" id="taskName" displayMode="label"></w2:column>
+							<w2:column width="200" inputType="text" id="testCaseName" displayMode="label"></w2:column>
+							<w2:column width="150" inputType="text" id="testTarget" displayMode="label"></w2:column>
+							<w2:column width="100" inputType="text" id="testTypeName" displayMode="label"></w2:column>
+							<w2:column width="80" inputType="text" id="priorityName" displayMode="label"></w2:column>
+							<w2:column width="100" inputType="text" id="assigneeName" displayMode="label"></w2:column>
+							<w2:column width="120" inputType="text" id="executionDate" displayMode="label"></w2:column>
+							<w2:column width="80" inputType="text" id="duration" displayMode="label"></w2:column>
+						</w2:row>
+					</w2:gBody>
+				</w2:gridView>
+			</xf:group>
 
-            <xf:group class="pglbox" id="" style="">
-                <w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_fail" 
-                    pageSize="5" pagingType="0" style="" ev:onclick="scwin.pgl_fail_onclick">
-                </w2:pageList>
-            </xf:group>
+			<xf:group class="pglbox" id="" style="">
+				<w2:pageList class="pgl" displayButtonType="display" displayFormat="#" id="pgl_fail" pageSize="5" pagingType="0" style=""
+					ev:onclick="scwin.pgl_fail_onclick">
+				</w2:pageList>
+			</xf:group>
 
 			<!-- 단위테스트 케이스 등록/수정 팝업 -->
-			<xf:group id="pop_overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; display: none;">
-                <xf:group class="pop_contents" style="background-color: white; position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 1400px; max-width: 95%; max-height: 90vh; overflow-y: auto;">
+			<xf:group id="pop_overlay"
+				style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 4000; display: none;">
+				<xf:group class="pop_contents"
+					style="background-color: white; position: relative; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 1400px; max-width: 95%; max-height: 90vh; overflow-y: auto;">
 					<!-- 팝업 제목 및 버튼 영역 -->
-                    <xf:group class="pop_header" style="padding:15px; border-bottom:1px solid #ddd; background-color:#f8f9fa; display: flex; justify-content: space-between; align-items: center;">
-                        <!-- 제목 -->
-                        <w2:span class="pop_title" id="spn_popupTitle" label="단위테스트 케이스 관리" style="font-size:18px; font-weight:bold; flex: 1; text-align: center;" />
-                        
-                        <!-- 버튼 그룹 -->
-                        <xf:group style="display: flex; gap: 8px; align-items: center;">
-                            <!-- 조회 모드 버튼들 -->
-                            <xf:trigger class="btn_cm" id="btn_popup_edit" 
-                                style="background-color:#98BED6; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; display: none;"
-                                type="button" ev:onclick="scwin.btn_popup_edit_onclick">
-                                <xf:label>수정</xf:label>
-                            </xf:trigger>
-                            
-                            <xf:trigger class="btn_cm" id="btn_popup_delete" 
-                                style="background-color:#EC9192; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; display: none;"
-                                type="button" ev:onclick="scwin.btn_popup_delete_onclick">
-                                <xf:label>삭제</xf:label>
-                            </xf:trigger>
-                            
-                            <!-- 등록/수정 모드 버튼 -->
-                            <xf:trigger class="btn_cm" id="btn_save" 
-                                style="background-color:#98BED6; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;"
-                                type="button" ev:onclick="scwin.btn_save_onclick">
-                                <xf:label>저장</xf:label>
-                            </xf:trigger>
-                            
-                            <xf:trigger class="btn_cm" id="btn_reset" 
-                                style="background-color:#6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;"
-                                type="button" ev:onclick="scwin.btn_reset_onclick">
-                                <xf:label>초기화</xf:label>
-                            </xf:trigger>
-                            
-                            <!-- 닫기 버튼 -->
-                            <xf:trigger class="btn_cm" id="btn_popup_close" 
-                                style="background-color:#6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;"
-                                type="button" ev:onclick="scwin.esc_btn_onclick">
-                                <xf:label>닫기</xf:label>
-                            </xf:trigger>
-                        </xf:group>
-                    </xf:group>
+					<xf:group class="pop_header"
+						style="padding:15px; border-bottom:1px solid #ddd; background-color:#f8f9fa; display: flex; justify-content: space-between; align-items: center;">
+						<!-- 제목 -->
+						<w2:span class="pop_title" id="spn_popupTitle" label="단위테스트 케이스 관리"
+							style="font-size:18px; font-weight:bold; flex: 1; text-align: center;" />
+
+						<!-- 버튼 그룹 -->
+						<xf:group style="display: flex; gap: 8px; align-items: center;">
+							<!-- 조회 모드 버튼들 -->
+							<xf:trigger class="btn_cm" id="btn_popup_edit"
+								style="background-color:#98BED6; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; display: none;"
+								type="button" ev:onclick="scwin.btn_popup_edit_onclick">
+								<xf:label>수정</xf:label>
+							</xf:trigger>
+
+							<xf:trigger class="btn_cm" id="btn_popup_delete"
+								style="background-color:#EC9192; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px; display: none;"
+								type="button" ev:onclick="scwin.btn_popup_delete_onclick">
+								<xf:label>삭제</xf:label>
+							</xf:trigger>
+
+							<!-- 등록/수정 모드 버튼 -->
+							<xf:trigger class="btn_cm" id="btn_save"
+								style="background-color:#98BED6; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;" type="button"
+								ev:onclick="scwin.btn_save_onclick">
+								<xf:label>저장</xf:label>
+							</xf:trigger>
+
+							<xf:trigger class="btn_cm" id="btn_reset"
+								style="background-color:#6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;" type="button"
+								ev:onclick="scwin.btn_reset_onclick">
+								<xf:label>초기화</xf:label>
+							</xf:trigger>
+
+							<!-- 닫기 버튼 -->
+							<xf:trigger class="btn_cm" id="btn_popup_close"
+								style="background-color:#6c757d; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 12px;" type="button"
+								ev:onclick="scwin.esc_btn_onclick">
+								<xf:label>닫기</xf:label>
+							</xf:trigger>
+						</xf:group>
+					</xf:group>
 
 					<xf:group style="flex: 1; overflow-y: auto; padding: 0; background: #f8f9fa;">
 						<!-- 1. 기본 정보 섹션 -->
-						<xf:group class="section basic-info" style="margin: 20px; padding: 25px; border: 1px solid #e9ecef; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-							
+						<xf:group class="section basic-info"
+							style="margin: 20px; padding: 25px; border: 1px solid #e9ecef; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+
 							<!-- 기본 정보 테이블 -->
 							<xf:group adaptive="layout" adaptiveThreshold="600" class="w2tb tbl" style="margin-bottom: 25px;" tagname="table">
 								<w2:attributes>
@@ -3619,25 +3869,23 @@ scwin.getCurrentUserName = function() {
 								</xf:group>
 
 								<!-- 업무명 -->
-                                <xf:group tagname="tr">
+								<xf:group tagname="tr">
 									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="업무명" style=""></w2:textbox>
 										<span style="color: red;">*</span>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td" colspan="3">
 										<xf:group style="display: flex; align-items: center; gap: 5px;">
-											<xf:input class="" id="inp_taskName" readOnly="true" 
-												style="flex: 1; height: 25px; background-color: #f9f9f9;" 
-												ref="data:dmp_unitTestDetail.taskName"
-												placeholder="업무를 선택해주세요"></xf:input>
-											<xf:trigger class="btn_cm" id="btn_selectTask" 
-												style="padding: 2px 8px; height: 29px; font-size: 12px; min-width: 60px;" 
-												type="button" ev:onclick="scwin.btn_selectTask_onclick">
+											<xf:input class="" id="inp_taskName" readOnly="true" style="flex: 1; height: 25px; background-color: #f9f9f9;"
+												ref="data:dmp_unitTestDetail.taskName" placeholder="업무를 선택해주세요"></xf:input>
+											<xf:trigger class="btn_cm" id="btn_selectTask"
+												style="padding: 2px 8px; height: 29px; font-size: 12px; min-width: 60px;" type="button"
+												ev:onclick="scwin.btn_selectTask_onclick">
 												<xf:label>선택</xf:label>
 											</xf:trigger>
-											<xf:trigger class="btn_cm" id="btn_resetTask" 
-												style="padding: 2px 8px; height: 29px; font-size: 12px; min-width: 60px; background-color: #6c757d; color: white;" 
-												type="button" ev:onclick="scwin.btn_resetTask_onclick">
+											<xf:trigger class="btn_cm" id="btn_resetTask"
+												style="padding: 2px 8px; height: 29px; font-size: 12px; min-width: 60px; background-color: #6c757d; color: white;" type="button"
+												ev:onclick="scwin.btn_resetTask_onclick">
 												<xf:label>초기화</xf:label>
 											</xf:trigger>
 										</xf:group>
@@ -3652,14 +3900,16 @@ scwin.getCurrentUserName = function() {
 										<span style="color: red;">*</span>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-										<xf:input class="" id="inp_testCaseName" placeholder="테스트케이스명을 입력하세요" ref="data:dmp_unitTestDetail.testCaseName" style="width: 100%; height: 25px;"></xf:input>
+										<xf:input class="" id="inp_testCaseName" placeholder="테스트케이스명을 입력하세요" ref="data:dmp_unitTestDetail.testCaseName"
+											style="width: 100%; height: 25px;"></xf:input>
 									</xf:group>
 									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="테스트 대상" style=""></w2:textbox>
 										<span style="color: red;">*</span>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-										<xf:input class="" id="inp_testTarget" placeholder="함수명/메소드명/클래스명" ref="data:dmp_unitTestDetail.testTarget" style="width: 100%; height: 25px;"></xf:input>
+										<xf:input class="" id="inp_testTarget" placeholder="함수명/메소드명/클래스명" ref="data:dmp_unitTestDetail.testTarget"
+											style="width: 100%; height: 25px;"></xf:input>
 									</xf:group>
 								</xf:group>
 
@@ -3669,7 +3919,8 @@ scwin.getCurrentUserName = function() {
 										<w2:textbox class="" label="테스트 타입" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-										<xf:select1 id="sel_testType" chooseOption="true" style="width: 148px;height: 21px;" ref="data:dmp_unitTestDetail.testType">
+										<xf:select1 id="sel_testType" chooseOption="true" style="width: 148px;height: 21px;"
+											ref="data:dmp_unitTestDetail.testType">
 											<xf:choices>
 												<xf:itemset nodeset="data:dlt_testType">
 													<xf:label ref="type"></xf:label>
@@ -3682,7 +3933,8 @@ scwin.getCurrentUserName = function() {
 										<w2:textbox class="" label="우선순위" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-										<xf:select1 id="sel_priority" chooseOption="true" style="width: 148px;height: 21px;" ref="data:dmp_unitTestDetail.priority">
+										<xf:select1 id="sel_priority" chooseOption="true" style="width: 148px;height: 21px;"
+											ref="data:dmp_unitTestDetail.priority">
 											<xf:choices>
 												<xf:itemset nodeset="data:dlt_priority">
 													<xf:label ref="priority"></xf:label>
@@ -3699,7 +3951,8 @@ scwin.getCurrentUserName = function() {
 										<w2:textbox class="" label="테스트 상태" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-										<xf:select1 id="sel_testStatus" chooseOption="false" style="width: 148px;height: 21px;" ref="data:dmp_unitTestDetail.testStatus">
+										<xf:select1 id="sel_testStatus" chooseOption="false" style="width: 148px;height: 21px;"
+											ref="data:dmp_unitTestDetail.testStatus">
 											<xf:choices>
 												<xf:itemset nodeset="data:dlt_testStatus">
 													<xf:label ref="status"></xf:label>
@@ -3712,7 +3965,8 @@ scwin.getCurrentUserName = function() {
 										<w2:textbox class="" label="담당자" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-										<xf:input class="" id="inp_assignee" readOnly="true" ref="data:dmp_unitTestDetail.assigneeName" style="width: 100%; height: 25px; "></xf:input>
+										<xf:input class="" id="inp_assignee" readOnly="true" ref="data:dmp_unitTestDetail.assigneeName"
+											style="width: 100%; height: 25px; "></xf:input>
 									</xf:group>
 								</xf:group>
 
@@ -3722,45 +3976,40 @@ scwin.getCurrentUserName = function() {
 										<w2:textbox class="" label="실행일시" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-										<w2:inputCalendar id="cal_executionDate" style="width: 100%; height: 25px;" calendarValueType="yearMonthDate" ref="data:dmp_unitTestDetail.executionDate"></w2:inputCalendar>
+										<w2:inputCalendar id="cal_executionDate" style="width: 100%; height: 25px;" calendarValueType="yearMonthDate"
+											ref="data:dmp_unitTestDetail.executionDate"></w2:inputCalendar>
 									</xf:group>
 									<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 										<w2:textbox class="" label="소요시간(분)" style=""></w2:textbox>
 									</xf:group>
 									<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-										<xf:input class="" id="inp_duration" placeholder="소요시간(분)" ref="data:dmp_unitTestDetail.duration" style="width: 100%; height: 25px;"></xf:input>
+										<xf:input class="" id="inp_duration" placeholder="소요시간(분)" ref="data:dmp_unitTestDetail.duration"
+											style="width: 100%; height: 25px;"></xf:input>
 									</xf:group>
 								</xf:group>
 							</xf:group>
-							
+
 							<!-- 테스트 설명 섹션 -->
-							<xf:group class="description-section" style="margin-bottom: 25px;">
+							<xf:group class="description-section" style="margin-bottom: 130px;">
 								<xf:group class="titbox" style="margin-bottom: 10px;">
 									<w2:textbox label="테스트 설명" style="font-weight: bold; font-size: 14px;" tagname="h4"></w2:textbox>
 									<span style="color: red;">*</span>
 								</xf:group>
 
-								<!-- 조회 모드 -->
-								<xf:group id="grp_description_view" style="display: none;">
-									<xf:textarea id="txt_description_view" readOnly="true" style="width: 100%; height: 80px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px; padding: 10px; font-family: inherit; line-height: 1.5;" ref="data:dmp_unitTestDetail.description"></xf:textarea>
-								</xf:group>
-
-								<!-- 편집 모드 -->
+								<!-- 에디터만 사용 -->
 								<xf:group id="grp_description_edit" style="display: block;">
 									<w2:editor id="editor_description" style="width: 100%; height: 120px;" ref="data:dmp_unitTestDetail.description"></w2:editor>
 								</xf:group>
 							</xf:group>
 
 							<!-- 테스트 데이터 섹션 -->
-							<xf:group class="testData-section" style="margin-bottom: 25px;">
+							<xf:group class="testData-section" style="margin-bottom: 130px;">
 								<xf:group class="titbox" style="margin-bottom: 10px;">
 									<w2:textbox label="테스트 데이터" style="font-weight: bold; font-size: 14px;" tagname="h4"></w2:textbox>
 								</xf:group>
 
-								<xf:group id="grp_testData_view" style="display: none;">
-									<xf:textarea id="txt_testData_view" readOnly="true" style="width: 100%; height: 80px; border: 1px solid #ddd; background: #f9f9f9; border-radius: 4px; padding: 10px; font-family: inherit; line-height: 1.5;" ref="data:dmp_unitTestDetail.testData"></xf:textarea>
-								</xf:group>
 
+								<!-- 에디터만 사용 -->
 								<xf:group id="grp_testData_edit" style="display: block;">
 									<w2:editor id="editor_testData" style="width: 100%; height: 100px;" ref="data:dmp_unitTestDetail.testData"></w2:editor>
 								</xf:group>
@@ -3768,34 +4017,45 @@ scwin.getCurrentUserName = function() {
 						</xf:group>
 
 						<!-- 2. 파일 첨부 섹션 -->
-						<xf:group class="section file-section" style="margin: 0 20px 20px 20px; padding: 25px; border: 1px solid #e9ecef; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+						<xf:group class="section file-section"
+							style="margin: 0 20px 20px 20px; padding: 25px; border: 1px solid #e9ecef; border-radius: 8px; background: white; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
 
 							<!-- 파일 업로드 영역 -->
-							<xf:group class="upload-area" id="grp_fileUploadArea" style="margin-bottom: 25px; border: 2px dashed #ddd; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+							<xf:group class="upload-area" id="grp_fileUploadArea"
+								style="margin-bottom: 25px; border: 2px dashed #ddd; padding: 20px; background: #f8f9fa; border-radius: 8px;">
 								<xf:group class="titbox" style="margin-bottom: 15px;">
 									<w2:textbox label="파일 업로드" style="font-weight: bold; font-size: 16px; display: inline-block;" tagname="h4"></w2:textbox>
-									<w2:textbox label="* 테스트 데이터, 스크린샷 등 관련 파일" style="color: #666; font-size: 12px; margin-left: 10px; display: inline-block;"></w2:textbox>
+									<w2:textbox label="* 테스트 데이터, 스크린샷 등 관련 파일"
+										style="color: #666; font-size: 12px; margin-left: 10px; display: inline-block;"></w2:textbox>
 								</xf:group>
 								<xf:group class="upload-buttons" style="margin-bottom: 15px;">
 									<xf:group style="position: relative; display: inline-block; margin-right: 10px;">
-										<xf:trigger class="btn_cm" style="background: #007bff; color: white; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 38px;" type="button">
+										<xf:trigger class="btn_cm"
+											style="background: #007bff; color: white; padding: 10px 20px; border-radius: 4px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 38px;"
+											type="button">
 											<xf:label>파일 선택</xf:label>
 										</xf:trigger>
-										<w2:multiupload ev:ondone="scwin.mpd_html5Type_ondone" id="mpd_html5Type" maxcount="10" maxsize="10485760" mode="html5_transparent" selectCallback="scwin.multiUploadSelectDone" style="position: absolute;left: 0px;top:0px;width:100%;height: 100%;cursor: pointer;z-index: 999;" uploadButton="" wmode="false"></w2:multiupload>
+										<w2:multiupload ev:ondone="scwin.mpd_html5Type_ondone" id="mpd_html5Type" maxcount="10" maxsize="10485760"
+											mode="html5_transparent" selectCallback="scwin.multiUploadSelectDone"
+											style="position: absolute;left: 0px;top:0px;width:100%;height: 100%;cursor: pointer;z-index: 999;" uploadButton="" wmode="false"></w2:multiupload>
 									</xf:group>
 
-									<xf:trigger class="btn_cm" ev:onclick="scwin.btn_InitMultiupload_onclick" style="background: #6c757d; color: white; padding: 10px 15px; border-radius: 4px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 38px;" type="button">
+									<xf:trigger class="btn_cm" ev:onclick="scwin.btn_InitMultiupload_onclick"
+										style="background: #6c757d; color: white; padding: 10px 15px; border-radius: 4px; border: none; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; min-height: 38px;"
+										type="button">
 										<xf:label>전체 삭제</xf:label>
 									</xf:trigger>
 								</xf:group>
-								
+
 								<!-- 업로드 대기 파일 목록 -->
 								<xf:group class="upload-list" style="margin-top: 5px;">
 									<w2:textbox label="선택된 파일" style="font-weight: bold; margin-bottom: 8px;" tagname="h5"></w2:textbox>
-									<w2:gridView autoFit="allColumn" class="gvw" dataList="dlt_upload" id="grd_uploadList" noResultMessage="선택된 파일이 없습니다." rowNumVisible="false" style="height: 120px; border: 1px solid #ddd; width: 100%;" visibleRowNum="4">
+									<w2:gridView autoFit="allColumn" class="gvw" dataList="dlt_upload" id="grd_uploadList" noResultMessage="선택된 파일이 없습니다."
+										rowNumVisible="false" style="height: 120px; border: 1px solid #ddd; width: 100%;" visibleRowNum="4">
 										<w2:header style="">
 											<w2:row style="">
-												<w2:column displayMode="label" inputType="text" style="height:25px; background-color: #e9ecef;" value="파일명" width="250"></w2:column>
+												<w2:column displayMode="label" inputType="text" style="height:25px; background-color: #e9ecef;" value="파일명"
+													width="250"></w2:column>
 												<w2:column displayMode="label" inputType="text" style="height:25px; background-color: #e9ecef;" value="크기" width="100"></w2:column>
 												<w2:column displayMode="label" inputType="text" style="height:25px; background-color: #e9ecef;" value="상태" width="100"></w2:column>
 												<w2:column displayMode="label" inputType="text" style="height:25px; background-color: #e9ecef;" value="작업" width="60"></w2:column>
@@ -3803,21 +4063,28 @@ scwin.getCurrentUserName = function() {
 										</w2:header>
 										<w2:gBody style="">
 											<w2:row style="">
-												<w2:column displayMode="label" id="originalFileName" inputType="text" style="height:25px; padding: 5px;" textAlign="left" width="250"></w2:column>
-												<w2:column dataType="number" displayFormat="#,###" displayMode="label" id="fileSize" inputType="text" style="height:25px; padding: 5px;" textAlign="right" width="100"></w2:column>
-												<w2:column displayMode="label" id="status" inputType="text" style="height:25px; padding: 5px; color: #007bff;" textAlign="center" width="100"></w2:column>
-												<w2:column displayMode="button" inputType="button" style="height:25px; padding: 2px; color: #dc3545; cursor: pointer; font-size: 14px; font-weight: bold;" textAlign="center" width="60" value="삭제" ev:onclick="scwin.removeUploadFile"></w2:column>
+												<w2:column displayMode="label" id="originalFileName" inputType="text" style="height:25px; padding: 5px;"
+													textAlign="left" width="250"></w2:column>
+												<w2:column dataType="number" displayFormat="#,###" displayMode="label" id="fileSize" inputType="text"
+													style="height:25px; padding: 5px;" textAlign="right" width="100"></w2:column>
+												<w2:column displayMode="label" id="status" inputType="text" style="height:25px; padding: 5px; color: #007bff;"
+													textAlign="center" width="100"></w2:column>
+												<w2:column displayMode="button" inputType="button"
+													style="height:25px; padding: 2px; color: #dc3545; cursor: pointer; font-size: 14px; font-weight: bold;" textAlign="center"
+													width="60" value="삭제" ev:onclick="scwin.removeUploadFile"></w2:column>
 											</w2:row>
 										</w2:gBody>
 									</w2:gridView>
 								</xf:group>
 							</xf:group>
-							
+
 							<!-- 기존 첨부파일 목록 -->
 							<xf:group class="existing-files" style="">
 								<xf:group class="titbox" style="margin-bottom: 15px;">
 									<w2:textbox label="기존 첨부파일" style="font-weight: bold; font-size: 16px; display: inline-block;" tagname="h4"></w2:textbox>
-									<xf:trigger class="btn_cm" ev:onclick="scwin.loadFileList" style="margin-left: 10px; background: #28a745; color: white; padding: 5px 10px; border-radius: 3px; font-size: 12px; display: inline-block;" type="button">
+									<xf:trigger class="btn_cm" ev:onclick="scwin.loadFileList"
+										style="margin-left: 10px; background: #28a745; color: white; padding: 5px 10px; border-radius: 3px; font-size: 12px; display: inline-block;"
+										type="button">
 										<xf:label>새로고침</xf:label>
 									</xf:trigger>
 								</xf:group>
@@ -3825,21 +4092,31 @@ scwin.getCurrentUserName = function() {
 								<xf:group class="file-grid-container" style="display: flex; gap: 20px;">
 									<!-- 파일 목록 그리드 -->
 									<xf:group style="flex: 1;">
-										<w2:gridView autoFit="lastColumn" class="gvw" dataList="dlt_attVoList" id="grd_fileList" noResultMessage="첨부된 파일이 없습니다." rowNumVisible="true" rowNumWidth="30" style="height: 300px; border: 1px solid #ddd;" visibleRowNum="8" ev:oncellclick="scwin.grd_fileList_oncellclick">
+										<w2:gridView autoFit="lastColumn" class="gvw" dataList="dlt_attVoList" id="grd_fileList"
+											noResultMessage="첨부된 파일이 없습니다." rowNumVisible="true" rowNumWidth="30" style="height: 300px; border: 1px solid #ddd;"
+											visibleRowNum="8" ev:oncellclick="scwin.grd_fileList_oncellclick">
 											<w2:header style="">
 												<w2:row style="">
-													<w2:column displayMode="label" inputType="text" style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="파일명" width="200"></w2:column>
-													<w2:column displayMode="label" inputType="text" style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="크기" width="80"></w2:column>
-													<w2:column displayMode="label" inputType="text" style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="업로드일" width="100"></w2:column>
-													<w2:column displayMode="label" inputType="text" style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="작업" width="120"></w2:column>
+													<w2:column displayMode="label" inputType="text"
+														style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="파일명" width="200"></w2:column>
+													<w2:column displayMode="label" inputType="text"
+														style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="크기" width="80"></w2:column>
+													<w2:column displayMode="label" inputType="text"
+														style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="업로드일" width="100"></w2:column>
+													<w2:column displayMode="label" inputType="text"
+														style="height:30px; background-color: #343a40; color: white; font-weight: bold;" value="작업" width="120"></w2:column>
 												</w2:row>
 											</w2:header>
 											<w2:gBody style="">
 												<w2:row style="">
-													<w2:column displayMode="label" id="originalFileName" inputType="text" style="height:30px; padding: 8px; cursor: pointer; color: #007bff; text-decoration: underline;" textAlign="left" width="200"></w2:column>
-													<w2:column dataType="number" displayFormat="#,###" displayMode="label" id="fileSize" inputType="text" style="height:30px; padding: 8px;" textAlign="right" width="80"></w2:column>
-													<w2:column displayMode="label" id="attachedAt" inputType="text" style="height:30px; padding: 8px;" textAlign="center" width="100"></w2:column>
-													<w2:column displayMode="button" inputType="button" style="height:30px; padding: 2px;" textAlign="center" width="120" value="다운로드|삭제" ev:onclick="scwin.fileActionClick"></w2:column>
+													<w2:column displayMode="label" id="originalFileName" inputType="text"
+														style="height:30px; padding: 8px; cursor: pointer; color: #007bff; text-decoration: underline;" textAlign="left" width="200"></w2:column>
+													<w2:column dataType="number" displayFormat="#,###" displayMode="label" id="fileSize" inputType="text"
+														style="height:30px; padding: 8px;" textAlign="right" width="80"></w2:column>
+													<w2:column displayMode="label" id="attachedAt" inputType="text" style="height:30px; padding: 8px;" textAlign="center"
+														width="100"></w2:column>
+													<w2:column displayMode="button" inputType="button" style="height:30px; padding: 2px;" textAlign="center" width="120"
+														value="다운로드|삭제" ev:onclick="scwin.fileActionClick"></w2:column>
 												</w2:row>
 											</w2:gBody>
 										</w2:gridView>
@@ -3847,7 +4124,8 @@ scwin.getCurrentUserName = function() {
 
 									<!-- 파일 미리보기 영역 -->
 									<xf:group class="preview-panel" style="width: 400px; border: 1px solid #ddd; background: #f8f9fa; border-radius: 8px;">
-										<xf:group class="preview-header" style="background: #495057; color: white; padding: 10px; font-weight: bold; border-radius: 8px 8px 0 0;">
+										<xf:group class="preview-header"
+											style="background: #495057; color: white; padding: 10px; font-weight: bold; border-radius: 8px 8px 0 0;">
 											<w2:textbox label="파일 미리보기" style="margin: 0;"></w2:textbox>
 										</xf:group>
 										<xf:group class="preview-content" id="grp_previewContent" style="padding: 15px; min-height: 250px;">
@@ -3860,9 +4138,12 @@ scwin.getCurrentUserName = function() {
 											<!-- 이미지 미리보기 -->
 											<w2:group id="grp_imagePreview" style="display: none; text-align: center;">
 												<w2:textbox id="txt_previewFileName" style="font-weight: bold; margin-bottom: 10px; word-break: break-all;"></w2:textbox>
-												<img id="img_preview" style="width: 150px; height: 150px; object-fit: cover; border: 1px solid #ddd; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 4px;" />
+												<img id="img_preview"
+													style="width: 150px; height: 150px; object-fit: cover; border: 1px solid #ddd; background: white; box-shadow: 0 2px 8px rgba(0,0,0,0.1); border-radius: 4px;" />
 												<xf:group style="margin-top: 10px;">
-													<xf:trigger style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin: 2px;" ev:onclick="scwin.downloadCurrentFile">
+													<xf:trigger
+														style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin: 2px;"
+														ev:onclick="scwin.downloadCurrentFile">
 														<xf:label>다운로드</xf:label>
 													</xf:trigger>
 												</xf:group>
@@ -3871,9 +4152,12 @@ scwin.getCurrentUserName = function() {
 											<!-- 텍스트 파일 미리보기 -->
 											<w2:group id="grp_textPreview" style="display: none;">
 												<w2:textbox id="txt_textFileName" style="font-weight: bold; margin-bottom: 10px; word-break: break-all;"></w2:textbox>
-												<xf:textarea id="txt_textContent" readOnly="true" style="width: 100%; height: 200px; border: 1px solid #ccc; font-family: monospace; font-size: 12px; background: white; padding: 8px; border-radius: 4px;"></xf:textarea>
+												<xf:textarea id="txt_textContent" readOnly="true"
+													style="width: 100%; height: 200px; border: 1px solid #ccc; font-family: monospace; font-size: 12px; background: white; padding: 8px; border-radius: 4px;"></xf:textarea>
 												<xf:group style="margin-top: 10px;">
-													<xf:trigger style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin: 2px;" ev:onclick="scwin.downloadCurrentFile">
+													<xf:trigger
+														style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin: 2px;"
+														ev:onclick="scwin.downloadCurrentFile">
 														<xf:label>다운로드</xf:label>
 													</xf:trigger>
 												</xf:group>
@@ -3884,7 +4168,9 @@ scwin.getCurrentUserName = function() {
 												<w2:textbox id="txt_documentFileName" style="font-weight: bold; margin-bottom: 10px; word-break: break-all;"></w2:textbox>
 												<w2:textbox id="txt_documentInfo" style="color: #666; margin-bottom: 15px;"></w2:textbox>
 												<xf:group style="margin-top: 10px;">
-													<xf:trigger style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin: 2px;" ev:onclick="scwin.downloadCurrentFile">
+													<xf:trigger
+														style="background: #007bff; color: white; border: none; padding: 5px 10px; border-radius: 3px; margin: 2px;"
+														ev:onclick="scwin.downloadCurrentFile">
 														<xf:label>다운로드</xf:label>
 													</xf:trigger>
 												</xf:group>

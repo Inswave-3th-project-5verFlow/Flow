@@ -8,8 +8,6 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +35,6 @@ import com.inswave.elfw.log.AppLog;
 @Service("unitTestServiceImpl")
 public class UnitTestServiceImpl implements UnitTestService {
     
-    private static final Logger logger = LoggerFactory.getLogger(UnitTestServiceImpl.class);
     
     @Resource(name = "unitTestDao")
     private UnitTestDao unitTestDao;
@@ -71,7 +68,7 @@ public class UnitTestServiceImpl implements UnitTestService {
      */
     @Override
 	public List<UnitTestVo> selectUnitTestList(UnitTestVo unitTestVo) throws Exception{
-	    logger.debug("단위테스트 케이스 목록 조회 시작: {}", unitTestVo);
+	    AppLog.debug("단위테스트 케이스 목록 조회 시작: {}", unitTestVo);
 	    
 	    // 현재 사용자 권한 정보 설정
 	    return unitTestDao.selectUnitTestList(unitTestVo);
@@ -82,7 +79,7 @@ public class UnitTestServiceImpl implements UnitTestService {
      */
     @Override
     public List<UnitTestVo> selectFailedUnitTestList(UnitTestVo unitTestVo) throws Exception {
-        logger.debug("실패한 단위테스트 케이스 목록 조회 시작: {}", unitTestVo);
+        AppLog.debug("실패한 단위테스트 케이스 목록 조회 시작: {}", unitTestVo);
         
         return unitTestDao.selectFailedUnitTestList(unitTestVo);
     }
@@ -105,17 +102,28 @@ public class UnitTestServiceImpl implements UnitTestService {
      * 단위테스트 케이스 상세 조회
      */
     @Override
-    public UnitTestVo selectUnitTestDetail(UnitTestVo unitTestVo) throws Exception {
-        logger.debug("단위테스트 케이스 상세 조회: {}", unitTestVo);
-        
-        UnitTestVo result = unitTestDao.selectUnitTestDetail(unitTestVo);
-        
-        if (result == null) {
-            throw new Exception("해당 테스트 케이스를 찾을 수 없습니다.");
-        }
-        
-        return result;
-    }
+	public UnitTestVo selectUnitTestDetail(UnitTestVo unitTestVo) throws Exception {
+	    AppLog.debug("===== 단위테스트 케이스 상세 조회 시작 =====");
+	    AppLog.debug("요청 파라미터: {}", unitTestVo);
+	    AppLog.debug("testCaseId: {}", unitTestVo.getTestCaseId());
+	    
+	    UnitTestVo result = unitTestDao.selectUnitTestDetail(unitTestVo);
+	    
+	    AppLog.debug("===== 조회 결과 확인 =====");
+	    AppLog.debug("전체 결과: {}", result);
+	    if (result != null) {
+	        AppLog.debug("description 원본: [{}]", result.getDescription());
+	        AppLog.debug("testData 원본: [{}]", result.getTestData());
+	        AppLog.debug("description 길이: {}", result.getDescription() != null ? result.getDescription().length() : "null");
+	        AppLog.debug("testData 길이: {}", result.getTestData() != null ? result.getTestData().length() : "null");
+	    }
+	    
+	    if (result == null) {
+	        throw new Exception("해당 테스트 케이스를 찾을 수 없습니다.");
+	    }
+	    
+	    return result;
+	}
     
     /**
      * 단위테스트 케이스 등록
@@ -166,8 +174,8 @@ public class UnitTestServiceImpl implements UnitTestService {
         List<String> uploadedS3Keys = new ArrayList<>();
 
         try {
-            logger.debug("=== 단위테스트 케이스 with 파일 등록 시작 ===");
-            logger.debug("단위테스트 케이스 정보: {}", unitTestVo);
+            AppLog.debug("=== 단위테스트 케이스 with 파일 등록 시작 ===");
+            AppLog.debug("단위테스트 케이스 정보: {}", unitTestVo);
 
             // 1. 단위테스트 케이스 등록
             String testCaseId = insertUnitTest(unitTestVo);
@@ -179,22 +187,22 @@ public class UnitTestServiceImpl implements UnitTestService {
                     if (!file.isEmpty()) {
                         AttVo attVo = uploadAndSaveFile(file, "UNIT_TEST", testCaseId);
                         uploadedS3Keys.add(attVo.getS3Key());
-                        logger.debug("파일 업로드 완료: {}", file.getOriginalFilename());
+                        AppLog.debug("파일 업로드 완료: {}", file.getOriginalFilename());
                     }
                 }
             }
 
-            logger.debug("=== 단위테스트 케이스 with 파일 등록 완료 ===");
+            AppLog.debug("=== 단위테스트 케이스 with 파일 등록 완료 ===");
             return unitTestVo;
 
         } catch (Exception e) {
-            logger.error("단위테스트 케이스 등록 실패: {}", e.getMessage());
+            AppLog.error("단위테스트 케이스 등록 실패: {}", e.getMessage());
 
             // 업로드된 파일들 S3에서 삭제 (롤백)
             for (String s3Key : uploadedS3Keys) {
                 try {
                     amazonS3.deleteObject(bucketName, s3Key);
-                    logger.debug("S3 파일 롤백: {}", s3Key);
+                    AppLog.debug("S3 파일 롤백: {}", s3Key);
                 } catch (Exception ignored) {
                 }
             }
@@ -209,7 +217,7 @@ public class UnitTestServiceImpl implements UnitTestService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int updateUnitTest(UnitTestVo unitTestVo) throws Exception {
-        logger.debug("단위테스트 케이스 수정: {}", unitTestVo);
+        AppLog.debug("단위테스트 케이스 수정: {}", unitTestVo);
         
         // 필수값 검증
         if (isEmpty(unitTestVo.getTestCaseId())) {
@@ -222,7 +230,7 @@ public class UnitTestServiceImpl implements UnitTestService {
             throw new Exception("해당 테스트 케이스를 찾을 수 없거나 수정할 수 없습니다.");
         }
         
-        logger.debug("단위테스트 케이스 수정 완료: {}", unitTestVo.getTestCaseId());
+        AppLog.debug("단위테스트 케이스 수정 완료: {}", unitTestVo.getTestCaseId());
         return result;
     }
     
@@ -235,8 +243,8 @@ public class UnitTestServiceImpl implements UnitTestService {
         List<String> uploadedS3Keys = new ArrayList<>();
 
         try {
-            logger.debug("=== 단위테스트 케이스 수정 with 파일 시작 ===");
-            logger.debug("수정할 테스트 케이스 ID: {}", unitTestVo.getTestCaseId());
+            AppLog.debug("=== 단위테스트 케이스 수정 with 파일 시작 ===");
+            AppLog.debug("수정할 테스트 케이스 ID: {}", unitTestVo.getTestCaseId());
 
             // 1. 테스트 케이스 ID 유효성 검사
             if (unitTestVo.getTestCaseId() == null || unitTestVo.getTestCaseId().trim().isEmpty()) {
@@ -254,7 +262,7 @@ public class UnitTestServiceImpl implements UnitTestService {
             if (updateResult <= 0) {
                 throw new RuntimeException("테스트 케이스 정보 수정 실패");
             }
-            logger.debug("테스트 케이스 정보 수정 완료");
+            AppLog.debug("테스트 케이스 정보 수정 완료");
 
             // 4. 새로운 파일 업로드 (기존 파일은 유지)
             if (files != null && files.length > 0) {
@@ -262,22 +270,22 @@ public class UnitTestServiceImpl implements UnitTestService {
                     if (!file.isEmpty()) {
                         AttVo attVo = uploadAndSaveFile(file, "UNIT_TEST", unitTestVo.getTestCaseId());
                         uploadedS3Keys.add(attVo.getS3Key());
-                        logger.debug("새 파일 업로드: {}", file.getOriginalFilename());
+                        AppLog.debug("새 파일 업로드: {}", file.getOriginalFilename());
                     }
                 }
             }
 
-            logger.debug("=== 단위테스트 케이스 수정 with 파일 완료 ===");
+            AppLog.debug("=== 단위테스트 케이스 수정 with 파일 완료 ===");
             return unitTestVo;
 
         } catch (Exception e) {
-            logger.error("단위테스트 케이스 수정 실패: {}", e.getMessage());
+            AppLog.error("단위테스트 케이스 수정 실패: {}", e.getMessage());
 
             // 새로 업로드된 파일들 S3에서 삭제 (롤백)
             for (String s3Key : uploadedS3Keys) {
                 try {
                     amazonS3.deleteObject(bucketName, s3Key);
-                    logger.debug("S3 파일 롤백: {}", s3Key);
+                    AppLog.debug("S3 파일 롤백: {}", s3Key);
                 } catch (Exception ignored) {
                 }
             }
@@ -292,7 +300,7 @@ public class UnitTestServiceImpl implements UnitTestService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int deleteUnitTest(UnitTestVo unitTestVo) throws Exception {
-        logger.debug("단위테스트 케이스 삭제: {}", unitTestVo);
+        AppLog.debug("단위테스트 케이스 삭제: {}", unitTestVo);
         
         String testCaseId = unitTestVo.getTestCaseId();
         if (isEmpty(testCaseId)) {
@@ -316,7 +324,7 @@ public class UnitTestServiceImpl implements UnitTestService {
             throw new Exception("해당 테스트 케이스를 찾을 수 없거나 삭제할 수 없습니다.");
         }
         
-        logger.debug("단위테스트 케이스 삭제 완료: {}", testCaseId);
+        AppLog.debug("단위테스트 케이스 삭제 완료: {}", testCaseId);
         return result;
     }
     
@@ -325,7 +333,7 @@ public class UnitTestServiceImpl implements UnitTestService {
      */
     @Override
     public List<AttVo> selectUnitTestFileList(UnitTestVo unitTestVo) throws Exception {
-        logger.debug("첨부파일 목록 조회: {}", unitTestVo);
+        AppLog.debug("첨부파일 목록 조회: {}", unitTestVo);
         
         // AttService 조회용 파라미터 설정
         ProworksCommVO commVO = new ProworksCommVO();
@@ -334,7 +342,7 @@ public class UnitTestServiceImpl implements UnitTestService {
         
         List<AttVo> fileList = attService.getFileList(commVO);
         
-        logger.debug("첨부파일 목록 조회 완료: {} 건", fileList.size());
+        AppLog.debug("첨부파일 목록 조회 완료: {} 건", fileList.size());
         return fileList;
     }
     
@@ -344,7 +352,7 @@ public class UnitTestServiceImpl implements UnitTestService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int deleteUnitTestFile(String fileId) throws Exception {
-        logger.debug("첨부파일 삭제: {}", fileId);
+        AppLog.debug("첨부파일 삭제: {}", fileId);
         
         if (isEmpty(fileId)) {
             throw new Exception("삭제할 파일 ID가 필요합니다.");
@@ -353,7 +361,7 @@ public class UnitTestServiceImpl implements UnitTestService {
         // AttService를 통해 파일 삭제
         attService.deleteFile(fileId);
         
-        logger.debug("첨부파일 삭제 완료: {}", fileId);
+        AppLog.debug("첨부파일 삭제 완료: {}", fileId);
         return 1; // 성공 시 1 반환
     }
     
@@ -362,7 +370,7 @@ public class UnitTestServiceImpl implements UnitTestService {
      */
     @Override
     public Map<String, Object> selectUnitTestStatistics(UnitTestVo unitTestVo) throws Exception {
-        logger.debug("통계 조회: {}", unitTestVo);
+        AppLog.debug("통계 조회: {}", unitTestVo);
     
         
         List<Map<String, Object>> statistics = unitTestDao.selectUnitTestStatistics(unitTestVo);
@@ -411,7 +419,7 @@ public class UnitTestServiceImpl implements UnitTestService {
             result.put("successRate", 0.0);
         }
         
-        logger.debug("통계 조회 완료: {}", result);
+        AppLog.debug("통계 조회 완료: {}", result);
         return result;
     }
     
@@ -421,7 +429,7 @@ public class UnitTestServiceImpl implements UnitTestService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int updateTestStatus(UnitTestVo unitTestVo) throws Exception {
-        logger.debug("테스트 상태 업데이트: {}", unitTestVo);
+        AppLog.debug("테스트 상태 업데이트: {}", unitTestVo);
         
         if (isEmpty(unitTestVo.getTestCaseId())) {
             throw new Exception("업데이트할 테스트 케이스 ID가 필요합니다.");
@@ -433,7 +441,7 @@ public class UnitTestServiceImpl implements UnitTestService {
             throw new Exception("해당 테스트 케이스를 찾을 수 없거나 상태를 업데이트할 수 없습니다.");
         }
         
-        logger.debug("테스트 상태 업데이트 완료: {}", unitTestVo.getTestCaseId());
+        AppLog.debug("테스트 상태 업데이트 완료: {}", unitTestVo.getTestCaseId());
         return result;
     }
     
@@ -443,7 +451,7 @@ public class UnitTestServiceImpl implements UnitTestService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int updateTestResult(UnitTestVo unitTestVo) throws Exception {
-        logger.debug("테스트 결과 업데이트: {}", unitTestVo);
+        AppLog.debug("테스트 결과 업데이트: {}", unitTestVo);
         
         if (isEmpty(unitTestVo.getTestCaseId())) {
             throw new Exception("업데이트할 테스트 케이스 ID가 필요합니다.");
@@ -455,7 +463,7 @@ public class UnitTestServiceImpl implements UnitTestService {
             throw new Exception("해당 테스트 케이스를 찾을 수 없거나 결과를 업데이트할 수 없습니다.");
         }
         
-        logger.debug("테스트 결과 업데이트 완료: {}", unitTestVo.getTestCaseId());
+        AppLog.debug("테스트 결과 업데이트 완료: {}", unitTestVo.getTestCaseId());
         return result;
     }
     
@@ -500,7 +508,7 @@ public class UnitTestServiceImpl implements UnitTestService {
      * TC_001, TC_002, ... TC_010, ... TC_100 형태로 생성
      */
     private String generateTestCaseId() throws Exception {
-        logger.debug("테스트 케이스 ID 생성 시작");
+        AppLog.debug("테스트 케이스 ID 생성 시작");
         
         try {
             // 현재 최대 시퀀스 번호 조회
@@ -509,11 +517,11 @@ public class UnitTestServiceImpl implements UnitTestService {
             // TC_001 형태로 포맷팅 (3자리 패딩)
             String testCaseId = String.format("TC_%03d", nextSequence);
             
-            logger.debug("생성된 테스트 케이스 ID: {}", testCaseId);
+            AppLog.debug("생성된 테스트 케이스 ID: {}", testCaseId);
             return testCaseId;
             
         } catch (Exception e) {
-            logger.error("테스트 케이스 ID 생성 실패: {}", e.getMessage());
+            AppLog.error("테스트 케이스 ID 생성 실패: {}", e.getMessage());
             throw new Exception("테스트 케이스 ID 생성에 실패했습니다: " + e.getMessage());
         }
     }
