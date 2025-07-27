@@ -447,6 +447,184 @@ scwin.CURRENT_USER_ID = "";
 scwin.CURRENT_USER_GROUP_ID = "";
 
 /**
+ * 우선순위별 배지 스타일 적용
+ * @description 우선순위에 따라 배지 형태로 스타일을 적용합니다.
+ */
+scwin.setPriorityStyle = function () {
+    console.log("우선순위 배지 스타일 적용 시작");
+    
+    // 성공 그리드 우선순위 스타일 적용
+    const successRowCount = dlt_successList.getTotalRow();
+    const successColIndex = success_grd.getColumnIndex("priorityName");
+    
+    for (let i = 0; i < successRowCount; i++) {
+        const priority = dlt_successList.getCellData(i, "priority");
+        const priorityStyles = scwin.getPriorityStyleConfig(priority);
+        
+        const styles = [
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "background-color", styleValue: priorityStyles.backgroundColor },
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "color", styleValue: priorityStyles.textColor },
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "border-radius", styleValue: "20px" },
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "text-align", styleValue: "center" },
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "font-weight", styleValue: "bold" },
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "font-size", styleValue: "11px" },
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "border", styleValue: "none" },
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "padding", styleValue: "4px 8px" }
+        ];
+        
+        styles.forEach(style => success_grd.setStyleAll(style));
+    }
+    
+    // 실패 그리드 우선순위 스타일 적용
+    const failRowCount = dlt_failList.getTotalRow();
+    const failColIndex = fail_grd.getColumnIndex("priorityName");
+    
+    for (let i = 0; i < failRowCount; i++) {
+        const priority = dlt_failList.getCellData(i, "priority");
+        const priorityStyles = scwin.getPriorityStyleConfig(priority);
+        
+        const styles = [
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "background-color", styleValue: priorityStyles.backgroundColor },
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "color", styleValue: priorityStyles.textColor },
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "border-radius", styleValue: "20px" },
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "text-align", styleValue: "center" },
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "font-weight", styleValue: "bold" },
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "font-size", styleValue: "11px" },
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "border", styleValue: "none" },
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "padding", styleValue: "4px 8px" }
+        ];
+        
+        styles.forEach(style => fail_grd.setStyleAll(style));
+    }
+    
+    console.log("우선순위 배지 스타일 적용 완료");
+};
+
+/**
+ * 우선순위별 스타일 설정 반환
+ * @param {string} priority - 우선순위 코드 (HIGH, MEDIUM, LOW)
+ * @returns {object} 스타일 설정 객체
+ */
+scwin.getPriorityStyleConfig = function(priority) {
+    let backgroundColor = "#f8f9fa";
+    let textColor = "#333333";
+
+    switch (priority) {
+        case "HIGH":
+            backgroundColor = "#FFE6E6"; // 연한 빨강
+            textColor = "#D32F2F";
+            break;
+        case "MEDIUM":
+            backgroundColor = "#FFF8E1"; // 연한 노랑
+            textColor = "#F57C00";
+            break;
+        case "LOW":
+            backgroundColor = "#E8F5E8"; // 연한 초록
+            textColor = "#2E7D32";
+            break;
+        default:
+            backgroundColor = "#f8f9fa";
+            textColor = "#333333";
+    }
+
+    return {
+        backgroundColor: backgroundColor,
+        textColor: textColor
+    };
+};
+
+/**
+ * 테스트 타입별 배지 스타일 적용 (추가)
+ * @description 테스트 타입에 따라 배지 형태로 스타일을 적용합니다.
+ */
+scwin.setTestTypeStyle = function () {
+    console.log("테스트 타입 배지 스타일 적용 시작");
+    
+    // 성공 그리드 테스트 타입 스타일 적용
+    const successRowCount = dlt_successList.getTotalRow();
+    const successColIndex = success_grd.getColumnIndex("testTypeName");
+    
+    for (let i = 0; i < successRowCount; i++) {
+        const testType = dlt_successList.getCellData(i, "testType");
+        const typeStyles = scwin.getTestTypeStyleConfig(testType);
+        
+        const styles = [
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "background-color", styleValue: typeStyles.backgroundColor },
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "color", styleValue: typeStyles.textColor },
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "border-radius", styleValue: "15px" },
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "text-align", styleValue: "center" },
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "font-weight", styleValue: "500" },
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "font-size", styleValue: "10px" },
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "border", styleValue: "none" },
+            { type: "cell", rowIndex: i, colIndex: successColIndex, styleName: "padding", styleValue: "3px 6px" }
+        ];
+        
+        styles.forEach(style => success_grd.setStyleAll(style));
+    }
+    
+    // 실패 그리드 테스트 타입 스타일 적용
+    const failRowCount = dlt_failList.getTotalRow();
+    const failColIndex = fail_grd.getColumnIndex("testTypeName");
+    
+    for (let i = 0; i < failRowCount; i++) {
+        const testType = dlt_failList.getCellData(i, "testType");
+        const typeStyles = scwin.getTestTypeStyleConfig(testType);
+        
+        const styles = [
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "background-color", styleValue: typeStyles.backgroundColor },
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "color", styleValue: typeStyles.textColor },
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "border-radius", styleValue: "15px" },
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "text-align", styleValue: "center" },
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "font-weight", styleValue: "500" },
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "font-size", styleValue: "10px" },
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "border", styleValue: "none" },
+            { type: "cell", rowIndex: i, colIndex: failColIndex, styleName: "padding", styleValue: "3px 6px" }
+        ];
+        
+        styles.forEach(style => fail_grd.setStyleAll(style));
+    }
+    
+    console.log("테스트 타입 배지 스타일 적용 완료");
+};
+
+/**
+ * 테스트 타입별 스타일 설정 반환
+ * @param {string} testType - 테스트 타입 코드 (NORMAL, BOUNDARY, EXCEPTION, PERFORMANCE)
+ * @returns {object} 스타일 설정 객체
+ */
+scwin.getTestTypeStyleConfig = function(testType) {
+    let backgroundColor = "#f8f9fa";
+    let textColor = "#333333";
+
+    switch (testType) {
+        case "NORMAL":
+            backgroundColor = "#E3F2FD"; // 연한 파랑
+            textColor = "#1976D2";
+            break;
+        case "BOUNDARY":
+            backgroundColor = "#FFF3E0"; // 연한 오렌지
+            textColor = "#F57C00";
+            break;
+        case "EXCEPTION":
+            backgroundColor = "#FCE4EC"; // 연한 핑크
+            textColor = "#C2185B";
+            break;
+        case "PERFORMANCE":
+            backgroundColor = "#F3E5F5"; // 연한 보라
+            textColor = "#7B1FA2";
+            break;
+        default:
+            backgroundColor = "#f8f9fa";
+            textColor = "#333333";
+    }
+
+    return {
+        backgroundColor: backgroundColor,
+        textColor: textColor
+    };
+};
+
+/**
  * 페이지 로드 시 사용자 정보 초기화
  */
 scwin.onpageload = function() {
@@ -1105,6 +1283,12 @@ scwin.sbm_selectUnitTestListByProject_submitdone = function(e) {
         
         console.log("=== processTestData 호출 완료 ===");
         
+        // 스타일 적용 추가
+        setTimeout(function() {
+            scwin.setPriorityStyle();
+            scwin.setTestTypeStyle();
+        }, 100);
+        
     } catch (error) {
         console.error("프로젝트별 조회 완료 처리 중 오류:", error);
         console.error("오류 스택:", error.stack);
@@ -1276,11 +1460,17 @@ scwin.sbm_selectUnitTestList_submitdone = function(e) {
     console.log("전체 데이터:", allData.length, "개");
     console.log("총 개수:", totalCount);
 
-     // 전역 변수에 저장 (엑셀 다운로드용) - 이 줄만 추가
+    // 전역 변수에 저장 (엑셀 다운로드용)
     scwin.globalElData = elData;
     
     // 데이터 분류 및 그리드 업데이트
     scwin.processTestData(allData, totalCount);
+    
+    // 스타일 적용 추가
+    setTimeout(function() {
+        scwin.setPriorityStyle();
+        scwin.setTestTypeStyle();
+    }, 100);
 };
 
 /**
@@ -1290,10 +1480,6 @@ scwin.updateGridData = function() {
     console.log("그리드 데이터 업데이트 시작");
     
     try {
-        // 전체 데이터 그리드 업데이트 제거
-        // var allPageData = scwin.getPageData(scwin.allDataPageInfo.data, scwin.allDataPageInfo);
-        // dlt_unitTestVoList.setJSON(allPageData);
-        
         // 상태별 그리드만 업데이트 (성공/실패만)
         var successPageData = scwin.getPageData(scwin.successPageInfo.data, scwin.successPageInfo);
         dlt_successList.setJSON(successPageData);
@@ -1302,6 +1488,13 @@ scwin.updateGridData = function() {
         dlt_failList.setJSON(failPageData);
         
         console.log("그리드 데이터 업데이트 완료");
+        
+        // 그리드 데이터 업데이트 후 스타일 적용
+        setTimeout(function() {
+            scwin.setPriorityStyle();
+            scwin.setTestTypeStyle();
+        }, 50);
+        
     } catch (err) {
         console.error("그리드 데이터 업데이트 오류:", err);
     }
@@ -1869,6 +2062,12 @@ scwin.pgl_success_onclick = function(idx) {
     var pageData = scwin.getPageData(scwin.successPageInfo.data, scwin.successPageInfo);
     dlt_successList.setJSON(pageData);
     pgl_success.setSelectedIndex(idx);
+    
+    // 페이지 변경 후 스타일 적용
+    setTimeout(function() {
+        scwin.setPriorityStyle();
+        scwin.setTestTypeStyle();
+    }, 50);
 };
 
 /**
@@ -1881,6 +2080,12 @@ scwin.pgl_fail_onclick = function(idx) {
     var pageData = scwin.getPageData(scwin.failPageInfo.data, scwin.failPageInfo);
     dlt_failList.setJSON(pageData);
     pgl_fail.setSelectedIndex(idx);
+    
+    // 페이지 변경 후 스타일 적용
+    setTimeout(function() {
+        scwin.setPriorityStyle();
+        scwin.setTestTypeStyle();
+    }, 50);
 };
 
 /**
@@ -3215,7 +3420,7 @@ scwin.btn_searchReset_onclick = function(e) {
     scwin.searchUnitTests();
 };
 
-scwin.btn_excel_combined_download_onclick = function (e) {
+scwin.btn_excel_combined_download_onclick = function(e) {
     var successData = scwin.successPageInfo.data || [];
     var failData = scwin.failPageInfo.data || [];
     
@@ -3242,7 +3447,7 @@ scwin.btn_excel_combined_download_onclick = function (e) {
             processMsg: "성공 데이터 엑셀 파일을 생성하고 있습니다...",
             timeout: 60000,
             checkInterval: 1000,
-            onSuccessCallback: function () {
+            onSuccessCallback: function() {
                 dlt_successList.setJSON(originalSuccessData);
                 
                 // 성공 다운로드 완료 후 실패 데이터 다운로드
@@ -3254,7 +3459,7 @@ scwin.btn_excel_combined_download_onclick = function (e) {
                     $c.win.alert("성공 테스트 엑셀 파일 다운로드가 완료되었습니다.");
                 }
             },
-            onFailureCallback: function () {
+            onFailureCallback: function() {
                 dlt_successList.setJSON(originalSuccessData);
                 $c.win.alert("엑셀 파일 다운로드에 실패했습니다.");
             }
@@ -3749,7 +3954,7 @@ scwin.getCurrentUserName = function() {
 					</xf:trigger>
 					<xf:trigger class="btn_cm" id="btn_excel_download"
 						style="background-color:#454F5B;color: #ffffff !important;height: 36px;font-size: 14px;min-width: 100px;width: auto;padding: 0 10px;width: 100px;border-color: #fff;border: none;"
-						type="button" ev:onclick="scwin.btn_excel_download_onclick">
+						type="button" ev:onclick="scwin.btn_excel_combined_download_onclick">
 						<xf:label><![CDATA[엑셀 다운로드]]></xf:label>
 					</xf:trigger>
 					<xf:trigger class="btn_cm" id="btn_refresh"
@@ -4063,7 +4268,7 @@ scwin.getCurrentUserName = function() {
 
 								<!-- 에디터만 사용 -->
 								<xf:group id="grp_description_edit" style="display: block;">
-									<w2:editor id="editor_description" style="width: 100%; height: 120px;" ref="data:dmp_unitTestDetail.description"></w2:editor>
+									<w2:editor id="editor_description" style="width: 100%; height: 200px;" ref="data:dmp_unitTestDetail.description"></w2:editor>
 								</xf:group>
 							</xf:group>
 
@@ -4076,7 +4281,7 @@ scwin.getCurrentUserName = function() {
 
 								<!-- 에디터만 사용 -->
 								<xf:group id="grp_testData_edit" style="display: block;">
-									<w2:editor id="editor_testData" style="width: 100%; height: 100px;" ref="data:dmp_unitTestDetail.testData"></w2:editor>
+									<w2:editor id="editor_testData" style="width: 100%; height: 200px;" ref="data:dmp_unitTestDetail.testData"></w2:editor>
 								</xf:group>
 							</xf:group>
 						</xf:group>
