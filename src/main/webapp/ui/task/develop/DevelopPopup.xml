@@ -339,7 +339,7 @@ scwin.navigateToTaskTab = function (taskId, taskName, flag) {
     try {
         
         // URL과 타이틀 결정
-        let targetUrl = "test/UnitTestPopup.xml";
+        let targetUrl = "test/UnitTestList.xml";
         let tabTitle = "테스트 내역";
 
         // 전달할 탭 데이터
@@ -356,6 +356,7 @@ scwin.navigateToTaskTab = function (taskId, taskName, flag) {
         var parentDevelopList = $p.parent(); // developlist.xml
         if (parentDevelopList && parentDevelopList.scwin) {
             var mainPage = parentDevelopList.$p.parent(); // testMain.xml
+            
             
             if (mainPage && mainPage.scwin && mainPage.scwin.openTab) {
                 mainPage.scwin.openTab(targetUrl, tabTitle, tabData);
