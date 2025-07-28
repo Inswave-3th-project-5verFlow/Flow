@@ -296,12 +296,50 @@ scwin.CURRENT_USER_GROUP_ID = "";
 scwin.successPageInfo = { currentPage: 1, pageSize: 10, totalCount: 0, data: [] };
 scwin.failPageInfo = { currentPage: 1, pageSize: 10, totalCount: 0, data: [] };
 scwin.globalElData = null;
-
+/**
+ * 검색 필드 강제 리셋 (마지막에 한 번만 실행)
+ */
+scwin.forceResetSearchFields = function() {
+    try {
+        console.log("=== 검색 필드 최종 강제 리셋 ===");
+        
+        // 담당자 필드 완전히 비우기
+        var assigneeField = $p.getComponentById("inp_searchAssignee");
+        if (assigneeField) {
+            assigneeField.setValue(""); 
+            console.log("담당자 검색 필드 최종 강제 비움");
+        }
+        
+        // 다른 검색 필드들도 비우기
+        var searchFields = [
+            { id: "sel_searchTestStatus", method: "setValue" },
+            { id: "inp_searchTestCaseName", method: "setValue" },
+            { id: "inp_searchTestTarget", method: "setValue" },
+            { id: "sel_searchPriority", method: "setValue" },
+            { id: "sel_searchTestType", method: "setValue" }
+        ];
+        
+        searchFields.forEach(function(fieldInfo) {
+            var field = $p.getComponentById(fieldInfo.id);
+            if (field && field[fieldInfo.method]) {
+                field[fieldInfo.method]("");
+            }
+        });
+        
+        console.log("모든 검색 조건 UI 필드 최종 강제 리셋 완료");
+        
+    } catch(e) {
+        console.error("검색 필드 강제 리셋 실패:", e);
+    }
+};
 /**
  * 페이지 로드 시 초기화
  */
 scwin.onpageload = function() {
     console.log("단위테스트 목록 페이지 로드");
+    
+    // 즉시 UI 필드를 비움 (다른 코드보다 먼저)
+    scwin.immediateResetSearchFields();
     
     // 초기화
     scwin.initializeData();
@@ -312,15 +350,157 @@ scwin.onpageload = function() {
     // 부모 창에서 프로젝트 ID 가져오기
     scwin.getProjectIdFromParent();
     
-    // 권한에 따른 UI 조정
+    // 권한에 따른 UI 조정 (값 변경 없이 속성만)
     setTimeout(function() {
         scwin.adjustUIByPermission();
+        // UI 조정 후에도 다시 한 번 비움
+        scwin.immediateResetSearchFields();
     }, 200);
     
-    // 개발업무 연동 파라미터 처리
-    scwin.handleTaskIdParam();
+    // 개발업무 연동 파라미터 처리 (조건부 자동 팝업)
+    scwin.handleTaskIdParamWithConditionalPopup();
+
+    // 추가로 여러 번 강제 리셋 (다른 코드들이 값을 설정하는 것 방지)
+    setTimeout(function() {
+        scwin.immediateResetSearchFields();
+    }, 500);
+    
+    setTimeout(function() {
+        scwin.immediateResetSearchFields();
+    }, 1000);
+    
+    setTimeout(function() {
+        scwin.immediateResetSearchFields();
+    }, 1500);
 
     console.log("페이지 로드 완료");
+};
+/**
+ * 개발업무 연동 파라미터 처리 (조건부 자동 팝업)
+ */
+scwin.handleTaskIdParamWithConditionalPopup = function() {
+    try {
+        var developParam = $p.getParameter("tabData");
+        if (developParam && developParam.selectedTaskId) {
+            console.log("개발업무에서 전달받은 업무ID:", developParam.selectedTaskId);
+            console.log("개발업무에서 전달받은 업무명:", developParam.selectedTaskName);
+            console.log("개발업무에서 전달받은 flag:", developParam.openRegisterPopup);
+            
+            if (developParam.openRegisterPopup === true) { 
+                // 개발업무에서 "등록" 버튼을 누른 경우 → 즉시 팝업 자동 열기
+                console.log("등록 모드: 백그라운드 목록 조회 후 팝업 자동 열기");
+                
+                // UI 필드는 절대 건드리지 않고, 백그라운드 목록만 조회
+                scwin.executeBackgroundSearch();
+                
+                // 팝업 자동 열기 (약간의 지연 후)
+                setTimeout(function() {
+                    console.log("개발업무 등록 연동 - 팝업 자동 열기 시작");
+                    scwin.openTestRegisterPopupWithTask(
+                        developParam.selectedTaskId, 
+                        developParam.selectedTaskName || ""
+                    );
+                }, 300); // 백그라운드 조회가 완료된 후
+                
+            } else { 
+                // 개발업무에서 업무ID를 클릭한 경우 → 테스트 조회만 (팝업 안 열림)
+                console.log("조회 모드: 해당 업무의 테스트만 필터링하여 표시 (팝업 없음)");
+                scwin.filterTestsByTask(developParam.selectedTaskId, developParam.selectedTaskName || "");
+            } 
+        } else {
+            // 개발업무에서 온 것이 아닌 경우 → 일반적인 테스트 목록 표시 (팝업 없음)
+            console.log("일반 테스트 목록 모드 (팝업 없음)");
+            scwin.executeBackgroundSearch();
+        }
+    } catch (e) {
+        console.log("개발 업무ID 파라미터 처리 생략");
+        // 파라미터 처리 실패 시에도 일반 목록 표시 (팝업 없음)
+        scwin.executeBackgroundSearch();
+    }
+};
+/**
+ * 개발업무 연동 파라미터 처리 (목록만 처리, 팝업 열지 않음)
+ */
+scwin.handleTaskIdParamForListOnly = function() {
+    try {
+        var developParam = $p.getParameter("tabData");
+        if (developParam && developParam.selectedTaskId) {
+            console.log("개발업무에서 전달받은 업무ID:", developParam.selectedTaskId);
+            console.log("개발업무에서 전달받은 업무명:", developParam.selectedTaskName);
+            console.log("개발업무에서 전달받은 flag:", developParam.openRegisterPopup);
+            
+            if (developParam.openRegisterPopup === true) { 
+                // 개발업무에서 "등록" 버튼을 누른 경우
+                console.log("등록 모드 감지: 백그라운드 목록 조회만 수행 (팝업은 버튼 클릭 시에만)");
+                
+                // 전역에 등록 모드 정보 저장 (나중에 등록 버튼 클릭 시 사용)
+                scwin.pendingTaskRegistration = {
+                    taskId: developParam.selectedTaskId,
+                    taskName: developParam.selectedTaskName || "",
+                    mode: "register"
+                };
+                
+                // UI 필드는 절대 건드리지 않고, 백그라운드 목록만 조회
+                scwin.executeBackgroundSearch();
+                
+                console.log("등록 대기 정보 저장:", scwin.pendingTaskRegistration);
+                
+            } else { 
+                // 개발업무에서 업무ID를 클릭한 경우 → 테스트 조회만 (팝업 안 열림)
+                console.log("조회 모드: 해당 업무의 테스트만 필터링하여 표시");
+                scwin.filterTestsByTask(developParam.selectedTaskId, developParam.selectedTaskName || "");
+            } 
+        } else {
+            // 개발업무에서 온 것이 아닌 경우 → 일반적인 테스트 목록 표시
+            console.log("일반 테스트 목록 모드");
+            scwin.executeBackgroundSearch();
+        }
+    } catch (e) {
+        console.log("개발 업무ID 파라미터 처리 생략");
+        // 파라미터 처리 실패 시에도 일반 목록 표시
+        scwin.executeBackgroundSearch();
+    }
+};
+/**
+ * 즉시 검색 필드 초기화 (동기적으로 실행)
+ */
+scwin.immediateResetSearchFields = function() {
+    try {
+        console.log("=== 즉시 검색 필드 초기화 ===");
+        
+        // 담당자 필드 즉시 비우기
+        var assigneeField = $p.getComponentById("inp_searchAssignee");
+        if (assigneeField) {
+            var beforeValue = assigneeField.getValue();
+            assigneeField.setValue(""); 
+            var afterValue = assigneeField.getValue();
+            console.log("담당자 필드 즉시 초기화:", beforeValue, "→", afterValue);
+        }
+        
+        // 다른 검색 필드들도 즉시 비우기
+        var searchFields = [
+            { id: "sel_searchTestStatus", method: "setValue" },
+            { id: "inp_searchTestCaseName", method: "setValue" },
+            { id: "inp_searchTestTarget", method: "setValue" },
+            { id: "sel_searchPriority", method: "setValue" },
+            { id: "sel_searchTestType", method: "setValue" }
+        ];
+        
+        searchFields.forEach(function(fieldInfo) {
+            var field = $p.getComponentById(fieldInfo.id);
+            if (field && field[fieldInfo.method]) {
+                field[fieldInfo.method]("");
+            }
+        });
+        
+        // 데이터맵도 함께 초기화
+        dmp_search.set("searchAssignee", "");
+        
+        console.log("즉시 검색 필드 초기화 완료");
+        
+    } catch(e) {
+        console.error("즉시 검색 필드 초기화 실패:", e);
+    }
 };
 
 /**
@@ -329,15 +509,16 @@ scwin.onpageload = function() {
 scwin.initializeData = function() {
     console.log("데이터 초기화 시작");
     
-    // 검색 조건 초기화
+    // 검색 조건 데이터맵만 초기화 (UI 필드는 건드리지 않음)
     dmp_search.set("pageIndex", "1");
     dmp_search.set("pageSize", "1000");
+    dmp_search.set("searchAssignee", ""); // 데이터맵에만 빈 문자열 설정
     
     // 페이징 정보 초기화
     scwin.successPageInfo = { currentPage: 1, pageSize: 10, totalCount: 0, data: [] };
     scwin.failPageInfo = { currentPage: 1, pageSize: 10, totalCount: 0, data: [] };
     
-    console.log("데이터 초기화 완료");
+    console.log("데이터 초기화 완료 - UI 필드는 건드리지 않음");
 };
 
 /**
@@ -352,7 +533,11 @@ scwin.getCurrentUserInfo = function() {
                 var headerScwin = headerFrame.getWindow().scwin;
                 var headerDoc = headerFrame.getWindow();
                 
+                // 사용자 ID 가져오기
                 scwin.CURRENT_USER_ID = headerScwin.USER_ID || "1";
+                
+                console.log("=== 사용자 정보 확인 ===");
+                console.log("USER_ID:", scwin.CURRENT_USER_ID);
                 
                 try {
                     var selectBox = headerDoc.$p.getComponentById("selectBoxProjectName");
@@ -362,23 +547,22 @@ scwin.getCurrentUserInfo = function() {
                         var grpIdResult = headerDoc.dlt_projectName.getMatchedColumnData("pjtId", selectedPjtId, "grpId");
                         scwin.CURRENT_USER_GROUP_ID = Array.isArray(grpIdResult) ? grpIdResult[0] : grpIdResult;
                     } else {
-                        scwin.CURRENT_USER_GROUP_ID = "2";
+                        scwin.CURRENT_USER_GROUP_ID = "2"; // 기본값: 일반 사용자
                     }
                 } catch (projectError) {
                     console.error("프로젝트 정보 가져오기 실패:", projectError);
                     scwin.CURRENT_USER_GROUP_ID = "2";
                 }
                 
-                console.log("사용자 정보:", {
-                    userId: scwin.CURRENT_USER_ID,
-                    groupId: scwin.CURRENT_USER_GROUP_ID,
-                    isPM: scwin.CURRENT_USER_GROUP_ID === "1"
-                });
+                console.log("GROUP_ID:", scwin.CURRENT_USER_GROUP_ID);
+                console.log("isPM:", scwin.isPM());
+                console.log("===================");
                 
                 return true;
             }
         }
         
+        // 기본값 설정
         scwin.CURRENT_USER_ID = "1";
         scwin.CURRENT_USER_GROUP_ID = "2";
         console.log("기본값으로 사용자 정보 설정");
@@ -433,10 +617,80 @@ scwin.handleTaskIdParam = function() {
         var developParam = $p.getParameter("tabData");
         if (developParam && developParam.selectedTaskId) {
             console.log("개발업무에서 전달받은 업무ID:", developParam.selectedTaskId);
+            console.log("개발업무에서 전달받은 flag:", developParam.openRegisterPopup);
+            
+            if (developParam.openRegisterPopup === true) { 
+                // DevelopPopup.xml에서 "등록" 버튼을 누른 경우에만 팝업 열기
+                console.log("등록 모드: 백그라운드 목록 조회 후 팝업 열기");
+                
+                // UI 필드는 절대 건드리지 않고, 내부 데이터만 설정
+                scwin.executeBackgroundSearch();
+                
+                // 팝업 열기
+                setTimeout(function() {
+                    scwin.openTestRegisterPopupWithTask(developParam.selectedTaskId, developParam.selectedTaskName || "");
+                }, 100);
+                
+            } else { 
+                // DevelopList.xml에서 업무ID를 클릭한 경우 → 테스트 조회만 (팝업 안 열림)
+                console.log("조회 모드: 해당 업무의 테스트만 필터링하여 표시");
+                scwin.filterTestsByTask(developParam.selectedTaskId, developParam.selectedTaskName || "");
+            } 
+        } else {
+            // 개발업무에서 온 것이 아닌 경우 → 일반적인 테스트 목록 표시
+            console.log("일반 테스트 목록 모드");
+            scwin.executeBackgroundSearch();
+        }
+    } catch (e) {
+        console.log("개발 업무ID 파라미터 처리 생략");
+        // 파라미터 처리 실패 시에도 일반 목록 표시
+        scwin.executeBackgroundSearch();
+    }
+};
+/**
+ * 일반 사용자를 위한 UI 제한 (수정된 버전 - 검색조건에서 담당자 설정)
+ */
+scwin.restrictUIForRegularUser = function() {
+    try {
+        var assigneeField = $p.getComponentById("inp_searchAssignee");
+        if (assigneeField) {
+            // 일반 사용자는 UI는 자유롭게 두되, 실제 검색 시에는 본인 ID가 적용됨을 안내
+            assigneeField.setValue(""); // UI는 비워둠
+            assigneeField.setReadOnly(false); // 입력은 가능하게
+            assigneeField.setStyle("background-color: white; color: black;");
+            assigneeField.setAttribute("placeholder", "담당자명 입력 (본인 테스트만 조회됩니다)");
+            
+            console.log("일반 사용자 권한: UI는 자유, 실제 조회 시 권한 제한");
+        }
+    } catch (e) {
+        console.error("일반 사용자 UI 제한 실패:", e);
+    }
+};
+
+/**
+ * 개발업무 연동 파라미터 처리 (수정된 버전)
+ */
+scwin.handleTaskIdParam = function() {
+    try {
+        var developParam = $p.getParameter("tabData");
+        if (developParam && developParam.selectedTaskId) {
+            console.log("개발업무에서 전달받은 업무ID:", developParam.selectedTaskId);
+            console.log("개발업무에서 전달받은 flag:", developParam.openRegisterPopup);
             
             if (developParam.openRegisterPopup) { 
-                scwin.openTestRegisterPopupWithTask(developParam.selectedTaskId, developParam.selectedTaskName || "");
+                // DevelopPopup.xml에서 등록 버튼을 누른 경우
+                console.log("등록 모드: 백그라운드 목록을 현재 사용자 기준으로 설정");
+                
+                // 먼저 검색 조건을 올바르게 설정
+                scwin.setBackgroundSearchCondition();
+                
+                // 팝업 열기
+                setTimeout(function() {
+                    scwin.openTestRegisterPopupWithTask(developParam.selectedTaskId, developParam.selectedTaskName || "");
+                }, 100);
+                
             } else { 
+                // DevelopList.xml에서 업무ID를 클릭한 경우 → 테스트 조회 
                 scwin.openTestViewPopupWithTask(developParam.selectedTaskId, developParam.selectedTaskName || "");
             } 
         }
@@ -446,21 +700,326 @@ scwin.handleTaskIdParam = function() {
 };
 
 /**
- * 권한에 따른 UI 조정
+ * 백그라운드 검색 조건 설정 (새 함수)
  */
-scwin.adjustUIByPermission = function() {
+scwin.setBackgroundSearchCondition = function() {
+    console.log("=== 백그라운드 검색 조건 설정 ===");
+    console.log("현재 사용자 ID:", scwin.CURRENT_USER_ID);
+    console.log("PM 여부:", scwin.isPM());
+    
+    // 검색 조건 초기화 (UI는 건드리지 않음)
+    dmp_search.setEmptyValue();
+    dmp_search.set("pageIndex", "1");
+    dmp_search.set("pageSize", "1000");
+    
+    // UI 검색 조건은 절대 건드리지 않음! (현재 표시된 상태 그대로 유지)
+    console.log("UI 검색 조건은 현재 상태 그대로 유지");
+    
+    // 실제 조회 조건에만 권한 적용 (UI와 완전 분리)
+    if (!scwin.isPM()) {
+        // 일반 사용자: 데이터맵에만 내부적으로 설정 (UI 표시와 무관)
+        console.log("일반 사용자 - 데이터맵에만 내부 설정:", scwin.CURRENT_USER_ID);
+        // 여기서는 설정하지 않고, 실제 조회 시에만 설정
+    } else {
+        console.log("PM 사용자 - 모든 데이터 조회");
+    }
+    
+    // UI 권한 조정 (필드 값은 변경하지 않고 속성만 조정)
+    scwin.adjustUIByPermissionWithoutValueChange();
+    
+    // 즉시 목록 조회
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        console.log("프로젝트별 조회 실행:", scwin.CURRENT_PROJECT_ID);
+        scwin.searchUnitTestsByProject();
+    } else {
+        console.log("일반 조회 실행");
+        scwin.searchUnitTests();
+    }
+    
+    console.log("=== 백그라운드 검색 조건 설정 완료 ===");
+};
+/**
+ * UI 권한 조정 (필드 값은 변경하지 않고 속성만 조정)
+ */
+scwin.adjustUIByPermissionWithoutValueChange = function() {
     try {
-        if (scwin.isPM()) {
-            console.log("PM 권한: 모든 기능 사용 가능");
-            scwin.enableAllSearchFields();
-        } else {
-            console.log("일반 사용자 권한: 제한된 기능");
-            scwin.restrictAssigneeSearch();
+        console.log("=== UI 권한 조정 시작 (값 변경 없음) ===");
+        console.log("현재 사용자 ID:", scwin.CURRENT_USER_ID);
+        console.log("현재 사용자 그룹 ID:", scwin.CURRENT_USER_GROUP_ID);
+        console.log("PM 여부:", scwin.isPM());
+        
+        var assigneeField = $p.getComponentById("inp_searchAssignee");
+        if (assigneeField) {
+            // 현재 필드 값 확인 (변경하지 않음)
+            var currentValue = assigneeField.getValue();
+            console.log("담당자 필드 현재 값:", currentValue, "(변경하지 않음)");
+            
+            // 속성만 조정
+            assigneeField.setReadOnly(false);
+            assigneeField.setStyle("background-color: white; color: black;");
+            
+            if (scwin.isPM()) {
+                assigneeField.setAttribute("placeholder", "담당자명 입력");
+            } else {
+                assigneeField.setAttribute("placeholder", "담당자명 입력 (본인 테스트만 조회됩니다)");
+            }
         }
+        
+        // 다른 검색 필드들 속성 조정 (값은 변경하지 않음)
+        var searchFields = [
+            "sel_searchTestStatus", 
+            "inp_searchTestCaseName", 
+            "inp_searchTestTarget",
+            "sel_searchPriority",
+            "sel_searchTestType"
+        ];
+        
+        searchFields.forEach(function(fieldId) {
+            var field = $p.getComponentById(fieldId);
+            if (field && field.setReadOnly) {
+                field.setReadOnly(false);
+            }
+        });
+        
+        console.log("=== UI 권한 조정 완료 (값 변경 없음) ===");
     } catch (e) {
         console.error("UI 권한 조정 실패:", e);
     }
 };
+
+/**
+ * 백그라운드 목록을 현재 사용자 기준으로 설정
+ */
+scwin.setBackgroundListForCurrentUser = function() {
+    console.log("백그라운드 목록을 현재 사용자 기준으로 설정");
+    
+    // 검색 조건 완전 초기화
+    dmp_search.setEmptyValue();
+    dmp_search.set("pageIndex", "1");
+    dmp_search.set("pageSize", "1000");
+    
+    // 일반 사용자라면 담당자 조건을 본인으로 강제 설정
+    if (!scwin.isPM()) {
+        dmp_search.set("searchAssignee", scwin.CURRENT_USER_ID);
+        dmp_search.set("currentUserId", scwin.CURRENT_USER_ID); // 서버 측 이중 체크용
+        console.log("일반 사용자 - 백그라운드 담당자 조건 강제 설정:", scwin.CURRENT_USER_ID);
+    }
+    
+    // UI는 자유롭게 두되, 플레이스홀더로 안내
+    scwin.setUIForBackgroundMode();
+    
+    // 목록 조회 (권한 체크 포함)
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        scwin.searchUnitTestsByProject();
+    } else {
+        scwin.searchUnitTests();
+    }
+};
+/**
+ * 백그라운드 모드용 UI 설정
+ */
+scwin.setUIForBackgroundMode = function() {
+    try {
+        var assigneeField = $p.getComponentById("inp_searchAssignee");
+        if (assigneeField) {
+            if (scwin.isPM()) {
+                // PM은 자유롭게 검색 가능
+                assigneeField.setValue("");
+                assigneeField.setReadOnly(false);
+                assigneeField.setStyle("background-color: white;");
+                assigneeField.setAttribute("placeholder", "담당자명 입력");
+            } else {
+                // 일반 사용자는 UI는 자유롭게 두되 안내 메시지 표시
+                assigneeField.setValue("");
+                assigneeField.setReadOnly(false);
+                assigneeField.setStyle("background-color: white;");
+                assigneeField.setAttribute("placeholder", "담당자명 입력 (본인 테스트만 조회됩니다)");
+            }
+        }
+        
+        console.log("백그라운드 모드 UI 설정 완료");
+    } catch (e) {
+        console.error("백그라운드 모드 UI 설정 실패:", e);
+    }
+};
+
+
+
+/**
+ * 권한에 따른 UI 조정 (수정된 버전)
+ */
+/**
+ * 백그라운드 목록을 현재 사용자 기준으로 설정 (수정된 버전)
+ */
+scwin.setBackgroundListForCurrentUser = function() {
+    console.log("백그라운드 목록을 현재 사용자 기준으로 설정");
+    
+    // 검색 조건 완전 초기화
+    dmp_search.setEmptyValue();
+    dmp_search.set("pageIndex", "1");
+    dmp_search.set("pageSize", "1000");
+    
+    // 일반 사용자라면 담당자 조건을 본인으로 강제 설정
+    if (!scwin.isPM()) {
+        dmp_search.set("searchAssignee", scwin.CURRENT_USER_ID);
+        dmp_search.set("currentUserId", scwin.CURRENT_USER_ID); // 서버 측 이중 체크용
+        console.log("일반 사용자 - 백그라운드 담당자 조건 강제 설정:", scwin.CURRENT_USER_ID);
+    }
+    
+    // UI는 자유롭게 두되, 플레이스홀더로 안내
+    scwin.setUIForBackgroundMode();
+    
+    // 목록 조회 (권한 체크 포함)
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        scwin.searchUnitTestsByProject();
+    } else {
+        scwin.searchUnitTests();
+    }
+};
+
+/**
+ * 백그라운드 모드용 UI 설정
+ */
+scwin.setUIForBackgroundMode = function() {
+    try {
+        var assigneeField = $p.getComponentById("inp_searchAssignee");
+        if (assigneeField) {
+            if (scwin.isPM()) {
+                // PM은 자유롭게 검색 가능
+                assigneeField.setValue("");
+                assigneeField.setReadOnly(false);
+                assigneeField.setStyle("background-color: white;");
+                assigneeField.setAttribute("placeholder", "담당자명 입력");
+            } else {
+                // 일반 사용자는 UI는 자유롭게 두되 안내 메시지 표시
+                assigneeField.setValue("");
+                assigneeField.setReadOnly(false);
+                assigneeField.setStyle("background-color: white;");
+                assigneeField.setAttribute("placeholder", "담당자명 입력 (본인 테스트만 조회됩니다)");
+            }
+        }
+        
+        console.log("백그라운드 모드 UI 설정 완료");
+    } catch (e) {
+        console.error("백그라운드 모드 UI 설정 실패:", e);
+    }
+};
+
+/**
+ * 권한에 따른 UI 조정 (수정된 버전)
+ */
+scwin.adjustUIByPermission = function() {
+    try {
+        console.log("=== UI 권한 조정 시작 (값 변경 절대 금지) ===");
+        console.log("현재 사용자 ID:", scwin.CURRENT_USER_ID);
+        console.log("현재 사용자 그룹 ID:", scwin.CURRENT_USER_GROUP_ID);
+        console.log("PM 여부:", scwin.isPM());
+        
+        // UI 필드 값 확인 및 강제 초기화
+        var assigneeField = $p.getComponentById("inp_searchAssignee");
+        if (assigneeField) {
+            var currentValue = assigneeField.getValue();
+            console.log("담당자 필드 현재 값:", currentValue);
+            
+            // 값이 비어있지 않으면 강제로 비움
+            if (currentValue && currentValue !== "") {
+                console.log("⚠️ 담당자 필드에 값이 있음! 강제로 비움:", currentValue);
+                assigneeField.setValue("");
+                console.log("담당자 필드 강제 초기화 완료");
+            }
+            
+            // 속성만 조정
+            assigneeField.setReadOnly(false);
+            assigneeField.setStyle("background-color: white; color: black;");
+            
+            if (scwin.isPM()) {
+                assigneeField.setAttribute("placeholder", "담당자명 입력");
+            } else {
+                assigneeField.setAttribute("placeholder", "담당자명 입력 (본인 테스트만 조회됩니다)");
+            }
+        }
+        
+        // 다른 검색 필드들도 속성만 조정
+        var searchFields = [
+            "sel_searchTestStatus", 
+            "inp_searchTestCaseName", 
+            "inp_searchTestTarget",
+            "sel_searchPriority",
+            "sel_searchTestType"
+        ];
+        
+        searchFields.forEach(function(fieldId) {
+            var field = $p.getComponentById(fieldId);
+            if (field && field.setReadOnly) {
+                field.setReadOnly(false);
+            }
+        });
+        
+        console.log("=== UI 권한 조정 완료 (값 변경 절대 금지) ===");
+    } catch (e) {
+        console.error("UI 권한 조정 실패:", e);
+    }
+};
+/**
+ * 일반 사용자를 위한 UI 설정 (완전 자유)
+ */
+scwin.setUIForRegularUser = function() {
+    try {
+        var assigneeField = $p.getComponentById("inp_searchAssignee");
+        if (assigneeField) {
+            // 검색 조건에는 아무것도 표시하지 않음 (완전히 비움)
+            assigneeField.setValue(""); // 빈 값으로 설정
+            assigneeField.setReadOnly(false);
+            assigneeField.setStyle("background-color: white; color: black;");
+            assigneeField.setAttribute("placeholder", "담당자명 입력 (본인 테스트만 조회됩니다)");
+            
+            // 데이터맵에서도 완전히 제거
+            dmp_search.set("searchAssignee", "");
+        }
+        
+        // 다른 검색 필드들도 모두 자유롭게
+        var searchFields = [
+            "sel_searchTestStatus", 
+            "inp_searchTestCaseName", 
+            "inp_searchTestTarget",
+            "sel_searchPriority",
+            "sel_searchTestType"
+        ];
+        
+        searchFields.forEach(function(fieldId) {
+            var field = $p.getComponentById(fieldId);
+            if (field && field.setReadOnly) {
+                field.setReadOnly(false);
+            }
+        });
+        
+        console.log("일반 사용자 권한: UI 검색 조건 담당자 필드 완전히 비움");
+    } catch (e) {
+        console.error("일반 사용자 UI 설정 실패:", e);
+    }
+};
+
+
+/**
+ * 일반 사용자를 위한 UI 제한 (검색 조건은 비워둠)
+ */
+scwin.restrictUIForRegularUser = function() {
+    try {
+        var assigneeField = $p.getComponentById("inp_searchAssignee");
+        if (assigneeField) {
+            // 일반 사용자는 UI는 자유롭게 두되, 실제 검색 시에는 본인 ID가 적용됨을 안내
+            assigneeField.setValue(""); // UI는 비워둠
+            assigneeField.setReadOnly(false); // 입력은 가능하게
+            assigneeField.setStyle("background-color: white; color: black;");
+            assigneeField.setAttribute("placeholder", "담당자명 입력 (본인 테스트만 조회됩니다)");
+            
+            console.log("일반 사용자 권한: UI는 자유, 실제 조회 시 권한 제한");
+        }
+    } catch (e) {
+        console.error("일반 사용자 UI 제한 실패:", e);
+    }
+};
+
 
 /**
  * 모든 검색 필드 활성화
@@ -488,7 +1047,6 @@ scwin.enableAllSearchFields = function() {
         console.error("검색 필드 활성화 실패:", e);
     }
 };
-
 /**
  * 담당자 검색 제한
  */
@@ -506,10 +1064,23 @@ scwin.restrictAssigneeSearch = function() {
 };
 
 /**
- * 조회 버튼 클릭
+ * 조회 버튼 클릭 (수정된 버전)
  */
 scwin.btn_search_onclick = function(e) {
-    console.log("조회 버튼 클릭");
+    console.log("=== 조회 버튼 클릭 ===");
+    
+    // 조회 전에 담당자 필드 확인 및 강제 초기화
+    var assigneeField = $p.getComponentById("inp_searchAssignee");
+    if (assigneeField) {
+        var fieldValue = assigneeField.getValue();
+        if (!scwin.isPM() && fieldValue && fieldValue !== "" && fieldValue !== scwin.CURRENT_USER_ID) {
+            console.log("⚠️ 일반 사용자 담당자 필드에 잘못된 값:", fieldValue, "→ 강제 초기화");
+            assigneeField.setValue("");
+        }
+    }
+    
+    // 현재 검색 조건 로깅
+    console.log("검색 버튼 클릭 시 검색 조건:", dmp_search.getJSON());
     
     if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
         scwin.searchUnitTestsByProject();
@@ -522,7 +1093,7 @@ scwin.btn_search_onclick = function(e) {
  * 등록 버튼 클릭
  */
 scwin.btn_register_onclick = function(e) {
-    console.log("등록 버튼 클릭");
+    console.log("등록 버튼 클릭 - 일반 등록 모드");
     
     // 현재 사용자 정보 가져오기
     var currentUserId = scwin.CURRENT_USER_ID || "1";
@@ -535,15 +1106,6 @@ scwin.btn_register_onclick = function(e) {
     console.log("- PROJECT_ID:", currentProjectId);
     
     // 사용자 정보를 포함한 데이터 준비
-    var userData = {
-        mode: "new",
-        currentUserId: currentUserId,
-        currentUserName: currentUserName,
-        currentProjectId: currentProjectId,
-        pjtId: currentProjectId
-    };
-    
-    // 팝업 데이터 준비
     var taskData = {
         mode: "new",
         taskId: "",
@@ -572,11 +1134,77 @@ scwin.btn_register_onclick = function(e) {
         dataObject: jsnPopupData
     };
 
-    console.log("팝업 열기 - 사용자 정보 포함:", taskData);
+    console.log("일반 등록 팝업 열기 - 사용자 정보 포함:", taskData);
     $p.openPopup("/InsWebApp/ui/test/UnitTestPopup.xml", options);
 };
 
 
+/**
+ * 등록 버튼 클릭 (개발업무 연동 정보 활용)
+ */
+scwin.btn_register_onclick = function(e) {
+    console.log("등록 버튼 클릭");
+    
+    // 개발업무에서 온 등록 대기 정보가 있는지 확인
+    if (scwin.pendingTaskRegistration && scwin.pendingTaskRegistration.mode === "register") {
+        console.log("개발업무 연동 등록 모드:", scwin.pendingTaskRegistration);
+        
+        // 개발업무에서 전달받은 업무 정보로 팝업 열기
+        scwin.openTestRegisterPopupWithTask(
+            scwin.pendingTaskRegistration.taskId, 
+            scwin.pendingTaskRegistration.taskName
+        );
+        
+        // 사용 후 정리
+        scwin.pendingTaskRegistration = null;
+        
+    } else {
+        // 일반 등록 모드
+        console.log("일반 등록 모드");
+        
+        // 현재 사용자 정보 가져오기
+        var currentUserId = scwin.CURRENT_USER_ID || "1";
+        var currentUserName = scwin.getCurrentUserName();
+        var currentProjectId = scwin.CURRENT_PROJECT_ID || "";
+        
+        console.log("팝업에 전달할 사용자 정보:");
+        console.log("- USER_ID:", currentUserId);
+        console.log("- USER_NAME:", currentUserName);
+        console.log("- PROJECT_ID:", currentProjectId);
+        
+        // 사용자 정보를 포함한 데이터 준비
+        var taskData = {
+            mode: "new",
+            taskId: "",
+            taskName: "",
+            pjtId: currentProjectId,
+            currentUserId: currentUserId,
+            currentUserName: currentUserName
+        };
+
+        var jsnPopupData = {
+            "type": "json",
+            "name": "taskData",
+            "data": taskData
+        };
+
+        var options = {
+            id: "unit_test_popup",
+            type: "wframePopup",
+            width: "1400px",
+            height: "900px",
+            top: "50px",
+            left: "100px",
+            popupName: "단위테스트 케이스 등록",
+            modal: true,
+            closeAction: "scwin.testPopup_closeAction",
+            dataObject: jsnPopupData
+        };
+
+        console.log("일반 팝업 열기 - 사용자 정보 포함:", taskData);
+        $p.openPopup("/InsWebApp/ui/test/UnitTestPopup.xml", options);
+    }
+};
 scwin.getCurrentUserName = function() {
     try {
         var parentWindow = $p.getParentWindow();
@@ -679,17 +1307,39 @@ scwin.openTestRegisterPopupWithTask = function(taskId, taskName) {
     var taskData = {
         mode: "new",
         taskId: taskId,
-        taskName: taskName,
+        taskName: taskName || "", // 업무명이 없으면 빈 문자열
         pjtId: currentProjectId,
         currentUserId: currentUserId,
         currentUserName: currentUserName
     };
 
+    console.log("팝업에 전달할 taskData:", taskData);
+
+    // 방법 1: dataObject 방식
     var jsnPopupData = {
         "type": "json",
-        "name": "taskData",
+        "name": "taskData", 
         "data": taskData
     };
+
+    // 방법 2: 임시 저장 방식 (대안)
+    try {
+        window.tempPopupUserData = {
+            currentUserId: currentUserId,
+            currentUserName: currentUserName,
+            currentProjectId: currentProjectId,
+            mode: "new"
+        };
+        
+        // 팝업용 데이터도 저장
+        window.tempPopupData = {
+            taskData: taskData
+        };
+        
+        console.log("임시 데이터 저장 완료:", window.tempPopupData);
+    } catch(e) {
+        console.log("임시 데이터 저장 실패:", e);
+    }
 
     var options = {
         id: "unit_test_popup_with_task",
@@ -698,16 +1348,78 @@ scwin.openTestRegisterPopupWithTask = function(taskId, taskName) {
         height: "900px",
         top: "50px",
         left: "100px",
-        popupName: "단위테스트 케이스 등록 (업무: " + taskName + ")",
+        popupName: "단위테스트 케이스 등록", // 업무명 제거 - 일반적인 제목으로 변경
         modal: true,
         closeAction: "scwin.testPopup_closeAction",
         dataObject: jsnPopupData
     };
 
     console.log("업무별 팝업 열기 - 사용자 정보 포함:", taskData);
+    console.log("팝업 타이틀: 단위테스트 케이스 등록 (업무명은 내부 입력 필드에 표시)");
+    
+    // 팝업 열기
     $p.openPopup("/InsWebApp/ui/test/UnitTestPopup.xml", options);
 };
-
+/**
+ * 특정 업무의 테스트만 필터링하여 표시 (팝업 없음)
+ */
+scwin.filterTestsByTask = function(taskId, taskName) {
+    console.log("업무별 테스트 필터링 (팝업 없음):", taskId, taskName);
+    
+    // 검색 조건에 업무ID 설정 (UI는 건드리지 않음)
+    dmp_search.setEmptyValue();
+    dmp_search.set("pageIndex", "1");
+    dmp_search.set("pageSize", "1000");
+    dmp_search.set("searchTaskId", taskId); // 업무ID로 필터링
+    
+    // 일반 사용자라면 담당자 조건도 추가
+    if (!scwin.isPM()) {
+        dmp_search.set("searchAssignee", scwin.CURRENT_USER_ID);
+        dmp_search.set("currentUserId", scwin.CURRENT_USER_ID);
+    }
+    
+    // 목록 조회
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        scwin.searchUnitTestsByProject();
+    } else {
+        scwin.searchUnitTests();
+    }
+    
+    // 페이지 안내 메시지
+    setTimeout(function() {
+        try {
+            console.log(`현재 "${taskName}" 업무의 테스트 케이스를 필터링하여 표시 중`);
+        } catch(e) {
+            console.log("필터링 안내 표시 실패:", e);
+        }
+    }, 500);
+};
+/**
+ * UI 건드리지 않고 백그라운드 검색만 실행
+ */
+scwin.executeBackgroundSearch = function() {
+    console.log("=== UI 건드리지 않고 백그라운드 검색만 실행 ===");
+    
+    // 데이터맵만 초기화 (UI는 절대 건드리지 않음)
+    dmp_search.setEmptyValue();
+    dmp_search.set("pageIndex", "1");
+    dmp_search.set("pageSize", "1000");
+    
+    // 일반 사용자라면 담당자 조건 내부 설정
+    if (!scwin.isPM()) {
+        dmp_search.set("searchAssignee", scwin.CURRENT_USER_ID);
+        dmp_search.set("currentUserId", scwin.CURRENT_USER_ID);
+    }
+    
+    // 목록 조회만 실행
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        scwin.searchUnitTestsByProject();
+    } else {
+        scwin.searchUnitTests();
+    }
+    
+    console.log("=== 백그라운드 검색 실행 완료 ===");
+};
 /**
  * 업무별 테스트 조회 팝업 열기
  */
@@ -744,6 +1456,9 @@ scwin.openTestViewPopupWithTask = function(taskId, taskName) {
 scwin.testPopup_closeAction = function(e) {
     console.log("테스트 팝업 닫기 콜백");
     
+    // 팝업 닫힌 후 즉시 검색 필드 초기화
+    scwin.immediateResetSearchFields();
+    
     // 목록 새로고침
     if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
         scwin.searchUnitTestsByProject();
@@ -751,17 +1466,55 @@ scwin.testPopup_closeAction = function(e) {
         scwin.searchUnitTests();
     }
     
+    // 목록 새로고침 후에도 한 번 더 초기화
+    setTimeout(function() {
+        scwin.immediateResetSearchFields();
+    }, 500);
+    
     return true;
 };
 
+
 /**
- * 일반 단위테스트 목록 조회
+ * 일반 단위테스트 목록 조회 (수정된 버전)
  */
 scwin.searchUnitTests = function() {
-    console.log("일반 단위테스트 목록 조회 시작");
+    console.log("=== 일반 단위테스트 목록 조회 시작 ===");
+    console.log("현재 사용자:", scwin.CURRENT_USER_ID, "PM 여부:", scwin.isPM());
     
+    // 기본 검색 조건 설정
     dmp_search.set("pageIndex", "1");
     dmp_search.set("pageSize", "1000");
+    
+    // UI에서 입력된 검색 조건들 가져오기 (UI 필드 값 자체는 변경하지 않음)
+    var uiSearchAssignee = "";
+    try {
+        var assigneeField = $p.getComponentById("inp_searchAssignee");
+        if (assigneeField) {
+            uiSearchAssignee = assigneeField.getValue() || "";
+        }
+    } catch(e) {
+        console.log("담당자 UI 필드 값 가져오기 실패:", e);
+    }
+    
+    // 일반 사용자의 경우 UI 입력과 관계없이 본인 ID로 강제 설정 (데이터맵에만)
+    if (!scwin.isPM()) {
+        console.log("일반 사용자 권한 적용:");
+        console.log("- UI에서 표시된 담당자:", uiSearchAssignee);
+        console.log("- 실제 적용될 담당자:", scwin.CURRENT_USER_ID, "(강제 적용)");
+        
+        // 실제 조회에는 본인 ID 적용 (UI 필드는 건드리지 않음)
+        dmp_search.set("searchAssignee", scwin.CURRENT_USER_ID);
+        dmp_search.set("currentUserId", scwin.CURRENT_USER_ID); // 서버 측 권한 체크용
+        
+    } else {
+        console.log("PM 사용자 - 입력된 검색 조건 그대로 사용");
+        dmp_search.set("searchAssignee", uiSearchAssignee);
+    }
+    
+    // 최종 검색 조건 확인
+    var finalCondition = dmp_search.getJSON();
+    console.log("최종 검색 조건:", finalCondition);
     
     $c.sbm.execute($p, sbm_selectUnitTestList);
 };
@@ -776,15 +1529,43 @@ scwin.searchUnitTestsByProject = function() {
         return;
     }
     
-    console.log("프로젝트별 단위테스트 목록 조회 시작:", scwin.CURRENT_PROJECT_ID);
+    console.log("=== 프로젝트별 단위테스트 목록 조회 시작 ===");
+    console.log("프로젝트 ID:", scwin.CURRENT_PROJECT_ID);
+    console.log("현재 사용자:", scwin.CURRENT_USER_ID, "PM 여부:", scwin.isPM());
     
     dmp_search.set("pjtId", scwin.CURRENT_PROJECT_ID);
     dmp_search.set("pageIndex", "1");
     dmp_search.set("pageSize", "1000");
     
+    // UI에서 입력된 검색 조건들 가져오기 (UI 필드 값 자체는 변경하지 않음)
+    var uiSearchAssignee = "";
+    try {
+        var assigneeField = $p.getComponentById("inp_searchAssignee");
+        if (assigneeField) {
+            uiSearchAssignee = assigneeField.getValue() || "";
+        }
+    } catch(e) {
+        console.log("담당자 UI 필드 값 가져오기 실패:", e);
+    }
+    
+    // 일반 사용자의 경우 UI 입력과 관계없이 본인 ID로 강제 설정 (데이터맵에만)
+    if (!scwin.isPM()) {
+        console.log("일반 사용자 프로젝트별 조회:");
+        console.log("- UI에서 표시된 담당자:", uiSearchAssignee);
+        console.log("- 실제 적용될 담당자:", scwin.CURRENT_USER_ID, "(강제 적용)");
+        
+        // 실제 조회에는 본인 ID 적용 (UI 필드는 건드리지 않음)
+        dmp_search.set("searchAssignee", scwin.CURRENT_USER_ID);
+        dmp_search.set("currentUserId", scwin.CURRENT_USER_ID); // 서버 측 권한 체크용
+        
+    } else {
+        console.log("PM 사용자 - 모든 데이터 조회 가능");
+        dmp_search.set("searchAssignee", uiSearchAssignee);
+    }
+    
+    console.log("최종 검색 조건:", dmp_search.getJSON());
     $c.sbm.execute($p, sbm_selectUnitTestListByProject);
 };
-
 /**
  * 단위테스트 목록 조회 완료
  */
@@ -1179,13 +1960,23 @@ scwin.pgl_fail_onclick = function(idx) {
 scwin.btn_searchReset_onclick = function(e) {
     console.log("검색 조건 초기화");
     
+    // 데이터맵 완전 초기화
     dmp_search.setEmptyValue();
     dmp_search.set("pageIndex", "1");
     dmp_search.set("pageSize", "1000");
     
-    scwin.searchUnitTests();
+    // UI 필드들 강제로 비우기
+    scwin.forceResetSearchFields();
+    
+    // 초기화 후 조회
+    setTimeout(function() {
+        if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+            scwin.searchUnitTestsByProject();
+        } else {
+            scwin.searchUnitTests();
+        }
+    }, 100);
 };
-
 /**
  * 통계 조회
  */
@@ -1762,15 +2553,24 @@ scwin.btn_excel_fail_download_onclick = function (e) {
 					</w2:caption>
 					<w2:header id="header4" style="">
 						<w2:row id="row7" style="">
-							<w2:column width="100" inputType="text" id="column29" value="테스트 ID" displayMode="label"></w2:column>
-							<w2:column width="150" inputType="text" id="column30" value="업무명" displayMode="label"></w2:column>
-							<w2:column width="200" inputType="text" id="column31" value="테스트케이스명" displayMode="label"></w2:column>
-							<w2:column width="150" inputType="text" id="column32" value="테스트 대상" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="column33" value="테스트 타입" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="column34" value="우선순위" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="column35" value="담당자" displayMode="label"></w2:column>
-							<w2:column width="120" inputType="text" id="column36" value="실행일시" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="column37" value="소요시간" displayMode="label"></w2:column>
+							<w2:column width="100" inputType="text" id="column29" value="테스트 ID" displayMode="label"
+                            style="height:32px; background-color : #4A8B57; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="150" inputType="text" id="column30" value="업무명" displayMode="label"
+                            style="height:32px; background-color : #4A8B57; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="200" inputType="text" id="column31" value="테스트케이스명" displayMode="label"
+                            style="height:32px; background-color : #4A8B57; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="150" inputType="text" id="column32" value="테스트 대상" displayMode="label"
+                            style="height:32px; background-color : #4A8B57; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="100" inputType="text" id="column33" value="테스트 타입" displayMode="label"
+                            style="height:32px; background-color : #4A8B57; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="80" inputType="text" id="column34" value="우선순위" displayMode="label"
+                            style="height:32px; background-color : #4A8B57; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="100" inputType="text" id="column35" value="담당자" displayMode="label"
+                            style="height:32px; background-color : #4A8B57; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="120" inputType="text" id="column36" value="실행일시" displayMode="label"
+                            style="height:32px; background-color : #4A8B57; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="80" inputType="text" id="column37" value="소요시간" displayMode="label"
+                            style="height:32px; background-color : #4A8B57; color: white; font-weight: bold; text-align: center;"></w2:column>
 						</w2:row>
 					</w2:header>
 					<w2:gBody id="gBody4" style="">
@@ -1820,15 +2620,24 @@ scwin.btn_excel_fail_download_onclick = function (e) {
 					</w2:caption>
 					<w2:header id="header5" style="">
 						<w2:row id="row9" style="">
-							<w2:column width="100" inputType="text" id="column38" value="테스트 ID" displayMode="label"></w2:column>
-							<w2:column width="150" inputType="text" id="column39" value="업무명" displayMode="label"></w2:column>
-							<w2:column width="200" inputType="text" id="column40" value="테스트케이스명" displayMode="label"></w2:column>
-							<w2:column width="150" inputType="text" id="column41" value="테스트 대상" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="column42" value="테스트 타입" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="column43" value="우선순위" displayMode="label"></w2:column>
-							<w2:column width="100" inputType="text" id="column44" value="담당자" displayMode="label"></w2:column>
-							<w2:column width="120" inputType="text" id="column45" value="실행일시" displayMode="label"></w2:column>
-							<w2:column width="80" inputType="text" id="column46" value="소요시간" displayMode="label"></w2:column>
+							<w2:column width="100" inputType="text" id="column38" value="테스트 ID" displayMode="label"
+                            style="height:32px; background-color : #C85A5A; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="150" inputType="text" id="column39" value="업무명" displayMode="label"
+                            style="height:32px; background-color : #C85A5A; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="200" inputType="text" id="column40" value="테스트케이스명" displayMode="label"
+                            style="height:32px; background-color : #C85A5A; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="150" inputType="text" id="column41" value="테스트 대상" displayMode="label"
+                            style="height:32px; background-color : #C85A5A; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="100" inputType="text" id="column42" value="테스트 타입" displayMode="label"
+                            style="height:32px; background-color : #C85A5A; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="80" inputType="text" id="column43" value="우선순위" displayMode="label"
+                            style="height:32px; background-color : #C85A5A; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="100" inputType="text" id="column44" value="담당자" displayMode="label"
+                            style="height:32px; background-color : #C85A5A; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="120" inputType="text" id="column45" value="실행일시" displayMode="label"
+                            style="height:32px; background-color : #C85A5A; color: white; font-weight: bold; text-align: center;"></w2:column>
+							<w2:column width="80" inputType="text" id="column46" value="소요시간" displayMode="label"
+                            style="height:32px; background-color : #C85A5A; color: white; font-weight: bold; text-align: center;"></w2:column>
 						</w2:row>
 					</w2:header>
 					<w2:gBody id="gBody5" style="">

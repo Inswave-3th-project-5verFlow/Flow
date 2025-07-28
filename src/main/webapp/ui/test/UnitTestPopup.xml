@@ -464,11 +464,11 @@ scwin.hideAllPreviewPanels = function() {
  */
 scwin.initializeFromParentData = function() {
     try {
-        // Test.xml에서 사용하는 방식 그대로 적용
+        // 1. 표준 방식으로 파라미터 가져오기
         var paramData = $p.getParameter();
         console.log("팝업 파라미터 전체:", paramData);
         
-        // getParameter()가 undefined인 경우 대안 방법들 시도
+        // 2. getParameter()가 undefined인 경우 대안 방법들 시도
         if (!paramData) {
             console.log("getParameter()가 undefined, 대안 방법들 시도");
             
@@ -490,61 +490,85 @@ scwin.initializeFromParentData = function() {
             }
         }
         
-        if (paramData && paramData.detailData) {
-            // 조회/수정 모드
-            var detailData = paramData.detailData;
-            console.log("전달받은 detailData:", detailData);
+        // 3. paramData 구조 확인 및 처리
+        if (paramData) {
+            console.log("파라미터 데이터 구조 확인:", paramData);
             
-            scwin.currentMode = detailData.mode || "view";
-            scwin.CURRENT_PROJECT_ID = detailData.pjtId || "";
-            scwin.CURRENT_USER_ID = detailData.currentUserId || "1";
-            
-            if (detailData.testData) {
-                console.log("상세 데이터 설정:", detailData.testData);
-                console.log("description 값:", detailData.testData.description);
-                console.log("testData 값:", detailData.testData.testData);
+            // detailData가 있는 경우 (조회/수정 모드)
+            if (paramData.detailData) {
+                var detailData = paramData.detailData;
+                console.log("전달받은 detailData:", detailData);
                 
-                // 데이터맵에 직접 설정
-                dmp_unitTestDetail.setJSON(detailData.testData);
+                scwin.currentMode = detailData.mode || "view";
+                scwin.CURRENT_PROJECT_ID = detailData.pjtId || "";
+                scwin.CURRENT_USER_ID = detailData.currentUserId || "1";
                 
-                console.log("데이터맵 설정 후 확인:");
-                console.log("- testCaseId:", dmp_unitTestDetail.get("testCaseId"));
-                console.log("- testCaseName:", dmp_unitTestDetail.get("testCaseName"));
-                console.log("- description:", dmp_unitTestDetail.get("description"));
-                console.log("- testData:", dmp_unitTestDetail.get("testData"));
+                if (detailData.testData) {
+                    console.log("상세 데이터 설정:", detailData.testData);
+                    dmp_unitTestDetail.setJSON(detailData.testData);
+                    
+                    if (scwin.currentMode === "view" || scwin.currentMode === "edit") {
+                        setTimeout(function() {
+                            console.log("서버에서 상세 데이터 재조회 시작");
+                            $c.sbm.execute($p, sbm_selectUnitTestDetail);
+                        }, 100);
+                    } else {
+                        setTimeout(function() {
+                            scwin.setEditorContent(
+                                detailData.testData.description || "", 
+                                detailData.testData.testData || ""
+                            );
+                        }, 300);
+                    }
+                }
+            } 
+            // taskData가 있는 경우 (등록 모드)
+            else if (paramData.taskData) {
+                var taskData = paramData.taskData;
+                console.log("전달받은 taskData:", taskData);
                 
-                // 조회 모드에서는 서버에서 최신 데이터 다시 조회
-                if (scwin.currentMode === "view" || scwin.currentMode === "edit") {
-                    setTimeout(function() {
-                        console.log("서버에서 상세 데이터 재조회 시작");
-                        $c.sbm.execute($p, sbm_selectUnitTestDetail);
-                    }, 100);
-                } else {
-                    // 등록 모드이거나 즉시 표시해야 하는 경우
-                    setTimeout(function() {
-                        scwin.setEditorContent(
-                            detailData.testData.description || "", 
-                            detailData.testData.testData || ""
-                        );
-                    }, 300);
+                scwin.currentMode = taskData.mode || "new";
+                scwin.CURRENT_PROJECT_ID = taskData.pjtId || "";
+                scwin.CURRENT_USER_ID = taskData.currentUserId || "1";
+                
+                if (scwin.currentMode === "new") {
+                    console.log("등록 모드 - 업무 정보 설정:");
+                    console.log("- taskId:", taskData.taskId);
+                    console.log("- taskName:", taskData.taskName);
+                    
+                    // 업무 정보 설정 (업무명을 입력 필드에 표시)
+                    dmp_unitTestDetail.set("taskId", taskData.taskId || "");
+                    dmp_unitTestDetail.set("taskName", taskData.taskName || ""); // 중요: 업무명 설정
+                    dmp_unitTestDetail.set("assignee", scwin.CURRENT_USER_ID);
+                    dmp_unitTestDetail.set("assigneeName", taskData.currentUserName || scwin.getCurrentUserName() || "현재 사용자");
+                    dmp_unitTestDetail.set("pjtId", scwin.CURRENT_PROJECT_ID);
+                    
+                    console.log("등록 모드 - 설정 완료:");
+                    console.log("- taskId:", taskData.taskId);
+                    console.log("- taskName:", taskData.taskName, "(입력 필드에 표시됨)");
+                    console.log("- assigneeName:", taskData.currentUserName);
                 }
             }
-        } else if (paramData && paramData.taskData) {
-            // 등록 모드
-            var taskData = paramData.taskData;
-            console.log("전달받은 taskData:", taskData);
-            
-            scwin.currentMode = taskData.mode || "new";
-            scwin.CURRENT_PROJECT_ID = taskData.pjtId || "";
-            scwin.CURRENT_USER_ID = taskData.currentUserId || "1";
-            
-            if (scwin.currentMode === "new") {
-                // 등록 모드 - 업무 정보 설정
-                dmp_unitTestDetail.set("taskId", taskData.taskId || "");
-                dmp_unitTestDetail.set("taskName", taskData.taskName || "");
-                dmp_unitTestDetail.set("assignee", scwin.CURRENT_USER_ID);
-                dmp_unitTestDetail.set("assigneeName", scwin.getCurrentUserName() || "현재 사용자");
-                dmp_unitTestDetail.set("pjtId", scwin.CURRENT_PROJECT_ID);
+            // 직접 데이터가 전달된 경우
+            else if (paramData.data) {
+                console.log("직접 데이터 전달됨:", paramData.data);
+                var directData = paramData.data;
+                
+                if (directData.taskId && directData.taskName) {
+                    scwin.currentMode = "new";
+                    scwin.CURRENT_PROJECT_ID = directData.pjtId || "";
+                    scwin.CURRENT_USER_ID = directData.currentUserId || "1";
+                    
+                    console.log("직접 데이터로 업무 정보 설정:");
+                    console.log("- taskId:", directData.taskId);
+                    console.log("- taskName:", directData.taskName);
+                    
+                    dmp_unitTestDetail.set("taskId", directData.taskId);
+                    dmp_unitTestDetail.set("taskName", directData.taskName); // 업무명 설정
+                    dmp_unitTestDetail.set("assignee", scwin.CURRENT_USER_ID);
+                    dmp_unitTestDetail.set("assigneeName", directData.currentUserName || "현재 사용자");
+                    dmp_unitTestDetail.set("pjtId", scwin.CURRENT_PROJECT_ID);
+                }
             }
         } else {
             console.log("파라미터 데이터가 없음, 기본 등록 모드로 설정");
@@ -555,6 +579,7 @@ scwin.initializeFromParentData = function() {
         console.log("현재 모드:", scwin.currentMode);
         console.log("프로젝트 ID:", scwin.CURRENT_PROJECT_ID);
         console.log("사용자 ID:", scwin.CURRENT_USER_ID);
+        console.log("업무명 (입력 필드):", dmp_unitTestDetail.get("taskName"));
         
         // 임시 데이터 정리
         try {
@@ -607,14 +632,14 @@ scwin.initializeByMode = function() {
  * 등록 모드 초기화
  */
 scwin.initializeNewMode = function() {
-    console.log("등록 모드 초기화");
+    console.log("등록 모드 초기화 - 시연용 데이터 포함");
     
     // 기본값 설정
     if (!dmp_unitTestDetail.get("testStatus")) {
         dmp_unitTestDetail.set("testStatus", "SUC");
     }
     if (!dmp_unitTestDetail.get("priority")) {
-        dmp_unitTestDetail.set("priority", "MEDIUM");
+        dmp_unitTestDetail.set("priority", "HIGH"); // 시연용: 높음으로 설정
     }
     if (!dmp_unitTestDetail.get("testType")) {
         dmp_unitTestDetail.set("testType", "NORMAL");
@@ -622,37 +647,141 @@ scwin.initializeNewMode = function() {
     
     // 사용자 정보 가져오기
     var currentUserId = scwin.CURRENT_USER_ID || "1";
-    var currentUserName = scwin.CURRENT_USER_NAME || scwin.getCurrentUserName();
+    var currentUserName = scwin.getCurrentUserName(); // 실제 사용자명 가져오기
     
     console.log("담당자 정보 설정:");
     console.log("- USER_ID:", currentUserId);
     console.log("- USER_NAME:", currentUserName);
     
-    dmp_unitTestDetail.set("assignee", currentUserId);
-    dmp_unitTestDetail.set("assigneeName", currentUserName);
+    // 담당자는 사용자 ID로 저장하지만, 화면에는 사용자명으로 표시
+    dmp_unitTestDetail.set("assignee", currentUserId); // 저장용 ID
+    dmp_unitTestDetail.set("assigneeName", currentUserName); // 화면 표시용 이름
     
     // 프로젝트 ID 설정
     var projectId = scwin.CURRENT_PROJECT_ID;
     dmp_unitTestDetail.set("pjtId", projectId);
     
-    // 에디터 초기화
+    // ===== 시연용 데이터 미리 입력 =====
+    
+    // 기존 업무명이 없는 경우에만 시연용 데이터 설정
+    var existingTaskName = dmp_unitTestDetail.get("taskName");
+    if (!existingTaskName || existingTaskName === "") {
+        dmp_unitTestDetail.set("taskName", "별점 기능 개발");
+    }
+    
+    // 시연용 테스트 케이스 정보 설정
+    dmp_unitTestDetail.set("testCaseName", "기존 별점 업데이트 성공");
+    dmp_unitTestDetail.set("testTarget", "updateProductRating(productId, userId, newRating)");
+    dmp_unitTestDetail.set("testType", "NORMAL");
+    dmp_unitTestDetail.set("priority", "HIGH");
+    dmp_unitTestDetail.set("duration", "25"); // 20-30분의 중간값
+    dmp_unitTestDetail.set("executionDate", "2025-07-30"); // 시연용 실행일시
+    
+    // 시연용 상세 설명 (HTML 형태)
+    var demoDescription = `
+        <p><strong>테스트 목적:</strong></p>
+        <p>사용자가 이미 등록한 별점을 새로운 값으로 수정할 때 정상적으로 업데이트되는지 확인한다.</p>
+        
+        <p><strong>검증 항목:</strong></p>
+        <ul>
+            <li>기존 별점 데이터가 새로운 값으로 변경되는지 확인</li>
+            <li>상품의 평균 별점이 올바르게 재계산되는지 검증</li>
+            <li>수정 일시(updatedAt)가 현재 시간으로 갱신되는지 확인</li>
+            <li>수정 이력이 로그에 기록되는지 확인</li>
+        </ul>
+        
+        <p><strong>테스트 절차:</strong></p>
+        <ol>
+            <li>기존 별점이 등록된 상품 선택 (productId: PROD-2024-200)</li>
+            <li>해당 사용자의 기존 별점 확인 (현재: 3점)</li>
+            <li>새로운 별점으로 수정 요청 (변경: 5점)</li>
+            <li>별점 업데이트 결과 검증</li>
+            <li>상품 평균 별점 재계산 결과 확인</li>
+        </ol>
+    `;
+    
+    // 시연용 테스트 데이터 (JSON 형태)
+    var demoTestData = `
+        <p><strong>입력 데이터:</strong></p>
+        <pre><code>{
+  "input": {
+    "productId": "PROD-2024-200",
+    "userId": "USER-54321",
+    "newRating": 5
+  },
+  "mockData": {
+    "existingRating": {
+      "ratingId": "RATING-2024-100",
+      "productId": "PROD-2024-200",
+      "userId": "USER-54321",
+      "rating": 3,
+      "createdAt": "2024-01-10T09:00:00Z",
+      "updatedAt": "2024-01-10T09:00:00Z"
+    },
+    "productBefore": {
+      "productId": "PROD-2024-200",
+      "name": "무선 이어폰",
+      "averageRating": 4.1,
+      "totalRatingCount": 10,
+      "totalRatingSum": 41
+    }
+  }
+}</code></pre>
+
+        <p><strong>예상 결과:</strong></p>
+        <pre><code>{
+  "expected": {
+    "updatedRating": {
+      "ratingId": "RATING-2024-100",
+      "productId": "PROD-2024-200", 
+      "userId": "USER-54321",
+      "rating": 5,
+      "createdAt": "2024-01-10T09:00:00Z",
+      "updatedAt": "2024-01-15T14:30:00Z"
+    },
+    "updatedProduct": {
+      "productId": "PROD-2024-200",
+      "averageRating": 4.3,
+      "totalRatingCount": 10,
+      "totalRatingSum": 43
+    },
+    "auditLog": {
+      "action": "RATING_UPDATED",
+      "userId": "USER-54321",
+      "productId": "PROD-2024-200",
+      "oldRating": 3,
+      "newRating": 5,
+      "timestamp": "2024-01-15T14:30:00Z"
+    }
+  }
+}</code></pre>
+    `;
+    
+    // 데이터맵에 미리 설정 (에디터는 나중에 설정)
+    dmp_unitTestDetail.set("description", demoDescription);
+    dmp_unitTestDetail.set("testData", demoTestData);
+    
+    // 에디터에 시연용 내용 설정 (약간의 지연 후)
     setTimeout(function() {
         try {
             if (editor_description && editor_description.setHTML) {
-                editor_description.setHTML("");
+                editor_description.setHTML(demoDescription);
+                console.log("시연용 테스트 설명 설정 완료");
             }
             if (editor_testData && editor_testData.setHTML) {
-                editor_testData.setHTML("");
+                editor_testData.setHTML(demoTestData);
+                console.log("시연용 테스트 데이터 설정 완료");
             }
         } catch(e) {
-            console.error("에디터 초기화 실패:", e);
+            console.error("시연용 에디터 내용 설정 실패:", e);
         }
-    }, 100);
+    }, 500); // 에디터 초기화가 완료된 후 실행
     
     scwin.setFormMode("new");
     
-    console.log("등록 모드 초기화 완료");
-    console.log("최종 설정된 담당자명:", currentUserName);
+    console.log("등록 모드 초기화 완료 - 시연용 데이터 포함");
+    console.log("최종 설정된 담당자명:", currentUserName); // 사용자명으로 표시
+    console.log("시연용 테스트 케이스명:", "기존 별점 업데이트 성공");
     
     // 임시 데이터 정리
     setTimeout(function() {
@@ -742,69 +871,33 @@ scwin.getCurrentUserName = function() {
             if (headerFrame && headerFrame.getWindow && headerFrame.getWindow().scwin) {
                 var headerScwin = headerFrame.getWindow().scwin;
                 
-                console.log("=== 헤더 scwin 객체 분석 ===");
-                console.log("headerScwin:", headerScwin);
-                
-                // Test.xml에서 성공하는 방식 그대로 사용
+                // Test.xml과 동일한 방식
                 if (headerScwin.USER_NAME) {
                     console.log("헤더에서 사용자 이름 가져옴:", headerScwin.USER_NAME);
                     return headerScwin.USER_NAME;
                 }
                 
-                // 헤더의 모든 속성 출력
-                console.log("헤더 scwin의 모든 속성들:");
-                for (var prop in headerScwin) {
-                    if (typeof headerScwin[prop] === 'string' && headerScwin[prop].length > 0) {
-                        console.log("- " + prop + ":", headerScwin[prop]);
-                        
-                        // 사용자 이름일 가능성이 있는 속성들 체크
-                        if ((prop.toLowerCase().includes('user') && prop.toLowerCase().includes('name')) ||
-                            prop === 'USER_NAME' || prop === 'userName' || prop === 'currentUserName') {
-                            if (headerScwin[prop] !== "사용자" && headerScwin[prop] !== "현재 사용자") {
-                                console.log("사용자 이름 후보 발견:", prop, "=", headerScwin[prop]);
-                                return headerScwin[prop];
-                            }
-                        }
+                // 추가 시도: 다른 가능한 속성들
+                var possibleProps = ['userName', 'currentUserName', 'userNm'];
+                for (var i = 0; i < possibleProps.length; i++) {
+                    var prop = possibleProps[i];
+                    if (headerScwin[prop] && headerScwin[prop] !== "사용자") {
+                        console.log("헤더에서 " + prop + " 가져옴:", headerScwin[prop]);
+                        return headerScwin[prop];
                     }
-                }
-                
-                // 서버 응답의 userHeader에서 가져오기 시도
-                // (최근 서버 통신 결과에서 userName 추출)
-                try {
-                    // 전역에서 최근 서버 응답 찾기
-                    var headerWindow = headerFrame.getWindow();
-                    if (headerWindow && headerWindow.document) {
-                        // Test.xml처럼 서버 응답에서 userName 찾기
-                        console.log("서버 응답에서 사용자 정보 찾기 시도");
-                        
-                        // 가능한 모든 전역 변수에서 userName 찾기
-                        for (var globalProp in headerWindow) {
-                            try {
-                                var obj = headerWindow[globalProp];
-                                if (obj && typeof obj === 'object' && obj.userName) {
-                                    console.log("전역 객체에서 userName 발견:", globalProp, obj.userName);
-                                    return obj.userName;
-                                }
-                            } catch(e) {
-                                // 무시
-                            }
-                        }
-                    }
-                } catch(e) {
-                    console.log("서버 응답 확인 실패:", e);
                 }
             }
         }
         
-        console.log("헤더에서 사용자 이름을 가져올 수 없음");
-        return "사용자";
+        // 헤더에서 가져오지 못한 경우 기본값
+        console.log("헤더에서 사용자 이름을 가져올 수 없음, 기본값 사용");
+        return "정개발"; // 시연용 기본 사용자명
         
     } catch (e) {
         console.error("사용자 이름 가져오기 실패:", e);
-        return "사용자";
+        return "정개발"; // 시연용 기본 사용자명
     }
 };
-
 /**
  * 서버 응답에서 사용자 정보 추출 시도
  */
@@ -2493,15 +2586,20 @@ scwin.openTestRegisterPopupWithTask = function(taskId, taskName) {
     console.log("- USER_ID:", currentUserId);
     console.log("- USER_NAME:", currentUserName);
     
-    // 전달받은 업무 정보로 설정
+    // 전달받은 업무 정보로 설정 (시연용 데이터 적용)
     dmp_unitTestDetail.set("testCaseId", "");
     dmp_unitTestDetail.set("testStatus", "SUC");
-    dmp_unitTestDetail.set("priority", "MEDIUM");
+    dmp_unitTestDetail.set("priority", "HIGH"); // 시연용: 높음
     dmp_unitTestDetail.set("testType", "NORMAL");
     dmp_unitTestDetail.set("taskId", taskId);
-    dmp_unitTestDetail.set("taskName", taskName);
+    dmp_unitTestDetail.set("taskName", taskName); // 전달받은 업무명 우선 사용
     dmp_unitTestDetail.set("assignee", currentUserId);
     dmp_unitTestDetail.set("assigneeName", currentUserName);
+    
+    // 시연용 추가 데이터 설정
+    dmp_unitTestDetail.set("testCaseName", "기존 별점 업데이트 성공");
+    dmp_unitTestDetail.set("testTarget", "updateProductRating(productId, userId, newRating)");
+    dmp_unitTestDetail.set("duration", "25");
     
     if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
         dmp_unitTestDetail.set("pjtId", scwin.CURRENT_PROJECT_ID);
@@ -2511,27 +2609,124 @@ scwin.openTestRegisterPopupWithTask = function(taskId, taskName) {
     scwin.setFormMode("new");
     pop_overlay.show();
     
+    // 팝업 타이틀은 일반적인 제목으로 설정
     setTimeout(function() {
         try {
-            spn_popupTitle.setValue("새 단위테스트 케이스 등록 (업무: " + taskName + ")");
+            spn_popupTitle.setValue("새 단위테스트 케이스 등록");
         } catch(e) {
             setTimeout(function() {
-                spn_popupTitle.setValue("새 단위테스트 케이스 등록 (업무: " + taskName + ")");
+                spn_popupTitle.setValue("새 단위테스트 케이스 등록");
             }, 50);
         }
     }, 50);
     
-    // 담당자명이 제대로 표시되는지 확인
+    // 시연용 에디터 내용 설정
     setTimeout(function() {
-        var displayedName = dmp_unitTestDetail.get("assigneeName");
-        console.log("팝업에 표시된 담당자명:", displayedName);
-        if (!displayedName || displayedName === "현재 사용자") {
-            console.log("담당자명 재설정 시도");
-            dmp_unitTestDetail.set("assigneeName", scwin.getCurrentUserName());
-        }
-    }, 300);
+        scwin.setDemoEditorContent();
+    }, 800); // 에디터 초기화 대기
     
-    console.log("개발업무 연동 테스트 등록 모드로 초기화 완료");
+    console.log("개발업무 연동 테스트 등록 모드로 초기화 완료 - 시연용 데이터 포함");
+};
+
+/**
+ * 시연용 에디터 내용 설정
+ */
+scwin.setDemoEditorContent = function() {
+    var demoDescription = `
+        <p><strong>테스트 목적:</strong></p>
+        <p>사용자가 이미 등록한 별점을 새로운 값으로 수정할 때 정상적으로 업데이트되는지 확인한다.</p>
+        
+        <p><strong>검증 항목:</strong></p>
+        <ul>
+            <li>기존 별점 데이터가 새로운 값으로 변경되는지 확인</li>
+            <li>상품의 평균 별점이 올바르게 재계산되는지 검증</li>
+            <li>수정 일시(updatedAt)가 현재 시간으로 갱신되는지 확인</li>
+            <li>수정 이력이 로그에 기록되는지 확인</li>
+        </ul>
+        
+        <p><strong>테스트 절차:</strong></p>
+        <ol>
+            <li>기존 별점이 등록된 상품 선택 (productId: PROD-2024-200)</li>
+            <li>해당 사용자의 기존 별점 확인 (현재: 3점)</li>
+            <li>새로운 별점으로 수정 요청 (변경: 5점)</li>
+            <li>별점 업데이트 결과 검증</li>
+            <li>상품 평균 별점 재계산 결과 확인</li>
+        </ol>
+    `;
+    
+    var demoTestData = `
+        <p><strong>입력 데이터:</strong></p>
+        <pre><code>{
+  "input": {
+    "productId": "PROD-2024-200",
+    "userId": "USER-54321", 
+    "newRating": 5
+  },
+  "mockData": {
+    "existingRating": {
+      "ratingId": "RATING-2024-100",
+      "productId": "PROD-2024-200",
+      "userId": "USER-54321",
+      "rating": 3,
+      "createdAt": "2024-01-10T09:00:00Z",
+      "updatedAt": "2024-01-10T09:00:00Z"
+    },
+    "productBefore": {
+      "productId": "PROD-2024-200",
+      "name": "무선 이어폰",
+      "averageRating": 4.1,
+      "totalRatingCount": 10,
+      "totalRatingSum": 41
+    }
+  }
+}</code></pre>
+
+        <p><strong>예상 결과:</strong></p>
+        <pre><code>{
+  "expected": {
+    "updatedRating": {
+      "ratingId": "RATING-2024-100",
+      "productId": "PROD-2024-200",
+      "userId": "USER-54321", 
+      "rating": 5,
+      "createdAt": "2024-01-10T09:00:00Z",
+      "updatedAt": "2024-01-15T14:30:00Z"
+    },
+    "updatedProduct": {
+      "productId": "PROD-2024-200",
+      "averageRating": 4.3,
+      "totalRatingCount": 10,
+      "totalRatingSum": 43
+    },
+    "auditLog": {
+      "action": "RATING_UPDATED",
+      "userId": "USER-54321",
+      "productId": "PROD-2024-200",
+      "oldRating": 3,
+      "newRating": 5,
+      "timestamp": "2024-01-15T14:30:00Z"
+    }
+  }
+}</code></pre>
+    `;
+    
+    try {
+        if (editor_description && editor_description.setHTML) {
+            editor_description.setHTML(demoDescription);
+            console.log("시연용 테스트 설명 에디터 설정 완료");
+        }
+        if (editor_testData && editor_testData.setHTML) {
+            editor_testData.setHTML(demoTestData);
+            console.log("시연용 테스트 데이터 에디터 설정 완료");
+        }
+        
+        // 데이터맵에도 설정 (저장 시 사용)
+        dmp_unitTestDetail.set("description", demoDescription);
+        dmp_unitTestDetail.set("testData", demoTestData);
+        
+    } catch(e) {
+        console.error("시연용 에디터 내용 설정 실패:", e);
+    }
 };
 
 /**
