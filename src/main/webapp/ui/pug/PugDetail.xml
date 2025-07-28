@@ -345,6 +345,7 @@ scwin.btn_close_onclick = function (e) {
 					<xf:group style="" tagname="tr">
 						<xf:group class="w2tb_th" style="" tagname="th">
 							<w2:textbox class="" id="" label="사용자ID" ref="" style="" userData2=""></w2:textbox>
+							<span style="color: red;">*</span>
 						</xf:group>
 						<xf:group class="w2tb_td" style="" tagname="td" id="">
 							<xf:input id="ipt_userId" style="width: 150px;height: 30px;" ref="data:dlt_userVoList.userId" disabled="true"></xf:input>
@@ -356,6 +357,7 @@ scwin.btn_close_onclick = function (e) {
 								<w2:scope>row</w2:scope>
 							</w2:attributes>
 							<w2:textbox class="" id="" label="이름" ref="" style="" userData2=""></w2:textbox>
+							<span style="color: red;">*</span>
 						</xf:group>
 						<xf:group class="w2tb_td" tagname="td">
 							<w2:attributes>
@@ -371,6 +373,7 @@ scwin.btn_close_onclick = function (e) {
 								<w2:scope>row</w2:scope>
 							</w2:attributes>
 							<w2:textbox class="" id="" label="메뉴그룹" ref="" style="" userData2=""></w2:textbox>
+							<span style="color: red;">*</span>
 						</xf:group>
 						<xf:group class="w2tb_td" tagname="td">
 							<w2:attributes></w2:attributes>

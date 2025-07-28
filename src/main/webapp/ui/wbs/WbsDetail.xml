@@ -74,12 +74,12 @@
 					</w2:columnInfo>
 					<w2:data use="true">
 						<w2:row>
-							<label><![CDATA[Y]]></label>
-							<value><![CDATA[1]]></value>
-						</w2:row>
-						<w2:row>
 							<label><![CDATA[N]]></label>
 							<value><![CDATA[0]]></value>
+						</w2:row>
+						<w2:row>
+							<label><![CDATA[Y]]></label>
+							<value><![CDATA[1]]></value>
 						</w2:row>
 					</w2:data>
 				</w2:dataList>
@@ -158,6 +158,7 @@ scwin.onpageload = function () {
 
         tbx_title.setValue("신규 업무 생성 팝업");
         dmp_taskDetail.set("pjtId", scwin.PJT_ID);
+
         
         // 로그인 사용자 정보로 기본값 설정
         const headerFrame = $p.getComponentById("mf_pg_header");
@@ -172,6 +173,7 @@ scwin.onpageload = function () {
         }
         
         ipt_taskSt.setValue($p.getCurrentServerDate("yyyyMMdd"));
+        ipt_pjtName.setValue("별점 기능 개발")
         btn_save.setValue("등록");
     }
 
@@ -335,17 +337,29 @@ scwin.btn_cancel_onclick = function (e) {
 
 // 사용자 선택 버튼 클릭
 scwin.btn_selectUser_onclick = function (e) {
+    // 프로젝트 ID 파라미터 데이터 생성
+    var popupData = {
+        pjtId: scwin.PJT_ID
+    };
+
+    var jsnPopupData = {
+        "type": "json",
+        "name": "params",
+        "data": popupData
+    };
+
     // 사용자 선택 팝업 열기
     var options = {
         id: "user_select_popup",
         type: "wframePopup",
         width: "600px",
-        height: "500px",
-        top: "50px",
-        left: "300px",
+        height: "550px",
+        top: "150px",
+        left: "500px",
         popupName: "사용자 선택",
         modal: true,
-        closeAction: "scwin.userSelectPopup_closeAction"
+        closeAction: "scwin.userSelectPopup_closeAction",
+        dataObject: jsnPopupData
     };
     
     $p.openPopup("/InsWebApp/ui/wbs/UserSelectPopup.xml", options);
@@ -425,12 +439,14 @@ scwin.taskStatus_onchange = function (info) {
 						<xf:group tagname="tr">
 							<xf:group class="w2tb_th" style="" tagname="th">
 								<w2:textbox label="업무명" style="" />
+								<span style="color: red;">*</span>
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
-								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskName" />
+								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskName" id="ipt_pjtName"/>
 							</xf:group>
 							<xf:group class="w2tb_th" style="" tagname="th">
 								<w2:textbox label="업무구분" style="" />
+								<span style="color: red;">*</span>
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<xf:select1 id="" chooseOption="" style="width: 180px;height: 30px;" submenuSize="auto" allOption=""
@@ -450,6 +466,7 @@ scwin.taskStatus_onchange = function (info) {
 						<xf:group tagname="tr">
 							<xf:group class="w2tb_th" style="" tagname="th">
 								<w2:textbox label="업무상태" style="" />
+								<span style="color: red;">*</span>
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<xf:select1 style="width:180px;" ref="data:dmp_taskDetail.taskStatus" appearance="minimal" allOption=""
@@ -464,10 +481,11 @@ scwin.taskStatus_onchange = function (info) {
 							</xf:group>
 							<xf:group class="w2tb_th" style="" tagname="th">
 								<w2:textbox label="테스트여부" style="" />
+								<span style="color: red;">*</span>
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<xf:select1 style="width:180px;" ref="data:dmp_taskDetail.isTest" appearance="minimal" allOption=""
-									chooseOption="" chooseOptionLabel="">
+									chooseOption="" chooseOptionLabel="" disabled="true">
 									<xf:choices>
 										<xf:itemset nodeset="data:dlt_isTest">
 											<xf:label ref="label"></xf:label>
@@ -501,10 +519,11 @@ scwin.taskStatus_onchange = function (info) {
 						<xf:group tagname="tr">
 							<xf:group class="w2tb_th" style="" tagname="th">
 								<w2:textbox label="업무담당자" style="" />
+								<span style="color: red;">*</span>
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<xf:group style="display:flex; align-items:center;">
-									<xf:input style="width:150px;" ref="data:dmp_taskDetail.taskAsi" id="ipt_taskAsi" readOnly="true"/>
+									<xf:input style="width:130px;" ref="data:dmp_taskDetail.taskAsi" id="ipt_taskAsi" readOnly="true"/>
 									<xf:trigger class="btn_cm" id="btn_selectUser" style="margin-left:5px; padding:2px 8px;" type="button"
 										ev:onclick="scwin.btn_selectUser_onclick">
 										<xf:label>선택</xf:label>

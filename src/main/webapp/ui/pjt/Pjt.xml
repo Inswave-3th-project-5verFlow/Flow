@@ -64,12 +64,20 @@ scwin.GROUP_ID = "";
  */
 scwin.onpageload = function () {
     var usrId = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_ID;
-    scwin.LOGIN_USER_NAME= $p.getComponentById("mf_pg_header").getWindow().scwin.USER_NAME;
+    scwin.LOGIN_USER_NAME = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_NAME;
     scwin.GROUP_ID = "1";
 
     dmp_pjtVoDetail.set("userId", usrId);
     dmp_pjtVoDetail.set("grpId", scwin.GROUP_ID);
     ipt_pjtAsi.setValue(scwin.LOGIN_USER_NAME);
+    ipt_pjtName.setValue("기업 포털 사이트 리뉴얼")
+    ipt_pjtSt.setValue($p.getCurrentServerDate("yyyyMMdd"));
+    ipt_pjtDetail.setValue(`기업 포털 사이트 리뉴얼 프로젝트 상세설명\n\n◆ 프로젝트 개요\n프로젝트명: 기업 포털 사이트 리뉴얼 (Flow)\n개발기간: 2024년 3월 ~ 2024년 6월 (4개월)\n개발인원: 5명 (PM 1명, 개발자 3명, 디자이너 1명)\n\n◆ 프로젝트
+   목적\n기존 레거시 포털 시스템의 UX/UI 개선 및 성능 최적화를 통한 사용자 경험 향상과 관리 효율성 증대\n\n◆ 주요기능\n1. 사용자 관리 시스템\n   - 직원 정보 관리 (Employee Management)\n   - 부서별 조직도 관리 (Department
+  Structure)\n   - 권한 기반 접근 제어 (Role-based Access Control)\n\n2. 프로젝트 관리 시스템\n   - 프로젝트 생성/수정/삭제 기능\n   - 프로젝트별 상세 진행 현황 추적\n   - WBS(Work Breakdown Structure) 기반 업무 분해
+  구조\n\n3. 업무 관리 기능\n   - 이슈 트래킹 시스템 (Issue Tracking)\n   - 결함 관리 시스템 (Defect Management)\n
+    - 테스크 할당 및 진행률 모니터링\n\n4. 대시보드 및 리포팅\n   - 실시간 프로젝트 현황 대시보드\n   - 개인별/팀별 업무 현황 시각화\n   - 통계 리포트 자동 생성 기능\n\n◆ 기술 스택\n프론트엔드: WebSquare 5.0, HTML5, CSS3, JavaScript\n백엔드: Java Spring Framework, MyBatis\n데이터베이스: MariaDB, Oracle (멀티 DB 지원)\n서버: Apache
+  Tomcat 9.0\n\n◆ 주요 개선사항\n- 반응형 웹 디자인 적용으로 모바일 환경 최적화\n- 기존 대비 페이지 로딩 속도 40% 개선\n- 직관적인 UI/UX 설계로 사용자 학습 비용 절감\n- 실시간 알림 시스템 도입으로 협업 효율성 향상"`);
 };
 
 /**
@@ -112,6 +120,7 @@ scwin.sbm_insertPjtVo_submitdone = function (e) {
     }
 
     $c.win.alert("등록이 완료되었습니다.");
+    $p.url("/InsWebApp/ui/testMain.xml");
 };
 
 /**
@@ -170,6 +179,7 @@ scwin.btn_refresh_onclick = function (e) {
 					<xf:group tagname="tr">
 						<xf:group class="w2tb_th" tagname="th">
 							<w2:textbox label="프로젝트명" />
+							<span style="color: red;">*</span>
 						</xf:group>
 						<xf:group class="w2tb_td" tagname="td" style="">
 							<w2:attributes>
@@ -183,6 +193,7 @@ scwin.btn_refresh_onclick = function (e) {
 					<xf:group tagname="tr">
 						<xf:group class="w2tb_th" tagname="th">
 							<w2:textbox label="관리자" localeRef="Pjt_COLNAME_00003" />
+							<span style="color: red;">*</span>
 						</xf:group>
 						<xf:group class="w2tb_td" tagname="td">
 							<w2:attributes>
@@ -196,6 +207,7 @@ scwin.btn_refresh_onclick = function (e) {
 					<xf:group tagname="tr">
 						<xf:group class="w2tb_th" tagname="th">
 							<w2:textbox label="프로젝트상태" localeRef="Pjt_COLNAME_00004" />
+							<span style="color: red;">*</span>
 						</xf:group>
 						<xf:group class="w2tb_td" tagname="td">
 							<w2:attributes>
@@ -218,6 +230,7 @@ scwin.btn_refresh_onclick = function (e) {
 					<xf:group tagname="tr">
 						<xf:group class="w2tb_th" tagname="th">
 							<w2:textbox label="시작일" localeRef="Pjt_COLNAME_00008" />
+							<span style="color: red;">*</span>
 						</xf:group>
 						<xf:group class="w2tb_td" tagname="td">
 							<w2:inputCalendar id="ipt_pjtSt" style="width: 100%;height: 30px;" calendarValueType="yearMonthDate"
@@ -241,7 +254,7 @@ scwin.btn_refresh_onclick = function (e) {
 							<w2:attributes>
 								<w2:colspan>3</w2:colspan>
 							</w2:attributes>
-							<xf:textarea ref="data:dmp_pjtVoDetail.pjtDetail" style="width:100%; height:100px;" />
+							<xf:textarea ref="data:dmp_pjtVoDetail.pjtDetail" style="width:100%;height: 600px;overflow-y: scorll;" id="ipt_pjtDetail"/>
 						</xf:group>
 					</xf:group>
 				</xf:group>

@@ -213,6 +213,7 @@ scwin.sbm_selectPjtVo_submitdone = function (e) {
 					<xf:group tagname="tr">
 						<xf:group class="w2tb_th" tagname="th">
 							<w2:textbox label="프로젝트명" />
+							<span style="color: red;">*</span>
 						</xf:group>
 						<xf:group class="w2tb_td" tagname="td" style="">
 							<w2:attributes>
@@ -226,6 +227,7 @@ scwin.sbm_selectPjtVo_submitdone = function (e) {
 					<xf:group tagname="tr">
 						<xf:group class="w2tb_th" tagname="th">
 							<w2:textbox label="관리자" localeRef="Pjt_COLNAME_00003" />
+							<span style="color: red;">*</span>
 						</xf:group>
 						<xf:group class="w2tb_td" tagname="td">
 							<w2:attributes>
@@ -239,6 +241,7 @@ scwin.sbm_selectPjtVo_submitdone = function (e) {
 					<xf:group tagname="tr">
 						<xf:group class="w2tb_th" tagname="th">
 							<w2:textbox label="프로젝트상태" localeRef="Pjt_COLNAME_00004" />
+							<span style="color: red;">*</span>
 						</xf:group>
 						<xf:group class="w2tb_td" tagname="td">
 							<w2:attributes>
@@ -261,6 +264,7 @@ scwin.sbm_selectPjtVo_submitdone = function (e) {
 					<xf:group tagname="tr">
 						<xf:group class="w2tb_th" tagname="th">
 							<w2:textbox label="시작일" localeRef="Pjt_COLNAME_00008" />
+							<span style="color: red;">*</span>
 						</xf:group>
 						<xf:group class="w2tb_td" tagname="td">
 							<w2:inputCalendar id="ipt_pjtSt" style="width: 100%;height: 30px;" calendarValueType="yearMonthDate"
@@ -284,7 +288,7 @@ scwin.sbm_selectPjtVo_submitdone = function (e) {
 							<w2:attributes>
 								<w2:colspan>3</w2:colspan>
 							</w2:attributes>
-							<xf:textarea ref="data:dmp_pjtVoDetail.pjtDetail" style="width:100%; height:100px;" id="txt_detail"/>
+							<xf:textarea ref="data:dmp_pjtVoDetail.pjtDetail" style="width:100%;height: 600px;overflow-y: scorll;" id="txt_detail"/>
 						</xf:group>
 					</xf:group>
 				</xf:group>

@@ -176,8 +176,8 @@ scwin.btn_new_onclick = function (e) {
         }
     };
 
-    const popupWidth = 800;
-    const popupHeight = 800;
+    const popupWidth = 750;
+    const popupHeight = 650;
     const centeredPosition = scwin.getCenteredPopupPosition(popupWidth, popupHeight);
 
     const options = {
@@ -270,8 +270,8 @@ scwin.grd_list_oncelldblclick = function (rowIndex, columnIndex, columnId) {
         }
     };
 
-    const popupWidth = 800;
-    const popupHeight = 800;
+    const popupWidth = 750;
+    const popupHeight = 650;
     const centeredPosition = scwin.getCenteredPopupPosition(popupWidth, popupHeight);
 
     const options = {
@@ -1346,9 +1346,9 @@ scwin.setTaskIdClickableStyle = function () {
 							<w2:column width="70" inputType="text" style="" id="column23" value="isDesign" displayMode="label" hidden="true"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="column25" value="업무 구분" displayMode="label"></w2:column>
 							<w2:column width="50" inputType="checkbox" style="" id="column17" value="" displayMode="label"></w2:column>
-							<w2:column width="50" inputType="text" style="" id="column1" value="업무ID" displayMode="label" localeRef="Wbs_COLNAME_00001">
+							<w2:column width="70" inputType="text" style="" id="column1" value="업무ID" displayMode="label" localeRef="Wbs_COLNAME_00001">
 							</w2:column>
-							<w2:column width="150" inputType="text" style="" id="column2" value="업무명" displayMode="label" localeRef="Wbs_COLNAME_00002">
+							<w2:column width="200" inputType="text" style="" id="column2" value="업무명" displayMode="label" localeRef="Wbs_COLNAME_00002">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="column3" value="업무상세" displayMode="label" localeRef="Wbs_COLNAME_00003"
 								hidden="true">
@@ -1366,7 +1366,7 @@ scwin.setTaskIdClickableStyle = function () {
 							<w2:column width="50" inputType="text" style="" id="column8" value="상위업무ID" displayMode="label"
 								localeRef="Wbs_COLNAME_00008" hidden="true">
 							</w2:column>
-							<w2:column width="150" inputType="text" style="" id="column19" value="상위업무명" displayMode="label"></w2:column>
+							<w2:column width="150" inputType="text" style="" id="column19" value="상위업무명" displayMode="label" hidden="true"></w2:column>
 							<w2:column width="70" inputType="text" style="" id="column9" value="순서" displayMode="label" localeRef="Wbs_COLNAME_00009"
 								hidden="true">
 							</w2:column>
@@ -1417,7 +1417,7 @@ scwin.setTaskIdClickableStyle = function () {
 							<w2:column width="70" inputType="text" style="" id="taskId" value="" displayMode="label" embeddedInput="text"
 								readOnly="true">
 							</w2:column>
-							<w2:column width="70" inputType="drilldown" style=";text-align:left;" id="taskName" value="" displayMode="label"
+							<w2:column width="200" inputType="drilldown" style=";text-align:left;" id="taskName" value="" displayMode="label"
 								embeddedInput="text" depthColumn="taskDepth" depthType="line" readOnly="true">
 							</w2:column>
 							<w2:column width="70" inputType="text" style="" id="taskDes" value="" displayMode="label"></w2:column>
