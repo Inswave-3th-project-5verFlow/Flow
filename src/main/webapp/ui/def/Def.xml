@@ -376,6 +376,117 @@ scwin.onpageload = function() {
 };
 
 /**
+ * 우선순위별 배지 스타일 적용 (DesignList 방식)
+ */
+scwin.setPriorityStyle = function () {
+    console.log("우선순위 배지 스타일 적용 시작");
+    
+    try {
+        // 신규 그리드
+        const newRowCount = dlt_newList.getTotalRow();
+        const newColIndex = new_grd.getColumnIndex("priorityName");
+        
+        for (let i = 0; i < newRowCount; i++) {
+            const priority = dlt_newList.getCellData(i, "priority");
+            const priorityStyles = scwin.getPriorityStyleConfig(priority);
+            
+            const styles = [
+                { type: "cell", rowIndex: i, colIndex: newColIndex, styleName: "background-color", styleValue: priorityStyles.backgroundColor },
+                { type: "cell", rowIndex: i, colIndex: newColIndex, styleName: "color", styleValue: priorityStyles.textColor },
+                { type: "cell", rowIndex: i, colIndex: newColIndex, styleName: "border-radius", styleValue: "12px" },
+                { type: "cell", rowIndex: i, colIndex: newColIndex, styleName: "text-align", styleValue: "center" },
+                { type: "cell", rowIndex: i, colIndex: newColIndex, styleName: "font-weight", styleValue: "bold" },
+                { type: "cell", rowIndex: i, colIndex: newColIndex, styleName: "font-size", styleValue: "11px" },
+                { type: "cell", rowIndex: i, colIndex: newColIndex, styleName: "border", styleValue: "1px solid " + priorityStyles.borderColor }
+            ];
+            
+            styles.forEach(style => new_grd.setStyleAll(style));
+        }
+        
+        // 진행중 그리드
+        const processingRowCount = dlt_processingList.getTotalRow();
+        const processingColIndex = processing_grd.getColumnIndex("priorityName");
+        
+        for (let i = 0; i < processingRowCount; i++) {
+            const priority = dlt_processingList.getCellData(i, "priority");
+            const priorityStyles = scwin.getPriorityStyleConfig(priority);
+            
+            const styles = [
+                { type: "cell", rowIndex: i, colIndex: processingColIndex, styleName: "background-color", styleValue: priorityStyles.backgroundColor },
+                { type: "cell", rowIndex: i, colIndex: processingColIndex, styleName: "color", styleValue: priorityStyles.textColor },
+                { type: "cell", rowIndex: i, colIndex: processingColIndex, styleName: "border-radius", styleValue: "12px" },
+                { type: "cell", rowIndex: i, colIndex: processingColIndex, styleName: "text-align", styleValue: "center" },
+                { type: "cell", rowIndex: i, colIndex: processingColIndex, styleName: "font-weight", styleValue: "bold" },
+                { type: "cell", rowIndex: i, colIndex: processingColIndex, styleName: "font-size", styleValue: "11px" },
+                { type: "cell", rowIndex: i, colIndex: processingColIndex, styleName: "border", styleValue: "1px solid " + priorityStyles.borderColor }
+            ];
+            
+            styles.forEach(style => processing_grd.setStyleAll(style));
+        }
+        
+        // 완료 그리드
+        const completedRowCount = dlt_completedList.getTotalRow();
+        const completedColIndex = completed_grd.getColumnIndex("priorityName");
+        
+        for (let i = 0; i < completedRowCount; i++) {
+            const priority = dlt_completedList.getCellData(i, "priority");
+            const priorityStyles = scwin.getPriorityStyleConfig(priority);
+            
+            const styles = [
+                { type: "cell", rowIndex: i, colIndex: completedColIndex, styleName: "background-color", styleValue: priorityStyles.backgroundColor },
+                { type: "cell", rowIndex: i, colIndex: completedColIndex, styleName: "color", styleValue: priorityStyles.textColor },
+                { type: "cell", rowIndex: i, colIndex: completedColIndex, styleName: "border-radius", styleValue: "12px" },
+                { type: "cell", rowIndex: i, colIndex: completedColIndex, styleName: "text-align", styleValue: "center" },
+                { type: "cell", rowIndex: i, colIndex: completedColIndex, styleName: "font-weight", styleValue: "bold" },
+                { type: "cell", rowIndex: i, colIndex: completedColIndex, styleName: "font-size", styleValue: "11px" },
+                { type: "cell", rowIndex: i, colIndex: completedColIndex, styleName: "border", styleValue: "1px solid " + priorityStyles.borderColor }
+            ];
+            
+            styles.forEach(style => completed_grd.setStyleAll(style));
+        }
+        
+        console.log("우선순위 배지 스타일 적용 완료");
+        
+    } catch (e) {
+        console.error("우선순위 스타일 적용 오류:", e);
+    }
+};
+
+/**
+ * 우선순위별 스타일 설정
+ */
+scwin.getPriorityStyleConfig = function(priority) {
+    let backgroundColor = "#f8f9fa";
+    let textColor = "#333333";
+    let borderColor = "#dee2e6";
+
+    switch (priority) {
+        case "CR": // 긴급
+            backgroundColor = "#ffe6e6";
+            textColor = "#dc3545";
+            borderColor = "#f5c6cb";
+            break;
+        case "HI": // 높음
+            backgroundColor = "#fff3cd";
+            textColor = "#856404";
+            borderColor = "#ffeaa7";
+            break;
+        case "MD": // 보통
+            backgroundColor = "#d1ecf1";
+            textColor = "#0c5460";
+            borderColor = "#bee5eb";
+            break;
+        case "LO": // 낮음
+            backgroundColor = "#d4edda";
+            textColor = "#155724";
+            borderColor = "#c3e6cb";
+            break;
+    }
+
+    return { backgroundColor, textColor, borderColor };
+};
+
+/**
  * 결함 데이터 처리 (권한 필터링 적용, 테스트케이스명은 서버에서 이미 포함됨)
  */
 scwin.processDefData = function(allData, totalCount) {
@@ -2794,27 +2905,168 @@ scwin.btn_searchReset_onclick = function(e) {
 /**
  * 엑셀 다운로드
  */
-scwin.btn_excel_download_onclick = function (e) {
-    var totalCount = scwin.globalElData ? scwin.globalElData.totalCount : 0;
-    console.log("전체 데이터 건수:", totalCount);
-
+scwin.btn_excel_download_onclick = function(e) {
+    var newData = scwin.newPageInfo.data || [];
+    var processingData = scwin.processingPageInfo.data || [];
+    var completedData = scwin.completedPageInfo.data || [];
+    
+    var totalCount = newData.length + processingData.length + completedData.length;
+    
     if (totalCount === 0) {
-        $c.win.alert("다운로드할 데이터가 없습니다.");
+        $c.win.alert("다운로드할 결함이 없습니다.");
         return;
     }
-
-    var originalPageIndex = dmp_search.get("pageIndex");
-    var originalPageSize = dmp_search.get("pageSize");
-
-    dmp_search.set("pageIndex", "1");
-    dmp_search.set("pageSize", totalCount.toString());
-
-    $c.sbm.execute($p, sbm_selectDefListForExcel);
-
-    dmp_search.set("pageIndex", originalPageIndex);
-    dmp_search.set("pageSize", originalPageSize);
+    
+    console.log("전체 결함 통합 엑셀 다운로드:", totalCount, "건");
+    
+    // 모든 데이터를 합쳐서 상태별로 정렬 + 모든 필요한 컬럼 포함
+    var allData = [];
+    
+    // 신규 데이터 추가
+    newData.forEach(function(item) {
+        allData.push({
+            id: item.id || '',
+            testId: item.testId || '',
+            testName: item.testName || '',
+            name: item.name || '',
+            description: item.description || '',
+            priority: item.priority || '',
+            priorityName: item.priorityName || scwin.getPriorityName(item.priority) || '',
+            status: item.status || 'NEW',
+            statusName: '신규',
+            assignee: item.assignee || '',
+            assigneeName: item.assigneeName || '',
+            fixDueDate: item.fixDueDate || '',
+            fixedDate: item.fixedDate || '',
+            responsePlan: item.responsePlan || '',
+            createdAt: item.createdAt || '',
+            updatedAt: item.updatedAt || '',
+            createdBy: item.createdBy || '',
+            updatedBy: item.updatedBy || '',
+            statusOrder: 1
+        });
+    });
+    
+    // 진행중 데이터 추가
+    processingData.forEach(function(item) {
+        allData.push({
+            id: item.id || '',
+            testId: item.testId || '',
+            testName: item.testName || '',
+            name: item.name || '',
+            description: item.description || '',
+            priority: item.priority || '',
+            priorityName: item.priorityName || scwin.getPriorityName(item.priority) || '',
+            status: item.status || 'IPR',
+            statusName: '진행중',
+            assignee: item.assignee || '',
+            assigneeName: item.assigneeName || '',
+            fixDueDate: item.fixDueDate || '',
+            fixedDate: item.fixedDate || '',
+            responsePlan: item.responsePlan || '',
+            createdAt: item.createdAt || '',
+            updatedAt: item.updatedAt || '',
+            createdBy: item.createdBy || '',
+            updatedBy: item.updatedBy || '',
+            statusOrder: 2
+        });
+    });
+    
+    // 완료 데이터 추가
+    completedData.forEach(function(item) {
+        allData.push({
+            id: item.id || '',
+            testId: item.testId || '',
+            testName: item.testName || '',
+            name: item.name || '',
+            description: item.description || '',
+            priority: item.priority || '',
+            priorityName: item.priorityName || scwin.getPriorityName(item.priority) || '',
+            status: item.status || 'COM',
+            statusName: '완료',
+            assignee: item.assignee || '',
+            assigneeName: item.assigneeName || '',
+            fixDueDate: item.fixDueDate || '',
+            fixedDate: item.fixedDate || '',
+            responsePlan: item.responsePlan || '',
+            createdAt: item.createdAt || '',
+            updatedAt: item.updatedAt || '',
+            createdBy: item.createdBy || '',
+            updatedBy: item.updatedBy || '',
+            statusOrder: 3
+        });
+    });
+    
+    // 상태별로 정렬
+    allData.sort(function(a, b) {
+        return a.statusOrder - b.statusOrder;
+    });
+    
+    console.log("엑셀 다운로드용 통합 데이터:", allData.length, "건");
+    console.log("첫 번째 데이터 샘플:", allData[0]);
+    
+    // dlt_defVoList가 있는지 확인하고 없으면 생성
+    var targetDataList, targetGrid;
+    
+    if (typeof dlt_defVoList !== 'undefined' && typeof grd_list !== 'undefined') {
+        targetDataList = dlt_defVoList;
+        targetGrid = grd_list;
+        console.log("기존 grd_list 사용");
+    } else {
+        // 임시로 신규 그리드 사용하되, 모든 컬럼 데이터를 맞춤
+        targetDataList = dlt_newList;
+        targetGrid = new_grd;
+        console.log("new_grd 사용");
+    }
+    
+    // 원본 데이터 백업
+    var originalData = targetDataList.getAllJSON();
+    
+    // 통합 데이터로 그리드 설정
+    targetDataList.setJSON(allData);
+    
+    console.log("그리드에 설정된 데이터 건수:", targetDataList.getTotalRow());
+    
+    var options = {
+        fileName: "결함_전체목록_" + new Date().toISOString().slice(0, 10).replace(/-/g, ""),
+        useStyle: true,
+        headerFontBold: true,
+        bodyFontBold: false,
+        type: 1,
+        trim: 1,
+        processMsg: "전체 결함 엑셀 파일을 생성하고 있습니다...",
+        timeout: 60000,
+        checkInterval: 1000,
+        onSuccessCallback: function() {
+            console.log("엑셀 다운로드 성공");
+            targetDataList.setJSON(originalData);
+            $c.win.alert("전체 결함 엑셀 파일 다운로드가 완료되었습니다. (총 " + totalCount + "건)");
+        },
+        onFailureCallback: function() {
+            console.log("엑셀 다운로드 실패");
+            targetDataList.setJSON(originalData);
+            $c.win.alert("엑셀 파일 다운로드에 실패했습니다.");
+        }
+    };
+    
+    // 엑셀 다운로드 실행
+    try {
+        targetGrid.advancedExcelDownload(options);
+        console.log("advancedExcelDownload 호출 완료");
+    } catch (error) {
+        console.error("advancedExcelDownload 오류:", error);
+        // 대안: 기본 excelDownload 사용
+        try {
+            targetGrid.excelDownload("결함_전체목록_" + new Date().toISOString().slice(0, 10));
+            targetDataList.setJSON(originalData);
+            $c.win.alert("엑셀 다운로드가 완료되었습니다. (총 " + totalCount + "건)");
+        } catch (basicError) {
+            console.error("기본 excelDownload도 실패:", basicError);
+            targetDataList.setJSON(originalData);
+            $c.win.alert("엑셀 다운로드에 실패했습니다.");
+        }
+    }
 };
-
 scwin.sbm_selectDefListForExcel_submitdone = function (e) {
     var elData = e.responseJSON.elData;
     var elHeader = e.responseJSON.elHeader;
@@ -3470,8 +3722,8 @@ scwin.getCurrentUserName = function() {
 												</xf:group>
 											</w2:group>
 
-											<!-- 텍스트 파일 미리보기 -->
-											<w2:group id="grp_textPreview" style="display: none;">
+				6						<!-- 텍스트 파일 미리보기 -->
+7										<w2:group id=8grp_textPreview" style="9isplay: none;">
 												<w2:textbox id="txt_textFileName" style="font-weight: bold; margin-bottom: 10px; word-break: break-all;"></w2:textbox>
 												<xf:textarea id="txt_textContent" readOnly="true" style="width: 100%; height: 200px; border: 1px solid #ccc; font-family: monospace; font-size: 12px; background: white; padding: 8px; border-radius: 4px;"></xf:textarea>
 												<xf:group style="margin-top: 10px;">
@@ -3520,8 +3772,8 @@ scwin.getCurrentUserName = function() {
 			            </xf:group>
 			        </xf:group>
 			
-			        <!-- 테스트케이스 목록 그리드 - 간단 버전 -->
-			        <xf:group class="gvwbox" id="" style="">
+			        <!-- 테스트케이스 목록 6리드 - 간단 버전 -->
+			        <7f:group class="gvwbox" 8d="" style="">
 			            <w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_testCaseList"
 						    defaultCellHeight="30" focusMode="row" id="grd_testCaseList" readOnly="true" scrollByColumn="false" 
 						    style="height: 400px;" visibleRowNum="15" 
