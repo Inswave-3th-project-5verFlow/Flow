@@ -56,16 +56,6 @@
  */
 scwin.onpageload = function () {
     var usrId = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_ID;
-    var isCreate = $p.getComponentById("mf_pg_header").getWindow().scwin.IS_CREATE;
-    // isCreate 의 값 0 또는 1에 따라서 btn_newPjt 를 보여주거나 감추기
-    if (isCreate === 1 || isCreate === "1") {
-        // 관리자인 경우 새 프로젝트 생성 버튼 표시
-        btn_newPjt.show();
-    } else {
-        // 일반 사용자인 경우 새 프로젝트 생성 버튼 숨김
-        btn_newPjt.hide();
-    }
-
     dmp_pjtVo.set("userId", usrId);
     $c.sbm.execute(sbm_selectPjtVoList);
 };
@@ -103,6 +93,16 @@ scwin.sbm_pjtList_submitdone = function (e) {
     num = (num - 1) * 10;
     grd_list.setStartRowNumber(num);
     scwin.setClickableStyle();
+
+    var isCreate = $p.getComponentById("mf_pg_header").getWindow().scwin.IS_CREATE;
+    // isCreate 의 값 0 또는 1에 따라서 btn_newPjt 를 보여주거나 감추기
+    if (isCreate === 1 || isCreate === "1") {
+        // 관리자인 경우 새 프로젝트 생성 버튼 표시
+        btn_newPjt.show();
+    } else {
+        // 일반 사용자인 경우 새 프로젝트 생성 버튼 숨김
+        btn_newPjt.hide();
+    }
 };
 
 /**
