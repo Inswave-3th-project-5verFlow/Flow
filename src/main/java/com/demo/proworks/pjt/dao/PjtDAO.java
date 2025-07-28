@@ -89,6 +89,17 @@ public class PjtDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
 	}
 
 	/**
+	 * 프로젝트 ID로 최상위 업무들의 평균 진척률을 조회한다.
+	 * 
+	 * @param pjtId 프로젝트 ID
+	 * @return Integer 프로젝트 진행률
+	 * @throws ElException
+	 */
+	public Integer selectProjectProgress(String pjtId) throws ElException {
+		return (Integer) selectByPk("com.demo.proworks.pjt.selectProjectProgress", pjtId);
+	}
+
+	/**
 	 * 프로젝트 유저 그룹에 프로젝트를 등록한다.
 	 * 
 	 * @param PjtVo 프로젝트 정보

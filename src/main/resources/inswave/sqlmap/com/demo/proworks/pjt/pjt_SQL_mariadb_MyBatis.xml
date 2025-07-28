@@ -73,6 +73,14 @@
 		SELECT /* QueryID : com.demo.proworks.pjt.selectListCountPjt */ COUNT(*) totcnt FROM PJT p JOIN PROJECT_USER_GROUP g ON p.PJT_ID =
 		g.PJT_ID WHERE g.USER_ID = #{userId}
 	</select>
+	<select id="selectProjectProgress" parameterType="string" resultType="java.lang.Integer">
+		<!-- 프로젝트 ID로 최상위 업무들의 평균 진척률을 조회한다. -->
+		SELECT /* QueryID : com.demo.proworks.pjt.selectProjectProgress */
+			COALESCE(ROUND(AVG(task_rate), 0), 0) as progress
+		FROM project_task 
+		WHERE pjt_id = #{pjtId} AND pt_task_id IS NULL
+	</select>
+
 	<insert id="insertPug" parameterType="com.demo.proworks.pjt.vo.PjtVo">
 		<!-- 프로젝트를 유저그룹에 등록한다. -->
 		INSERT INTO PROJECT_USER_GROUP /* QueryID : com.demo.proworks.pjt.insertPug */

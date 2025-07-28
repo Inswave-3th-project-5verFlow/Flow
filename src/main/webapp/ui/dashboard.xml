@@ -15,22 +15,6 @@
                         <w2:key id="totalIssues" name="총 이슈/리스크 수" dataType="text"></w2:key>
                     </w2:keyInfo>
                 </w2:dataMap>
-                <w2:dataList baseNode="list" id="dlt_projectList" repeatNode="map" saveRemovedData="true" style="">
-                	<w2:columnInfo>
-                		<w2:column dataType="text" id="pjtId" name="프로젝트ID"></w2:column>
-                		<w2:column dataType="text" id="pjtName" name="프로젝트명"></w2:column>
-                		<w2:column dataType="text" id="pjtAsi" name="프로젝트관리자"></w2:column>
-                		<w2:column dataType="text" id="pjtStatus" name="프로젝트상태"></w2:column>
-                		<w2:column dataType="text" id="pjtDetail" name="상세설명"></w2:column>
-                		<w2:column dataType="text" id="createdAt" name="등록일자"></w2:column>
-                		<w2:column dataType="text" id="updatedAt" name="수정일자"></w2:column>
-                		<w2:column dataType="text" id="pjtSt" name="시작일"></w2:column>
-                		<w2:column dataType="text" id="pjtEt" name="완료일"></w2:column>
-                		<w2:column dataType="text" name="진척률" id="pjtProgress"></w2:column>
-                	</w2:columnInfo>
-                	<w2:data use="false">
-                	</w2:data>
-                </w2:dataList>
                 <w2:dataList baseNode="list" repeatNode="map" id="dlt_projectChartData">
                     <w2:columnInfo>
                         <w2:column id="label" name="라벨" dataType="text"></w2:column>
@@ -99,8 +83,7 @@ scwin.sbm_getDashboardData_submitdone = function (e) {
     dlt_projectChartData.setJSON(elData.pjtChartVo);
     dlt_taskChartData.setJSON(elData.taskChartVo);
     dlt_issueChartData.setJSON(elData.irrChartVo);
-   
-
+    
     // 모든 데이터가 준비되었으므로 차트를 한 번에 렌더링
     scwin.initFusionChart(projectPieChart, "프로젝트 현황", { "showPercentValues": "1" });
     scwin.initFusionChart(taskPieChart, "업무별 현황", { "yAxisName": "업무 수" });

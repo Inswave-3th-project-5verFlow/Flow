@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
+	xmlns:xf="http://www.w3.org/2002/xforms">
+	<head>
+		<w2:type>COMPONENT</w2:type>
+		<w2:buildDate />
+		<w2:MSA />
+		<xf:model>
+			<w2:dataCollection baseNode="map">
+				<!-- 사용자 목록 데이터 -->
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_userList" saveRemovedData="true">
+					<w2:columnInfo>
+						<w2:column dataType="text" name="사용자ID" id="userId"></w2:column>
+						<w2:column dataType="text" name="이름" id="name"></w2:column>
+						<w2:column dataType="text" name="직책" id="position"></w2:column>
+						<w2:column dataType="text" name="이메일" id="email"></w2:column>
+						<w2:column dataType="text" name="연락처" id="phone"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
+				<!-- 사용자 검색 조건 -->
+				<w2:dataMap baseNode="map" id="dmp_userSearch">
+					<w2:keyInfo>
+						<w2:key dataType="text" name="페이지번호" id="pageIndex" defaultValue="1"></w2:key>
+						<w2:key dataType="text" name="페이지건수" id="pageSize" defaultValue="10"></w2:key>
+						<w2:key dataType="text" name="검색명" id="scName"></w2:key>
+					</w2:keyInfo>
+				</w2:dataMap>
+			</w2:dataCollection>
+
+			<w2:workflowCollection />
+
+			<!-- 사용자 목록 조회용 submission -->
+			<xf:submission id="sbm_selectUserList" action="/InsWebApp/USERS0001List.pwkjson" method="post" mediatype="application/json"
+				ref='data:json,{"id":"dmp_userSearch","key":"elData"}' target="" encoding="UTF-8" instance="" replace="" errorHandler=""
+				customHandler="" mode="asynchronous" processMsg="사용자 목록을 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUserList_submitdone"
+				ev:submiterror="" abortTrigger="">
+			</xf:submission>
+		</xf:model>
+
+		<w2:layoutInfo />
+		<w2:publicInfo method="" />
+
+		<script lazy="false" type="text/javascript"><![CDATA[
+scwin.onpageload = function () {
+    // 초기 사용자 목록 조회
+    scwin.btn_search_onclick();
+};
+
+// 조회 버튼 클릭
+scwin.btn_search_onclick = function (e) {
+    $c.sbm.execute(sbm_selectUserList);
+};
+
+// 사용자 목록 조회 완료
+scwin.sbm_selectUserList_submitdone = function (e) {
+    var elHeader = e.responseJSON.elHeader;
+    var elData = e.responseJSON.elData;
+
+    if (elHeader == null || elHeader == "" || elHeader == "undefined" || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    }
+
+    // 사용자 목록 데이터 설정
+    dlt_userList.setJSON(elData.usersVoList);
+    spn_listCnt.setLabel(elData.totalCount);
+};
+
+// 선택 버튼 클릭
+scwin.btn_select_onclick = function (e) {
+    var selectedIndex = grd_userList.getFocusedRowIndex();
+    
+    if (selectedIndex < 0) {
+        $c.win.alert("사용자를 선택해주세요.");
+        return;
+    }
+    
+    var selectedUserData = dlt_userList.getRowJSON(selectedIndex);
+    
+    // 부모 창에 선택된 사용자 정보 전달
+    var returnData = {
+        selectedUser: {
+            userId: selectedUserData.userId,
+            name: selectedUserData.name,
+            position: selectedUserData.position,
+            email: selectedUserData.email
+        }
+    };
+    
+    // 부모 창의 receiveUserData 함수 호출
+    $p.parent().scwin.receiveUserData(returnData);
+    
+    // 팝업 닫기
+    $p.closePopup();
+};
+
+// 취소 버튼 클릭
+scwin.btn_cancel_onclick = function (e) {
+    $p.closePopup();
+};
+
+// 그리드 더블클릭으로도 선택 가능
+scwin.grd_userList_ondblclick = function (e) {
+    scwin.btn_select_onclick();
+};
+		]]></script>
+	</head>
+
+	<body ev:onpageload="scwin.onpageload">
+		<xf:group class="pop_contents" style="width:580px;">
+			<!-- 팝업 헤더 -->
+			<xf:group class="pop_header" style="padding:15px; border-bottom:1px solid #ddd; background-color:#98bed6; color: white;">
+				<w2:textbox class="pop_title" label="사용자 선택" style="font-size:18px; font-weight:bold;" />
+			</xf:group>
+
+			<!-- 팝업 내용 -->
+			<xf:group class="pop_body" style="padding:20px; max-height:500px; overflow-y:auto;">
+				
+				<!-- 검색 조건 -->
+				<xf:group class="schbox" style="margin-bottom:15px;">
+					<xf:group class="schbox_inner">
+						<xf:group adaptive="layout" adaptiveThreshold="768" class="w2tb tbl" style="width:100%;" tagname="table">
+							<w2:attributes>
+								<w2:summary />
+							</w2:attributes>
+							<xf:group tagname="colgroup">
+								<xf:group style="width:80px;" tagname="col" />
+								<xf:group style="" tagname="col" />
+							</xf:group>
+							<xf:group tagname="tr">
+								<xf:group class="w2tb_th" style="" tagname="th">
+									<w2:textbox label="이름" style="" />
+								</xf:group>
+								<xf:group class="w2tb_td" tagname="td">
+									<xf:input style="width:150px;" ref="data:dmp_userSearch.scName" />
+									<xf:trigger class="btn_cm sch" style="margin-left:10px;" type="button" ev:onclick="scwin.btn_search_onclick">
+										<xf:label>조회</xf:label>
+									</xf:trigger>
+								</xf:group>
+							</xf:group>
+						</xf:group>
+					</xf:group>
+				</xf:group>
+
+				<!-- 사용자 목록 그리드 -->
+				<xf:group class="titbox" style="margin-bottom:10px;">
+					<xf:group class="count rt">
+						<w2:span label="총" style="" />
+						<w2:span class="num" id="spn_listCnt" label="0" style="" />
+						<w2:span label="건" style="" />
+					</xf:group>
+				</xf:group>
+
+				<xf:group class="gvwbox" style="margin-bottom:20px;">
+					<w2:gridView autoFit="allColumn" class="gvw" dataList="data:dlt_userList" focusMode="row"
+						id="grd_userList" keepDefaultColumnWidth="true" rowNumHeaderValue="No" rowNumVisible="true" 
+						rowNumWidth="40" rowStatusVisible="false" scrollByColumn="false" style="height:200px;" 
+						visibleRowNum="8" defaultCellHeight="26" readOnly="true" ev:ondblclick="scwin.grd_userList_ondblclick">
+						<w2:caption style="" value="사용자 목록" />
+						<w2:header style="">
+							<w2:row style="">
+								<w2:column blockSelect="false" displayMode="label" inputType="text" 
+									value="사용자ID" width="80" />
+								<w2:column blockSelect="false" displayMode="label" inputType="text" 
+									value="이름" width="80" />
+								<w2:column blockSelect="false" displayMode="label" inputType="text" 
+									value="직책" width="80" />
+								<w2:column blockSelect="false" displayMode="label" inputType="text" 
+									value="이메일" width="150" />
+								<w2:column blockSelect="false" displayMode="label" inputType="text" 
+									value="연락처" width="120" />
+							</w2:row>
+						</w2:header>
+						<w2:gBody style="">
+							<w2:row style="">
+								<w2:column blockSelect="false" displayMode="label" id="userId" inputType="text" width="80" />
+								<w2:column blockSelect="false" displayMode="label" id="name" inputType="text" width="80" />
+								<w2:column blockSelect="false" displayMode="label" id="position" inputType="text" width="80" />
+								<w2:column blockSelect="false" displayMode="label" id="email" inputType="text" width="150" />
+								<w2:column blockSelect="false" displayMode="label" id="phone" inputType="text" width="120" />
+							</w2:row>
+						</w2:gBody>
+					</w2:gridView>
+				</xf:group>
+
+				<!-- 버튼 영역 -->
+				<xf:group class="btnbox" style="">
+					<xf:group class="rt" style="">
+						<xf:trigger class="btn_cm pt" id="btn_select" 
+							style="background-color:#98BED6;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border-color: #fff;border: none;" 
+							type="button" ev:onclick="scwin.btn_select_onclick">
+							<xf:label>선택</xf:label>
+						</xf:trigger>
+						<xf:trigger class="btn_cm" id="btn_cancel" style="" type="button" ev:onclick="scwin.btn_cancel_onclick">
+							<xf:label>취소</xf:label>
+						</xf:trigger>
+					</xf:group>
+				</xf:group>
+			</xf:group>
+		</xf:group>
+	</body>
+</html>

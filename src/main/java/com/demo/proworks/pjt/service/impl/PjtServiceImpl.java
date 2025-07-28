@@ -34,7 +34,9 @@ public class PjtServiceImpl implements PjtService {
 	/**
 	 * 프로젝트 목록을 페이징 처리한다.
 	 *
-	 * @process 1. 프로젝트 정보 페이징 처리하여 목록을 조회한다. 2. 결과 List<PjtVo>을(를) 리턴한다.
+	 * @process 1. 프로젝트 정보 페이징 처리하여 목록을 조회한다. 
+	 *          2. 각 프로젝트의 task 기반 진행률을 계산하여 설정한다.
+	 *          3. 결과 List<PjtVo>을(를) 리턴한다.
 	 * 
 	 * @param pjtVo 프로젝트 정보 PjtVo
 	 * @return 프로젝트 정보 목록 List<PjtVo>
@@ -42,6 +44,13 @@ public class PjtServiceImpl implements PjtService {
 	 */
 	public List<PjtVo> selectListPjt(PjtVo pjtVo) throws Exception {
 		List<PjtVo> list = pjtDAO.selectListPjt(pjtVo);
+		
+		// 각 프로젝트별로 task 기반 진행률 계산
+		for (PjtVo project : list) {
+			Integer progress = pjtDAO.selectProjectProgress(project.getPjtId());
+			project.setPjtProgress(progress != null ? progress : 0);
+		}
+		
 		return list;
 	}
 

@@ -7,6 +7,23 @@
 		<w2:MSA />
 		<xf:model>
 			<w2:dataCollection baseNode="map">
+				<!-- 사용자 목록 데이터 -->
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_userList" saveRemovedData="true">
+					<w2:columnInfo>
+						<w2:column dataType="text" name="사용자ID" id="userId"></w2:column>
+						<w2:column dataType="text" name="이름" id="name"></w2:column>
+						<w2:column dataType="text" name="직책" id="position"></w2:column>
+						<w2:column dataType="text" name="이메일" id="email"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
+				<!-- 사용자 검색 조건 -->
+				<w2:dataMap baseNode="map" id="dmp_userSearch">
+					<w2:keyInfo>
+						<w2:key dataType="text" name="페이지번호" id="pageIndex" defaultValue="1"></w2:key>
+						<w2:key dataType="text" name="페이지건수" id="pageSize" defaultValue="20"></w2:key>
+						<w2:key dataType="text" name="검색명" id="scName"></w2:key>
+					</w2:keyInfo>
+				</w2:dataMap>
 				<!-- 업무 상세 정보 -->
 				<w2:dataMap baseNode="map" id="dmp_taskDetail">
 					<w2:keyInfo>
@@ -90,6 +107,13 @@
 
 			<w2:workflowCollection />
 
+			<!-- 사용자 목록 조회용 submission -->
+			<xf:submission id="sbm_selectUserList" action="/InsWebApp/USERS0001List.pwkjson" method="post" mediatype="application/json"
+				ref='data:json,{"id":"dmp_userSearch","key":"elData"}' target="" encoding="UTF-8" instance="" replace="" errorHandler=""
+				customHandler="" mode="asynchronous" processMsg="사용자 목록을 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUserList_submitdone"
+				ev:submiterror="" abortTrigger="">
+			</xf:submission>
+
 			<!-- 단건 등록용 submission -->
 			<xf:submission id="sbm_insertTaskDetail" action="/InsWebApp/WbsSave.pwkjson" method="post" mediatype="application/json"
 				ref='data:json,{"id":"dmp_taskDetail","key":"elData"}' target='' encoding="UTF-8" instance="" replace="" errorHandler=""
@@ -134,10 +158,19 @@ scwin.onpageload = function () {
 
         tbx_title.setValue("신규 업무 생성 팝업");
         dmp_taskDetail.set("pjtId", scwin.PJT_ID);
-        dmp_taskDetail.set("userId", popupData.userId);
-        // 기본 담당자로 로그인 유저 이름 설정
-        const userName = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_NAME;
-        ipt_taskAsi.setValue(userName);
+        
+        // 로그인 사용자 정보로 기본값 설정
+        const headerFrame = $p.getComponentById("mf_pg_header");
+        if (headerFrame && headerFrame.getWindow().scwin) {
+            const userName = headerFrame.getWindow().scwin.USER_NAME;
+            const userId = headerFrame.getWindow().scwin.USER_ID;
+            
+            if (userName && userId) {
+                dmp_taskDetail.set("taskAsi", userName);
+                dmp_taskDetail.set("userId", userId);
+            }
+        }
+        
         ipt_taskSt.setValue($p.getCurrentServerDate("yyyyMMdd"));
         btn_save.setValue("등록");
     }
@@ -300,6 +333,56 @@ scwin.btn_cancel_onclick = function (e) {
     $p.closePopup();
 };
 
+// 사용자 선택 버튼 클릭
+scwin.btn_selectUser_onclick = function (e) {
+    // 사용자 선택 팝업 열기
+    var options = {
+        id: "user_select_popup",
+        type: "wframePopup",
+        width: "600px",
+        height: "500px",
+        top: "50px",
+        left: "300px",
+        popupName: "사용자 선택",
+        modal: true,
+        closeAction: "scwin.userSelectPopup_closeAction"
+    };
+    
+    $p.openPopup("/InsWebApp/ui/wbs/UserSelectPopup.xml", options);
+};
+
+// 사용자 선택 팝업 닫기 액션
+scwin.userSelectPopup_closeAction = function () {
+    return true;
+};
+
+// 선택된 사용자 정보 수신
+scwin.receiveUserData = function (returnData) {
+    if (returnData && returnData.selectedUser) {
+        var selectedUser = returnData.selectedUser;
+        
+        // 담당자명과 사용자ID 동시 설정
+        dmp_taskDetail.set("taskAsi", selectedUser.name);
+        dmp_taskDetail.set("userId", selectedUser.userId);
+        
+        $c.win.alert("담당자가 '" + selectedUser.name + "'으로 설정되었습니다.");
+    }
+};
+
+// 사용자 목록 조회 완료
+scwin.sbm_selectUserList_submitdone = function (e) {
+    var elHeader = e.responseJSON.elHeader;
+    var elData = e.responseJSON.elData;
+
+    if (elHeader == null || elHeader == "" || elHeader == "undefined" || elHeader.resSuc == false) {
+        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        return false;
+    }
+
+    // 사용자 목록 데이터 설정
+    dlt_userList.setJSON(elData.usersVoList);
+};
+
 scwin.taskStatus_onchange = function (info) {
     if (info.newValue === "진행중") {
         ipt_taskRate.setValue(50);
@@ -420,7 +503,13 @@ scwin.taskStatus_onchange = function (info) {
 								<w2:textbox label="업무담당자" style="" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
-								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskAsi" id="ipt_taskAsi"/>
+								<xf:group style="display:flex; align-items:center;">
+									<xf:input style="width:150px;" ref="data:dmp_taskDetail.taskAsi" id="ipt_taskAsi" readOnly="true"/>
+									<xf:trigger class="btn_cm" id="btn_selectUser" style="margin-left:5px; padding:2px 8px;" type="button"
+										ev:onclick="scwin.btn_selectUser_onclick">
+										<xf:label>선택</xf:label>
+									</xf:trigger>
+								</xf:group>
 							</xf:group>
 							<xf:group class="w2tb_th" style="" tagname="th">
 								<w2:textbox label="진척률(%)" style="" />

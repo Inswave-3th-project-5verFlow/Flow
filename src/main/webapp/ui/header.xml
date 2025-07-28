@@ -221,7 +221,7 @@ scwin.btn_sidebarToggle_onclick = function(e) {
     			
     			<!-- 로고 -->
     			<xf:group style="display: flex; align-items: center; gap: 12px;">
-    				<xf:image src="/InsWebApp/ui/mainLogo.jpg" style="width: 36px; height: 36px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);" id="mainLogoImg"></xf:image>
+    				<xf:image src="/InsWebApp/ui/headerLogo.JPG" style="width: 36px; height: 36px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.2);" id="mainLogoImg"></xf:image>
     				<w2:span style="color: white; font-size: 22px; font-weight: 700; letter-spacing: -0.5px; text-shadow: 0 1px 2px rgba(0,0,0,0.2);" label="Flow"></w2:span>
     			</xf:group>
     			
