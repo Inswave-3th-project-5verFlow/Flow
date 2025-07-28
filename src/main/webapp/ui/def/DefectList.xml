@@ -940,7 +940,7 @@ scwin.completed_grd_oncelldblclick = function(row, col, colId) {
  * 등록 버튼 클릭
  */
 scwin.btn_register_onclick = function(e) {
-    console.log("등록 버튼 클릭");
+    console.log("결함 등록 버튼 클릭");
     
     // 현재 사용자 정보 가져오기
     var currentUserId = scwin.CURRENT_USER_ID || "1";
@@ -952,7 +952,7 @@ scwin.btn_register_onclick = function(e) {
     console.log("- USER_NAME:", currentUserName);
     console.log("- PROJECT_ID:", currentProjectId);
     
-    // 팝업 데이터 준비
+    // UnitTestList.xml과 동일한 방식으로 데이터 준비
     var defectData = {
         mode: "new",
         id: "",
@@ -963,7 +963,7 @@ scwin.btn_register_onclick = function(e) {
 
     var jsnPopupData = {
         "type": "json",
-        "name": "defectData",
+        "name": "defectData",  // UnitTestList에서는 "taskData"였지만 결함에서는 "defectData"
         "data": defectData
     };
 
@@ -977,11 +977,12 @@ scwin.btn_register_onclick = function(e) {
         popupName: "결함 등록",
         modal: true,
         closeAction: "scwin.defectPopup_closeAction",
-        dataObject: jsnPopupData
+        dataObject: jsnPopupData  // 이 부분이 중요!
     };
 
     console.log("팝업 열기 - 사용자 정보 포함:", defectData);
-    $p.openPopup("/InsWebApp/ui/def/DefectPopup.xml", options);
+    // 경로 수정: /InsWebApp/ui/def/ -> /InsWebApp/def/
+    $p.openPopup("/InsWebApp/def/DefectPopup.xml", options);
 };
 
 /**
@@ -1056,7 +1057,7 @@ scwin.openDefectPopup = function(defectData, mode) {
     };
 
     console.log("팝업 열기 - 상세 데이터 포함:", popupData);
-    $p.openPopup("/InsWebApp/def/DefectPopup.xml", options);
+    $p.openPopup("/InsWebApp/ui/def/DefectPopup.xml", options);
 };
 
 /**
