@@ -709,7 +709,7 @@ scwin.updateRelatedTestStatus = function(testId, newStatus) {
 
 					<!-- 결함명 -->
 					<xf:group tagname="tr">
-						<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+						<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 							<w2:textbox class="" label="결함명" style=""></w2:textbox>
 							<span style="color: red;">*</span>
 						</xf:group>
@@ -720,7 +720,7 @@ scwin.updateRelatedTestStatus = function(testId, newStatus) {
 
 					<!-- 우선순위, 상태 -->
 					<xf:group tagname="tr">
-						<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+						<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 							<w2:textbox class="" label="우선순위" style=""></w2:textbox>
 						</xf:group>
 						<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
@@ -733,7 +733,7 @@ scwin.updateRelatedTestStatus = function(testId, newStatus) {
 								</xf:choices>
 							</xf:select1>
 						</xf:group>
-						<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+						<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 							<w2:textbox class="" label="상태" style=""></w2:textbox>
 						</xf:group>
 						<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
@@ -750,13 +750,13 @@ scwin.updateRelatedTestStatus = function(testId, newStatus) {
 
 					<!-- 담당자, 수정 기한 -->
 					<xf:group tagname="tr">
-						<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+						<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 							<w2:textbox class="" label="담당자" style=""></w2:textbox>
 						</xf:group>
 						<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
 							<xf:input class="" id="inp_assignee" placeholder="담당자명" ref="data:dmp_defDetail.assignee" style="width: 100%; height: 25px;"></xf:input>
 						</xf:group>
-						<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+						<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 							<w2:textbox class="" label="수정 기한" style=""></w2:textbox>
 						</xf:group>
 						<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
@@ -766,17 +766,17 @@ scwin.updateRelatedTestStatus = function(testId, newStatus) {
 
 					<!-- 등록일시, 수정 완료일 -->
 					<xf:group tagname="tr">
-						<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+						<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 							<w2:textbox class="" label="등록일시" style=""></w2:textbox>
 						</xf:group>
 						<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-							<xf:input class="" readOnly="true" ref="data:dmp_defDetail.createdAt" style="width: 100%; height: 25px; background-color: #f5f5f5;"></xf:input>
+							<xf:input class="" readOnly="true" ref="data:dmp_defDetail.createdAt" style="width: 100%; height: 25px; "></xf:input>
 						</xf:group>
-						<xf:group class="w2tb_th" style="background-color: #f5f5f5; padding: 8px; font-weight: bold;" tagname="th">
+						<xf:group class="w2tb_th" style=" padding: 8px; font-weight: bold;" tagname="th">
 							<w2:textbox class="" label="수정 완료일" style=""></w2:textbox>
 						</xf:group>
 						<xf:group class="w2tb_td" style="padding: 8px;" tagname="td">
-							<xf:input class="" readOnly="true" ref="data:dmp_defDetail.fixedDate" style="width: 100%; height: 25px; background-color: #f5f5f5;"></xf:input>
+							<xf:input class="" readOnly="true" ref="data:dmp_defDetail.fixedDate" style="width: 100%; height: 25px; "></xf:input>
 						</xf:group>
 					</xf:group>
 				</xf:group>
