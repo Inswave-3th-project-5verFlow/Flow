@@ -11,8 +11,8 @@
 				<w2:dataList baseNode="list" repeatNode="map" id="dlt_userList" saveRemovedData="true">
 					<w2:columnInfo>
 						<w2:column dataType="text" name="사용자ID" id="userId"></w2:column>
-						<w2:column dataType="text" name="이름" id="name"></w2:column>
-						<w2:column dataType="text" name="직책" id="position"></w2:column>
+						<w2:column dataType="text" name="이름" id="userName"></w2:column>
+						<w2:column dataType="text" name="직책" id="userPosition"></w2:column>
 						<w2:column dataType="text" name="이메일" id="email"></w2:column>
 						<w2:column dataType="text" name="연락처" id="phone"></w2:column>
 					</w2:columnInfo>
@@ -23,16 +23,17 @@
 						<w2:key dataType="text" name="페이지번호" id="pageIndex" defaultValue="1"></w2:key>
 						<w2:key dataType="text" name="페이지건수" id="pageSize" defaultValue="10"></w2:key>
 						<w2:key dataType="text" name="검색명" id="scName"></w2:key>
+						<w2:key dataType="text" name="프로젝트ID" id="pjtId"></w2:key>
 					</w2:keyInfo>
 				</w2:dataMap>
 			</w2:dataCollection>
 
 			<w2:workflowCollection />
 
-			<!-- 사용자 목록 조회용 submission -->
-			<xf:submission id="sbm_selectUserList" action="/InsWebApp/USERS0001List.pwkjson" method="post" mediatype="application/json"
+			<!-- 프로젝트 소속 사용자 목록 조회용 submission -->
+			<xf:submission id="sbm_selectUserList" action="/InsWebApp/PugList.pwkjson" method="post" mediatype="application/json"
 				ref='data:json,{"id":"dmp_userSearch","key":"elData"}' target="" encoding="UTF-8" instance="" replace="" errorHandler=""
-				customHandler="" mode="asynchronous" processMsg="사용자 목록을 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUserList_submitdone"
+				customHandler="" mode="asynchronous" processMsg="프로젝트 소속 사용자 목록을 조회 중입니다." ev:submit="" ev:submitdone="scwin.sbm_selectUserList_submitdone"
 				ev:submiterror="" abortTrigger="">
 			</xf:submission>
 		</xf:model>
@@ -42,6 +43,12 @@
 
 		<script lazy="false" type="text/javascript"><![CDATA[
 scwin.onpageload = function () {
+    // 팝업 파라미터에서 프로젝트 ID 추출
+    const popupData = $p.getParameter("params");
+    if (popupData && popupData.pjtId) {
+        dmp_userSearch.set("pjtId", popupData.pjtId);
+    }
+    
     // 초기 사용자 목록 조회
     scwin.btn_search_onclick();
 };
@@ -61,9 +68,9 @@ scwin.sbm_selectUserList_submitdone = function (e) {
         return false;
     }
 
-    // 사용자 목록 데이터 설정
-    dlt_userList.setJSON(elData.usersVoList);
-    spn_listCnt.setLabel(elData.totalCount);
+    // 프로젝트 소속 사용자 목록 데이터 설정
+    dlt_userList.setJSON(elData.pugVoList || []);
+    spn_listCnt.setLabel(elData.totalCount || 0);
 };
 
 // 선택 버튼 클릭
@@ -81,8 +88,8 @@ scwin.btn_select_onclick = function (e) {
     var returnData = {
         selectedUser: {
             userId: selectedUserData.userId,
-            name: selectedUserData.name,
-            position: selectedUserData.position,
+            name: selectedUserData.userName || selectedUserData.name,
+            position: selectedUserData.userPosition || selectedUserData.position,
             email: selectedUserData.email
         }
     };
@@ -132,7 +139,7 @@ scwin.grd_userList_ondblclick = function (e) {
 									<w2:textbox label="이름" style="" />
 								</xf:group>
 								<xf:group class="w2tb_td" tagname="td">
-									<xf:input style="width:150px;" ref="data:dmp_userSearch.scName" />
+									<xf:input style="width:150px;" ref="data:dmp_userSearch.scUserName" />
 									<xf:trigger class="btn_cm sch" style="margin-left:10px;" type="button" ev:onclick="scwin.btn_search_onclick">
 										<xf:label>조회</xf:label>
 									</xf:trigger>
@@ -160,13 +167,13 @@ scwin.grd_userList_ondblclick = function (e) {
 						<w2:header style="">
 							<w2:row style="">
 								<w2:column blockSelect="false" displayMode="label" inputType="text" 
-									value="사용자ID" width="80" />
+									value="사용자ID" width="80" hidden="true"/>
 								<w2:column blockSelect="false" displayMode="label" inputType="text" 
 									value="이름" width="80" />
 								<w2:column blockSelect="false" displayMode="label" inputType="text" 
 									value="직책" width="80" />
 								<w2:column blockSelect="false" displayMode="label" inputType="text" 
-									value="이메일" width="150" />
+									value="이메일" width="150" hidden="true"/>
 								<w2:column blockSelect="false" displayMode="label" inputType="text" 
 									value="연락처" width="120" />
 							</w2:row>
@@ -174,8 +181,8 @@ scwin.grd_userList_ondblclick = function (e) {
 						<w2:gBody style="">
 							<w2:row style="">
 								<w2:column blockSelect="false" displayMode="label" id="userId" inputType="text" width="80" />
-								<w2:column blockSelect="false" displayMode="label" id="name" inputType="text" width="80" />
-								<w2:column blockSelect="false" displayMode="label" id="position" inputType="text" width="80" />
+								<w2:column blockSelect="false" displayMode="label" id="userName" inputType="text" width="80" />
+								<w2:column blockSelect="false" displayMode="label" id="userPosition" inputType="text" width="80" />
 								<w2:column blockSelect="false" displayMode="label" id="email" inputType="text" width="150" />
 								<w2:column blockSelect="false" displayMode="label" id="phone" inputType="text" width="120" />
 							</w2:row>
