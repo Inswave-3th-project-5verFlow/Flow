@@ -81,6 +81,8 @@
 				border: 1px solid #98BED6 !important;
 				border-radius: 4px !important;
 			}
+
+
 		</style>
 		
 		<xf:model>
@@ -378,6 +380,7 @@ scwin.btn_reset_onclick = function (e) {
 						<xf:group tagname="tr">
 							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
 								<w2:textbox label="업무명" style="color:#333;" />
+                                <w2:textbox label="*" style="color:#FF0000; font-weight:bold;" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskName" />
@@ -408,7 +411,7 @@ scwin.btn_reset_onclick = function (e) {
 									<w2:colspan>3</w2:colspan>
 								</w2:attributes>
 								<xf:group style="align-items:center;">
-									<xf:input ref="data:dmp_taskDetail.ptTaskName" style="width:404px;" readOnly="true"></xf:input>
+									<xf:input ref="data:dmp_taskDetail.ptTaskName" style="width:320px;" readOnly="true"></xf:input>
 									<xf:trigger ev:onclick="scwin.btn_ptTaskName_onclick" style="margin-left:5px; padding:2px 8px; background-color: #454F5B; color: #FFFFFF;"
 										id="btn_ptTaskName" type="button" class="btn_cm">
 										<xf:label>선택</xf:label>
@@ -427,7 +430,7 @@ scwin.btn_reset_onclick = function (e) {
 								<w2:textbox label="업무담당자" style="color:#333;" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
-								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskAsi" />
+								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskAsi" readOnly="true"/>
 							</xf:group>
 							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
 								<w2:textbox label="진척률(%)" style="color:#333;" />
@@ -458,6 +461,7 @@ scwin.btn_reset_onclick = function (e) {
 						<xf:group tagname="tr">
 							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
 								<w2:textbox label="시작예정일" style="color:#333;" />
+                                <w2:textbox label="*" style="color:#FF0000; font-weight:bold;" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<w2:inputCalendar id="" style="width: 150px;height: 23px;" calendarValueType="yearMonthDate"
@@ -466,6 +470,7 @@ scwin.btn_reset_onclick = function (e) {
 							</xf:group>
 							<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
 								<w2:textbox label="완료예정일" style="color:#333;" />
+                                <w2:textbox label="*" style="color:#FF0000; font-weight:bold;" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<w2:inputCalendar id="" style="width: 150px;height: 23px;" calendarValueType="yearMonthDate"

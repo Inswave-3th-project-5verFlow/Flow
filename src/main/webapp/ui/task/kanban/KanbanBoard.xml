@@ -329,7 +329,7 @@
 				ev:submitdone="scwin.sbm_selectTaskList_submitdone">
 			</xf:submission>
 			<!-- DesignList.xml과 동일한 submission 사용 -->
-			<xf:submission id="sbm_saveDesignVoList" action="/InsWebApp/WbsSave.pwkjson" method="post"
+			<xf:submission id="sbm_saveDesignVoList" action="/InsWebApp/DESIGN001Save.pwkjson" method="post"
 				mediatype="application/json" ref="" target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler=""
 				mode="asynchronous" processMsg="업무 상태를 업데이트 중입니다." ev:submit="" ev:submitdone="scwin.sbm_saveDesignVoList_submitdone" ev:submiterror=""
 				abortTrigger="">
@@ -679,7 +679,7 @@ scwin.updateTaskStatus = function(taskId, newStatus) {
     // DesignList.xml과 동일한 방식으로 서버 요청
     var reqObj = {
         "elData": {
-            "wbsVoList": [updatedTask]
+            "designVoList": [updatedTask]
         }
     };
     

@@ -1,126 +1,93 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:ev="http://www.w3.org/2001/xml-events"
-    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
-    <head>
-        <w2:type>COMPONENT</w2:type>
-        <w2:buildDate/>
-        <w2:MSA/>
-        
-        <style>
-            /* 전체 팝업 */
-            .pop_contents {
-                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                background: #EDFAFF;
-                border-radius: 8px;
-                overflow: hidden;
-            }
-            
-            /* 선택된 업무 정보 */
-            .selected_info {
-                background: #ffffff;
-                padding: 15px;
-                border-bottom: 1px solid #ddd;
-                border-left: 3px solid #98BED6;
-            }
-            
-            .selected_info xf:output[style*="color:#007bff"] {
-                color: #98BED6 !important;
-                font-weight: bold !important;
-            }
-            
-            /* TreeView 영역 */
-            .tvwbox {
-                background: #ffffff;
-                padding: 15px;
-                margin: 0;
-            }
-            
-            .tvw {
-                border: 1px solid #ddd !important;
-                border-radius: 5px !important;
-                background: #ffffff !important;
-            }
-            
-            /* 버튼 영역 */
-            .btn_area {
-                background: #f8f9fa;
-                padding: 15px;
-                text-align: center;
-                border-top: 1px solid #ddd;
-            }
-            
-            .btn_cm {
-                padding: 10px 25px;
-                border: none;
-                border-radius: 5px;
-                font-weight: bold;
-                cursor: pointer;
-                margin: 0 5px;
-            }
-            
-            .btn_cm#btn_confirm {
-                background: #98BED6;
-                color: #FFFFFF;
-            }
-            
-            .btn_cm#btn_confirm:hover {
-                background: #7DACC8;
-            }
-            
-            .btn_cm#btn_cancel {
-                background: #454F5B;
-                color: #FFFFFF;
-            }
-            
-            .btn_cm#btn_cancel:hover {
-                background: #3a424c;
-            }
-        </style>
-        
-        <xf:model>
-        	<w2:dataCollection baseNode="map">
-        		<w2:dataMap baseNode="map" id="dmp_projectId">
-        			<w2:keyInfo>
-        				<w2:key dataType="text" name="pjt_id" id="pjtId" defaultValue="1"></w2:key>
-        			</w2:keyInfo>
-        			<w2:data use="true">
-        				<pjtId><![CDATA[1]]></pjtId>
-        			</w2:data>
-        		</w2:dataMap>
-        		
-        		<w2:dataList baseNode="list" repeatNode="map" id="dlt_taskTreeList" saveRemovedData="true">
-        			<w2:columnInfo>
-        				<w2:column dataType="text" name="task_id" id="taskId"></w2:column>
-        				<w2:column dataType="text" name="task_name" id="taskName"></w2:column>
-        				<w2:column dataType="text" name="pt_task_id" id="ptTaskId"></w2:column>
-        				<w2:column dataType="text" name="task_depth" id="taskDepth"></w2:column>
-        				<w2:column dataType="text" name="pjt_id" id="pjtId"></w2:column>
-        			</w2:columnInfo>
-        		</w2:dataList>
-        		
-        		<!-- 선택된 업무 정보 -->
-        		<w2:dataMap baseNode="map" id="dmp_selectedTask">
-        			<w2:keyInfo>
-        				<w2:key dataType="text" name="selected_task_id" id="selectedTaskId"></w2:key>
-        				<w2:key dataType="text" name="selected_task_name" id="selectedTaskName"></w2:key>
-        				<w2:key dataType="text" name="selected_task_depth" id="selectedTaskDepth"></w2:key>
-        			</w2:keyInfo>
-        		</w2:dataMap>
-        	</w2:dataCollection>
-        	
-        	<w2:workflowCollection />
-        	
-        	<xf:submission id="sbm_designTaskTreeList" action="/InsWebApp/DESIGN001Tree.pwkjson" method="post" mediatype="application/json"
-        		ref='data:json,{"id":"dmp_projectId","key":"designVo"}' target='' encoding="UTF-8" instance="" replace="" errorHandler="" customHandler="" mode="asynchronous" processMsg=""
-        		ev:submit="" ev:submitdone="scwin.sbm_designTaskTreeList_submitdone" ev:submiterror="" abortTrigger="">
-        	</xf:submission>
-        </xf:model>
-        
-        <w2:layoutInfo/>
-        <w2:publicInfo method=""/>
-        
-        <script lazy="false" type="text/javascript"><![CDATA[
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
+	xmlns:xf="http://www.w3.org/2002/xforms">
+	<head>
+		<w2:type>COMPONENT</w2:type>
+		<w2:buildDate />
+		<w2:MSA />
+
+		<style>
+			/* 전체 팝업 */
+			.pop_contents {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background: #EDFAFF;
+			border-radius: 8px;
+			overflow: hidden;
+			}
+
+			/* 선택된 업무 정보 */
+			.selected_info {
+			background: #ffffff;
+			padding: 15px;
+			border-bottom: 1px solid #ddd;
+			border-left: 3px solid #98BED6;
+			}
+
+			.selected_info xf:output[style*="color:#007bff"] {
+			color: #98BED6 !important;
+			font-weight: bold !important;
+			}
+
+			/* TreeView 영역 */
+			.tvwbox {
+			background: #ffffff;
+			padding: 15px;
+			margin: 0;
+			}
+
+			.tvw {
+			border: 1px solid #ddd !important;
+			border-radius: 5px !important;
+			background: #ffffff !important;
+			}
+
+
+		</style>
+
+		<xf:model>
+			<w2:dataCollection baseNode="map">
+				<w2:dataMap baseNode="map" id="dmp_projectId">
+					<w2:keyInfo>
+						<w2:key dataType="text" name="pjt_id" id="pjtId" defaultValue="1"></w2:key>
+					</w2:keyInfo>
+					<w2:data use="true">
+						<pjtId><![CDATA[1]]></pjtId>
+					</w2:data>
+				</w2:dataMap>
+
+				<w2:dataList baseNode="list" repeatNode="map" id="dlt_taskTreeList" saveRemovedData="true">
+					<w2:columnInfo>
+						<w2:column dataType="text" name="task_id" id="taskId"></w2:column>
+						<w2:column dataType="text" name="task_name" id="taskName"></w2:column>
+						<w2:column dataType="text" name="pt_task_id" id="ptTaskId"></w2:column>
+						<w2:column dataType="text" name="task_depth" id="taskDepth"></w2:column>
+						<w2:column dataType="text" name="pjt_id" id="pjtId"></w2:column>
+					</w2:columnInfo>
+				</w2:dataList>
+
+				<!-- 선택된 업무 정보 -->
+				<w2:dataMap baseNode="map" id="dmp_selectedTask">
+					<w2:keyInfo>
+						<w2:key dataType="text" name="selected_task_id" id="selectedTaskId"></w2:key>
+						<w2:key dataType="text" name="selected_task_name" id="selectedTaskName"></w2:key>
+						<w2:key dataType="text" name="selected_task_depth" id="selectedTaskDepth"></w2:key>
+					</w2:keyInfo>
+				</w2:dataMap>
+			</w2:dataCollection>
+
+			<w2:workflowCollection />
+
+			<xf:submission id="sbm_designTaskTreeList" action="/InsWebApp/DESIGN001Tree.pwkjson" method="post"
+				mediatype="application/json" ref='data:json,{"id":"dmp_projectId","key":"designVo"}' target='' encoding="UTF-8" instance="" replace=""
+				errorHandler="" customHandler="" mode="asynchronous" processMsg="" ev:submit="" ev:submitdone="scwin.sbm_designTaskTreeList_submitdone"
+				ev:submiterror="" abortTrigger="">
+			</xf:submission>
+		</xf:model>
+
+		<w2:layoutInfo />
+		<w2:publicInfo method="" />
+
+		<script lazy="false" type="text/javascript"><![CDATA[
 scwin.onpageload = function () {
     btn_search.hide();
     var taskData = $p.getParameter("taskData");
@@ -259,58 +226,57 @@ scwin.btn_cancel_onclick = function (e) {
     $p.closePopup();
 };
 ]]></script>
-    </head>
-    
-    <body ev:onpageload="scwin.onpageload">
-    	<xf:group class="pop_contents" id="" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true"
-    		meta_snippetName="0_02 팝업페이지시작">
-    		
-    		<!-- 검색 영역 -->
-    		<xf:group class="search_area" style="padding:10px; border-bottom:1px solid #ddd;">
-    			<xf:trigger class="btn_cm search icon" id="btn_search" type="button" ev:onclick="scwin.btn_search_onclick">
-    				<xf:label><![CDATA[업무 조회]]></xf:label>
-    			</xf:trigger>
-    		</xf:group>
-    		
-    		<!-- 선택된 업무 정보 표시 -->
-    		<xf:group class="selected_info" style="padding:10px; background-color:#f8f9fa; border-bottom:1px solid #ddd;">
-    			<xf:output style="font-weight:bold;">선택된 업무: </xf:output>
-    			<xf:output ref="data:dmp_selectedTask.selectedTaskName" style="color:#007bff;"></xf:output>
-    			<xf:output style="margin-left:10px; color:#666;"> (</xf:output>
-    			<xf:output ref="data:dmp_selectedTask.selectedTaskType" style="color:#666;"></xf:output>
-    			<xf:output style="color:#666;">)</xf:output>
-    		</xf:group>
-    		
-    		<!-- TreeView 영역 -->
-    		<xf:group class="tvwbox" style="height:400px; padding:10px;">
-    			<w2:treeview id="trv_taskTree" class="tvw" style="width:100%; height:100%; border:1px solid #ccc;" 
-    				dataType="listed" checkBox="false" folderIcon="true" leafIcon="true" lineIcon="true" 
-    				ev:onlabelclick="scwin.trv_taskTree_onlabelclick">
-    				<w2:itemset nodeset="data:dlt_taskTreeList">
-    					<w2:label ref="taskName"></w2:label>
-    					<w2:value ref="taskId"></w2:value>
-    					<w2:depth ref="taskDepth"></w2:depth>
-    					<w2:folder ref=""></w2:folder>
-    					<w2:checkbox ref=""></w2:checkbox>
-    					<w2:checkboxDisabled ref=""></w2:checkboxDisabled>
-    					<w2:image ref=""></w2:image>
-    					<w2:iconImage ref=""></w2:iconImage>
-    					<w2:selectedImage ref=""></w2:selectedImage>
-    					<w2:expandedImage ref=""></w2:expandedImage>
-    					<w2:leafImage ref=""></w2:leafImage>
-    				</w2:itemset>
-    			</w2:treeview>
-    		</xf:group>
-    		
-    		<!-- 버튼 영역 -->
-    		<xf:group class="btn_area" style="text-align:center; padding:15px; border-top:1px solid #ddd;">
-    			<xf:trigger class="btn_cm" id="btn_confirm" type="button" ev:onclick="scwin.btn_confirm_onclick">
-    				<xf:label><![CDATA[확인]]></xf:label>
-    			</xf:trigger>
-    			<xf:trigger class="btn_cm" id="btn_cancel" type="button" ev:onclick="scwin.btn_cancel_onclick" style="margin-left:10px;">
-    				<xf:label><![CDATA[취소]]></xf:label>
-    			</xf:trigger>
-    		</xf:group>
-    	</xf:group>
-    </body>
+	</head>
+
+	<body ev:onpageload="scwin.onpageload">
+		<xf:group class="pop_contents" id="" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true"
+			meta_snippetName="0_02 팝업페이지시작">
+
+			<!-- 검색 영역 -->
+			<xf:group class="search_area" style="padding:10px; border-bottom:1px solid #ddd;">
+				<xf:trigger class="btn_cm search icon" id="btn_search" type="button" ev:onclick="scwin.btn_search_onclick">
+					<xf:label><![CDATA[업무 조회]]></xf:label>
+				</xf:trigger>
+			</xf:group>
+
+			<!-- 선택된 업무 정보 표시 -->
+			<xf:group class="selected_info" style="padding:10px; background-color:#f8f9fa; border-bottom:1px solid #ddd;">
+				<xf:output style="font-weight:bold;">선택된 업무: </xf:output>
+				<xf:output ref="data:dmp_selectedTask.selectedTaskName" style="color:#007bff;"></xf:output>
+				<xf:output style="margin-left:10px; color:#666;"> (</xf:output>
+				<xf:output ref="data:dmp_selectedTask.selectedTaskType" style="color:#666;"></xf:output>
+				<xf:output style="color:#666;">)</xf:output>
+			</xf:group>
+
+			<!-- TreeView 영역 -->
+			<xf:group class="tvwbox" style="height:400px; padding:10px;">
+				<w2:treeview id="trv_taskTree" class="tvw" style="width:100%; height:100%; border:1px solid #ccc;" dataType="listed"
+					checkBox="false" folderIcon="true" leafIcon="true" lineIcon="true" ev:onlabelclick="scwin.trv_taskTree_onlabelclick">
+					<w2:itemset nodeset="data:dlt_taskTreeList">
+						<w2:label ref="taskName"></w2:label>
+						<w2:value ref="taskId"></w2:value>
+						<w2:depth ref="taskDepth"></w2:depth>
+						<w2:folder ref=""></w2:folder>
+						<w2:checkbox ref=""></w2:checkbox>
+						<w2:checkboxDisabled ref=""></w2:checkboxDisabled>
+						<w2:image ref=""></w2:image>
+						<w2:iconImage ref=""></w2:iconImage>
+						<w2:selectedImage ref=""></w2:selectedImage>
+						<w2:expandedImage ref=""></w2:expandedImage>
+						<w2:leafImage ref=""></w2:leafImage>
+					</w2:itemset>
+				</w2:treeview>
+			</xf:group>
+
+			<!-- 버튼 영역 -->
+			<xf:trigger class="btn_cm" id="btn_confirm" type="button" ev:onclick="scwin.btn_confirm_onclick"
+				style="background-color:#454F5B;color: #ffffff !important;">
+				<xf:label><![CDATA[확인]]></xf:label>
+			</xf:trigger>
+			<xf:trigger class="btn_cm" id="btn_cancel" type="button" ev:onclick="scwin.btn_cancel_onclick"
+				style="margin-left:10px;background-color:#454F5B;color: #ffffff !important;">
+				<xf:label><![CDATA[취소]]></xf:label>
+			</xf:trigger>
+		</xf:group>
+	</body>
 </html>

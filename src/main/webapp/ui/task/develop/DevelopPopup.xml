@@ -330,20 +330,22 @@ scwin.btn_reset_onclick = function (e) {
 scwin.btn_test_reg_onclick = function (e) {
     console.log(dmp_taskDetail.get("taskId"));
     let taskId = dmp_taskDetail.get("taskId"); // 개발 업무ID
-    scwin.navigateToTaskTab(taskId, true);
+    let taskName = dmp_taskDetail.get("taskName"); // 개발 업무명
+    scwin.navigateToTaskTab(taskId,taskName, true);
 };
 
 // 개발 업무ID 를 테스트 페이지 >> 테스트 등록 팝업으로 전달
-scwin.navigateToTaskTab = function (taskId, flag) {
+scwin.navigateToTaskTab = function (taskId, taskName, flag) {
     try {
         
         // URL과 타이틀 결정
-        let targetUrl = "test/Test.xml";
+        let targetUrl = "test/UnitTestPopup.xml";
         let tabTitle = "테스트 내역";
 
         // 전달할 탭 데이터
         const tabData = {
             selectedTaskId: taskId, // 개발 업무ID
+            selectedTaskName : taskName, // 개발 업무명
             openRegisterPopup: flag, 
             timestamp: new Date().getTime(),
         };
@@ -409,6 +411,7 @@ scwin.navigateToTaskTab = function (taskId, flag) {
     					<xf:group tagname="tr">
     						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
     							<w2:textbox label="업무명" style="color:#333;" />
+                                <w2:textbox label="*" style="color:#FF0000; font-weight:bold;" />
     						</xf:group>
     						<xf:group class="w2tb_td" tagname="td">
     							<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskName" />
@@ -510,6 +513,7 @@ scwin.navigateToTaskTab = function (taskId, flag) {
     					<xf:group tagname="tr">
     						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
     							<w2:textbox label="시작예정일" style="color:#333;" />
+                                <w2:textbox label="*" style="color:#FF0000; font-weight:bold;" />
     						</xf:group>
     						<xf:group class="w2tb_td" tagname="td">
     							<w2:inputCalendar id="" style="width: 150px;height: 23px;" calendarValueType="yearMonthDate"
@@ -518,6 +522,7 @@ scwin.navigateToTaskTab = function (taskId, flag) {
     						</xf:group>
     						<xf:group class="w2tb_th" style="background-color:#f5f5f5;" tagname="th">
     							<w2:textbox label="완료예정일" style="color:#333;" />
+                                <w2:textbox label="*" style="color:#FF0000; font-weight:bold;" />
     						</xf:group>
     						<xf:group class="w2tb_td" tagname="td">
     							<w2:inputCalendar id="" style="width: 150px;height: 23px;" calendarValueType="yearMonthDate"
