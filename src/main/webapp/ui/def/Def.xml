@@ -3722,8 +3722,8 @@ scwin.getCurrentUserName = function() {
 												</xf:group>
 											</w2:group>
 
-				6						<!-- 텍스트 파일 미리보기 -->
-7										<w2:group id=8grp_textPreview" style="9isplay: none;">
+										<!-- 텍스트 파일 미리보기 -->
+										<w2:group id=8grp_textPreview" style="9isplay: none;">
 												<w2:textbox id="txt_textFileName" style="font-weight: bold; margin-bottom: 10px; word-break: break-all;"></w2:textbox>
 												<xf:textarea id="txt_textContent" readOnly="true" style="width: 100%; height: 200px; border: 1px solid #ccc; font-family: monospace; font-size: 12px; background: white; padding: 8px; border-radius: 4px;"></xf:textarea>
 												<xf:group style="margin-top: 10px;">
