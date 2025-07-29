@@ -417,6 +417,7 @@ scwin.completed_grd_oncelldblclick = function(row, col, colId) {
     
     scwin.openDefectDetailPopup(selectedData);
 };
+
 /**
  * 개발업무 연동 파라미터 처리 (조건부 자동 팝업)
  */
