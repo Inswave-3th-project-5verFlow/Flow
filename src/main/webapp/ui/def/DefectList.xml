@@ -22,21 +22,6 @@
                         <w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
                     </w2:keyInfo>
                 </w2:dataMap>
-                <!-- 검색 조건 -->
-                <w2:dataMap baseNode="map" id="dmp_search" style="">
-                    <w2:keyInfo>
-				        <w2:key dataType="text" id="name" name="결함명"></w2:key>
-				        <w2:key dataType="text" id="assignee" name="담당자"></w2:key>
-				        <w2:key dataType="text" id="status" name="상태"></w2:key>
-				        <w2:key dataType="text" id="priority" name="우선순위"></w2:key>
-				        <w2:key dataType="text" id="testId" name="테스트ID"></w2:key>
-				        <w2:key dataType="text" id="dateFrom" name="시작일"></w2:key>
-				        <w2:key dataType="text" id="dateTo" name="종료일"></w2:key>
-				        <w2:key dataType="text" id="pageIndex" name="페이지번호" defaultValue="1"></w2:key>
-				        <w2:key dataType="text" id="pageSize" name="페이지사이즈" defaultValue="10"></w2:key>
-				        <w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
-				    </w2:keyInfo>
-                </w2:dataMap>
 
 				<!-- 결함 목록 -->
 				<w2:dataList baseNode="list" id="dlt_defVoList" repeatNode="map" saveRemovedData="true">
@@ -46,6 +31,7 @@
                         <w2:column dataType="text" id="name" name="결함명"></w2:column>
                         <w2:column dataType="text" id="description" name="결함설명"></w2:column>
                         <w2:column dataType="text" id="priority" name="우선순위"></w2:column>
+                        <w2:column dataType="text" id="remarks" name="비고"></w2:column>
                         <w2:column dataType="text" id="status" name="상태"></w2:column>
                         <w2:column dataType="text" id="assignee" name="담당자ID"></w2:column>
                         <w2:column dataType="text" id="assigneeName" name="담당자명"></w2:column>
@@ -235,8 +221,52 @@ scwin.CURRENT_PROJECT_ID = "";
 scwin.CURRENT_USER_ID = "";
 scwin.CURRENT_USER_GROUP_ID = "";
 
+/**
+ * 진행중 그리드 더블클릭 이벤트
+ */
+scwin.processing_grd_oncelldblclick = function(row, col, colId) {
+    console.log("진행중 그리드 더블클릭 - 행:", row);
+    
+    if (row < 0 || row >= dlt_processingList.getTotalRow()) {
+        console.error("유효하지 않은 행 번호:", row);
+        return;
+    }
+    
+    var selectedData = dlt_processingList.getRowJSON(row);
+    console.log("선택된 진행중 결함 기본 데이터:", selectedData);
+    
+    if (!selectedData || !selectedData.id) {
+        console.error("결함ID가 없습니다:", selectedData);
+        $c.win.alert("유효하지 않은 데이터입니다.");
+        return;
+    }
+    
+    // 완전한 데이터로 팝업 열기
+    scwin.openDefectDetailPopup(selectedData);
+};
 
 
+
+scwin.completed_grd_oncelldblclick = function(row, col, colId) {
+    console.log("완료 그리드 더블클릭 - 행:", row);
+    
+    if (row < 0 || row >= dlt_completedList.getTotalRow()) {
+        console.error("유효하지 않은 행 번호:", row);
+        return;
+    }
+    
+    var selectedData = dlt_completedList.getRowJSON(row);
+    console.log("선택된 완료 결함 기본 데이터:", selectedData);
+    
+    if (!selectedData || !selectedData.id) {
+        console.error("결함ID가 없습니다:", selectedData);
+        $c.win.alert("유효하지 않은 데이터입니다.");
+        return;
+    }
+    
+    // 완전한 데이터로 팝업 열기
+    scwin.openDefectDetailPopup(selectedData);
+};
 /**
  * 결함 탭으로 전환하면서 검색 데이터 전달
  */
@@ -433,6 +463,76 @@ scwin.executeHiddenSearchFromUnitTest = function(searchData) {
         console.error("단위테스트 연동 숨김 검색 실행 실패:", e);
     }
 };
+
+/**
+ * 전체 데이터에서 결함 ID로 완전한 데이터 찾기
+ */
+scwin.findFullDefectData = function(defectId) {
+    console.log("결함 ID로 완전한 데이터 찾기:", defectId);
+    
+    try {
+        // 1. 전역 데이터에서 찾기
+        if (scwin.globalElData && scwin.globalElData.defVoList) {
+            var globalData = scwin.globalElData.defVoList;
+            console.log("전역 데이터에서 검색, 총", globalData.length, "개");
+            for (var i = 0; i < globalData.length; i++) {
+                if (globalData[i].id === defectId) {
+                    console.log("전역 데이터에서 발견:", globalData[i]);
+                    console.log("발견된 데이터의 description:", globalData[i].description ? "있음" : "없음");
+                    console.log("발견된 데이터의 remarks:", globalData[i].remarks ? "있음" : "없음");
+                    return globalData[i];
+                }
+            }
+        }
+        
+        // 2. 상태별 페이징 데이터에서 찾기
+        var allStatusData = [];
+        
+        if (scwin.newPageInfo && scwin.newPageInfo.data) {
+            allStatusData = allStatusData.concat(scwin.newPageInfo.data);
+        }
+        if (scwin.processingPageInfo && scwin.processingPageInfo.data) {
+            allStatusData = allStatusData.concat(scwin.processingPageInfo.data);
+        }
+        if (scwin.completedPageInfo && scwin.completedPageInfo.data) {
+            allStatusData = allStatusData.concat(scwin.completedPageInfo.data);
+        }
+        
+        console.log("상태별 데이터에서 검색, 총", allStatusData.length, "개");
+        for (var j = 0; j < allStatusData.length; j++) {
+            if (allStatusData[j].id === defectId) {
+                console.log("상태별 데이터에서 발견:", allStatusData[j]);
+                console.log("발견된 데이터의 description:", allStatusData[j].description ? "있음" : "없음");
+                console.log("발견된 데이터의 remarks:", allStatusData[j].remarks ? "있음" : "없음");
+                return allStatusData[j];
+            }
+        }
+        
+        // 3. 메인 데이터리스트에서 찾기
+        try {
+            var mainData = dlt_defVoList.getAllJSON();
+            console.log("메인 데이터리스트에서 검색, 총", mainData.length, "개");
+            for (var k = 0; k < mainData.length; k++) {
+                if (mainData[k].id === defectId) {
+                    console.log("메인 데이터리스트에서 발견:", mainData[k]);
+                    console.log("발견된 데이터의 description:", mainData[k].description ? "있음" : "없음");
+                    console.log("발견된 데이터의 remarks:", mainData[k].remarks ? "있음" : "없음");
+                    return mainData[k];
+                }
+            }
+        } catch(e) {
+            console.log("메인 데이터리스트 접근 실패:", e);
+        }
+        
+        console.log("완전한 데이터를 찾을 수 없음");
+        return null;
+        
+    } catch (error) {
+        console.error("데이터 찾기 중 오류:", error);
+        return null;
+    }
+};
+
 /**
  * 모든 검색 조건 초기화 (새 함수)
  */
@@ -1083,8 +1183,53 @@ scwin.sbm_selectDefList_submitdone = function(e) {
     var totalCount = elData.totalCount || 0;
     
     scwin.globalElData = elData;
+    
+    // 상세 팝업 열기가 예정된 경우 처리
+    if (scwin.openPopupAfterDetailLoad && scwin.pendingDefectId) {
+        console.log("상세 데이터 조회 완료 - 팝업 열기 처리");
+        
+        var detailData = null;
+        for (var i = 0; i < allData.length; i++) {
+            if (allData[i].id === scwin.pendingDefectId) {
+                detailData = allData[i];
+                break;
+            }
+        }
+        
+        if (detailData) {
+            console.log("상세 데이터 발견:", detailData);
+            console.log("description 필드:", detailData.description ? "있음 (" + detailData.description.length + "자)" : "없음");
+            console.log("remarks 필드:", detailData.remarks ? "있음 (" + detailData.remarks.length + "자)" : "없음");
+            
+            // 팝업 열기
+            scwin.openDefectPopupWithDetailData(detailData);
+        } else {
+            console.error("상세 데이터를 찾을 수 없습니다:", scwin.pendingDefectId);
+            $c.win.alert("결함 데이터를 찾을 수 없습니다.");
+        }
+        
+        // 플래그 초기화
+        scwin.openPopupAfterDetailLoad = false;
+        scwin.pendingDefectId = null;
+        
+        // 원래 검색 조건 복원
+        if (scwin.originalSearchData) {
+            dmp_search.setJSON(scwin.originalSearchData);
+            scwin.originalSearchData = null;
+            
+            // 원래 검색 재실행
+            setTimeout(function() {
+                scwin.btn_search_onclick();
+            }, 100);
+        }
+        
+        return;
+    }
+    
+    // 일반 조회 처리
     scwin.processDefData(allData, totalCount);
 };
+
 
 /**
  * 프로젝트별 결함 목록 조회 완료
@@ -1104,6 +1249,50 @@ scwin.sbm_selectDefListByProject_submitdone = function(e) {
     var totalCount = elData.totalCount || 0;
     
     scwin.globalElData = elData;
+    
+    // 상세 팝업 열기가 예정된 경우 처리
+    if (scwin.openPopupAfterDetailLoad && scwin.pendingDefectId) {
+        console.log("프로젝트별 상세 데이터 조회 완료 - 팝업 열기 처리");
+        
+        var detailData = null;
+        for (var i = 0; i < allData.length; i++) {
+            if (allData[i].id === scwin.pendingDefectId) {
+                detailData = allData[i];
+                break;
+            }
+        }
+        
+        if (detailData) {
+            console.log("프로젝트별 상세 데이터 발견:", detailData);
+            console.log("description 필드:", detailData.description ? "있음 (" + detailData.description.length + "자)" : "없음");
+            console.log("remarks 필드:", detailData.remarks ? "있음 (" + detailData.remarks.length + "자)" : "없음");
+            
+            // 팝업 열기
+            scwin.openDefectPopupWithDetailData(detailData);
+        } else {
+            console.error("프로젝트별 상세 데이터를 찾을 수 없습니다:", scwin.pendingDefectId);
+            $c.win.alert("결함 데이터를 찾을 수 없습니다.");
+        }
+        
+        // 플래그 초기화
+        scwin.openPopupAfterDetailLoad = false;
+        scwin.pendingDefectId = null;
+        
+        // 원래 검색 조건 복원
+        if (scwin.originalSearchData) {
+            dmp_search.setJSON(scwin.originalSearchData);
+            scwin.originalSearchData = null;
+            
+            // 원래 검색 재실행
+            setTimeout(function() {
+                scwin.btn_search_onclick();
+            }, 100);
+        }
+        
+        return;
+    }
+    
+    // 일반 조회 처리
     scwin.processDefData(allData, totalCount);
 };
 
@@ -1454,7 +1643,7 @@ scwin.new_grd_oncelldblclick = function(row, col, colId) {
     }
     
     var selectedData = dlt_newList.getRowJSON(row);
-    console.log("선택된 신규 결함 데이터:", selectedData);
+    console.log("선택된 신규 결함 기본 데이터:", selectedData);
     
     if (!selectedData || !selectedData.id) {
         console.error("결함ID가 없습니다:", selectedData);
@@ -1462,43 +1651,73 @@ scwin.new_grd_oncelldblclick = function(row, col, colId) {
         return;
     }
     
-    // UnitTest와 완전히 동일한 방식으로 팝업 열기
+    // 완전한 데이터로 팝업 열기
     scwin.openDefectDetailPopup(selectedData);
 };
-
 /**
- * 결함 상세 팝업 열기 (UnitTest의 showDetailPopup과 완전히 동일한 구조)
+ * 결함 상세 팝업 열기 (최종 버전)
  */
 scwin.openDefectDetailPopup = function(selectedData) {
-    console.log("결함 상세 팝업 열기:", selectedData);
+    console.log("결함 상세 팝업 열기 (최종 버전):", selectedData);
     
     if (!selectedData || !selectedData.id) {
         $c.win.alert("유효하지 않은 데이터입니다.");
         return;
     }
     
-    // UnitTest와 완전히 동일한 방식으로 데이터 구성
-    var detailData = {
+    // 전체 데이터에서 해당 ID의 완전한 데이터 찾기
+    var fullData = scwin.findFullDefectData(selectedData.id);
+    
+    if (fullData) {
+        console.log("완전한 데이터 발견:", fullData);
+        console.log("description 필드:", fullData.description ? "있음 (" + fullData.description.length + "자)" : "없음");
+        console.log("remarks 필드:", fullData.remarks ? "있음 (" + fullData.remarks.length + "자)" : "없음");
+        
+        scwin.openDefectPopupWithDetailData(fullData);
+    } else {
+        console.log("완전한 데이터를 찾을 수 없음, 기본 데이터로 팝업 열기");
+        scwin.openDefectPopupWithDetailData(selectedData);
+    }
+};
+
+/**
+ * 상세 데이터로 팝업 열기
+ */
+scwin.openDefectPopupWithDetailData = function(detailData) {
+    console.log("상세 데이터로 팝업 열기:", detailData);
+    
+    // 현재 사용자 정보 추가
+    var currentUserId = scwin.CURRENT_USER_ID || "1";
+    var currentUserName = scwin.getCurrentUserName();
+    var currentProjectId = scwin.CURRENT_PROJECT_ID || "";
+    
+    // 팝업 데이터 구성
+    var popupData = {
         mode: "view",
-        defectData: selectedData, // UnitTest의 testData와 동일한 역할
-        pjtId: scwin.CURRENT_PROJECT_ID,
-        currentUserId: scwin.CURRENT_USER_ID
+        defectData: detailData,
+        pjtId: currentProjectId,
+        currentUserId: currentUserId,
+        currentUserName: currentUserName
     };
 
-    console.log("팝업으로 전달할 데이터:", detailData);
+    console.log("팝업으로 전달할 상세 데이터:");
+    console.log("- mode:", popupData.mode);
+    console.log("- defectData.id:", popupData.defectData.id);
+    console.log("- defectData.name:", popupData.defectData.name);
+    console.log("- defectData.description:", popupData.defectData.description ? "있음 (" + popupData.defectData.description.length + "자)" : "없음");
+    console.log("- defectData.remarks:", popupData.defectData.remarks ? "있음 (" + popupData.defectData.remarks.length + "자)" : "없음");
 
-    // UnitTest와 동일한 데이터 전달 방법 (다중 방법 적용)
-    // 방법 1: 표준 dataObject 방식
+    // 데이터 전달을 위한 다중 방법 적용
     var jsnPopupData = {
         "type": "json",
-        "name": "detailData", // UnitTest와 동일하게 "detailData"로 통일
-        "data": detailData
+        "name": "defectData",
+        "data": popupData
     };
     
-    // 방법 2: 부모 창에 임시 저장 (UnitTest와 동일)
+    // 부모 창에 임시 저장 (대안)
     try {
-        window.tempPopupData = { detailData: detailData };
-        console.log("임시 데이터 저장:", window.tempPopupData);
+        window.tempPopupData = { defectData: popupData };
+        console.log("임시 데이터 저장 완료");
     } catch(e) {
         console.log("임시 데이터 저장 실패:", e);
     }
@@ -1516,9 +1735,10 @@ scwin.openDefectDetailPopup = function(selectedData) {
         dataObject: jsnPopupData
     };
 
-    console.log("결함 팝업 열기 시도");
+    console.log("결함 상세보기 팝업 열기 - 전체 데이터 포함");
     $p.openPopup("/InsWebApp/ui/def/DefectPopup.xml", options);
 };
+
 
 
 
@@ -1582,47 +1802,10 @@ scwin.showDetailDefectPopup = function(selectedData, mode) {
     $p.openPopup("/InsWebApp/ui/def/DefectPopup.xml", options);
 };
 
-scwin.completed_grd_oncelldblclick = function(row, col, colId) {
-    console.log("완료 그리드 더블클릭 - 행:", row);
-    
-    if (row < 0 || row >= dlt_completedList.getTotalRow()) {
-        console.error("유효하지 않은 행 번호:", row);
-        return;
-    }
-    
-    var selectedData = dlt_completedList.getRowJSON(row);
-    console.log("선택된 완료 결함 데이터:", selectedData);
-    
-    if (!selectedData || !selectedData.id) {
-        console.error("결함ID가 없습니다:", selectedData);
-        $c.win.alert("유효하지 않은 데이터입니다.");
-        return;
-    }
-    
-    scwin.openDefectDetailPopup(selectedData);
-};
 
 
 
-scwin.completed_grd_oncelldblclick = function(row, col, colId) {
-    console.log("완료 그리드 더블클릭 - 행:", row);
-    
-    if (row < 0 || row >= dlt_completedList.getTotalRow()) {
-        console.error("유효하지 않은 행 번호:", row);
-        return;
-    }
-    
-    var selectedData = dlt_completedList.getRowJSON(row);
-    console.log("완전한 선택된 완료 결함 데이터:", selectedData);
-    
-    if (!selectedData || !selectedData.id) {
-        console.error("결함ID가 없습니다:", selectedData);
-        $c.win.alert("유효하지 않은 데이터입니다.");
-        return;
-    }
-    
-    scwin.showDetailDefectPopup(selectedData, "view");
-};
+
 
 
 /**
