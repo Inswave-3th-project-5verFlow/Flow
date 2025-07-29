@@ -220,7 +220,52 @@
 scwin.CURRENT_PROJECT_ID = "";
 scwin.CURRENT_USER_ID = "";
 scwin.CURRENT_USER_GROUP_ID = "";
+/**
+ * 검색 조건 초기화 함수
+ */
 
+scwin.resetAllSearchConditions = function() {
+    console.log("검색 조건 초기화 시작");
+    
+    try {
+        // 검색 입력 필드들 초기화
+        if (typeof inp_searchName !== 'undefined' && inp_searchName.setValue) {
+            inp_searchName.setValue("");
+        }
+        
+        // 상태 선택 초기화
+        if (typeof sel_searchStatus !== 'undefined' && sel_searchStatus.setSelectedIndex) {
+            sel_searchStatus.setSelectedIndex(0);
+        }
+        
+        // 우선순위 선택 초기화
+        if (typeof sel_searchPriority !== 'undefined' && sel_searchPriority.setSelectedIndex) {
+            sel_searchPriority.setSelectedIndex(0);
+        }
+        
+        // 담당자 검색 초기화 (PM인 경우만)
+        if (scwin.isPM()) {
+            if (typeof inp_searchAssignee !== 'undefined' && inp_searchAssignee.setValue) {
+                inp_searchAssignee.setValue("");
+            }
+        }
+        
+        // 데이터맵 초기화
+        dmp_search.setEmptyValue();
+        dmp_search.set("pageIndex", "1");
+        dmp_search.set("pageSize", "10");
+        
+        // 프로젝트 ID는 유지
+        if (scwin.CURRENT_PROJECT_ID) {
+            dmp_search.set("pjtId", scwin.CURRENT_PROJECT_ID);
+        }
+        
+        console.log("검색 조건 초기화 완료");
+        
+    } catch (e) {
+        console.error("검색 조건 초기화 실패:", e);
+    }
+};
 /**
  * 진행중 그리드 더블클릭 이벤트
  */
@@ -438,31 +483,6 @@ scwin.setHiddenSearchConditionFromUnitTest = function(searchData) {
         console.error("단위테스트 숨김 모드 검색 조건 설정 실패:", e);
     }
 };
-/**
- * 단위테스트 연동 숨김 검색 실행
- */
-scwin.executeHiddenSearchFromUnitTest = function(searchData) {
-    console.log("단위테스트 연동 숨김 검색 실행");
-    
-    try {
-        // 프로젝트별 검색 또는 일반 검색
-        if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
-            console.log("프로젝트별 결함 숨김 검색 실행:", scwin.CURRENT_PROJECT_ID);
-            scwin.searchDefectsByProject();
-        } else {
-            console.log("일반 결함 숨김 검색 실행");
-            scwin.searchDefects();
-        }
-        
-        // 검색 완료 후 결과 처리
-        setTimeout(function() {
-            scwin.showHiddenSearchResultFromUnitTest(searchData);
-        }, 1000);
-        
-    } catch (e) {
-        console.error("단위테스트 연동 숨김 검색 실행 실패:", e);
-    }
-};
 
 /**
  * 전체 데이터에서 결함 ID로 완전한 데이터 찾기
@@ -616,40 +636,6 @@ scwin.handleTestIdFromUnitTest = function(testId, testName) {
     }, 500);
 };
 
-/**
- * 단위테스트 연동 숨김 검색 결과 처리
- */
-scwin.showHiddenSearchResultFromUnitTest = function(searchData) {
-    try {
-        // 상태별 결과 집계
-        var newCount = scwin.newPageInfo ? scwin.newPageInfo.totalCount : 0;
-        var processingCount = scwin.processingPageInfo ? scwin.processingPageInfo.totalCount : 0;
-        var completedCount = scwin.completedPageInfo ? scwin.completedPageInfo.totalCount : 0;
-        var totalResults = newCount + processingCount + completedCount;
-        
-        var testId = searchData.searchTestId;
-        
-        console.log("테스트 ID '" + testId + "'에 대한 결함 검색 결과:", {
-            신규: newCount,
-            진행중: processingCount,
-            완료: completedCount,
-            총합: totalResults
-        });
-        
-        if (totalResults > 0) {
-            console.log("테스트 ID '" + testId + "'에 대한 결함 " + totalResults + "건 발견 (숨김 검색)");
-            
-            // 검색 결과가 있음을 시각적으로 표시 (선택사항)
-            scwin.highlightHiddenSearchResults(testId);
-            
-        } else {
-            console.log("테스트 ID '" + testId + "'에 대한 결함이 없음 (숨김 검색)");
-        }
-        
-    } catch (e) {
-        console.error("숨김 검색 결과 처리 실패:", e);
-    }
-};
 
 /**
  * 페이지 로드 시 초기화
@@ -982,11 +968,11 @@ scwin.adjustUIByPermission = function() {
         if (scwin.isPM()) {
             console.log("PM 권한: 모든 기능 사용 가능");
             scwin.enableAllSearchFields();
-            scwin.showPermissionIndicator("관리자", "#28a745");
+            // scwin.showPermissionIndicator("관리자", "#28a745");
         } else {
             console.log("일반 사용자 권한: 제한된 기능");
             scwin.restrictAssigneeSearch();
-            scwin.showPermissionIndicator("일반 사용자", "#6c757d");
+            // scwin.showPermissionIndicator("일반 사용자", "#6c757d");
         }
     } catch (e) {
         console.error("UI 권한 조정 실패:", e);
@@ -1035,42 +1021,24 @@ scwin.restrictAssigneeSearch = function() {
     try {
         console.log("일반 사용자 담당자 검색 제한 적용");
         
-        var assigneeField = $p.getComponentById("inp_searchAssignee");
-        if (assigneeField) {
-            // 필드를 숨기는 방법
-            
-            // 또는 읽기 전용으로 만들고 사용자명 표시하는 방법
-            // var currentUserName = scwin.getCurrentUserName();
-            // assigneeField.setValue(currentUserName);
-            // assigneeField.setReadOnly(true);
-            // assigneeField.setStyle("background-color: #f8f9fa; color: #6c757d;");
-            
+        // 담당자 검색 입력 필드 숨기기
+        if (typeof inp_searchAssignee !== 'undefined' && inp_searchAssignee.hide) {
+            inp_searchAssignee.hide();
+        }
+        
+        // 담당자 검색 레이블 숨기기 (DOM 방식)
+        var assigneeHeader = Array.from(document.querySelectorAll('th, label, span')).find(el => 
+            el.textContent && el.textContent.includes('담당자')
+        );
+        
+        if (assigneeHeader) {
+            assigneeHeader.style.display = 'none';
             console.log("담당자 검색 필드 숨김 처리 완료");
+        } else {
+            console.log("담당자 검색 헤더를 찾을 수 없음");
         }
         
-        // 담당자 라벨도 숨기기
-        var assigneeLabel = document.querySelector('th:contains("담당자")');
-        if (!assigneeLabel) {
-            // jQuery가 없을 경우 직접 찾기
-            var thElements = document.querySelectorAll('th');
-            for (var i = 0; i < thElements.length; i++) {
-                if (thElements[i].textContent.includes('담당자')) {
-                    assigneeLabel = thElements[i];
-                    break;
-                }
-            }
-        }
-        
-        if (assigneeLabel) {
-            assigneeLabel.style.display = 'none';
-            console.log("담당자 라벨 숨김 처리 완료");
-        }
-        
-        // 해당 테이블 셀도 숨기기
-        var assigneeTd = assigneeField ? assigneeField.getParent() : null;
-        if (assigneeTd && assigneeTd.hide) {
-            assigneeTd.hide();
-        }
+        console.log("담당자 검색 필드 숨김 처리 완료");
         
     } catch (e) {
         console.error("담당자 검색 제한 실패:", e);
@@ -1824,7 +1792,6 @@ scwin.showDetailDefectPopup = function(selectedData, mode) {
 scwin.btn_register_onclick = function(e) {
     console.log("결함 등록 버튼 클릭");
     
-    // UnitTest와 동일한 방식으로 사용자 정보 가져오기
     var currentUserId = scwin.CURRENT_USER_ID || "1";
     var currentUserName = scwin.getCurrentUserName();
     var currentProjectId = scwin.CURRENT_PROJECT_ID || "";
@@ -1834,21 +1801,18 @@ scwin.btn_register_onclick = function(e) {
     console.log("- USER_NAME:", currentUserName);
     console.log("- PROJECT_ID:", currentProjectId);
     
-    // UnitTest의 taskData와 동일한 구조로 defectData 구성
-    var defectData = {
-        mode: "new",
-        id: "",
-        pjtId: currentProjectId,
-        currentUserId: currentUserId,
-        currentUserName: currentUserName
+    // ✅ 올바른 데이터 구조 (다른 상세보기와 동일한 구조로)
+    var popupData = {
+        defectData: {  // 이 부분이 중요!
+            mode: "new",
+            pjtId: currentProjectId,
+            currentUserId: currentUserId,
+            currentUserName: currentUserName
+        }
     };
 
-    // UnitTest와 동일한 방식으로 데이터 전달
-    var jsnPopupData = {
-        "type": "json",
-        "name": "defectData", // DefectPopup에서 기대하는 이름
-        "data": defectData
-    };
+    // ✅ 임시 데이터 저장 (대안 방법)
+    window.tempPopupData = popupData;
 
     var options = {
         id: "defect_popup",
@@ -1859,11 +1823,10 @@ scwin.btn_register_onclick = function(e) {
         left: "100px",
         popupName: "결함 등록",
         modal: true,
-        closeAction: "scwin.defectPopup_closeAction",
-        dataObject: jsnPopupData
+        closeAction: "scwin.defectPopup_closeAction"
     };
 
-    console.log("팝업 열기 - 사용자 정보 포함:", defectData);
+    console.log("팝업 열기 - 등록 모드:", popupData);
     $p.openPopup("/InsWebApp/ui/def/DefectPopup.xml", options);
 };
 

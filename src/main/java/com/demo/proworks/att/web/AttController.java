@@ -29,6 +29,7 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.demo.proworks.att.service.AttService;
 import com.demo.proworks.att.vo.AttListVo;
 import com.demo.proworks.att.vo.AttVo;
+import com.demo.proworks.cmmn.ProworksCommVO;
 import com.inswave.elfw.annotation.ElDescription;
 import com.inswave.elfw.annotation.ElService;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -81,36 +82,64 @@ public class AttController {
     @ElService(key="FileList")
     @RequestMapping(value="FileList")    
     @ElDescription(sub="파일 목록 조회",desc="파일 목록을 조회한다.")
-    public ResponseEntity<List<AttVo>> getFileList(HttpServletRequest request) throws Exception {
-        // Step 1: JSON 데이터 읽기
-        StringBuilder jsonString = new StringBuilder();
-        String line;
-        try (BufferedReader reader = request.getReader()) {
-            while ((line = reader.readLine()) != null) {
-                jsonString.append(line);
-            }
-        }
-
-        // Step 2: JSON 파싱
-        JSONObject json = new JSONObject(jsonString.toString());
-        String refType = json.optString("refType");
-        String refId = json.optString("refId");
-
-        // Debugging: 로그로 파라미터 확인
-        System.out.println("Received refType: " + refType);
-        System.out.println("Received refId: " + refId);
-
-        // Step 3: 파라미터 유효성 검사
-        if (refType == null || refId == null || refType.trim().isEmpty() || refId.trim().isEmpty()) {
-            return ResponseEntity.badRequest().body(Collections.emptyList());
-        }
-
-        // Step 4: 서비스 호출
-        // List<AttVo> files = attService.getFileList(refType, refId);
-
-        // Step 5: 파일 목록 반환
-        return null;
-    }
+    public AttListVo getFileList(HttpServletRequest request) throws Exception {
+    
+	    // Step 1: JSON 데이터 읽기
+	    StringBuilder jsonString = new StringBuilder();
+	    String line;
+	    try (BufferedReader reader = request.getReader()) {
+	        while ((line = reader.readLine()) != null) {
+	            jsonString.append(line);
+	        }
+	    }
+	
+	    // Step 2: JSON 파싱
+	    JSONObject json = new JSONObject(jsonString.toString());
+	    String refType = json.optString("refType");
+	    String refId = json.optString("refId");
+	
+	    // Debugging: 로그로 파라미터 확인
+	    System.out.println("Received refType: " + refType);
+	    System.out.println("Received refId: " + refId);
+	
+	    // Step 3: 파라미터 유효성 검사
+	    if (refType == null || refId == null || refType.trim().isEmpty() || refId.trim().isEmpty()) {
+	        System.out.println("파라미터가 유효하지 않음 - 빈 목록 반환");
+	        
+	        AttListVo emptyResult = new AttListVo();
+	        emptyResult.setAttVoList(new ArrayList<>());
+	        return emptyResult;
+	    }
+	
+	    // Step 4: 서비스 호출
+	    try {
+	        // ProworksCommVO 객체 생성
+	        ProworksCommVO fileParam = new ProworksCommVO();
+	        fileParam.setRefType(refType);
+	        fileParam.setRefId(refId);
+	        
+	        System.out.println("파일 조회 파라미터: refType=" + refType + ", refId=" + refId);
+	        
+	        List<AttVo> files = attService.getFileList(fileParam);
+	        
+	        System.out.println("조회된 파일 개수: " + (files != null ? files.size() : 0));
+	        
+	        // Step 5: 결과 반환 (프로웍스 표준 방식)
+	        AttListVo result = new AttListVo();
+	        result.setAttVoList(files != null ? files : new ArrayList<>());
+	        
+	        return result;
+	        
+	    } catch (Exception e) {
+	        System.err.println("파일 목록 조회 실패: " + e.getMessage());
+	        e.printStackTrace();
+	        
+	        // 오류 시에도 빈 목록 반환
+	        AttListVo errorResult = new AttListVo();
+	        errorResult.setAttVoList(new ArrayList<>());
+	        return errorResult;
+	    }
+	}
 
     /**
      * 이미지 미리보기 (별도 엔드포인트)
