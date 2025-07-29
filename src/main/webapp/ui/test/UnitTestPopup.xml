@@ -1602,6 +1602,9 @@ scwin.validateForm = function() {
 /**
  * 파일과 함께 저장
  */
+/**
+ * 파일과 함께 저장 (수정된 버전)
+ */
 scwin.executeFileUploadWithData = function() {
     console.log("executeFileUploadWithData() 시작됨");
     
@@ -1766,17 +1769,50 @@ scwin.executeFileUploadWithData = function() {
                 mpd_html5Type.removeAllFiles();
             }
             
-            // 팝업 닫기
-            pop_overlay.hide();
+            // ✅ 수정된 부분: 부모 창의 목록 새로고침 함수 안전하게 호출
+            try {
+                var parentWindow = $p.getParentWindow();
+                if (parentWindow && parentWindow.scwin) {
+                    // 여러 가능한 함수명 시도
+                    if (typeof parentWindow.scwin.searchUnitTests === 'function') {
+                        parentWindow.scwin.searchUnitTests();
+                        console.log("부모 창 searchUnitTests() 호출 성공");
+                    } else if (typeof parentWindow.scwin.searchUnitTestsByProject === 'function') {
+                        parentWindow.scwin.searchUnitTestsByProject();
+                        console.log("부모 창 searchUnitTestsByProject() 호출 성공");
+                    } else if (typeof parentWindow.scwin.btn_search_onclick === 'function') {
+                        parentWindow.scwin.btn_search_onclick();
+                        console.log("부모 창 btn_search_onclick() 호출 성공");
+                    } else {
+                        console.log("부모 창에서 목록 새로고침 함수를 찾을 수 없음 - 팝업만 닫기");
+                    }
+                } else {
+                    console.log("부모 창에 접근할 수 없음 - 팝업만 닫기");
+                }
+            } catch (refreshError) {
+                console.error("부모 창 새로고침 실패:", refreshError);
+                console.log("새로고침 실패했지만 등록은 성공 - 팝업만 닫기");
+            }
             
-            // 목록 새로고침
-            // if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
-            //     scwin.searchUnitTestsByProject();
-            // } else {
-            //     scwin.searchUnitTests();
-            // }
-
-            scwin.searchUnitTests();
+            // 팝업 닫기 (새로고침 성공 여부와 관계없이)
+            setTimeout(function() {
+                try {
+                    $p.closePopup();
+                    console.log("팝업 닫기 성공");
+                } catch (closeError) {
+                    console.error("팝업 닫기 실패:", closeError);
+                    // 대안 방법으로 팝업 숨기기 시도
+                    try {
+                        if (typeof pop_overlay !== 'undefined' && pop_overlay.hide) {
+                            pop_overlay.hide();
+                            console.log("팝업 숨기기로 대체 성공");
+                        }
+                    } catch (hideError) {
+                        console.error("팝업 숨기기도 실패:", hideError);
+                    }
+                }
+            }, 500);
+            
         } else {
             var errorMsg = "등록에 실패했습니다.";
             if (elHeader && elHeader.resMsg) {
