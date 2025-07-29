@@ -186,6 +186,8 @@ scwin.onpageload = function () {
     }
     dmp_taskDetail.set("pjtId", $p.parent().scwin.pjtId);
     dmp_taskDetail.set("userId", $p.parent().scwin.userId);
+    dmp_taskDetail.set("taskDes", "기본 사양\n- 1~5점 별점 시스템, 0.5점 단위 입력 가능\n- 별 아이콘 클릭/터치로 점수 선택\n- 실시간 평균 별점 및 총 평가 수 표시\n\n기술 구현\n- DB: rating(DECIMAL 2,1), 유효성 검증 1.0~5.0\n- UI: 호버 효과, 선택 상태 하이라이트\n- 사용자당 1회 평가 제한, 수정 가능\n\n성능 최적화\n- 평균 별점 캐싱, 별점별 개수 통계 저장\n- 인덱스 설정으로 조회 성능 향상");
+
 };
 
 scwin.btn_ptTaskName_onclick = function (e) {
