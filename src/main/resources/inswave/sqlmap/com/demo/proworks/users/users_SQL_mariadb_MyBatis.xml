@@ -77,7 +77,7 @@
 </select>
 
 	<select id="selectListUsers" parameterType="com.demo.proworks.users.vo.UsersVo" resultType="com.demo.proworks.users.vo.UsersVo">
-		<!-- 사용자정보 목록을 조회한다. -->
+<!-- 사용자정보 목록을 조회한다. -->
 		SELECT /* QueryID : com.demo.proworks.users.selectListUsers */
 		USER_ID as userId, NAME as name, POSITION as position, EMAIL as email, PHONE as phone, ACCOUNT_ID as accountId, ACCOUNT_PWD as accountPwd, IMAGE
 		as image, IS_DELETED as isDeleted, IS_ADMIN as isAdmin, IS_CREATE as isCreate
@@ -92,7 +92,8 @@
 			AND NAME like '%${scName}%'
 		</if>
 		) S, (SELECT @ROWNUM := 0) TMP ) A WHERE PAGE = #{pageIndex}
-	</select>
+		ORDER BY user_id desc
+</select>
 
 	<select id="selectListCountUsers" parameterType="com.demo.proworks.users.vo.UsersVo" resultType="long">
 		<!-- 사용자정보 목록의 카운트를 조회한다. -->
