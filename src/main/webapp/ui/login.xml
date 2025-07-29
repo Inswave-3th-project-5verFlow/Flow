@@ -1,31 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="/InsWebApp/css/login/login.css" type="text/css"?>
-<html xmlns="http://www.w3.org/1999/xhtml"
-    xmlns:ev="http://www.w3.org/2001/xml-events"
-    xmlns:w2="http://www.inswave.com/websquare" xmlns:xf="http://www.w3.org/2002/xforms">
-    <head meta_screenName="로그인 화면">
-        <w2:type>COMPONENT</w2:type>
-        <w2:buildDate/>
-        <w2:MSA/>
-        <xf:model>
-        	<w2:dataCollection baseNode="map">
-        		<w2:dataMap baseNode="map" id="dma_login">
-        			<w2:keyInfo>
-        				<w2:key dataType="text" name="아이디" id="id"></w2:key>
-        				<w2:key dataType="text" name="패스워드" id="pw"></w2:key>
-        			</w2:keyInfo>
-        		</w2:dataMap>
-        	</w2:dataCollection>
-        	<w2:workflowCollection />
-        	<xf:submission id="sbm_login" action="/InsWebApp/Login.pwkjson" method="post" mediatype="application/json"
-        		ref='data:json,{"id":"dma_login","key":"elData"}' target="" encoding="UTF-8" instance="" replace="" errorHandler=""
-        		customHandler="" mode="asynchronous" processMsg="로그인 처리중..." ev:submit="" ev:submitdone="scwin.sbm_login_submitdone"
-        		ev:submiterror="" abortTrigger="">
-        	</xf:submission>
-        </xf:model>
-        <w2:layoutInfo/>
-        <w2:publicInfo method=""/>
-        <script lazy="false" type="text/javascript"><![CDATA[
+<?xml-stylesheet href="/InsWebApp/css/main/Main.css" type="text/css"?>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
+	xmlns:xf="http://www.w3.org/2002/xforms">
+	<head meta_screenName="로그인 화면">
+		<w2:type>COMPONENT</w2:type>
+		<w2:buildDate />
+		<w2:MSA />
+		<xf:model>
+			<w2:dataCollection baseNode="map">
+				<w2:dataMap baseNode="map" id="dma_login">
+					<w2:keyInfo>
+						<w2:key dataType="text" name="아이디" id="id"></w2:key>
+						<w2:key dataType="text" name="패스워드" id="pw"></w2:key>
+					</w2:keyInfo>
+				</w2:dataMap>
+			</w2:dataCollection>
+			<w2:workflowCollection />
+			<xf:submission id="sbm_login" action="/InsWebApp/Login.pwkjson" method="post" mediatype="application/json"
+				ref='data:json,{"id":"dma_login","key":"elData"}' target="" encoding="UTF-8" instance="" replace="" errorHandler="" customHandler=""
+				mode="asynchronous" processMsg="로그인 처리중..." ev:submit="" ev:submitdone="scwin.sbm_login_submitdone" ev:submiterror="" abortTrigger="">
+			</xf:submission>
+		</xf:model>
+		<w2:layoutInfo />
+		<w2:publicInfo method="" />
+		<script lazy="false" type="text/javascript"><![CDATA[
 scwin.onpageload = function () {
 
 };
@@ -46,13 +45,13 @@ scwin.btn_login_onclick = function (e) {
     var plainPassword = $p.getComponentById("pw_input").getValue();
 
     if (!userId && plainPassword) { // 아이디 혹은 비밀번호가 Null값일 경우
-        $c.win.alert("아이디 또는 비밀번호가 올바르지 않습니다.");
+        scwin.showToast("아이디 또는 비밀번호가 올바르지 않습니다.","warning");
         return;
     } else if (userId && !plainPassword) {  // 아이디 및 비밀번호가 Null값일 경우
-        $c.win.alert("아이디 또는 비밀번호가 올바르지 않습니다.");
+        scwin.showToast("아이디 또는 비밀번호가 올바르지 않습니다.","warning");
         return;
     } else if (!userId && !plainPassword) {  // 아이디 및 비밀번호가 Null값일 경우
-        $c.win.alert("아이디와 비밀번호를 입력하세요.");
+       scwin.showToast("아이디와 비밀번호를 입력하세요.","warning");
         return;
     } else {
     }
@@ -60,7 +59,7 @@ scwin.btn_login_onclick = function (e) {
     // 아이디 혹은 비밀번호가 공백이 존재할 경우
     var spaceCheck = /\s/;
     if (spaceCheck.test(userId) || spaceCheck.test(plainPassword)) {
-        $c.win.alert("아이디 혹은 비밀번호에 공백이 포함될 수 없습니다.");
+        scwin.showToast("아이디 혹은 비밀번호에 공백이 포함될 수 없습니다.","warning");
         return;
     }
 
@@ -77,7 +76,7 @@ scwin.sbm_login_submitdone = function (e) {
 
     // 아이디 혹은 비밀번호 불일치 시
     if (elHeader.resSuc == false) {
-        $c.win.alert("아이디 또는 비밀번호를 다시 확인해주세요.");
+        scwin.showToast("아이디 또는 비밀번호를 다시 확인해주세요.","warning");
     }
 
     if (userHeader != "" && userHeader != null && userHeader != "undefined") {
@@ -94,53 +93,88 @@ scwin.sbm_login_submitdone = function (e) {
         }
 
     }
-};]]></script>
-    </head>
-    <body ev:onpageload="scwin.onpageload">
-    	<xf:group class="sub_contents" id="" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true" meta_snippetName="0_01 페이지시작"
-    		style="display: flex; justify-content: center; align-items: center;">
-    		<xf:group style="width: 300px;height: 560px;" id="">
-    			<xf:group style="margin-top: 20px; margin-bottom: 20px;display: flex;justify-content: center;" id="">
-    				<xf:image id="image1" src="/InsWebApp/ui/mainLogo.jpg" style="width:100%;height:150px;"></xf:image>
-    			</xf:group>
-    			<xf:group style="margin-bottom: 30px;display: flex;justify-content: center;" id="">
-    				<w2:span meta_snippetCategory="10_입력폼" meta_snippetName="10_16 출력텍스트" meta_snippetKeyComponent="true"
-    					style="font-size: 22px;font-weight: bold;width: 100%;" id="" label="프로젝트, 새롭게 관리하세요">
-    				</w2:span>
-    			</xf:group>
-    			<xf:group style="" id="">
-    				<w2:span meta_snippetCategory="10_입력폼" meta_snippetName="10_16 출력텍스트" meta_snippetKeyComponent="true"
-    					style="font-size: 18px;font-weight: bold;color: #16213e" id="" label="ID">
-    				</w2:span>
-    			</xf:group>
-    			<xf:group style="display: flex;justify-content: center;" id="login_info">
-    				<xf:input ref="data:dma_login.id" meta_snippetCategory="10_입력폼" meta_snippetName="10_01 InputBox"
-    					ev:onclick="scwin.id_input_onclick" meta_snippetKeyComponent="true"
-    					style="margin-top: 10px;margin-bottom: 20px;border-radius: 8px;width: 100%;height: 40px;" id="id_input" placeholder="아이디를 입력하세요"
-    					class="login-input" tooltip="아이디에 공백이 포함될 수 없습니다">
-    				</xf:input>
-    			</xf:group>
-    			<xf:group style="" id="">
-    				<w2:span meta_snippetCategory="10_입력폼" meta_snippetName="10_16 출력텍스트" meta_snippetKeyComponent="true"
-    					style="font-size: 18px;font-weight: bold;color: #16213e;" id="" label="PASSWORD">
-    				</w2:span>
-    			</xf:group>
+};
 
-    			<xf:group style='display: flex;justify-content: center;' id="">
-    				<xf:input ref="data:dma_login.pw" meta_snippetCategory="10_입력폼" meta_snippetName="10_01 InputBox"
-    					ev:onclick="scwin.pw_input_onclick" ev:onkeydown="scwin.pw_input_onkeydown" meta_snippetKeyComponent="true"
-    					style="margin-top: 10px;margin-bottom: 40px;border-radius: 8px;width: 100%;height: 40px;" id="pw_input" placeholder="패스워드를 입력하세요"
-    					type="password" class="login-input" tooltip="비밀번호에 공백이 포함될 수 없습니다">
-    				</xf:input>
-    			</xf:group>
-    			<xf:group meta_snippetCategory="08_버튼" meta_snippetName="8_04 전체제어버튼" meta_snippetKeyComponent="true" style="width: 100%;"
-    				id="" class="btnbox lt">
-    				<xf:trigger ev:onclick="scwin.btn_login_onclick" style="width: 100%;height: 40px;border-radius: 8px;font-size: 16px;"
-    					id="btn_login" type="button" class="login-btn">
-    					<xf:label><![CDATA[로그인]]></xf:label>
-    				</xf:trigger>
-    			</xf:group>
-    		</xf:group>
-    	</xf:group>
-    </body>
+// 로컬 토스트 함수 구현 (Main.css의 스타일 활용)
+scwin.showLocalToast = function(message, type = 'success', duration = 3000) {
+    var toastElement = $p.$("#txt_localToast")[0];
+    txt_localToast.setValue(message);
+    toastElement.className = `notification-toast ${type}`;
+    toastElement.style.display = 'block';
+    
+    setTimeout(function() {
+        toastElement.classList.add('show');
+    }, 50);
+    
+    setTimeout(function() {
+        scwin.hideLocalToast();
+    }, duration);
+};
+
+// 로컬 토스트 숨김 함수
+scwin.hideLocalToast = function() {
+    var toastElement = $p.$("#txt_localToast")[0];
+    toastElement.classList.remove('show');
+    toastElement.classList.add('fade-out');
+    
+    setTimeout(function() {
+        toastElement.style.display = 'none';
+        toastElement.classList.remove('fade-out');
+    }, 400);
+};
+
+// showToast 함수를 로컬 토스트로 변경
+scwin.showToast = function(message, type = 'success', duration = 3000) {
+    scwin.showLocalToast(message, type, duration);
+};]]></script>
+	</head>
+	<body ev:onpageload="scwin.onpageload">
+		<xf:group class="sub_contents" id="" meta_snippetCategory="00_화면시작" meta_snippetKeyComponent="true" meta_snippetName="0_01 페이지시작"
+			style="display: flex; justify-content: center; align-items: center;">
+			<xf:group style="width: 300px;height: 560px;" id="">
+				<xf:group style="margin-top: 20px; margin-bottom: 20px;display: flex;justify-content: center;" id="">
+					<xf:image id="image1" src="/InsWebApp/ui/mainLogo.jpg" style="width:100%;height:150px;"></xf:image>
+				</xf:group>
+				<xf:group style="margin-bottom: 30px;display: flex;justify-content: center;" id="">
+					<w2:span meta_snippetCategory="10_입력폼" meta_snippetName="10_16 출력텍스트" meta_snippetKeyComponent="true"
+						style="font-size: 22px;font-weight: bold;width: 100%;" id="" label="프로젝트, 새롭게 관리하세요">
+					</w2:span>
+				</xf:group>
+				<xf:group style="" id="">
+					<w2:span meta_snippetCategory="10_입력폼" meta_snippetName="10_16 출력텍스트" meta_snippetKeyComponent="true"
+						style="font-size: 18px;font-weight: bold;color: #16213e" id="" label="ID">
+					</w2:span>
+				</xf:group>
+				<xf:group style="display: flex;justify-content: center;" id="login_info">
+					<xf:input ref="data:dma_login.id" meta_snippetCategory="10_입력폼" meta_snippetName="10_01 InputBox"
+						ev:onclick="scwin.id_input_onclick" meta_snippetKeyComponent="true"
+						style="margin-top: 10px;margin-bottom: 20px;border-radius: 8px;width: 100%;height: 40px;" id="id_input" placeholder="아이디를 입력하세요"
+						class="login-input" tooltip="아이디에 공백이 포함될 수 없습니다">
+					</xf:input>
+				</xf:group>
+				<xf:group style="" id="">
+					<w2:span meta_snippetCategory="10_입력폼" meta_snippetName="10_16 출력텍스트" meta_snippetKeyComponent="true"
+						style="font-size: 18px;font-weight: bold;color: #16213e;" id="" label="PASSWORD">
+					</w2:span>
+				</xf:group>
+
+				<xf:group style='display: flex;justify-content: center;' id="">
+					<xf:input ref="data:dma_login.pw" meta_snippetCategory="10_입력폼" meta_snippetName="10_01 InputBox"
+						ev:onclick="scwin.pw_input_onclick" ev:onkeydown="scwin.pw_input_onkeydown" meta_snippetKeyComponent="true"
+						style="margin-top: 10px;margin-bottom: 40px;border-radius: 8px;width: 100%;height: 40px;" id="pw_input" placeholder="패스워드를 입력하세요"
+						type="password" class="login-input" tooltip="비밀번호에 공백이 포함될 수 없습니다">
+					</xf:input>
+				</xf:group>
+				<xf:group meta_snippetCategory="08_버튼" meta_snippetName="8_04 전체제어버튼" meta_snippetKeyComponent="true" style="width: 100%;"
+					id="" class="btnbox lt">
+					<xf:trigger ev:onclick="scwin.btn_login_onclick" style="width: 100%;height: 40px;border-radius: 8px;font-size: 16px;"
+						id="btn_login" type="button" class="login-btn">
+						<xf:label><![CDATA[로그인]]></xf:label>
+					</xf:trigger>
+				</xf:group>
+			</xf:group>
+		</xf:group>
+		<!-- 로컬 토스트 알림 컴포넌트 -->
+		<w2:textbox id="txt_localToast" class="notification-toast" label="토스트 메시지"></w2:textbox>
+	</body>
 </html>
