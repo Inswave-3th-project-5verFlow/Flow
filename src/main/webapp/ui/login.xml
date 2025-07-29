@@ -26,7 +26,7 @@
         <w2:layoutInfo/>
         <w2:publicInfo method=""/>
         <script lazy="false" type="text/javascript"><![CDATA[
-scwin.onpageload = function() {
+scwin.onpageload = function () {
 
 };
 
@@ -45,15 +45,21 @@ scwin.btn_login_onclick = function (e) {
     var userId = $p.getComponentById("id_input").getValue();
     var plainPassword = $p.getComponentById("pw_input").getValue();
 
-    // 아이디 혹은 비밀번호가 Null값일 경우
-    if (!userId || !plainPassword) {
+    if (!userId && plainPassword) { // 아이디 혹은 비밀번호가 Null값일 경우
+        $c.win.alert("아이디 또는 비밀번호가 올바르지 않습니다.");
+        return;
+    } else if (userId && !plainPassword) {  // 아이디 및 비밀번호가 Null값일 경우
+        $c.win.alert("아이디 또는 비밀번호가 올바르지 않습니다.");
+        return;
+    } else if (!userId && !plainPassword) {  // 아이디 및 비밀번호가 Null값일 경우
         $c.win.alert("아이디와 비밀번호를 입력하세요.");
         return;
+    } else {
     }
 
     // 아이디 혹은 비밀번호가 공백이 존재할 경우
     var spaceCheck = /\s/;
-    if (spaceCheck.test(userId) || spaceCheck.test(plainPassword)){
+    if (spaceCheck.test(userId) || spaceCheck.test(plainPassword)) {
         $c.win.alert("아이디 혹은 비밀번호에 공백이 포함될 수 없습니다.");
         return;
     }
@@ -69,14 +75,19 @@ scwin.sbm_login_submitdone = function (e) {
     var elHeader = e.responseJSON.elHeader; // 응답 전문 elHeader
     var userHeader = e.responseJSON.userHeader;
 
-    if(userHeader != "" && userHeader != null && userHeader != "undefined") {
-        if(elHeader.resSuc == true) {
+    // 아이디 혹은 비밀번호 불일치 시
+    if (elHeader.resSuc == false) {
+        $c.win.alert("아이디 또는 비밀번호를 다시 확인해주세요.");
+    }
 
-           $p.url("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/testMain.xml");
-           
-           var serverTime = $c.date.getServerDateTime("yyyy-MM-dd hh:mm:ss");   // 로그인 접속시간
-           WebSquare.localStorage.setItem("serverTime", serverTime);
-           WebSquare.localStorage.setItem("usrId", userHeader.usrId);
+    if (userHeader != "" && userHeader != null && userHeader != "undefined") {
+        if (elHeader.resSuc == true) {
+
+            $p.url("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/testMain.xml");
+
+            var serverTime = $c.date.getServerDateTime("yyyy-MM-dd hh:mm:ss");   // 로그인 접속시간
+            WebSquare.localStorage.setItem("serverTime", serverTime);
+            WebSquare.localStorage.setItem("usrId", userHeader.usrId);
 
         } else {
             $c.win.alert(elHeader.resMsg);
@@ -106,7 +117,7 @@ scwin.sbm_login_submitdone = function (e) {
     				<xf:input ref="data:dma_login.id" meta_snippetCategory="10_입력폼" meta_snippetName="10_01 InputBox"
     					ev:onclick="scwin.id_input_onclick" meta_snippetKeyComponent="true"
     					style="margin-top: 10px;margin-bottom: 20px;border-radius: 8px;width: 100%;height: 40px;" id="id_input" placeholder="아이디를 입력하세요"
-    					class="login-input">
+    					class="login-input" tooltip="아이디에 공백이 포함될 수 없습니다">
     				</xf:input>
     			</xf:group>
     			<xf:group style="" id="">
@@ -119,7 +130,7 @@ scwin.sbm_login_submitdone = function (e) {
     				<xf:input ref="data:dma_login.pw" meta_snippetCategory="10_입력폼" meta_snippetName="10_01 InputBox"
     					ev:onclick="scwin.pw_input_onclick" ev:onkeydown="scwin.pw_input_onkeydown" meta_snippetKeyComponent="true"
     					style="margin-top: 10px;margin-bottom: 40px;border-radius: 8px;width: 100%;height: 40px;" id="pw_input" placeholder="패스워드를 입력하세요"
-    					type="password" class="login-input">
+    					type="password" class="login-input" tooltip="비밀번호에 공백이 포함될 수 없습니다">
     				</xf:input>
     			</xf:group>
     			<xf:group meta_snippetCategory="08_버튼" meta_snippetName="8_04 전체제어버튼" meta_snippetKeyComponent="true" style="width: 100%;"
