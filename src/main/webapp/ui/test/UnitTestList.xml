@@ -376,47 +376,7 @@ scwin.onpageload = function() {
     console.log("페이지 로드 완료");
 };
 
-/**
- * 진행중 그리드 더블클릭 이벤트
- */
-scwin.processing_grd_oncelldblclick = function(row, col, colId) {
-    console.log("진행중 그리드 더블클릭 - 행:", row);
-    
-    if (row < 0 || row >= dlt_processingList.getTotalRow()) {
-        console.error("유효하지 않은 행 번호:", row);
-        return;
-    }
-    
-    var selectedData = dlt_processingList.getRowJSON(row);
-    console.log("선택된 진행중 결함 데이터:", selectedData);
-    
-    if (!selectedData || !selectedData.id) {
-        console.error("결함ID가 없습니다:", selectedData);
-        $c.win.alert("유효하지 않은 데이터입니다.");
-        return;
-    }
-    
-    scwin.openDefectDetailPopup(selectedData);
-};
-scwin.completed_grd_oncelldblclick = function(row, col, colId) {
-    console.log("완료 그리드 더블클릭 - 행:", row);
-    
-    if (row < 0 || row >= dlt_completedList.getTotalRow()) {
-        console.error("유효하지 않은 행 번호:", row);
-        return;
-    }
-    
-    var selectedData = dlt_completedList.getRowJSON(row);
-    console.log("선택된 완료 결함 데이터:", selectedData);
-    
-    if (!selectedData || !selectedData.id) {
-        console.error("결함ID가 없습니다:", selectedData);
-        $c.win.alert("유효하지 않은 데이터입니다.");
-        return;
-    }
-    
-    scwin.openDefectDetailPopup(selectedData);
-};
+
 /**
  * 개발업무 연동 파라미터 처리 (조건부 자동 팝업)
  */
