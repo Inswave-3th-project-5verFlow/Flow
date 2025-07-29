@@ -349,3 +349,5 @@ body::before {
     to { transform: rotate(360deg); }
 }
 
+/* 툴팁 위치 오른쪽으로 밀어냄 */ 
+.w2balloonTip {margin-left: 120px !important;}
