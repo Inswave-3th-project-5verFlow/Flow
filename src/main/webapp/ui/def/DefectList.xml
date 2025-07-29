@@ -533,56 +533,7 @@ scwin.findFullDefectData = function(defectId) {
     }
 };
 
-/**
- * 모든 검색 조건 초기화 (새 함수)
- */
-scwin.resetAllSearchConditions = function() {
-    console.log("=== 모든 검색 조건 초기화 ===");
-    
-    try {
-        // 데이터맵 완전 초기화
-        dmp_search.setEmptyValue();
-        dmp_search.set("pageIndex", "1");
-        dmp_search.set("pageSize", "1000");
-        
-        // UI 필드들도 초기화
-        var searchFields = [
-            "sel_searchStatus",
-            "inp_searchAssignee", 
-            "inp_searchName",
-            "sel_searchPriority"
-        ];
-        
-        searchFields.forEach(function(fieldId) {
-            try {
-                var field = $p.getComponentById(fieldId);
-                if (field) {
-                    if (field.setValue) {
-                        field.setValue("");
-                    } else if (field.setSelectedIndex) {
-                        field.setSelectedIndex(0);
-                    }
-                }
-            } catch(e) {
-                console.warn("필드 초기화 실패:", fieldId, e);
-            }
-        });
-        
-        // 일반 사용자인 경우에만 담당자 조건 설정
-        if (!scwin.isPM()) {
-            dmp_search.set("assignee", scwin.CURRENT_USER_ID);
-            var assigneeField = $p.getComponentById("inp_searchAssignee");
-            if (assigneeField) {
-                assigneeField.setValue(scwin.CURRENT_USER_ID);
-            }
-        }
-        
-        console.log("검색 조건 초기화 완료");
-        
-    } catch (e) {
-        console.error("검색 조건 초기화 실패:", e);
-    }
-};
+
 /**
  * 단위테스트 연동 파라미터 처리 (DevelopList의 handleWbsParam 방식)
  */
@@ -1031,6 +982,7 @@ scwin.adjustUIByPermission = function() {
         if (scwin.isPM()) {
             console.log("PM 권한: 모든 기능 사용 가능");
             scwin.enableAllSearchFields();
+            scwin.showPermissionIndicator("관리자", "#28a745");
         } else {
             console.log("일반 사용자 권한: 제한된 기능");
             scwin.restrictAssigneeSearch();
@@ -1046,13 +998,31 @@ scwin.adjustUIByPermission = function() {
  */
 scwin.enableAllSearchFields = function() {
     try {
-        var searchFields = ["inp_searchAssignee", "sel_searchStatus", "inp_searchName"];
+        console.log("PM 권한 - 모든 검색 필드 활성화");
+        
+        var searchFields = ["inp_searchAssignee", "sel_searchStatus", "inp_searchName", "sel_searchPriority"];
         searchFields.forEach(function(fieldId) {
             var field = $p.getComponentById(fieldId);
-            if (field && field.setReadOnly) {
-                field.setReadOnly(false);
+            if (field) {
+                if (field.setReadOnly) {
+                    field.setReadOnly(false);
+                }
+                if (field.show) {
+                    field.show();
+                }
+                console.log("필드 활성화:", fieldId);
             }
         });
+        
+        // 담당자 라벨 다시 표시
+        var thElements = document.querySelectorAll('th');
+        for (var i = 0; i < thElements.length; i++) {
+            if (thElements[i].textContent.includes('담당자')) {
+                thElements[i].style.display = '';
+                break;
+            }
+        }
+        
     } catch (e) {
         console.error("검색 필드 활성화 실패:", e);
     }
@@ -1063,12 +1033,45 @@ scwin.enableAllSearchFields = function() {
  */
 scwin.restrictAssigneeSearch = function() {
     try {
+        console.log("일반 사용자 담당자 검색 제한 적용");
+        
         var assigneeField = $p.getComponentById("inp_searchAssignee");
         if (assigneeField) {
-            assigneeField.setValue(scwin.CURRENT_USER_ID);
-            assigneeField.setReadOnly(true);
-            assigneeField.setStyle("background-color: #f8f9fa; color: #6c757d;");
+            // 필드를 숨기는 방법
+            
+            // 또는 읽기 전용으로 만들고 사용자명 표시하는 방법
+            // var currentUserName = scwin.getCurrentUserName();
+            // assigneeField.setValue(currentUserName);
+            // assigneeField.setReadOnly(true);
+            // assigneeField.setStyle("background-color: #f8f9fa; color: #6c757d;");
+            
+            console.log("담당자 검색 필드 숨김 처리 완료");
         }
+        
+        // 담당자 라벨도 숨기기
+        var assigneeLabel = document.querySelector('th:contains("담당자")');
+        if (!assigneeLabel) {
+            // jQuery가 없을 경우 직접 찾기
+            var thElements = document.querySelectorAll('th');
+            for (var i = 0; i < thElements.length; i++) {
+                if (thElements[i].textContent.includes('담당자')) {
+                    assigneeLabel = thElements[i];
+                    break;
+                }
+            }
+        }
+        
+        if (assigneeLabel) {
+            assigneeLabel.style.display = 'none';
+            console.log("담당자 라벨 숨김 처리 완료");
+        }
+        
+        // 해당 테이블 셀도 숨기기
+        var assigneeTd = assigneeField ? assigneeField.getParent() : null;
+        if (assigneeTd && assigneeTd.hide) {
+            assigneeTd.hide();
+        }
+        
     } catch (e) {
         console.error("담당자 검색 제한 실패:", e);
     }
@@ -1120,9 +1123,16 @@ scwin.showPermissionIndicator = function(text, color) {
 scwin.btn_search_onclick = function(e) {
     console.log("조회 버튼 클릭");
     
-    // 일반 사용자인 경우 담당자를 자신으로 제한
-    if (!scwin.isPM()) {
+    // 현재 검색 조건 로깅
+    console.log("현재 검색 조건:", dmp_search.getJSON());
+    
+    // 일반 사용자인 경우 담당자를 자신으로 제한 (testId 조건이 없는 경우에만)
+    var currentTestId = dmp_search.get("testId");
+    if (!scwin.isPM() && !currentTestId) {
         dmp_search.set("assignee", scwin.CURRENT_USER_ID);
+        console.log("일반 사용자 권한 - 담당자 자동 설정:", scwin.CURRENT_USER_ID);
+        
+        // UI 필드는 건드리지 않음 (숨겨져 있으므로)
     }
     
     // 프로젝트가 선택되어 있으면 프로젝트별 검색, 아니면 일반 검색
