@@ -586,7 +586,7 @@ scwin.openTab = async function (url, title, tabData) {
 
     } catch (e) {
         console.error("탭 생성 실패:", e);
-        $c.win.alert("페이지를 로드할 수 없습니다: " + title);
+        scwin.showGlobalToast("페이지를 로드할 수 없습니다: " + title, "error");
     }
 };
 
@@ -599,7 +599,7 @@ scwin.btn_closeAllTabs_onclick = function () {
         var tabCount = tab_content.getTabCount();
 
         if (tabCount <= 1) {
-            $c.win.alert("닫을 탭이 없습니다.");
+            scwin.showGlobalToast("닫을 탭이 없습니다", "warning");
             return;
         }
 
@@ -628,7 +628,7 @@ scwin.btn_closeAllTabs_onclick = function () {
 
     } catch (e) {
         console.error("모든 탭 닫기 실패:", e);
-        $c.win.alert("탭을 닫는 중 오류가 발생했습니다.");
+        scwin.showGlobalToast("탭을 닫는 중 오류가 발생했습니다", "error");
     }
 };
 
@@ -638,7 +638,7 @@ scwin.sbm_selectMenuList_submitdone = function (e) {
     var elHeader = e.responseJSON.elHeader;
 
     if (elHeader == null || elHeader === "" || elHeader === "undefined" || elHeader.resSuc === false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        scwin.showGlobalToast(`에러코드: ${elHeader.resCode} - ${elHeader.resMsg}`, "error");
         return false;
     }
 
@@ -656,6 +656,57 @@ scwin.sbm_selectMenuList_submitdone = function (e) {
         src: "dashboard.xml",
         frameMode: "wframe"
     });
+};
+
+// ================================================================
+// 전역 토스트 알림창 함수
+// ================================================================
+
+/**
+ * 전역 토스트 알림창 표시 함수
+ * @param {string} message - 표시할 메시지
+ * @param {string} type - 토스트 타입 (success, error, warning, info)
+ * @param {number} duration - 표시 시간 (기본 3초)
+ */
+scwin.showGlobalToast = function(message, type = 'success', duration = 3000) {
+    // 웹스퀘어 API 사용하여 컴포넌트 가져오기
+    var toastElement = $p.$("#txt_globalToast")[0];
+    
+    // 메시지 설정
+    txt_globalToast.setValue(message);
+    
+    // 기존 클래스 제거 후 새 클래스 적용
+    toastElement.className = `notification-toast ${type}`;
+    
+    // 토스트 표시
+    toastElement.style.display = 'block';
+    
+    // 슬라이드 인 애니메이션 (약간의 지연 후)
+    setTimeout(function() {
+        toastElement.classList.add('show');
+    }, 50);
+    
+    // 자동 숨김
+    setTimeout(function() {
+        scwin.hideGlobalToast();
+    }, duration);
+};
+
+/**
+ * 전역 토스트 알림창 숨김 함수
+ */
+scwin.hideGlobalToast = function() {
+    var toastElement = $p.$("#txt_globalToast")[0];
+    
+    // 페이드 아웃 클래스 추가
+    toastElement.classList.add('fade-out');
+    toastElement.classList.remove('show');
+    
+    // 애니메이션 완료 후 숨김
+    setTimeout(function() {
+        toastElement.style.display = 'none';
+        toastElement.classList.remove('fade-out');
+    }, 300);
 };
 ]]></script>
 	</head>
@@ -729,5 +780,9 @@ scwin.sbm_selectMenuList_submitdone = function (e) {
 			</xf:group>
 
 		</xf:group>
+		
+		<!-- ===== 전역 토스트 알림창 ===== -->
+		<w2:textbox class="notification-toast" dataType="" id="txt_globalToast" label="" style="display:none;">
+		</w2:textbox>
 	</body>
 </html>

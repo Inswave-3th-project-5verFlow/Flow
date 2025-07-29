@@ -104,7 +104,7 @@ scwin.sbm_selectUserVoList_submitdone = function (e) {
     var elHeader = e.responseJSON.elHeader;
 
     if (elHeader == null || elHeader === "" || elHeader === "undefined" || elHeader.resSuc === false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        scwin.showToast(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`, "error");
         return false;
     }
 
@@ -152,10 +152,10 @@ scwin.btn_new_onclick = function (e) {
                 "pjtId": scwin.PJT_ID,
                 "userId": ipt_userId.getValue(),
                 "grpId": slt_grp.getValue(),
-                "rowStatus" : "C"
+                "rowStatus": "C"
             }]
         }
-    };    
+    };
     $c.sbm.execute(sbm_insertPugVo, reqObj);
 };
 
@@ -172,11 +172,12 @@ scwin.sbm_insertPugVo_submitdone = function (e) {
     var elHeader = e.responseJSON.elHeader;
 
     if (elHeader == null || elHeader === "" || elHeader === "undefined" || elHeader.resSuc === false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        scwin.showToast(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`, "error");
         return false;
     }
 
-    $c.win.alert("등록이 완료되었습니다.");
+    scwin.showToast("등록이 완료되었습니다", "success");
+    $p.closePopup();
 };
 
 /**
@@ -192,7 +193,7 @@ scwin.sbm_selectGrpVoList_submitdone = function (e) {
     var elHeader = e.responseJSON.elHeader;
 
     if (elHeader == null || elHeader === "" || elHeader === "undefined" || elHeader.resSuc === false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        scwin.showToast(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`, "error");
         return false;
     }
 
@@ -209,6 +210,22 @@ scwin.sbm_selectGrpVoList_submitdone = function (e) {
  */
 scwin.btn_close_onclick = function (e) {
     $p.closePopup();
+};
+
+// 전역 토스트 함수 호출 헬퍼
+scwin.showToast = function (message, type = 'success', duration = 3000) {
+    // 메인 페이지의 전역 토스트 함수 호출
+    try {
+        if ($p.top() && $p.top().scwin && $p.top().scwin.showGlobalToast) {
+            $p.top().scwin.showGlobalToast(message, type, duration);
+        } else {
+            // 전역 함수를 찾을 수 없는 경우 기본 alert 사용
+            $c.win.alert(message);
+        }
+    } catch (e) {
+        console.error("토스트 표시 중 오류:", e);
+        $c.win.alert(message);
+    }
 };
 ]]></script>
 	</head>

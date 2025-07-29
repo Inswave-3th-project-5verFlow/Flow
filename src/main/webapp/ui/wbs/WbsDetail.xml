@@ -220,7 +220,7 @@ scwin.receiveTaskData = function (returnData) {
         console.log(selectedTask.taskDepth);
         dmp_taskDetail.set("taskDepth", parseInt(selectedTask.taskDepth) + 1);
         dmp_taskDetail.set("deTaskId", selectedTask.taskId);
-        $c.win.alert("선택된 상위업무: " + selectedTask.taskName);
+        scwin.showToast("상위업무가 '" + selectedTask.taskName + "'으로 설정되었습니다", "info");
     }
 };
 
@@ -233,7 +233,7 @@ scwin.btn_save_onclick = function (e) {
     var taskData = dmp_taskDetail.getJSON();
 
     if (!taskData.taskName || taskData.taskName.trim() === "") {
-        $c.win.alert("업무명을 입력해주세요.");
+        scwin.showToast("업무명을 입력해주세요.","warning",);
         return;
     }
 
@@ -276,16 +276,16 @@ scwin.sbm_saveTaskDetail_submitdone = function (e) {
     var isNewTask = !taskData.taskId || taskData.taskId === "" || taskData.taskId === "0";
 
     if (isNewTask) {
-        $c.win.alert("업무가 등록되었습니다.");
+        scwin.showToast("업무가 성공적으로 등록되었습니다", "success");
     } else {
-        $c.win.alert("업무 정보가 수정되었습니다.");
+        scwin.showToast("업무 정보가 수정되었습니다", "success");
     }
 
     // // 부모 페이지 재조회 요청
-    // //$p.parent().scwin.btn_search_onclick();
+    $p.parent().scwin.btn_search_onclick();
 
     // // 팝업 닫기
-    // $p.closePopup();
+    $p.closePopup();
 };
 
 // 삭제 버튼
@@ -309,7 +309,6 @@ scwin.btn_delete_onclick = function (e) {
                     }
                 };
                 $c.sbm.execute(sbm_deleteTaskDetail, reqObj);
-                $c.win.alert("업무가 삭제되었습니다.");
             }
         })
     }
@@ -323,7 +322,7 @@ scwin.sbm_deleteTaskDetail_submitdone = function (e) {
         return false;
     } else {
         // 삭제되었습니다. msg 출력
-        $c.win.alert("삭제되었습니다.");
+        scwin.showToast("업무가 삭제되었습니다", "success");
     }
     // 부모 페이지 재조회 요청
     $p.parent().scwin.btn_search_onclick();
@@ -379,7 +378,7 @@ scwin.receiveUserData = function (returnData) {
         dmp_taskDetail.set("taskAsi", selectedUser.name);
         dmp_taskDetail.set("userId", selectedUser.userId);
         
-        $c.win.alert("담당자가 '" + selectedUser.name + "'으로 설정되었습니다.");
+        scwin.showToast("담당자가 '" + selectedUser.name + "'으로 설정되었습니다", "info");
     }
 };
 
@@ -406,6 +405,22 @@ scwin.taskStatus_onchange = function (info) {
         ipt_taskRate.setValue(0);
     }
 };
+
+// 전역 토스트 함수 호출 헬퍼
+scwin.showToast = function(message, type = 'success', duration = 3000) {
+    // 메인 페이지의 전역 토스트 함수 호출
+    try {
+        if ($p.top() && $p.top().scwin && $p.top().scwin.showGlobalToast) {
+            $p.top().scwin.showGlobalToast(message, type, duration);
+        } else {
+            // 전역 함수를 찾을 수 없는 경우 기본 alert 사용
+            $c.win.alert(message);
+        }
+    } catch (e) {
+        console.error("토스트 표시 중 오류:", e);
+        $c.win.alert(message);
+    }
+};
 ]]></script>
 	</head>
 
@@ -422,7 +437,8 @@ scwin.taskStatus_onchange = function (info) {
 
 				<!-- 기본 정보 섹션 -->
 				<xf:group class="section" style="margin-bottom:20px;" id="grp_taskInfo">
-					<w2:textbox class="section_title" label="기본 정보" style="font-size:16px; font-weight:bold; margin-bottom:10px; color:#333;" />
+					<w2:textbox class="section_title" label="기본 정보"
+						style="font-size:16px; font-weight:bold; margin-bottom:10px; color:#333;" />
 
 					<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" style="width:100%;" tagname="table">
 						<w2:attributes>
@@ -442,7 +458,7 @@ scwin.taskStatus_onchange = function (info) {
 								<span style="color: red;">*</span>
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
-								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskName" id="ipt_pjtName"/>
+								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskName" id="ipt_pjtName" />
 							</xf:group>
 							<xf:group class="w2tb_th" style="" tagname="th">
 								<w2:textbox label="업무구분" style="" />
@@ -506,7 +522,7 @@ scwin.taskStatus_onchange = function (info) {
 									<w2:colspan>3</w2:colspan>
 								</w2:attributes>
 								<xf:group style="display:flex; align-items:center;">
-									<xf:input style="width:350px;" ref="data:dmp_taskDetail.ptTaskName" readOnly="false"/>
+									<xf:input style="width:350px;" ref="data:dmp_taskDetail.ptTaskName" readOnly="false" />
 									<xf:trigger class="btn_cm" id="btn_ptTaskName" style="margin-left:5px; padding:2px 8px;" type="button"
 										ev:onclick="scwin.btn_ptTaskName_onclick">
 										<xf:label>선택</xf:label>
@@ -523,7 +539,7 @@ scwin.taskStatus_onchange = function (info) {
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<xf:group style="display:flex; align-items:center;">
-									<xf:input style="width:130px;" ref="data:dmp_taskDetail.taskAsi" id="ipt_taskAsi" readOnly="false"/>
+									<xf:input style="width:130px;" ref="data:dmp_taskDetail.taskAsi" id="ipt_taskAsi" readOnly="false" />
 									<xf:trigger class="btn_cm" id="btn_selectUser" style="margin-left:5px; padding:2px 8px;" type="button"
 										ev:onclick="scwin.btn_selectUser_onclick">
 										<xf:label>선택</xf:label>
@@ -534,7 +550,7 @@ scwin.taskStatus_onchange = function (info) {
 								<w2:textbox label="진척률(%)" style="" />
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
-								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskRate" id="ipt_taskRate" initValue="0"/>
+								<xf:input style="width:180px;" ref="data:dmp_taskDetail.taskRate" id="ipt_taskRate" initValue="0" />
 							</xf:group>
 						</xf:group>
 					</xf:group>
@@ -542,7 +558,8 @@ scwin.taskStatus_onchange = function (info) {
 
 				<!-- 일정 정보 섹션 -->
 				<xf:group class="section" style="margin-bottom:20px;">
-					<w2:textbox class="section_title" label="일정 정보" style="font-size:16px; font-weight:bold; margin-bottom:10px; color:#333;" />
+					<w2:textbox class="section_title" label="일정 정보"
+						style="font-size:16px; font-weight:bold; margin-bottom:10px; color:#333;" />
 
 					<xf:group adaptive="layout" adaptiveThreshold="1200" class="w2tb tbl" style="width:100%;" tagname="table">
 						<w2:attributes>
@@ -580,11 +597,14 @@ scwin.taskStatus_onchange = function (info) {
 				<!-- 버튼 영역 -->
 				<xf:group class="btnbox" style="">
 					<xf:group class="rt" style="">
-						<xf:trigger class="btn_cm pt" id="btn_save" style="background-color:#98BED6;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border-color: #fff;border: none;" type="button" ev:onclick="scwin.btn_save_onclick">
+						<xf:trigger class="btn_cm pt" id="btn_save"
+							style="background-color:#98BED6;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border-color: #fff;border: none;"
+							type="button" ev:onclick="scwin.btn_save_onclick">
 							<xf:label><![CDATA[버튼]]></xf:label>
 						</xf:trigger>
 
-						<xf:trigger class="btn_cm pt" id="btn_delete" style="background-color:#ec9192;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border: none;" type="button"
+						<xf:trigger class="btn_cm pt" id="btn_delete"
+							style="background-color:#ec9192;color: #ffffff !important;height: 36px;font-size: 14px;width: 80px;border: none;" type="button"
 							ev:onclick="scwin.btn_delete_onclick">
 							<xf:label><![CDATA[삭제]]></xf:label>
 						</xf:trigger>

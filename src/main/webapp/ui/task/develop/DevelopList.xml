@@ -206,7 +206,7 @@ scwin.sbm_saveDesignVoList_submitdone = function (e) {
         $c.win.alert($p, `에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
         return false;
     } else {
-        $c.win.alert($p, "저장되었습니다.");
+        scwin.showToast("저장되었습니다.");
     }
     scwin.btn_search_onclick();
 };
@@ -218,7 +218,7 @@ scwin.grd_list_oncellclick = function (row, col, colId) {
     }
     if (colId === "taskId") {
         if (rowData.isTest === "1") scwin.navigateToTaskTab(row, false);
-        else $c.win.alert("해당 개발업무에 등록된 테스트가 없습니다.");
+        else scwin.showToast("해당 개발업무에 등록된 테스트가 없습니다.","warning");
 
     }
 };
@@ -266,12 +266,12 @@ scwin.navigateToTaskTab = function (rowIndex, flag) {
             $p.parent().scwin.openTab(targetUrl, tabTitle, tabData);
         } else {
             console.error("메인페이지의 openTab 함수를 찾을 수 없습니다.");
-            $c.win.alert("페이지 이동에 실패했습니다.");
+            scwin.showToast("페이지 이동에 실패했습니다.","warning");
         }
 
     } catch (error) {
         console.error("테스트 화면 이동 중 오류:", error);
-        $c.win.alert("화면 이동 중 오류가 발생했습니다.");
+        scwin.showToast("화면 이동 중 오류가 발생했습니다.","warning");
     }
 };
 
@@ -344,7 +344,7 @@ scwin.receiveTaskData = function (returnData) {
             dlt_designVoList.setCellData(currentRowIndex, "taskDepth", parseInt(selectedTask.taskDepth) + 1);
 
             console.log(`상위업무 선택 완료: [${selectedTask.taskName}] (원본 depth: ${selectedTask.taskDepth}, 설정될 depth: ${parseInt(selectedTask.taskDepth) + 1})`);
-            $c.win.alert("선택된 업무: " + selectedTask.taskName);
+            scwin.showToast("선택된 업무: " + selectedTask.taskName);
         }
     }
 };
@@ -357,7 +357,7 @@ scwin.btn_excel_download_onclick = function (e) {
     console.log("globalElData:", scwin.globalElData);
 
     if (totalCount === 0) {
-        $c.win.alert("다운로드할 데이터가 없습니다.");
+        scwin.showToast("다운로드할 데이터가 없습니다.","info");
         return;
     }
 
@@ -389,7 +389,7 @@ scwin.sbm_selectDesignVoListForExcel_submitdone = function (e) {
 
     // 전체 데이터가 없는 경우
     if (!elData.designVoList || elData.designVoList.length === 0) {
-        $c.win.alert("다운로드할 데이터가 없습니다.");
+        scwin.showToast("다운로드할 데이터가 없습니다.","info");
         return;
     }
 
@@ -413,12 +413,12 @@ scwin.sbm_selectDesignVoListForExcel_submitdone = function (e) {
         timeout: 60000,
         checkInterval: 1000,
         onSuccessCallback: function () {
-            $c.win.alert("엑셀 파일 다운로드가 완료되었습니다.");
+            scwin.showToast("엑셀 파일 다운로드가 완료되었습니다.");
             // 원래 데이터로 복원
             dlt_designVoList.setJSON(originalData);
         },
         onFailureCallback: function () {
-            $c.win.alert("엑셀 파일 다운로드에 실패했습니다.");
+            scwin.showToast("엑셀 파일 다운로드에 실패했습니다.","warning");
             // 원래 데이터로 복원
             dlt_designVoList.setJSON(originalData);
         }
@@ -553,12 +553,12 @@ scwin.btn_excel_template_download_onclick = function (e) {
             // 원래 데이터로 복원
             dlt_designVoList.setJSON(originalData);
 
-            $c.win.alert("템플릿 다운로드가 완료되었습니다.");
+            scwin.showToast("템플릿 다운로드가 완료되었습니다.");
         },
         onFailureCallback: function () {
             // 원래 데이터로 복원
             dlt_designVoList.setJSON(originalData);
-            $c.win.alert("템플릿 다운로드에 실패했습니다.");
+            scwin.showToast("템플릿 다운로드에 실패했습니다.","warning");
         }
     };
 
@@ -700,6 +700,22 @@ scwin.setTestStatusStyleSimple = function () {
         ];
 
         styles.forEach(style => grd_list.setStyleAll(style));
+    }
+};
+
+// 전역 토스트 함수 호출 헬퍼
+scwin.showToast = function (message, type = 'success', duration = 3000) {
+    // 메인 페이지의 전역 토스트 함수 호출
+    try {
+        if ($p.top() && $p.top().scwin && $p.top().scwin.showGlobalToast) {
+            $p.top().scwin.showGlobalToast(message, type, duration);
+        } else {
+            // 전역 함수를 찾을 수 없는 경우 기본 alert 사용
+            $c.win.alert(message);
+        }
+    } catch (e) {
+        console.error("토스트 표시 중 오류:", e);
+        $c.win.alert(message);
     }
 };]]></script>
 	</head>

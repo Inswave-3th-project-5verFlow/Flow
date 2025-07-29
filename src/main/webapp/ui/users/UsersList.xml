@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="/InsWebApp/css/main/Main.css" type="text/css"?>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:w2="http://www.inswave.com/websquare"
 	xmlns:xf="http://www.w3.org/2002/xforms">
 	<head>
@@ -90,7 +91,7 @@ scwin.sbm_usersList_submitdone = function (e) {
     var elData = e.responseJSON.elData;
     var elHeader = e.responseJSON.elHeader;
     if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        scwin.showToast(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`, "error");
         return false;
     }
 
@@ -194,7 +195,7 @@ scwin.grd_list_onafteredit = function (rowIndex, columnIndex, value) {
     if (columnId === "email" || columnId === "phone") {
         var result = scwin.validateAndStyleCell(rowIndex, columnId, value);
         if (!result.isValid) {
-            $c.win.alert(`올바른 ${columnId === "email" ? "이메일" : "연락처"} 형식을 입력해주세요.${columnId === "phone" ? "\n예: 010-1234-5678 또는 01012345678" : ""}`);
+            scwin.showToast(`올바른 ${columnId === "email" ? "이메일" : "연락처"} 형식을 입력해주세요.${columnId === "phone" ? "\n예: 010-1234-5678 또는 01012345678" : ""}`, "warning");
             return false;
         }
     }
@@ -206,7 +207,7 @@ scwin.btn_save_onclick = function (e) {
 
     // 수정된 데이터가 있는지 확인
     if (!modifyData || modifyData.length === 0) {
-        $c.win.alert("변경된 데이터가 없습니다.");
+        scwin.showToast("변경된 데이터가 없습니다", "info");
         return;
     }
 
@@ -219,13 +220,13 @@ scwin.btn_save_onclick = function (e) {
 
         // 이름 필수 입력 검사
         if (!row.name || row.name.trim() === "") {
-            $c.win.alert(`이름은 필수 입력 항목입니다.`);
+            scwin.showToast(`이름은 필수 입력 항목입니다`, "warning");
             return;
         }
 
         // 계정명 필수 입력 검사
         if (!row.accountId || row.accountId.trim() === "") {
-            $c.win.alert(`계정명은 필수 입력 항목입니다.`);
+            scwin.showToast(`계정명은 필수 입력 항목입니다`, "warning");
             return;
         }
 
@@ -240,37 +241,37 @@ scwin.btn_save_onclick = function (e) {
         }
 
         if (duplicateAccountId) {
-            $c.win.alert(`계정명이 중복됩니다. 다른 계정명을 입력해주세요.`);
+            scwin.showToast(`계정명이 중복됩니다. 다른 계정명을 입력해주세요`, "warning");
             return;
         }
 
         // 이메일 유효성 검사
         if (!scwin.validateEmail(row.email)) {
-            $c.win.alert(`이메일 형식이 올바르지 않습니다.`);
+            scwin.showToast(`이메일 형식이 올바르지 않습니다`, "warning");
             return;
         }
 
         // 연락처 유효성 검사
         if (!scwin.validatePhone(row.phone)) {
-            $c.win.alert(`연락처 형식이 올바르지 않습니다.`);
+            scwin.showToast(`연락처 형식이 올바르지 않습니다`, "warning");
             return;
         }
 
         // 삭제여부 필수 입력 검사
         if (row.isDeleted === undefined || row.isDeleted === null || row.isDeleted === "") {
-            $c.win.alert(`삭제여부는 필수 선택 항목입니다.`);
+            scwin.showToast(`삭제여부는 필수 선택 항목입니다`, "warning");
             return;
         }
 
         // 관리자여부 필수 입력 검사
         if (row.isAdmin === undefined || row.isAdmin === null || row.isAdmin === "") {
-            $c.win.alert(`관리자여부는 필수 선택 항목입니다.`);
+            scwin.showToast(`관리자여부는 필수 선택 항목입니다`, "warning");
             return;
         }
 
         // 생성권한 필수 입력 검사
         if (row.isCreate === undefined || row.isCreate === null || row.isCreate === "") {
-            $c.win.alert(`생성권한은 필수 선택 항목입니다.`);
+            scwin.showToast(`생성권한은 필수 선택 항목입니다`, "warning");
             return;
         }
     }
@@ -288,11 +289,11 @@ scwin.sbm_saveUsersVoList_submitdone = function (e) {
     var elHeader = e.responseJSON.elHeader;
 
     if (elHeader == null || elHeader === "" || elHeader === "undefiend" || elHeader.resSuc == false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        scwin.showToast(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`, "error");
         return false;
     }
 
-    $c.win.alert("저장이 완료되었습니다.");
+    scwin.showToast("저장이 완료되었습니다", "success");
 
     // 재조회
     scwin.btn_search_onclick();
@@ -306,7 +307,7 @@ scwin.grd_list_oncellclick = function (rowIndex, columnIndex, columnId) {
 
         // userId가 존재하는지 확인
         if (!userId || userId.trim() === "") {
-            $c.win.alert("사용자 ID가 없어 비밀번호 초기화를 할 수 없습니다.");
+            scwin.showToast("사용자 ID가 없어 비밀번호 초기화를 할 수 없습니다", "error");
             return;
         }
 
@@ -327,11 +328,11 @@ scwin.sbm_resetPassword_submitdone = function (e) {
     var elHeader = e.responseJSON.elHeader;
 
     if (elHeader == null || elHeader === "" || elHeader === "undefiend" || elHeader.resSuc == false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        scwin.showToast(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`, "error");
         return false;
     }
 
-    $c.win.alert("변경이 완료되었습니다.");
+    scwin.showToast("변경이 완료되었습니다", "success");
     scwin.btn_search_onclick();
 };
 
@@ -339,6 +340,39 @@ scwin.sbm_resetPassword_submitdone = function (e) {
 scwin.btn_return_onclick = function (e) {
     WebSquare.localStorage.removeItem("adminPage");
     $p.url("/InsWebApp/websquare/websquare.html?w2xPath=/InsWebApp/ui/testMain.xml");
+};
+
+// 로컬 토스트 함수 구현 (Main.css의 스타일 활용)
+scwin.showLocalToast = function(message, type = 'success', duration = 3000) {
+    var toastElement = $p.$("#txt_localToast")[0];
+    txt_localToast.setValue(message);
+    toastElement.className = `notification-toast ${type}`;
+    toastElement.style.display = 'block';
+    
+    setTimeout(function() {
+        toastElement.classList.add('show');
+    }, 50);
+    
+    setTimeout(function() {
+        scwin.hideLocalToast();
+    }, duration);
+};
+
+// 로컬 토스트 숨김 함수
+scwin.hideLocalToast = function() {
+    var toastElement = $p.$("#txt_localToast")[0];
+    toastElement.classList.remove('show');
+    toastElement.classList.add('fade-out');
+    
+    setTimeout(function() {
+        toastElement.style.display = 'none';
+        toastElement.classList.remove('fade-out');
+    }, 400);
+};
+
+// showToast 함수를 로컬 토스트로 변경
+scwin.showToast = function(message, type = 'success', duration = 3000) {
+    scwin.showLocalToast(message, type, duration);
 };
 ]]></script>
 	</head>
@@ -511,5 +545,8 @@ scwin.btn_return_onclick = function (e) {
 				</xf:group>
 			</xf:group>
 		</xf:group>
+		
+		<!-- 로컬 토스트 알림 컴포넌트 -->
+		<w2:textbox id="txt_localToast" class="notification-toast" label="토스트 메시지"></w2:textbox>
 	</body>
 </html>
