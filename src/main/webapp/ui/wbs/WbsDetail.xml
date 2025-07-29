@@ -506,7 +506,7 @@ scwin.taskStatus_onchange = function (info) {
 									<w2:colspan>3</w2:colspan>
 								</w2:attributes>
 								<xf:group style="display:flex; align-items:center;">
-									<xf:input style="width:350px;" ref="data:dmp_taskDetail.ptTaskName" readOnly="true" />
+									<xf:input style="width:350px;" ref="data:dmp_taskDetail.ptTaskName" readOnly="false"/>
 									<xf:trigger class="btn_cm" id="btn_ptTaskName" style="margin-left:5px; padding:2px 8px;" type="button"
 										ev:onclick="scwin.btn_ptTaskName_onclick">
 										<xf:label>선택</xf:label>
@@ -523,7 +523,7 @@ scwin.taskStatus_onchange = function (info) {
 							</xf:group>
 							<xf:group class="w2tb_td" tagname="td">
 								<xf:group style="display:flex; align-items:center;">
-									<xf:input style="width:130px;" ref="data:dmp_taskDetail.taskAsi" id="ipt_taskAsi" readOnly="true"/>
+									<xf:input style="width:130px;" ref="data:dmp_taskDetail.taskAsi" id="ipt_taskAsi" readOnly="false"/>
 									<xf:trigger class="btn_cm" id="btn_selectUser" style="margin-left:5px; padding:2px 8px;" type="button"
 										ev:onclick="scwin.btn_selectUser_onclick">
 										<xf:label>선택</xf:label>
