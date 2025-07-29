@@ -130,13 +130,339 @@
 scwin.currentMode = "new";
 scwin.currentDefectId = "";
 
+
+
+
 /**
- * 페이지 로드 시 초기화
+ * 페이지 로드 시 초기화 (UnitTest와 동일한 구조)
  */
 scwin.onpageload = function() {
-    console.log("결함 팝업 로드 완료");
-    scwin.initializeDefectData();
+    console.log("결함 팝업 로드");
+    
+    // 초기화
+    scwin.initializeData();
+    
+    // 사용자 정보 가져오기 (UnitTest와 동일한 방식)
+    scwin.getCurrentUserInfo();
+    
+    // 부모 창에서 프로젝트 ID 가져오기
+    scwin.getProjectIdFromParent();
+    
+    // 사용자 이름 가져오기 테스트
+    var userName = scwin.getCurrentUserName();
+    console.log("=== 사용자 정보 최종 확인 ===");
+    console.log("CURRENT_USER_ID:", scwin.CURRENT_USER_ID);
+    console.log("USER_NAME:", userName);
+    console.log("CURRENT_PROJECT_ID:", scwin.CURRENT_PROJECT_ID);
+    
+    // 부모창에서 전달받은 데이터 처리
+    scwin.initializeFromParentData();
+    
+    // 모드에 따른 초기화
+    scwin.initializeByMode();
+    
+    console.log("팝업 로드 완료");
 };
+
+/**
+ * DefectPopup.xml용 데이터 초기화 (UnitTestPopup과 동일한 구조)
+ */
+scwin.initializeData = function() {
+    console.log("결함 팝업 데이터 초기화 시작");
+    
+    // 전역 변수 초기화
+    scwin.CURRENT_PROJECT_ID = "";
+    scwin.CURRENT_USER_ID = "";
+    scwin.CURRENT_USER_GROUP_ID = "";
+    scwin.currentMode = "new"; // new, edit, view
+    scwin.currentDefectId = "";
+    
+    // 데이터맵 초기화
+    try {
+        dmp_defDetail.setEmptyValue();
+        
+        // 결함 기본값 설정
+        dmp_defDetail.set("status", "대기");
+        dmp_defDetail.set("priority", "보통");
+        dmp_defDetail.set("isDeleted", "N");
+        
+        console.log("결함 데이터맵 초기화 완료");
+    } catch (e) {
+        console.error("데이터맵 초기화 중 오류:", e);
+    }
+    
+    // 데이터리스트 초기화
+    try {
+        dlt_defAttVoList.setJSON([]);
+        
+        console.log("파일 데이터리스트 초기화 완료");
+    } catch (e) {
+        console.error("데이터리스트 초기화 실패:", e);
+    }
+    
+    console.log("결함 팝업 데이터 초기화 완료");
+};
+
+
+/**
+ * 사용자 정보 가져오기 (UnitTest와 동일)
+ */
+scwin.getCurrentUserInfo = function() {
+    try {
+        var parentWindow = $p.getParentWindow();
+        if (parentWindow) {
+            var headerFrame = parentWindow.$p.getComponentById("pg_header");
+            if (headerFrame && headerFrame.getWindow && headerFrame.getWindow().scwin) {
+                var headerScwin = headerFrame.getWindow().scwin;
+                
+                scwin.CURRENT_USER_ID = headerScwin.USER_ID || "1";
+                scwin.CURRENT_USER_NAME = headerScwin.USER_NAME || "사용자";
+                
+                // 프로젝트 정보
+                if (parentWindow.scwin && parentWindow.scwin.SEL_PJT_ID) {
+                    scwin.CURRENT_PROJECT_ID = parentWindow.scwin.SEL_PJT_ID;
+                }
+                
+                console.log("헤더에서 가져온 사용자 정보:");
+                console.log("- USER_ID:", scwin.CURRENT_USER_ID);
+                console.log("- USER_NAME:", scwin.CURRENT_USER_NAME);
+                console.log("- PROJECT_ID:", scwin.CURRENT_PROJECT_ID);
+                
+                return true;
+            }
+        }
+        
+        // 기본값 설정
+        scwin.CURRENT_USER_ID = "1";
+        scwin.CURRENT_USER_NAME = "사용자";
+        scwin.CURRENT_PROJECT_ID = "";
+        console.log("기본값으로 사용자 정보 설정");
+        return false;
+        
+    } catch (e) {
+        console.error("사용자 정보 가져오기 실패:", e);
+        scwin.CURRENT_USER_ID = "1";
+        scwin.CURRENT_USER_NAME = "사용자";
+        scwin.CURRENT_PROJECT_ID = "";
+        return false;
+    }
+};
+
+
+/**
+ * 부모창에서 전달받은 데이터 처리 (단위테스트 방식 적용)
+ */
+scwin.initializeFromParentData = function() {
+    try {
+        console.log("=== 결함 팝업 데이터 초기화 시작 (UnitTest 방식) ===");
+        
+        // 1. 표준 방식으로 파라미터 가져오기 (UnitTest와 동일)
+        var paramData = $p.getParameter();
+        console.log("팝업 파라미터 전체:", paramData);
+        
+        // 2. getParameter()가 undefined인 경우 대안 방법들 시도 (UnitTest와 동일)
+        if (!paramData) {
+            console.log("getParameter()가 undefined, 대안 방법들 시도");
+            
+            // 방법 1: parent window에서 직접 확인
+            try {
+                var parent = $p.getParentWindow();
+                if (parent && parent.tempPopupData) {
+                    paramData = parent.tempPopupData;
+                    console.log("parent.tempPopupData에서 가져온 데이터:", paramData);
+                }
+            } catch(e) {
+                console.log("parent window 방법 실패:", e);
+            }
+            
+            // 방법 2: window에서 확인
+            if (!paramData && window.tempPopupData) {
+                paramData = window.tempPopupData;
+                console.log("window.tempPopupData에서 가져온 데이터:", paramData);
+            }
+        }
+        
+        // 3. paramData 구조 확인 및 처리 (UnitTest와 동일한 구조)
+        if (paramData) {
+            console.log("파라미터 데이터 구조 확인:", paramData);
+            
+            // detailData가 있는 경우 (조회/수정 모드) - UnitTest와 동일한 구조
+            if (paramData.detailData) {
+                var detailData = paramData.detailData;
+                console.log("전달받은 detailData:", detailData);
+                
+                scwin.currentMode = detailData.mode || "view";
+                scwin.CURRENT_PROJECT_ID = detailData.pjtId || "";
+                scwin.CURRENT_USER_ID = detailData.currentUserId || "1";
+                
+                if (detailData.defectData) {
+                    console.log("상세 데이터 설정:", detailData.defectData);
+                    dmp_defDetail.setJSON(detailData.defectData);
+                    
+                    // 조회/수정 모드에서 파일 목록 로드
+                    if (scwin.currentMode === "view" || scwin.currentMode === "edit") {
+                        setTimeout(function() {
+                            console.log("서버에서 상세 데이터 재조회 시작");
+                            // 필요시 서버 재조회 로직 추가
+                        }, 100);
+                    }
+                    
+                    // 파일 목록 로드
+                    setTimeout(function() {
+                        scwin.loadDefFileList();
+                    }, 200);
+                }
+            } 
+            // defectData가 있는 경우 (등록 모드)
+            else if (paramData.defectData) {
+                var defectData = paramData.defectData;
+                console.log("전달받은 defectData:", defectData);
+                
+                scwin.currentMode = defectData.mode || "new";
+                scwin.CURRENT_PROJECT_ID = defectData.pjtId || "";
+                scwin.CURRENT_USER_ID = defectData.currentUserId || "1";
+                
+                if (scwin.currentMode === "new") {
+                    console.log("등록 모드 - 기본값 설정");
+                    
+                    // 기본값 설정 (UnitTest와 동일한 방식)
+                    dmp_defDetail.set("status", "대기");
+                    dmp_defDetail.set("priority", "보통");
+                    dmp_defDetail.set("isDeleted", "N");
+                    dmp_defDetail.set("assignee", scwin.CURRENT_USER_ID);
+                    dmp_defDetail.set("pjtId", scwin.CURRENT_PROJECT_ID);
+                    
+                    if (defectData.currentUserName) {
+                        console.log("사용자명 설정:", defectData.currentUserName);
+                        // 필요시 추가 사용자 정보 설정
+                    }
+                }
+            }
+            // 직접 데이터가 전달된 경우
+            else if (paramData.data) {
+                console.log("직접 데이터 전달됨:", paramData.data);
+                var directData = paramData.data;
+                
+                scwin.currentMode = directData.mode || "new";
+                scwin.CURRENT_PROJECT_ID = directData.pjtId || "";
+                scwin.CURRENT_USER_ID = directData.currentUserId || "1";
+                
+                if (scwin.currentMode === "new") {
+                    dmp_defDetail.set("status", "대기");
+                    dmp_defDetail.set("priority", "보통");
+                    dmp_defDetail.set("isDeleted", "N");
+                    dmp_defDetail.set("assignee", scwin.CURRENT_USER_ID);
+                    dmp_defDetail.set("pjtId", scwin.CURRENT_PROJECT_ID);
+                }
+            }
+        } else {
+            console.log("파라미터 데이터가 없음, 기본 등록 모드로 설정");
+            scwin.currentMode = "new";
+            
+            // 기본값 설정
+            dmp_defDetail.set("status", "대기");
+            dmp_defDetail.set("priority", "보통"); 
+            dmp_defDetail.set("isDeleted", "N");
+        }
+        
+        console.log("최종 설정된 값들:");
+        console.log("현재 모드:", scwin.currentMode);
+        console.log("프로젝트 ID:", scwin.CURRENT_PROJECT_ID);
+        console.log("사용자 ID:", scwin.CURRENT_USER_ID);
+        console.log("데이터맵 내용:", dmp_defDetail.getJSON());
+        
+        // 임시 데이터 정리 (UnitTest와 동일)
+        try {
+            if (window.tempPopupData) {
+                delete window.tempPopupData;
+            }
+            var parent = $p.getParentWindow();
+            if (parent && parent.tempPopupData) {
+                delete parent.tempPopupData;
+            }
+        } catch(e) {
+            console.log("임시 데이터 정리 실패:", e);
+        }
+        
+        console.log("=== 결함 팝업 데이터 초기화 완료 ===");
+        
+    } catch (e) {
+        console.error("부모창 데이터 처리 실패:", e);
+        scwin.currentMode = "new";
+        
+        // 실패 시 기본값 설정
+        dmp_defDetail.set("status", "대기");
+        dmp_defDetail.set("priority", "보통");
+        dmp_defDetail.set("isDeleted", "N");
+    }
+};
+
+/**
+ * 모드에 따른 초기화 (단위테스트 방식 적용)
+ */
+scwin.initializeByMode = function() {
+    console.log("모드별 초기화:", scwin.currentMode);
+    
+    // 파일 관련 초기화
+    dlt_defAttVoList.setJSON([]);
+    
+    // 모드별 설정
+    switch (scwin.currentMode) {
+        case "new":
+            scwin.initializeNewMode();
+            break;
+        case "edit":
+            scwin.initializeEditMode();
+            break;
+        case "view":
+            scwin.initializeViewMode();
+            break;
+        default:
+            scwin.initializeNewMode();
+    }
+};
+
+
+
+/**
+ * 등록 모드 초기화
+ */
+scwin.initializeNewMode = function() {
+    console.log("등록 모드 초기화");
+    
+    // 기본값이 설정되지 않은 경우에만 설정
+    if (!dmp_defDetail.get("status")) {
+        dmp_defDetail.set("status", "대기");
+    }
+    if (!dmp_defDetail.get("priority")) {
+        dmp_defDetail.set("priority", "보통");
+    }
+    if (!dmp_defDetail.get("isDeleted")) {
+        dmp_defDetail.set("isDeleted", "N");
+    }
+    
+    scwin.setFormMode("new");
+    console.log("등록 모드 초기화 완료");
+};
+
+/**
+ * 수정 모드 초기화
+ */
+scwin.initializeEditMode = function() {
+    console.log("수정 모드 초기화");
+    scwin.setFormMode("edit");
+    scwin.loadDefFileList();
+};
+
+/**
+ * 조회 모드 초기화
+ */
+scwin.initializeViewMode = function() {
+    console.log("조회 모드 초기화");
+    scwin.setFormMode("view");
+    scwin.loadDefFileList();
+};
+
 
 /**
  * 결함 팝업 표시 (외부에서 호출)
@@ -148,10 +474,16 @@ scwin.showDefectPopup = function(mode, defectData) {
     
     // 데이터 설정
     if (defectData && mode !== "new") {
+        console.log("기존 데이터 설정:", defectData);
         dmp_defDetail.setJSON(defectData);
         scwin.currentDefectId = defectData.id;
-        scwin.loadDefFileList();
+        
+        // 파일 목록 로드
+        setTimeout(function() {
+            scwin.loadDefFileList();
+        }, 100);
     } else {
+        console.log("초기화 모드");
         scwin.initializeDefectData();
     }
     
@@ -166,7 +498,12 @@ scwin.showDefectPopup = function(mode, defectData) {
         case "view": title = "결함 상세보기"; break;
         default: title = "결함 관리";
     }
-    spn_popupTitle.setValue(title);
+    
+    try {
+        spn_popupTitle.setValue(title);
+    } catch(e) {
+        console.log("제목 설정 실패:", e);
+    }
     
     console.log("결함 팝업 표시 완료");
 };
@@ -186,6 +523,23 @@ scwin.initializeDefectData = function() {
     dlt_defAttVoList.setJSON([]);
     
     console.log("결함 데이터 초기화 완료");
+};
+
+/**
+ * 부모 창에서 프로젝트 ID 가져오기 (UnitTestPopup과 동일)
+ */
+scwin.getProjectIdFromParent = function() {
+    try {
+        var parentWindow = $p.getParentWindow();
+        if (parentWindow && parentWindow.scwin && parentWindow.scwin.SEL_PJT_ID) {
+            scwin.CURRENT_PROJECT_ID = parentWindow.scwin.SEL_PJT_ID;
+            console.log("현재 선택된 프로젝트 ID: " + scwin.CURRENT_PROJECT_ID);
+        } else {
+            console.log("부모 창에서 프로젝트 ID를 찾을 수 없습니다.");
+        }
+    } catch (e) {
+        console.error("부모 창에서 프로젝트 ID 가져오기 실패:", e);
+    }
 };
 
 /**
@@ -601,12 +955,20 @@ scwin.getCurrentUserName = function() {
         if (parentWindow) {
             var headerFrame = parentWindow.$p.getComponentById("pg_header");
             if (headerFrame && headerFrame.getWindow && headerFrame.getWindow().scwin) {
-                return headerFrame.getWindow().scwin.USER_NAME || "현재 사용자";
+                var headerScwin = headerFrame.getWindow().scwin;
+                
+                if (headerScwin.USER_NAME) {
+                    console.log("헤더에서 사용자 이름 가져옴:", headerScwin.USER_NAME);
+                    return headerScwin.USER_NAME;
+                }
             }
         }
+        
+        console.log("헤더에서 사용자 이름을 가져올 수 없음, 기본값 사용");
         return "현재 사용자";
+        
     } catch (e) {
-        console.error("사용자명 가져오기 실패:", e);
+        console.error("사용자 이름 가져오기 실패:", e);
         return "현재 사용자";
     }
 };

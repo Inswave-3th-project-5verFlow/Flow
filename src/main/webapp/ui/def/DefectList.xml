@@ -8,6 +8,20 @@
 		<w2:MSA />
 		<xf:model>
 			<w2:dataCollection baseNode="map">
+                <w2:dataMap baseNode="map" id="dmp_search" style="">
+                    <w2:keyInfo>
+                        <w2:key dataType="text" id="name" name="결함명"></w2:key>
+                        <w2:key dataType="text" id="assignee" name="담당자"></w2:key>
+                        <w2:key dataType="text" id="status" name="상태"></w2:key>
+                        <w2:key dataType="text" id="priority" name="우선순위"></w2:key>
+                        <w2:key dataType="text" id="testId" name="테스트ID"></w2:key>
+                        <w2:key dataType="text" id="dateFrom" name="시작일"></w2:key>
+                        <w2:key dataType="text" id="dateTo" name="종료일"></w2:key>
+                        <w2:key dataType="text" id="pageIndex" name="페이지번호" defaultValue="1"></w2:key>
+                        <w2:key dataType="text" id="pageSize" name="페이지사이즈" defaultValue="10"></w2:key>
+                        <w2:key dataType="text" id="pjtId" name="프로젝트ID"></w2:key>
+                    </w2:keyInfo>
+                </w2:dataMap>
                 <!-- 검색 조건 -->
                 <w2:dataMap baseNode="map" id="dmp_search" style="">
                     <w2:keyInfo>
@@ -221,19 +235,380 @@ scwin.CURRENT_PROJECT_ID = "";
 scwin.CURRENT_USER_ID = "";
 scwin.CURRENT_USER_GROUP_ID = "";
 
+
+
+/**
+ * 결함 탭으로 전환하면서 검색 데이터 전달
+ */
+scwin.switchToDefectTab = function(searchData) {
+    console.log("결함 탭으로 전환 요청:", searchData);
+    
+    try {
+        // 탭 컨테이너 찾기
+        var tabContainer = $p.getComponentById("tac_main") || 
+                          $p.getComponentById("tac_content") ||
+                          $p.getComponentById("tabContainer");
+        
+        if (!tabContainer) {
+            console.error("탭 컨테이너를 찾을 수 없습니다.");
+            return;
+        }
+        
+        // 결함 탭 찾기
+        var defectTabIndex = -1;
+        var tabCount = tabContainer.getTabCount ? tabContainer.getTabCount() : 0;
+        
+        for (var i = 0; i < tabCount; i++) {
+            var tabLabel = tabContainer.getTabLabel ? tabContainer.getTabLabel(i) : "";
+            if (tabLabel && (tabLabel.indexOf("결함") >= 0 || tabLabel.indexOf("defect") >= 0 || tabLabel.indexOf("Defect") >= 0)) {
+                defectTabIndex = i;
+                break;
+            }
+        }
+        
+        if (defectTabIndex >= 0) {
+            console.log("결함 탭 발견, 전환 시작");
+            
+            // 검색 데이터를 임시 저장
+            window.tempDefectSearchData = searchData;
+            
+            // 탭 전환
+            tabContainer.setSelectedIndex(defectTabIndex);
+            
+            console.log("결함 탭 전환 완료");
+            
+        } else {
+            console.error("결함 탭을 찾을 수 없습니다.");
+            alert("결함 관리 탭을 찾을 수 없습니다.");
+        }
+        
+    } catch (e) {
+        console.error("결함 탭 전환 실패:", e);
+        alert("결함 페이지로 이동하는 중 오류가 발생했습니다.");
+    }
+};
+
+/**
+ * 탭 변경 이벤트 처리 (기존 함수에 추가하거나 새로 생성)
+ */
+scwin.handleTabChange = function(selectedIndex, previousIndex) {
+    console.log("탭 변경:", previousIndex, "→", selectedIndex);
+    
+    try {
+        // 결함 탭으로 전환된 경우
+        var tabContainer = $p.getComponentById("tac_main") || 
+                          $p.getComponentById("tac_content") ||
+                          $p.getComponentById("tabContainer");
+        
+        if (tabContainer) {
+            var tabLabel = tabContainer.getTabLabel ? tabContainer.getTabLabel(selectedIndex) : "";
+            
+            if (tabLabel && (tabLabel.indexOf("결함") >= 0 || tabLabel.indexOf("defect") >= 0 || tabLabel.indexOf("Defect") >= 0)) {
+                console.log("결함 탭 활성화됨");
+                
+                // 검색 데이터가 있는 경우 전달
+                setTimeout(function() {
+                    scwin.sendSearchDataToDefectPage();
+                }, 300);
+            }
+        }
+        
+    } catch (e) {
+        console.error("탭 변경 이벤트 처리 실패:", e);
+    }
+};
+
+/**
+ * 결함 페이지에 검색 데이터 전달
+ */
+scwin.sendSearchDataToDefectPage = function() {
+    try {
+        if (!window.tempDefectSearchData) {
+            return;
+        }
+        
+        console.log("결함 페이지에 검색 데이터 전달 시도");
+        
+        // 결함 페이지 프레임 찾기
+        var defectFrame = $p.getComponentById("wframe_defect") ||
+                         $p.getComponentById("defectFrame") ||
+                         $p.getComponentById("pg_defect");
+        
+        if (defectFrame && defectFrame.getWindow) {
+            var defectWindow = defectFrame.getWindow();
+            
+            if (defectWindow && defectWindow.scwin) {
+                // 결함 페이지의 검색 조건 설정 함수 호출
+                if (typeof defectWindow.scwin.setSearchConditionFromUnitTest === 'function') {
+                    defectWindow.scwin.setSearchConditionFromUnitTest(window.tempDefectSearchData);
+                    
+                    // 전달 완료 후 임시 데이터 삭제
+                    delete window.tempDefectSearchData;
+                    
+                    console.log("결함 페이지에 검색 데이터 전달 완료");
+                } else {
+                    console.warn("결함 페이지의 검색 조건 설정 함수를 찾을 수 없습니다.");
+                }
+            } else {
+                console.warn("결함 페이지 스크립트에 접근할 수 없습니다.");
+            }
+        } else {
+            console.warn("결함 페이지 프레임을 찾을 수 없습니다.");
+        }
+        
+    } catch (e) {
+        console.error("결함 페이지에 검색 데이터 전달 실패:", e);
+    }
+};
+
+/**
+ * 단위테스트에서 전달받은 검색 조건 설정 (숨김 모드)
+ */
+scwin.setHiddenSearchConditionFromUnitTest = function(searchData) {
+    console.log("단위테스트에서 숨김 모드 검색 조건 전달받음:", searchData);
+    
+    try {
+        // 검색 조건 초기화
+        dmp_search.setEmptyValue();
+        dmp_search.set("pageIndex", "1");
+        dmp_search.set("pageSize", "1000");
+        
+        // 테스트 ID 검색 조건 설정 (데이터맵에만, UI 표시 안함)
+        if (searchData.searchTestId) {
+            dmp_search.set("testId", searchData.searchTestId);
+            console.log("테스트 ID 검색 조건 설정 (UI 표시 안함):", searchData.searchTestId);
+        }
+        
+        // 프로젝트 ID 설정
+        if (searchData.pjtId) {
+            dmp_search.set("pjtId", searchData.pjtId);
+            scwin.CURRENT_PROJECT_ID = searchData.pjtId;
+        }
+        
+        // 일반 사용자 권한 체크
+        if (!scwin.isPM()) {
+            dmp_search.set("assignee", scwin.CURRENT_USER_ID);
+            console.log("일반 사용자 권한 적용 - 담당자:", scwin.CURRENT_USER_ID);
+        }
+        
+        // UI 필드는 절대 건드리지 않음 (검색 조건을 화면에 표시하지 않음)
+        console.log("UI 검색 필드는 변경하지 않음 - 숨김 모드 검색");
+        
+        console.log("숨김 모드 검색 조건 설정 완료:", dmp_search.getJSON());
+        
+        // 자동 검색 실행
+        if (searchData.autoSearch) {
+            setTimeout(function() {
+                console.log("단위테스트 연동 숨김 모드 자동 검색 실행");
+                scwin.executeHiddenSearchFromUnitTest(searchData);
+            }, 200);
+        }
+        
+    } catch (e) {
+        console.error("단위테스트 숨김 모드 검색 조건 설정 실패:", e);
+    }
+};
+/**
+ * 단위테스트 연동 숨김 검색 실행
+ */
+scwin.executeHiddenSearchFromUnitTest = function(searchData) {
+    console.log("단위테스트 연동 숨김 검색 실행");
+    
+    try {
+        // 프로젝트별 검색 또는 일반 검색
+        if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+            console.log("프로젝트별 결함 숨김 검색 실행:", scwin.CURRENT_PROJECT_ID);
+            scwin.searchDefectsByProject();
+        } else {
+            console.log("일반 결함 숨김 검색 실행");
+            scwin.searchDefects();
+        }
+        
+        // 검색 완료 후 결과 처리
+        setTimeout(function() {
+            scwin.showHiddenSearchResultFromUnitTest(searchData);
+        }, 1000);
+        
+    } catch (e) {
+        console.error("단위테스트 연동 숨김 검색 실행 실패:", e);
+    }
+};
+/**
+ * 모든 검색 조건 초기화 (새 함수)
+ */
+scwin.resetAllSearchConditions = function() {
+    console.log("=== 모든 검색 조건 초기화 ===");
+    
+    try {
+        // 데이터맵 완전 초기화
+        dmp_search.setEmptyValue();
+        dmp_search.set("pageIndex", "1");
+        dmp_search.set("pageSize", "1000");
+        
+        // UI 필드들도 초기화
+        var searchFields = [
+            "sel_searchStatus",
+            "inp_searchAssignee", 
+            "inp_searchName",
+            "sel_searchPriority"
+        ];
+        
+        searchFields.forEach(function(fieldId) {
+            try {
+                var field = $p.getComponentById(fieldId);
+                if (field) {
+                    if (field.setValue) {
+                        field.setValue("");
+                    } else if (field.setSelectedIndex) {
+                        field.setSelectedIndex(0);
+                    }
+                }
+            } catch(e) {
+                console.warn("필드 초기화 실패:", fieldId, e);
+            }
+        });
+        
+        // 일반 사용자인 경우에만 담당자 조건 설정
+        if (!scwin.isPM()) {
+            dmp_search.set("assignee", scwin.CURRENT_USER_ID);
+            var assigneeField = $p.getComponentById("inp_searchAssignee");
+            if (assigneeField) {
+                assigneeField.setValue(scwin.CURRENT_USER_ID);
+            }
+        }
+        
+        console.log("검색 조건 초기화 완료");
+        
+    } catch (e) {
+        console.error("검색 조건 초기화 실패:", e);
+    }
+};
+/**
+ * 단위테스트 연동 파라미터 처리 (DevelopList의 handleWbsParam 방식)
+ */
+scwin.handleUnitTestParam = function() {
+    try {
+        var unitTestData = $p.getParameter("tabData");
+        if (unitTestData && unitTestData.fromUnitTest && unitTestData.selectedTestId) {
+            console.log("단위테스트에서 전달받은 테스트ID:", unitTestData.selectedTestId);
+            console.log("단위테스트에서 전달받은 테스트명:", unitTestData.testCaseName);
+            
+            // 검색 조건에 테스트 ID 설정 (UI 필드에는 표시하지 않음)
+            dmp_search.set("testId", unitTestData.selectedTestId);
+            
+            console.log("단위테스트 연동 검색 조건 설정 완료");
+            return true; // 단위테스트에서 온 경우
+        }
+    } catch (e) {
+        console.log("단위테스트 파라미터 처리 생략:", e);
+    }
+    
+    return false; // 단위테스트에서 오지 않은 경우
+};
+
+/**
+ * 단위테스트에서 전달받은 테스트 ID로 검색 조건 설정
+ */
+scwin.setSearchConditionFromUnitTest = function(testId, testName) {
+    console.log("단위테스트에서 호출된 검색 조건 설정:", testId, testName);
+    
+    try {
+        // 검색 조건 초기화
+        dmp_search.setEmptyValue();
+        dmp_search.set("pageIndex", "1");
+        dmp_search.set("pageSize", "1000");
+        
+        // 테스트 ID로 검색 조건 설정 (데이터맵에만)
+        dmp_search.set("testId", testId);
+        
+        // 프로젝트 ID 설정 (있는 경우)
+        if (scwin.CURRENT_PROJECT_ID) {
+            dmp_search.set("pjtId", scwin.CURRENT_PROJECT_ID);
+        }
+        
+        // 일반 사용자 권한 체크
+        if (!scwin.isPM()) {
+            dmp_search.set("assignee", scwin.CURRENT_USER_ID);
+        }
+        
+        console.log("검색 조건 설정 완료:", dmp_search.getJSON());
+        
+        // 검색 실행
+        setTimeout(function() {
+            if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+                scwin.searchDefectsByProject();
+            } else {
+                scwin.searchDefects();
+            }
+        }, 100);
+        
+    } catch (e) {
+        console.error("검색 조건 설정 실패:", e);
+    }
+};
+/**
+ * 외부에서 호출 가능한 검색 함수 (DevelopList의 handleTaskIdFromDevelop 방식)
+ */
+scwin.handleTestIdFromUnitTest = function(testId, testName) {
+    console.log("단위테스트에서 넘어온 테스트 ID:", testId, testName);
+    
+    // 해당 테스트의 결함 목록 필터링해서 보여주기
+    scwin.setSearchConditionFromUnitTest(testId, testName);
+    
+    // 사용자에게 알림 (선택적)
+    var message = `테스트: ${testName}\n테스트ID: ${testId}\n\n이 테스트와 관련된 결함 목록을 조회하고 있습니다.`;
+    
+    setTimeout(function() {
+        console.log(message);
+        // 필요하면 사용자에게 알림
+        // $c.win.alert(message);
+    }, 500);
+};
+
+/**
+ * 단위테스트 연동 숨김 검색 결과 처리
+ */
+scwin.showHiddenSearchResultFromUnitTest = function(searchData) {
+    try {
+        // 상태별 결과 집계
+        var newCount = scwin.newPageInfo ? scwin.newPageInfo.totalCount : 0;
+        var processingCount = scwin.processingPageInfo ? scwin.processingPageInfo.totalCount : 0;
+        var completedCount = scwin.completedPageInfo ? scwin.completedPageInfo.totalCount : 0;
+        var totalResults = newCount + processingCount + completedCount;
+        
+        var testId = searchData.searchTestId;
+        
+        console.log("테스트 ID '" + testId + "'에 대한 결함 검색 결과:", {
+            신규: newCount,
+            진행중: processingCount,
+            완료: completedCount,
+            총합: totalResults
+        });
+        
+        if (totalResults > 0) {
+            console.log("테스트 ID '" + testId + "'에 대한 결함 " + totalResults + "건 발견 (숨김 검색)");
+            
+            // 검색 결과가 있음을 시각적으로 표시 (선택사항)
+            scwin.highlightHiddenSearchResults(testId);
+            
+        } else {
+            console.log("테스트 ID '" + testId + "'에 대한 결함이 없음 (숨김 검색)");
+        }
+        
+    } catch (e) {
+        console.error("숨김 검색 결과 처리 실패:", e);
+    }
+};
+
 /**
  * 페이지 로드 시 초기화
  */
 scwin.onpageload = function() {
     console.log("결함 목록 페이지 로드 시작");
     
-    // 초기화
+    // 기존 초기화 로직
     scwin.initializeData();
-    
-    // 사용자 정보 가져오기
     scwin.getCurrentUserInfo();
-    
-    // 부모 창에서 프로젝트 ID 가져오기
     scwin.getProjectIdFromParent();
     
     // 권한에 따른 UI 조정
@@ -241,14 +616,208 @@ scwin.onpageload = function() {
         scwin.adjustUIByPermission();
     }, 200);
     
-    // 자동 데이터 로드
+    // 단위테스트 연동 파라미터 처리 후 조건부 검색
+    var hasUnitTestParam = scwin.handleUnitTestParam();
+    
+    // 단위테스트에서 온 경우에만 자동 검색, 아니면 초기화 후 전체 검색
     setTimeout(function() {
-        console.log("자동 데이터 로드 시작");
+        if (!hasUnitTestParam) {
+            // 단위테스트에서 오지 않은 경우 검색 조건 완전 초기화
+            console.log("일반 접근 - 검색 조건 초기화");
+            scwin.resetAllSearchConditions();
+        }
         scwin.btn_search_onclick();
-    }, 100);
+    }, 300);
 
     console.log("결함 목록 페이지 로드 완료");
 };
+/**
+ * 조회 버튼 클릭 (수정된 버전)
+ */
+scwin.btn_search_onclick = function(e) {
+    console.log("조회 버튼 클릭");
+    
+    // 현재 검색 조건 로깅
+    console.log("현재 검색 조건:", dmp_search.getJSON());
+    
+    // 일반 사용자인 경우 담당자를 자신으로 제한 (testId 조건이 없는 경우에만)
+    var currentTestId = dmp_search.get("testId");
+    if (!scwin.isPM() && !currentTestId) {
+        dmp_search.set("assignee", scwin.CURRENT_USER_ID);
+    }
+    
+    // 프로젝트가 선택되어 있으면 프로젝트별 검색, 아니면 일반 검색
+    if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+        dmp_search.set("pjtId", scwin.CURRENT_PROJECT_ID);
+        scwin.searchDefectsByProject();
+    } else {
+        scwin.searchDefects();
+    }
+};
+
+/**
+ * 단위테스트에서 전달받은 검색 조건 설정
+ */
+scwin.setSearchConditionFromUnitTest = function(searchData) {
+    console.log("단위테스트에서 검색 조건 전달받음:", searchData);
+    
+    try {
+        // 검색 조건 초기화
+        dmp_search.setEmptyValue();
+        dmp_search.set("pageIndex", "1");
+        dmp_search.set("pageSize", "1000");
+        
+        // 테스트 ID 검색 조건 설정
+        if (searchData.searchTestId) {
+            dmp_search.set("testId", searchData.searchTestId);
+            
+            // UI 필드도 업데이트
+            var testIdField = $p.getComponentById("inp_searchTestId");
+            if (testIdField) {
+                testIdField.setValue(searchData.searchTestId);
+            }
+        }
+        
+        // 프로젝트 ID 설정
+        if (searchData.pjtId) {
+            dmp_search.set("pjtId", searchData.pjtId);
+            scwin.CURRENT_PROJECT_ID = searchData.pjtId;
+        }
+        
+        // 일반 사용자 권한 체크
+        if (!scwin.isPM()) {
+            dmp_search.set("assignee", scwin.CURRENT_USER_ID);
+        }
+        
+        console.log("검색 조건 설정 완료:", dmp_search.getJSON());
+        
+        // 자동 검색 실행
+        if (searchData.autoSearch) {
+            setTimeout(function() {
+                console.log("단위테스트 연동 자동 검색 실행");
+                scwin.executeSearchFromUnitTest();
+            }, 200);
+        }
+        
+    } catch (e) {
+        console.error("단위테스트 검색 조건 설정 실패:", e);
+    }
+};
+
+/**
+ * 단위테스트 연동 검색 실행
+ */
+scwin.executeSearchFromUnitTest = function() {
+    console.log("단위테스트 연동 검색 실행");
+    
+    try {
+        // 프로젝트별 검색 또는 일반 검색
+        if (scwin.CURRENT_PROJECT_ID && scwin.CURRENT_PROJECT_ID !== "") {
+            console.log("프로젝트별 결함 검색 실행:", scwin.CURRENT_PROJECT_ID);
+            scwin.searchDefectsByProject();
+        } else {
+            console.log("일반 결함 검색 실행");
+            scwin.searchDefects();
+        }
+        
+        // 검색 완료 후 결과 알림
+        setTimeout(function() {
+            scwin.showSearchResultFromUnitTest();
+        }, 1000);
+        
+    } catch (e) {
+        console.error("단위테스트 연동 검색 실행 실패:", e);
+    }
+};
+
+/**
+ * 단위테스트 연동 검색 결과 알림
+ */
+scwin.showSearchResultFromUnitTest = function() {
+    try {
+        var totalResults = scwin.newPageInfo.totalCount + 
+                          scwin.processingPageInfo.totalCount + 
+                          scwin.completedPageInfo.totalCount;
+        
+        var testId = dmp_search.get("testId");
+        
+        if (totalResults > 0) {
+            console.log("테스트 ID '" + testId + "'에 대한 결함 " + totalResults + "건 발견");
+            
+            // 검색 결과가 있음을 시각적으로 표시
+            scwin.highlightSearchResults();
+            
+        } else {
+            console.log("테스트 ID '" + testId + "'에 대한 결함이 없음");
+            
+            // 결함이 없다는 메시지 표시 (선택사항)
+            var message = "테스트 ID '" + testId + "'와 관련된 결함이 없습니다.";
+            console.log(message);
+            
+            // 필요하다면 사용자에게 알림
+            // $c.win.alert(message);
+        }
+        
+    } catch (e) {
+        console.error("검색 결과 알림 실패:", e);
+    }
+};
+
+/**
+ * 검색 결과 강조 표시
+ */
+scwin.highlightSearchResults = function() {
+    try {
+        // 검색된 테스트 ID를 강조 표시
+        setTimeout(function() {
+            var testIdFields = document.querySelectorAll('[id*="testId"]');
+            testIdFields.forEach(function(field) {
+                if (field.style) {
+                    field.style.backgroundColor = '#fff3cd';
+                    field.style.border = '2px solid #ffc107';
+                }
+            });
+            
+            // 3초 후 강조 제거
+            setTimeout(function() {
+                testIdFields.forEach(function(field) {
+                    if (field.style) {
+                        field.style.backgroundColor = '';
+                        field.style.border = '';
+                    }
+                });
+            }, 3000);
+            
+        }, 100);
+        
+    } catch (e) {
+        console.error("검색 결과 강조 표시 실패:", e);
+    }
+};
+
+/**
+ * 페이지 로드 시 단위테스트 연동 데이터 확인
+ */
+scwin.checkUnitTestLinkage = function() {
+    try {
+        // 부모 창에서 임시 저장된 검색 데이터 확인
+        var parentWindow = $p.getParentWindow();
+        if (parentWindow && parentWindow.tempDefectSearchData) {
+            console.log("부모 창에서 임시 검색 데이터 발견:", parentWindow.tempDefectSearchData);
+            
+            var searchData = parentWindow.tempDefectSearchData;
+            
+            // 임시 데이터 삭제
+            delete parentWindow.tempDefectSearchData;
+            
+            // 검색 조건 설정 및 실행
+            scwin.setSearchConditionFromUnitTest(searchData);
+        }
+    } catch (e) {
+        console.error("단위테스트 연동 데이터 확인 실패:", e);
+    }
+};
+
 
 /**
  * 데이터 초기화
@@ -893,27 +1462,124 @@ scwin.new_grd_oncelldblclick = function(row, col, colId) {
         return;
     }
     
-    scwin.openDefectPopup(selectedData, "view");
+    // UnitTest와 완전히 동일한 방식으로 팝업 열기
+    scwin.openDefectDetailPopup(selectedData);
 };
 
-scwin.processing_grd_oncelldblclick = function(row, col, colId) {
-    console.log("진행중 그리드 더블클릭 - 행:", row);
-    
-    if (row < 0 || row >= dlt_processingList.getTotalRow()) {
-        console.error("유효하지 않은 행 번호:", row);
-        return;
-    }
-    
-    var selectedData = dlt_processingList.getRowJSON(row);
-    console.log("선택된 진행중 결함 데이터:", selectedData);
+/**
+ * 결함 상세 팝업 열기 (UnitTest의 showDetailPopup과 완전히 동일한 구조)
+ */
+scwin.openDefectDetailPopup = function(selectedData) {
+    console.log("결함 상세 팝업 열기:", selectedData);
     
     if (!selectedData || !selectedData.id) {
-        console.error("결함ID가 없습니다:", selectedData);
         $c.win.alert("유효하지 않은 데이터입니다.");
         return;
     }
     
-    scwin.openDefectPopup(selectedData, "view");
+    // UnitTest와 완전히 동일한 방식으로 데이터 구성
+    var detailData = {
+        mode: "view",
+        defectData: selectedData, // UnitTest의 testData와 동일한 역할
+        pjtId: scwin.CURRENT_PROJECT_ID,
+        currentUserId: scwin.CURRENT_USER_ID
+    };
+
+    console.log("팝업으로 전달할 데이터:", detailData);
+
+    // UnitTest와 동일한 데이터 전달 방법 (다중 방법 적용)
+    // 방법 1: 표준 dataObject 방식
+    var jsnPopupData = {
+        "type": "json",
+        "name": "detailData", // UnitTest와 동일하게 "detailData"로 통일
+        "data": detailData
+    };
+    
+    // 방법 2: 부모 창에 임시 저장 (UnitTest와 동일)
+    try {
+        window.tempPopupData = { detailData: detailData };
+        console.log("임시 데이터 저장:", window.tempPopupData);
+    } catch(e) {
+        console.log("임시 데이터 저장 실패:", e);
+    }
+
+    var options = {
+        id: "defect_detail_popup",
+        type: "wframePopup",
+        width: "1400px",
+        height: "900px",
+        top: "50px",
+        left: "100px",
+        popupName: "결함 상세정보",
+        modal: true,
+        closeAction: "scwin.defectPopup_closeAction",
+        dataObject: jsnPopupData
+    };
+
+    console.log("결함 팝업 열기 시도");
+    $p.openPopup("/InsWebApp/ui/def/DefectPopup.xml", options);
+};
+
+
+
+/**
+ * 상세보기 결함 팝업 표시 (단위테스트 방식 적용)
+ */
+scwin.showDetailDefectPopup = function(selectedData, mode) {
+    console.log("결함 상세보기 팝업 표시:", selectedData, mode);
+    
+    if (!selectedData || !selectedData.id) {
+        $c.win.alert("유효하지 않은 데이터입니다.");
+        return;
+    }
+    
+    // 현재 사용자 정보 가져오기 (단위테스트와 동일)
+    var currentUserId = scwin.CURRENT_USER_ID || "1";
+    var currentUserName = scwin.getCurrentUserName();
+    var currentProjectId = scwin.CURRENT_PROJECT_ID || "";
+    
+    // 단위테스트의 showDetailPopup 방식과 완전히 동일하게 데이터 구성
+    var detailData = {
+        mode: mode || "view",
+        defectData: selectedData, // 전체 데이터를 직접 전달 (testData -> defectData)
+        pjtId: currentProjectId,
+        currentUserId: currentUserId,
+        currentUserName: currentUserName
+    };
+
+    console.log("결함 팝업으로 전달할 데이터:", detailData);
+
+    // 데이터 전달을 위한 다중 방법 적용 (단위테스트와 동일)
+    // 방법 1: 표준 dataObject 방식
+    var jsnPopupData = {
+        "type": "json",
+        "name": "defectData", // UnitTestPopup에서는 "detailData", DefectPopup에서는 "defectData"
+        "data": detailData
+    };
+    
+    // 방법 2: 부모 창에 임시 저장 (대안)
+    try {
+        window.tempPopupData = { defectData: detailData };
+        console.log("결함 임시 데이터 저장:", window.tempPopupData);
+    } catch(e) {
+        console.log("결함 임시 데이터 저장 실패:", e);
+    }
+
+    var options = {
+        id: "defect_detail_popup",
+        type: "wframePopup",
+        width: "1400px",
+        height: "900px",
+        top: "50px",
+        left: "100px",
+        popupName: "결함 상세정보",
+        modal: true,
+        closeAction: "scwin.defectPopup_closeAction",
+        dataObject: jsnPopupData
+    };
+
+    console.log("결함 상세보기 팝업 열기 - 사용자 정보 포함:", detailData);
+    $p.openPopup("/InsWebApp/ui/def/DefectPopup.xml", options);
 };
 
 scwin.completed_grd_oncelldblclick = function(row, col, colId) {
@@ -933,8 +1599,31 @@ scwin.completed_grd_oncelldblclick = function(row, col, colId) {
         return;
     }
     
-    scwin.openDefectPopup(selectedData, "view");
+    scwin.openDefectDetailPopup(selectedData);
 };
+
+
+
+scwin.completed_grd_oncelldblclick = function(row, col, colId) {
+    console.log("완료 그리드 더블클릭 - 행:", row);
+    
+    if (row < 0 || row >= dlt_completedList.getTotalRow()) {
+        console.error("유효하지 않은 행 번호:", row);
+        return;
+    }
+    
+    var selectedData = dlt_completedList.getRowJSON(row);
+    console.log("완전한 선택된 완료 결함 데이터:", selectedData);
+    
+    if (!selectedData || !selectedData.id) {
+        console.error("결함ID가 없습니다:", selectedData);
+        $c.win.alert("유효하지 않은 데이터입니다.");
+        return;
+    }
+    
+    scwin.showDetailDefectPopup(selectedData, "view");
+};
+
 
 /**
  * 등록 버튼 클릭
@@ -942,7 +1631,7 @@ scwin.completed_grd_oncelldblclick = function(row, col, colId) {
 scwin.btn_register_onclick = function(e) {
     console.log("결함 등록 버튼 클릭");
     
-    // 현재 사용자 정보 가져오기
+    // UnitTest와 동일한 방식으로 사용자 정보 가져오기
     var currentUserId = scwin.CURRENT_USER_ID || "1";
     var currentUserName = scwin.getCurrentUserName();
     var currentProjectId = scwin.CURRENT_PROJECT_ID || "";
@@ -952,7 +1641,7 @@ scwin.btn_register_onclick = function(e) {
     console.log("- USER_NAME:", currentUserName);
     console.log("- PROJECT_ID:", currentProjectId);
     
-    // UnitTestList.xml과 동일한 방식으로 데이터 준비
+    // UnitTest의 taskData와 동일한 구조로 defectData 구성
     var defectData = {
         mode: "new",
         id: "",
@@ -961,9 +1650,10 @@ scwin.btn_register_onclick = function(e) {
         currentUserName: currentUserName
     };
 
+    // UnitTest와 동일한 방식으로 데이터 전달
     var jsnPopupData = {
         "type": "json",
-        "name": "defectData",  // UnitTestList에서는 "taskData"였지만 결함에서는 "defectData"
+        "name": "defectData", // DefectPopup에서 기대하는 이름
         "data": defectData
     };
 
@@ -977,12 +1667,11 @@ scwin.btn_register_onclick = function(e) {
         popupName: "결함 등록",
         modal: true,
         closeAction: "scwin.defectPopup_closeAction",
-        dataObject: jsnPopupData  // 이 부분이 중요!
+        dataObject: jsnPopupData
     };
 
     console.log("팝업 열기 - 사용자 정보 포함:", defectData);
-    // 경로 수정: /InsWebApp/ui/def/ -> /InsWebApp/def/
-    $p.openPopup("/InsWebApp/def/DefectPopup.xml", options);
+    $p.openPopup("/InsWebApp/ui/def/DefectPopup.xml", options);
 };
 
 /**
@@ -992,23 +1681,36 @@ scwin.getCurrentUserName = function() {
     try {
         var parentWindow = $p.getParentWindow();
         if (parentWindow) {
+            // 메인 페이지의 헤더 프레임에서 사용자 이름 가져오기
             var headerFrame = parentWindow.$p.getComponentById("pg_header");
             if (headerFrame && headerFrame.getWindow && headerFrame.getWindow().scwin) {
                 var headerScwin = headerFrame.getWindow().scwin;
                 
+                // UnitTest와 동일한 방식
                 if (headerScwin.USER_NAME) {
                     console.log("헤더에서 사용자 이름 가져옴:", headerScwin.USER_NAME);
                     return headerScwin.USER_NAME;
                 }
+                
+                // 추가 시도: 다른 가능한 속성들
+                var possibleProps = ['userName', 'currentUserName', 'userNm'];
+                for (var i = 0; i < possibleProps.length; i++) {
+                    var prop = possibleProps[i];
+                    if (headerScwin[prop] && headerScwin[prop] !== "사용자") {
+                        console.log("헤더에서 " + prop + " 가져옴:", headerScwin[prop]);
+                        return headerScwin[prop];
+                    }
+                }
             }
         }
         
+        // 헤더에서 가져오지 못한 경우 기본값
         console.log("헤더에서 사용자 이름을 가져올 수 없음, 기본값 사용");
-        return "사용자";
+        return "현재 사용자";
         
     } catch (e) {
         console.error("사용자 이름 가져오기 실패:", e);
-        return "사용자";
+        return "현재 사용자";
     }
 };
 
@@ -1115,28 +1817,79 @@ scwin.pgl_completed_onclick = function(idx) {
     }, 50);
 };
 
+
 /**
- * 검색 조건 초기화
+ * 검색 조건 초기화 버튼 (수정된 버전)
  */
 scwin.btn_searchReset_onclick = function(e) {
-    console.log("검색 조건 초기화");
+    console.log("검색 조건 초기화 버튼 클릭");
     
-    dmp_search.set("name", "");
-    dmp_search.set("status", "");
-    dmp_search.set("priority", "");
-    dmp_search.set("testId", "");
-    dmp_search.set("dateFrom", "");
-    dmp_search.set("dateTo", "");
-    dmp_search.set("pageIndex", "1");
-    dmp_search.set("pageSize", "10");
+    // 완전 초기화
+    scwin.resetAllSearchConditions();
     
-    if (!scwin.isPM()) {
-        dmp_search.set("assignee", scwin.CURRENT_USER_ID);
-    } else {
-        dmp_search.set("assignee", "");
+    // 초기화 후 검색 실행
+    setTimeout(function() {
+        scwin.btn_search_onclick();
+    }, 100);
+};
+/**
+ * 탭 활성화 시 호출되는 함수 (새로 추가)
+ */
+scwin.onTabActivated = function() {
+    console.log("결함 탭 활성화됨");
+    
+    // 단위테스트에서 온 파라미터가 없다면 검색 조건 초기화
+    try {
+        var unitTestData = $p.getParameter("tabData");
+        if (!unitTestData || !unitTestData.fromUnitTest) {
+            console.log("일반 탭 활성화 - 검색 조건 초기화");
+            scwin.resetAllSearchConditions();
+            
+            // 초기화 후 검색
+            setTimeout(function() {
+                scwin.btn_search_onclick();
+            }, 100);
+        }
+    } catch (e) {
+        console.log("탭 활성화 처리 중 오류:", e);
     }
+};
+
+/**
+ * 페이지 새로고침/재진입 감지 (새로 추가)
+ */
+scwin.checkPageRefresh = function() {
+    // sessionStorage를 사용해서 페이지 재진입 감지
+    try {
+        var lastTestId = sessionStorage.getItem("lastDefectTestId");
+        var currentTestId = dmp_search.get("testId");
+        
+        // 이전에 설정된 testId와 현재 testId가 다르면 초기화
+        if (lastTestId && lastTestId !== currentTestId) {
+            console.log("이전 testId와 다름 - 초기화:", lastTestId, "→", currentTestId);
+            scwin.resetAllSearchConditions();
+        }
+        
+        // 현재 testId 저장
+        if (currentTestId) {
+            sessionStorage.setItem("lastDefectTestId", currentTestId);
+        } else {
+            sessionStorage.removeItem("lastDefectTestId");
+        }
+        
+    } catch (e) {
+        console.log("페이지 새로고침 감지 실패:", e);
+    }
+};
+
+// onpageload에서 페이지 새로고침 체크 추가
+scwin.originalOnpageload = scwin.onpageload;
+scwin.onpageload = function() {
+    // 페이지 새로고침 체크
+    scwin.checkPageRefresh();
     
-    scwin.searchDefects();
+    // 기존 onpageload 실행
+    scwin.originalOnpageload();
 };
 
 /**
