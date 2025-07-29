@@ -73,7 +73,7 @@ scwin.sbm_pjtList_submitdone = function (e) {
     var elHeader = e.responseJSON.elHeader;
 
     if (elHeader == null || elHeader === "" || elHeader === "undefined" || elHeader.resSuc === false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        scwin.showToast(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`, "error");
         return false;
     }
 
@@ -185,7 +185,7 @@ scwin.btn_newPjt_onclick = function (e) {
         var tabContent = $p.getComponentById("mf_tab_content").getScopeWindow().scwin;
         tabContent.openTab("pjt/Pjt.xml", "새 프로젝트");
     } else {
-        alert("새 프로젝트 생성 페이지를 열 수 없습니다.");
+        scwin.showToast("새 프로젝트 생성 페이지를 열 수 없습니다", "error");
     }
 };
 
@@ -210,6 +210,22 @@ scwin.setClickableStyle = function () {
         let taskIdStyle = "text-align: center; font-weight: bold;";
         taskIdStyle += "color: #0f3460; text-decoration: underline; cursor: pointer;";
         grd_list.setCellStyle(i, nameColIndex, taskIdStyle);
+    }
+};
+
+// 전역 토스트 함수 호출 헬퍼
+scwin.showToast = function(message, type = 'success', duration = 3000) {
+    // 메인 페이지의 전역 토스트 함수 호출
+    try {
+        if ($p.top() && $p.top().scwin && $p.top().scwin.showGlobalToast) {
+            $p.top().scwin.showGlobalToast(message, type, duration);
+        } else {
+            // 전역 함수를 찾을 수 없는 경우 기본 alert 사용
+            $c.win.alert(message);
+        }
+    } catch (e) {
+        console.error("토스트 표시 중 오류:", e);
+        $c.win.alert(message);
     }
 };]]></script>
 	</head>

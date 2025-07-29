@@ -376,6 +376,47 @@ scwin.onpageload = function() {
     console.log("페이지 로드 완료");
 };
 
+/**
+ * 진행중 그리드 더블클릭 이벤트
+ */
+scwin.processing_grd_oncelldblclick = function(row, col, colId) {
+    console.log("진행중 그리드 더블클릭 - 행:", row);
+    
+    if (row < 0 || row >= dlt_processingList.getTotalRow()) {
+        console.error("유효하지 않은 행 번호:", row);
+        return;
+    }
+    
+    var selectedData = dlt_processingList.getRowJSON(row);
+    console.log("선택된 진행중 결함 데이터:", selectedData);
+    
+    if (!selectedData || !selectedData.id) {
+        console.error("결함ID가 없습니다:", selectedData);
+        scwin.showToast("유효하지 않은 데이터입니다.","warning");
+        return;
+    }
+    
+    scwin.openDefectDetailPopup(selectedData);
+};
+scwin.completed_grd_oncelldblclick = function(row, col, colId) {
+    console.log("완료 그리드 더블클릭 - 행:", row);
+    
+    if (row < 0 || row >= dlt_completedList.getTotalRow()) {
+        console.error("유효하지 않은 행 번호:", row);
+        return;
+    }
+    
+    var selectedData = dlt_completedList.getRowJSON(row);
+    console.log("선택된 완료 결함 데이터:", selectedData);
+    
+    if (!selectedData || !selectedData.id) {
+        console.error("결함ID가 없습니다:", selectedData);
+        scwin.showToast("유효하지 않은 데이터입니다.","warning");
+        return;
+    }
+    
+    scwin.openDefectDetailPopup(selectedData);
+};
 
 /**
  * 개발업무 연동 파라미터 처리 (조건부 자동 팝업)
@@ -1439,7 +1480,7 @@ scwin.fail_grd_testId_onclick = function(row, col, colId) {
     
     if (!testCaseId) {
         console.error("테스트케이스ID가 없습니다:", selectedData);
-        $c.win.alert("테스트 ID 정보가 없습니다.");
+        scwin.showToast("테스트 ID 정보가 없습니다.","info");
         return;
     }
     
@@ -1464,7 +1505,7 @@ scwin.fail_grd_testId_onclick = function(row, col, colId) {
     
     if (!testCaseId) {
         console.error("테스트케이스ID가 없습니다:", selectedData);
-        $c.win.alert("테스트 ID 정보가 없습니다.");
+        scwin.showToast("테스트 ID 정보가 없습니다.","info");
         return;
     }
     
@@ -1483,7 +1524,7 @@ scwin.navigateToDefectPageWithTestId = function(testCaseId, testCaseName) {
         var parentWindow = $p.getParentWindow();
         if (!parentWindow) {
             console.error("부모 창을 찾을 수 없습니다.");
-            $c.win.alert("페이지 이동에 실패했습니다.");
+            scwin.showToast("페이지 이동에 실패했습니다.","warning");
             return;
         }
         
@@ -1507,7 +1548,7 @@ scwin.navigateToDefectPageWithTestId = function(testCaseId, testCaseName) {
         
     } catch (e) {
         console.error("결함 페이지 이동 실패:", e);
-        $c.win.alert("결함 페이지로 이동하는 중 오류가 발생했습니다.");
+        scwin.showToast("결함 페이지로 이동하는 중 오류가 발생했습니다.","warning");
     }
 };
 
@@ -1525,7 +1566,7 @@ scwin.switchToDefectTabAndSearch = function(parentWindow, searchData) {
         
         if (!tabContainer) {
             console.error("탭 컨테이너를 찾을 수 없습니다.");
-            $c.win.alert("결함 페이지를 찾을 수 없습니다.");
+            scwin.showToast("결함 페이지를 찾을 수 없습니다.","warning");
             return;
         }
         
@@ -1559,12 +1600,12 @@ scwin.switchToDefectTabAndSearch = function(parentWindow, searchData) {
             
         } else {
             console.error("결함 탭을 찾을 수 없습니다.");
-            $c.win.alert("결함 관리 탭을 찾을 수 없습니다.");
+           scwin.showToast("결함 관리 탭을 찾을 수 없습니다.","warning");
         }
         
     } catch (e) {
         console.error("결함 탭 전환 실패:", e);
-        $c.win.alert("탭 전환 중 오류가 발생했습니다.");
+        scwin.showToast("탭 전환 중 오류가 발생했습니다.","warning");
     }
 };
 
@@ -1691,7 +1732,7 @@ scwin.switchToDefectTabDirect = function(parentWindow, searchData) {
         
         if (!tabContainer) {
             console.error("탭 컨테이너를 찾을 수 없습니다.");
-            $c.win.alert("결함 페이지를 찾을 수 없습니다.");
+            scwin.showToast("결함 페이지를 찾을 수 없습니다.","warning");
             return;
         }
         
@@ -1723,12 +1764,12 @@ scwin.switchToDefectTabDirect = function(parentWindow, searchData) {
             
         } else {
             console.error("결함 탭을 찾을 수 없습니다.");
-            $c.win.alert("결함 관리 탭을 찾을 수 없습니다.");
+            scwin.showToast("결함 관리 탭을 찾을 수 없습니다.","warning");
         }
         
     } catch (e) {
         console.error("직접 탭 전환 실패:", e);
-        $c.win.alert("탭 전환 중 오류가 발생했습니다.");
+        scwin.showToast("탭 전환 중 오류가 발생했습니다.","warning");
     }
 };
 
@@ -2210,7 +2251,7 @@ scwin.success_grd_oncelldblclick = function(row, col, colId) {
     
     if (!selectedData || !selectedData.testCaseId) {
         console.error("테스트케이스ID가 없습니다:", selectedData);
-        $c.win.alert("유효하지 않은 데이터입니다.");
+        scwin.showToast("유효하지 않은 데이터입니다.","info");
         return;
     }
     
@@ -2238,7 +2279,7 @@ scwin.switchToDefectTabAndHiddenSearch = function(parentWindow, searchData) {
         
         if (!tabContainer) {
             console.error("탭 컨테이너를 찾을 수 없습니다.");
-            $c.win.alert("결함 페이지를 찾을 수 없습니다.");
+            scwin.showToast("결함 페이지를 찾을 수 없습니다.","warning");
             return;
         }
         
@@ -2272,12 +2313,12 @@ scwin.switchToDefectTabAndHiddenSearch = function(parentWindow, searchData) {
             
         } else {
             console.error("결함 탭을 찾을 수 없습니다.");
-            $c.win.alert("결함 관리 탭을 찾을 수 없습니다.");
+            scwin.showToast("결함 관리 탭을 찾을 수 없습니다.","warning");
         }
         
     } catch (e) {
         console.error("결함 탭 전환 실패:", e);
-        $c.win.alert("탭 전환 중 오류가 발생했습니다.");
+        scwin.showToast("탭 전환 중 오류가 발생했습니다.","warning");
     }
 };
 
@@ -2336,7 +2377,7 @@ scwin.success_grd_oncellclick = function(row, col, colId) {
         
         if (!testCaseId) {
             console.error("테스트케이스ID가 없습니다:", rowData);
-            $c.win.alert("테스트 ID 정보가 없습니다.");
+            scwin.showToast("테스트 ID 정보가 없습니다.","warning");
             return;
         }
         
@@ -2365,7 +2406,7 @@ scwin.fail_grd_oncellclick = function(row, col, colId) {
         
         if (!testCaseId) {
             console.error("테스트케이스ID가 없습니다:", rowData);
-            $c.win.alert("테스트 ID 정보가 없습니다.");
+            scwin.showToast("테스트 ID 정보가 없습니다.","info");
             return;
         }
         
@@ -2400,12 +2441,12 @@ scwin.navigateToDefectTab = function(testCaseId, testCaseName) {
             $p.parent().scwin.openTab(targetUrl, tabTitle, tabData);
         } else {
             console.error("메인페이지의 openTab 함수를 찾을 수 없습니다.");
-            $c.win.alert("페이지 이동에 실패했습니다.");
+            scwin.showToast("페이지 이동에 실패했습니다.","warning");
         }
 
     } catch (error) {
         console.error("결함 화면 이동 중 오류:", error);
-        $c.win.alert("화면 이동 중 오류가 발생했습니다.");
+        scwin.showToast("화면 이동 중 오류가 발생했습니다.","warning");
     }
 };
 
@@ -2425,7 +2466,7 @@ scwin.fail_grd_oncelldblclick = function(row, col, colId) {
     
     if (!selectedData || !selectedData.testCaseId) {
         console.error("테스트케이스ID가 없습니다:", selectedData);
-        $c.win.alert("유효하지 않은 데이터입니다.");
+        scwin.showToast("유효하지 않은 데이터입니다.","info");
         return;
     }
     
@@ -2446,7 +2487,7 @@ scwin.showDetailPopup = function(selectedData) {
     console.log("상세보기 팝업 표시:", selectedData);
     
     if (!selectedData || !selectedData.testCaseId) {
-        $c.win.alert("유효하지 않은 데이터입니다.");
+        scwin.showToast("유효하지 않은 데이터입니다.","info");
         return;
     }
     
@@ -2835,7 +2876,7 @@ scwin.btn_excel_combined_download_onclick = function(e) {
     var failData = scwin.failPageInfo.data || [];
     
     if (successData.length === 0 && failData.length === 0) {
-        $c.win.alert("다운로드할 데이터가 없습니다.");
+        scwin.showToast("다운로드할 데이터가 없습니다.","info");
         return;
     }
 
@@ -2864,12 +2905,12 @@ scwin.btn_excel_combined_download_onclick = function(e) {
                         scwin.downloadFailDataAfterSuccess();
                     }, 1000);
                 } else {
-                    $c.win.alert("성공 테스트 엑셀 파일 다운로드가 완료되었습니다.");
+                    scwin.showToast("성공 테스트 엑셀 파일 다운로드가 완료되었습니다.");
                 }
             },
             onFailureCallback: function() {
                 dlt_successList.setJSON(originalSuccessData);
-                $c.win.alert("엑셀 파일 다운로드에 실패했습니다.");
+                scwin.showToast("엑셀 파일 다운로드에 실패했습니다.","warning");
             }
         };
 
@@ -2897,11 +2938,11 @@ scwin.downloadFailDataAfterSuccess = function() {
         checkInterval: 1000,
         onSuccessCallback: function () {
             dlt_failList.setJSON(originalFailData);
-            $c.win.alert("성공/실패 통합 엑셀 파일 다운로드가 완료되었습니다.");
+            scwin.showToast("성공/실패 통합 엑셀 파일 다운로드가 완료되었습니다.");
         },
         onFailureCallback: function () {
             dlt_failList.setJSON(originalFailData);
-            $c.win.alert("엑셀 파일 다운로드에 실패했습니다.");
+            scwin.showToast("엑셀 파일 다운로드에 실패했습니다.","warning");
         }
     };
 
@@ -2915,7 +2956,7 @@ scwin.btn_excel_success_download_onclick = function (e) {
     var successData = scwin.successPageInfo.data || [];
     
     if (successData.length === 0) {
-        $c.win.alert("다운로드할 성공 데이터가 없습니다.");
+        scwin.showToast("다운로드할 성공 데이터가 없습니다.","info");
         return;
     }
 
@@ -2933,11 +2974,11 @@ scwin.btn_excel_success_download_onclick = function (e) {
         timeout: 60000,
         checkInterval: 1000,
         onSuccessCallback: function () {
-            $c.win.alert("성공 테스트 엑셀 파일 다운로드가 완료되었습니다.");
+            scwin.showToast("성공 테스트 엑셀 파일 다운로드가 완료되었습니다.");
             dlt_successList.setJSON(originalData);
         },
         onFailureCallback: function () {
-            $c.win.alert("엑셀 파일 다운로드에 실패했습니다.");
+            scwin.showToast("엑셀 파일 다운로드에 실패했습니다.","warning");
             dlt_successList.setJSON(originalData);
         }
     };
@@ -2952,7 +2993,7 @@ scwin.btn_excel_fail_download_onclick = function (e) {
     var failData = scwin.failPageInfo.data || [];
     
     if (failData.length === 0) {
-        $c.win.alert("다운로드할 실패 데이터가 없습니다.");
+        scwin.showToast("다운로드할 실패 데이터가 없습니다.","info");
         return;
     }
 
@@ -2970,16 +3011,32 @@ scwin.btn_excel_fail_download_onclick = function (e) {
         timeout: 60000,
         checkInterval: 1000,
         onSuccessCallback: function () {
-            $c.win.alert("실패 테스트 엑셀 파일 다운로드가 완료되었습니다.");
+            scwin.showToast("실패 테스트 엑셀 파일 다운로드가 완료되었습니다.");
             dlt_failList.setJSON(originalData);
         },
         onFailureCallback: function () {
-            $c.win.alert("엑셀 파일 다운로드에 실패했습니다.");
+            scwin.showToast("엑셀 파일 다운로드에 실패했습니다.","warning");
             dlt_failList.setJSON(originalData);
         }
     };
 
     fail_grd.advancedExcelDownload(options);
+};
+
+// 전역 토스트 함수 호출 헬퍼
+scwin.showToast = function (message, type = 'success', duration = 3000) {
+    // 메인 페이지의 전역 토스트 함수 호출
+    try {
+        if ($p.top() && $p.top().scwin && $p.top().scwin.showGlobalToast) {
+            $p.top().scwin.showGlobalToast(message, type, duration);
+        } else {
+            // 전역 함수를 찾을 수 없는 경우 기본 alert 사용
+            $c.win.alert(message);
+        }
+    } catch (e) {
+        console.error("토스트 표시 중 오류:", e);
+        $c.win.alert(message);
+    }
 };
 ]]></script>
 	</head>

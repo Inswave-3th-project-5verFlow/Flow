@@ -204,7 +204,7 @@ scwin.btn_new_onclick = function (e) {
 scwin.btn_delete_onclick = function (e) {
     let chkArrIdx = grd_list.getCheckedIndex("chk");
     if (chkArrIdx.length === 0) {
-        $c.win.alert("삭제할 항목을 선택해주세요.");
+        scwin.showToast("삭제할 항목을 선택해주세요", "warning");
         return;
     }
     dlt_wbsVoList.deleteRows(chkArrIdx);
@@ -231,7 +231,7 @@ scwin.btn_down_onclick = function (e) {
     var totalCount = spn_listCnt.getLabel();
 
     if (totalCount === "0") {
-        $c.win.alert("다운로드할 데이터가 없습니다.");
+        scwin.showToast("다운로드할 데이터가 없습니다", "warning");
         return;
     }
 
@@ -381,7 +381,7 @@ scwin.sbm_wbsList_submitdone = function (e) {
 
     // 에러 처리
     if (elHeader == null || elHeader == "" || elHeader == "undefined" || elHeader.resSuc == false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        scwin.showToast(`에러코드: ${elHeader.resCode} - ${elHeader.resMsg}`, "error");
         return false;
     }
 
@@ -439,11 +439,11 @@ scwin.sbm_saveWbsVoList_submitdone = function (e) {
     var elHeader = e.responseJSON.elHeader;
 
     if (elHeader == null || elHeader === "" || elHeader === "undefined" || elHeader.resSuc == false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        scwin.showToast(`에러코드: ${elHeader.resCode} - ${elHeader.resMsg}`, "error");
         return false;
     }
 
-    $c.win.alert("저장이 완료되었습니다.");
+    scwin.showToast("저장이 완료되었습니다", "success");
     scwin.btn_search_onclick();
 };
 
@@ -457,13 +457,13 @@ scwin.sbm_selectWbsVoListForExcel_submitdone = function (e) {
     var elHeader = e.responseJSON.elHeader;
 
     if (elHeader == null || elHeader == "" || elHeader == "undefined" || elHeader.resSuc == false) {
-        $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
+        scwin.showToast(`에러코드: ${elHeader.resCode} - ${elHeader.resMsg}`, "error");
         return false;
     }
 
     // 데이터 유효성 검증
     if (!elData.wbsVoList || elData.wbsVoList.length === 0) {
-        $c.win.alert("다운로드할 데이터가 없습니다.");
+        scwin.showToast("다운로드할 데이터가 없습니다", "warning");
         return;
     }
 
@@ -487,12 +487,12 @@ scwin.sbm_selectWbsVoListForExcel_submitdone = function (e) {
         timeout: 60000,
         checkInterval: 1000,
         onSuccessCallback: function () {
-            $c.win.alert("엑셀 파일 다운로드가 완료되었습니다.");
+            scwin.showToast("엑셀 파일 다운로드가 완료되었습니다", "success");
             dlt_wbsVoList.setJSON(originalData);
             scwin.btn_search_onclick();
         },
         onFailureCallback: function () {
-            $c.win.alert("엑셀 파일 다운로드에 실패했습니다.");
+            scwin.showToast("엑셀 파일 다운로드에 실패했습니다", "error");
             dlt_wbsVoList.setJSON(originalData);
             scwin.btn_search_onclick();
         }
@@ -1017,19 +1017,19 @@ scwin.validateSearchConditions = function () {
 
     // 업무ID는 숫자만 허용 (빈 값은 허용)
     if (scTaskId && !/^\d*$/.test(scTaskId)) {
-        $c.win.alert("업무ID는 숫자만 입력 가능합니다.");
+        scwin.showToast("업무ID는 숫자만 입력 가능합니다", "warning");
         return false;
     }
 
     // 업무명 길이 제한 (100자)
     if (scTaskName && scTaskName.length > 100) {
-        $c.win.alert("업무명은 100자를 초과할 수 없습니다.");
+        scwin.showToast("업무명은 100자를 초과할 수 없습니다", "warning");
         return false;
     }
 
     // 담당자명 길이 제한 (50자)
     if (scTaskAsi && scTaskAsi.length > 50) {
-        $c.win.alert("업무담당자는 50자를 초과할 수 없습니다.");
+        scwin.showToast("업무담당자는 50자를 초과할 수 없습니다", "warning");
         return false;
     }
 
@@ -1066,7 +1066,7 @@ scwin.showErrorMessages = function (title, messages) {
         errorText += "\n\n" + messages;
     }
 
-    $c.win.alert(errorText);
+    scwin.showToast(errorText, "error");
 };
 
 /**
@@ -1121,7 +1121,7 @@ scwin.navigateToTaskTab = async function (rowIndex) {
 
         // 담당자 체크
         if (rowData.userId !== scwin.LOGIN_USER_ID) {
-            $c.win.alert(`이 업무는 ${rowData.taskAsi}님의 업무입니다.\n본인 담당 업무만 접근할 수 있습니다.`);
+            scwin.showToast(`이 업무는 ${rowData.taskAsi}님의 업무입니다. 본인 담당 업무만 접근할 수 있습니다`, "warning");
             return;
         }
 
@@ -1136,7 +1136,7 @@ scwin.navigateToTaskTab = async function (rowIndex) {
             targetUrl = "task/develop/DevelopList.xml";
             tabTitle = `개발 업무`;
         } else {
-            $c.win.alert("업무 구분을 확인할 수 없습니다.");
+            scwin.showToast("업무 구분을 확인할 수 없습니다", "error");
             return;
         }
 
@@ -1154,12 +1154,12 @@ scwin.navigateToTaskTab = async function (rowIndex) {
             await $p.parent().scwin.openTab(targetUrl, tabTitle, tabData);
         } else {
             console.error("메인페이지의 openTab 함수를 찾을 수 없습니다.");
-            $c.win.alert("페이지 이동에 실패했습니다.");
+            scwin.showToast("페이지 이동에 실패했습니다", "error");
         }
 
     } catch (error) {
         console.error("업무 화면 이동 중 오류:", error);
-        $c.win.alert("화면 이동 중 오류가 발생했습니다.");
+        scwin.showToast("화면 이동 중 오류가 발생했습니다", "error");
     }
 };
 
@@ -1196,6 +1196,26 @@ scwin.setTaskIdClickableStyle = function () {
         }
 
         grd_list.setCellStyle(i, taskIdColIndex, taskIdStyle);
+    }
+};
+
+// ================================================================
+// 전역 토스트 함수 호출 헬퍼
+// ================================================================
+
+// 전역 토스트 함수 호출 헬퍼
+scwin.showToast = function(message, type = 'success', duration = 3000) {
+    // 메인 페이지의 전역 토스트 함수 호출
+    try {
+        if ($p.top() && $p.top().scwin && $p.top().scwin.showGlobalToast) {
+            $p.top().scwin.showGlobalToast(message, type, duration);
+        } else {
+            // 전역 함수를 찾을 수 없는 경우 기본 alert 사용
+            $c.win.alert(message);
+        }
+    } catch (e) {
+        console.error("토스트 표시 중 오류:", e);
+        $c.win.alert(message);
     }
 };]]></script>
 	</head>

@@ -251,7 +251,7 @@ scwin.receiveTaskData = function (returnData) {
         dmp_taskDetail.set("ptTaskName", selectedTask.taskName);
         dmp_taskDetail.set("taskDepth", parseInt(selectedTask.taskDepth) + 1);
         
-        $c.win.alert("선택된 상위업무: " + selectedTask.taskName);
+        scwin.showToast("선택된 상위업무: " + selectedTask.taskName);
     }
 };
 
@@ -264,7 +264,7 @@ scwin.btn_save_onclick = function (e) {
     var taskData = dmp_taskDetail.getJSON();
 
     if (!taskData.taskName || taskData.taskName.trim() === "") {
-        $c.win.alert("업무명을 입력해주세요.");
+        scwin.showToast("업무명을 입력해주세요.","warning");
         return;
     }
 
@@ -290,9 +290,9 @@ scwin.sbm_saveTaskDetail_submitdone = function (e) {
     var isNewTask = !taskData.taskId || taskData.taskId === "" || taskData.taskId === "0";
 
     if (isNewTask) {
-        $c.win.alert("업무가 등록되었습니다.");
+        scwin.showToast("업무가 등록되었습니다.");
     } else {
-        $c.win.alert("업무 정보가 수정되었습니다.");
+        scwin.showToast("업무 정보가 수정되었습니다.");
     }
 
     // 부모 페이지 재조회 요청
@@ -328,7 +328,7 @@ scwin.sbm_deleteTaskDetail_submitdone = function (e) {
         return false;
     } else {
         // 삭제되었습니다. msg 출력
-        $c.win.alert("삭제되었습니다.");
+        scwin.showToast("삭제되었습니다.");
     }
     // 부모 페이지 재조회 요청
     $p.parent().scwin.btn_search_onclick();
@@ -345,9 +345,24 @@ scwin.btn_reset_onclick = function (e) {
     dmp_taskDetail.set("ptTaskId", null);
     dmp_taskDetail.set("ptTaskName", null);
     dmp_taskDetail.set("taskDepth", 1);
-    $c.win.alert("상위 업무가 초기화되었습니다.")
+    scwin.showToast("상위 업무가 초기화되었습니다.")
 };
-]]></script>
+
+// 전역 토스트 함수 호출 헬퍼
+scwin.showToast = function (message, type = 'success', duration = 3000) {
+    // 메인 페이지의 전역 토스트 함수 호출
+    try {
+        if ($p.top() && $p.top().scwin && $p.top().scwin.showGlobalToast) {
+            $p.top().scwin.showGlobalToast(message, type, duration);
+        } else {
+            // 전역 함수를 찾을 수 없는 경우 기본 alert 사용
+            $c.win.alert(message);
+        }
+    } catch (e) {
+        console.error("토스트 표시 중 오류:", e);
+        $c.win.alert(message);
+    }
+};]]></script>
 	</head>
 
 	<body ev:onpageload="scwin.onpageload">

@@ -1126,7 +1126,7 @@ scwin.btn_selectTask_onclick = function(e) {
         console.log("팝업 열기 성공 - 프로젝트 ID:", projectId);
     } catch(error) {
         console.error("팝업 열기 실패:", error);
-        $c.win.alert("업무 선택 팝업을 열 수 없습니다: " + error.message);
+        scwin.showToast("업무 선택 팝업을 열 수 없습니다: " + error.message,"warning");
     }
 };
 /**
@@ -1148,7 +1148,7 @@ scwin.receiveTaskData = function(returnData) {
         
     } else {
         console.log("유효하지 않은 데이터:", returnData);
-        $c.win.alert("업무 선택이 취소되었거나 유효하지 않습니다.");
+        scwin.showToast("업무 선택이 취소되었거나 유효하지 않습니다.","warning");
     }
 };
 
@@ -1165,7 +1165,7 @@ scwin.taskTreePopup_closeAction = function() {
 scwin.btn_resetTask_onclick = function(e) {
     dmp_unitTestDetail.set("taskId", "");
     dmp_unitTestDetail.set("taskName", "");
-    $c.win.alert("업무 선택이 초기화되었습니다.");
+    scwin.showToast("업무 선택이 초기화되었습니다.","info");
 };
 
 /**
@@ -1379,7 +1379,7 @@ scwin.sbm_selectUnitTestDetail_submitdone = function(e) {
         
     } catch (error) {
         console.error("상세 조회 응답 처리 중 오류:", error);
-        $c.win.alert("상세 정보 처리 중 오류가 발생했습니다.");
+        scwin.showToast("상세 정보 처리 중 오류가 발생했습니다.","warning");
     }
 };
 
@@ -1578,22 +1578,22 @@ scwin.validateForm = function() {
     var projectId = dmp_unitTestDetail.get("pjtId") || scwin.CURRENT_PROJECT_ID;
     
     if (!taskId || taskId.trim() === "" || !taskName || taskName.trim() === "") {
-        $c.win.alert("업무를 선택해주세요.");
+        scwin.showToast("업무를 선택해주세요.","info");
         return false;
     }
     
     if (!testCaseName || testCaseName.trim() === "") {
-        $c.win.alert("테스트케이스명을 입력해주세요.");
+        scwin.showToast("테스트케이스명을 입력해주세요.","info");
         return false;
     }
     
     if (!testTarget || testTarget.trim() === "") {
-        $c.win.alert("테스트 대상을 입력해주세요.");
+        scwin.showToast("테스트 대상을 입력해주세요.","info");
         return false;
     }
     
     if (!projectId || projectId.trim() === "") {
-        $c.win.alert("프로젝트 정보가 없습니다. 프로젝트를 선택해주세요.");
+        scwin.showToast("프로젝트 정보가 없습니다. 프로젝트를 선택해주세요.","warning");
         return false;
     }
     
@@ -1635,27 +1635,27 @@ scwin.executeFileUploadWithData = function() {
     
     // 필수 필드 검증
     if (!taskId || taskId.trim() === "") {
-        $c.win.alert("업무 ID가 없습니다. 업무를 선택해주세요.");
+        scwin.showToast("업무 ID가 없습니다. 업무를 선택해주세요.","info");
         return;
     }
     
     if (!taskName || taskName.trim() === "") {
-        $c.win.alert("업무명이 없습니다. 업무를 선택해주세요.");
+        scwin.showToast("업무명이 없습니다. 업무를 선택해주세요.","info");
         return;
     }
     
     if (!testCaseName || testCaseName.trim() === "") {
-        $c.win.alert("테스트케이스명을 입력해주세요.");
+        scwin.showToast("테스트케이스명을 입력해주세요.","info");
         return;
     }
     
     if (!testTarget || testTarget.trim() === "") {
-        $c.win.alert("테스트 대상을 입력해주세요.");
+        scwin.showToast("테스트 대상을 입력해주세요.","info");
         return;
     }
     
     if (!projectId || projectId.trim() === "") {
-        $c.win.alert("프로젝트 정보가 없습니다. 프로젝트를 선택해주세요.");
+        scwin.showToast("프로젝트 정보가 없습니다. 프로젝트를 선택해주세요.","warning");
         return;
     }
     
@@ -1701,7 +1701,7 @@ scwin.executeFileUploadWithData = function() {
     // 담당자 정보 (필수)
     var assignee = dmp_unitTestDetail.get("assignee") || scwin.CURRENT_USER_ID;
     if (!assignee || assignee.trim() === "") {
-        $c.win.alert("담당자 정보가 없습니다.");
+        scwin.showToast("담당자 정보가 없습니다.","info");
         return;
     }
     formData.append("assignee", assignee);
@@ -1761,7 +1761,7 @@ scwin.executeFileUploadWithData = function() {
         var elHeader = res.elHeader;
         
         if (elHeader && elHeader.resSuc === true) {
-            $c.win.alert("등록되었습니다.");
+            scwin.showToast("등록되었습니다.");
             
             // 파일 목록 초기화
             dlt_upload.setJSON([]);
@@ -1849,7 +1849,7 @@ scwin.sbm_insertUnitTest_submitdone = function(e) {
         return;
     }
     
-    $c.win.alert("등록되었습니다.");
+    scwin.showToast("등록되었습니다.");
     $p.closePopup();
 };
 
@@ -1875,7 +1875,7 @@ scwin.sbm_updateUnitTest_submitdone = function(e) {
         return;
     }
     
-    $c.win.alert("수정되었습니다.");
+    scwin.showToast("수정되었습니다.");
     scwin.currentMode = "view";
     scwin.setFormMode("view");
 };
@@ -1889,7 +1889,7 @@ scwin.btn_popup_delete_onclick = function(e) {
     var testCaseId = dmp_unitTestDetail.get("testCaseId");
     
     if (!testCaseId) {
-        $c.win.alert("삭제할 테스트 케이스를 선택해주세요.");
+        scwin.showToast("삭제할 테스트 케이스를 선택해주세요.","info");
         return;
     }
     
@@ -1910,7 +1910,7 @@ scwin.deleteUnitTestWithSubmission = function() {
     var testCaseId = dmp_unitTestDetail.get("testCaseId");
     
     if (!testCaseId) {
-        $c.win.alert("삭제할 테스트 케이스를 선택해주세요.");
+        scwin.showToast("삭제할 테스트 케이스를 선택해주세요.","info");
         return;
     }
     
@@ -1931,7 +1931,7 @@ scwin.sbm_deleteUnitTest_submitdone = function(e) {
         // 새로운 응답 형식 처리
         if (responseData && responseData.success !== undefined) {
             if (responseData.success === true) {
-                $c.win.alert("테스트 케이스가 성공적으로 삭제되었습니다.");
+                scwin.showToast("테스트 케이스가 성공적으로 삭제되었습니다.");
                 
                 if (responseData.warning) {
                     setTimeout(function() {
@@ -1957,7 +1957,7 @@ scwin.sbm_deleteUnitTest_submitdone = function(e) {
             return;
         }
         
-        $c.win.alert("삭제되었습니다.");
+        scwin.showToast("삭제되었습니다.");
         $p.closePopup();
         
     } catch (error) {
@@ -2217,7 +2217,7 @@ scwin.fileActionClick = function(row, col, colId, targetId) {
     var fileName = rowData.originalFileName;
     
     if (!fileId) {
-        alert("파일 ID가 없습니다.");
+        scwin.showToast("파일 ID가 없습니다.","info");
         return;
     }
     
@@ -2413,7 +2413,7 @@ scwin.downloadCurrentFile = function() {
     if (fileId && fileName) {
         scwin.downloadFile(fileId, fileName);
     } else {
-        alert("다운로드할 파일 정보가 없습니다.");
+        scwin.showToast("다운로드할 파일 정보가 없습니다.","info");
     }
 };
 
@@ -2424,7 +2424,7 @@ scwin.downloadFile = function(fileId, fileName) {
     console.log("파일 다운로드:", fileName, "ID:", fileId);
     
     if (!fileId || !fileName) {
-        alert("다운로드할 파일 정보가 없습니다.");
+        scwin.showToast("다운로드할 파일 정보가 없습니다.","info");
         return;
     }
     
@@ -2449,7 +2449,7 @@ scwin.downloadFile = function(fileId, fileName) {
         
     } catch (error) {
         console.error("파일 다운로드 실패:", error);
-        alert("파일 다운로드 중 오류가 발생했습니다: " + error.message);
+        scwin.showToast("파일 다운로드 중 오류가 발생했습니다: " + error.message,"warning");
     }
 };
 
@@ -2460,7 +2460,7 @@ scwin.deleteFile = function(fileId) {
     console.log("파일 삭제:", fileId);
     
     if (!fileId) {
-        alert("삭제할 파일을 선택해주세요.");
+        scwin.showToast("삭제할 파일을 선택해주세요.","info");
         return;
     }
     
@@ -2494,11 +2494,11 @@ scwin.sbm_deleteUnitTestFile_submitdone = function(e) {
     var elHeader = e.responseJSON.elHeader;
     
     if (!elHeader || elHeader.resSuc == false) {
-        alert("파일 삭제 실패: " + (elHeader ? elHeader.resMsg : "알 수 없는 오류"));
+        scwin.showToast("파일 삭제 실패: " + (elHeader ? elHeader.resMsg : "알 수 없는 오류"),"warning");
         return;
     }
     
-    alert("파일이 삭제되었습니다.");
+    scwin.showToast("파일이 삭제되었습니다.");
     
     var deletedFileId = dmp_currentFile.get("fileId");
     if (deletedFileId) {
@@ -2554,7 +2554,7 @@ scwin.removeUploadFile = function(row, col, colId, targetId) {
         
     } catch(error) {
         console.error("파일 삭제 중 오류:", error);
-        alert("파일 삭제 중 오류가 발생했습니다.");
+        scwin.showToast("파일 삭제 중 오류가 발생했습니다.","warning");
     }
 };
 /**
@@ -2601,7 +2601,7 @@ scwin.showTestListViewPopup = function(taskId, taskName) {
     } else {
         // 테스트가 있으면 목록 표시 (현재 그리드에 이미 표시됨)
         console.log(`업무 "${taskName}"의 테스트 ${totalCount}건이 조회되었습니다.`);
-        $c.win.alert(`업무 "${taskName}"의 테스트 ${totalCount}건이 조회되었습니다.\n\n성공: ${successCount}건, 실패: ${failCount}건`);
+        scwin.showToast(`업무 "${taskName}"의 테스트 ${totalCount}건이 조회되었습니다.\n\n성공: ${successCount}건, 실패: ${failCount}건`);
     }
 };
 
@@ -2833,7 +2833,24 @@ scwin.openTestViewOnlyPopup = function(taskId, taskName, testList) {
         // 파일 목록 로드
         scwin.loadFileList();
     }
-};]]></script>
+};
+
+// 전역 토스트 함수 호출 헬퍼
+scwin.showToast = function (message, type = 'success', duration = 3000) {
+    // 메인 페이지의 전역 토스트 함수 호출
+    try {
+        if ($p.top() && $p.top().scwin && $p.top().scwin.showGlobalToast) {
+            $p.top().scwin.showGlobalToast(message, type, duration);
+        } else {
+            // 전역 함수를 찾을 수 없는 경우 기본 alert 사용
+            $c.win.alert(message);
+        }
+    } catch (e) {
+        console.error("토스트 표시 중 오류:", e);
+        $c.win.alert(message);
+    }
+};
+]]></script>
 	</head>
 	<body ev:onpageload="scwin.onpageload">
 		<xf:group class="pop_contents" id="pop_overlay" style="width: 100%; height: 100%; display: flex; flex-direction: column;">
