@@ -1516,6 +1516,12 @@
 						ev:onclick="scwin.btn_reset_onclick">
 						<xf:label><![CDATA[초기화]]></xf:label>
 					</xf:trigger>
+                    <!-- 엑셀 다운로드 버튼 추가 -->
+                    <xf:trigger class="btn_cm" disabled="" escape="false" id="btn_excel_download" 
+                        style="margin-left: 5px; margin-right : 5px;" 
+                        type="button" ev:onclick="scwin.btn_excel_download_onclick">
+                        <xf:label><![CDATA[엑셀 다운로드]]></xf:label>
+                    </xf:trigger>
 					<xf:trigger class="" disabled="" escape="false" id="reg_btn" localeRef="COMMON_BUTTON_00001"
                     style="background-color:#EC9192;color: #ffffff !important;height: 30px;font-size: 14px;min-width: 70px;width: auto;padding: 0 10px;width: 70px;border-color: #fff;border: none; border-radius : 5px;"
 						type="button" ev:onclick="scwin.reg_btn_onclick">
