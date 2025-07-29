@@ -142,26 +142,248 @@ scwin.onpageload = function() {
     // 초기화
     scwin.initializeData();
     
-    // 사용자 정보 가져오기 (UnitTest와 동일한 방식)
+    // 사용자 정보 가져오기
     scwin.getCurrentUserInfo();
     
     // 부모 창에서 프로젝트 ID 가져오기
     scwin.getProjectIdFromParent();
     
-    // 사용자 이름 가져오기 테스트
-    var userName = scwin.getCurrentUserName();
-    console.log("=== 사용자 정보 최종 확인 ===");
-    console.log("CURRENT_USER_ID:", scwin.CURRENT_USER_ID);
-    console.log("USER_NAME:", userName);
-    console.log("CURRENT_PROJECT_ID:", scwin.CURRENT_PROJECT_ID);
-    
     // 부모창에서 전달받은 데이터 처리
     scwin.initializeFromParentData();
     
-    // 모드에 따른 초기화
-    scwin.initializeByMode();
+    // 에디터 초기화 대기 후 모드 설정
+    setTimeout(function() {
+        scwin.initializeByMode();
+        
+        // 에디터 내용 설정 (추가 지연)
+        setTimeout(function() {
+            scwin.setEditorContentFromData();
+        }, 500);
+    }, 300);
     
     console.log("팝업 로드 완료");
+};
+/**
+ * 에디터 내용을 데이터맵에서 설정
+ */
+scwin.setEditorContentFromData = function() {
+    console.log("=== 에디터 내용 설정 시작 ===");
+    
+    try {
+        // 데이터맵 전체 내용 확인
+        var allData = dmp_defDetail.getJSON();
+        console.log("데이터맵 전체 내용:", allData);
+        
+        var description = dmp_defDetail.get("description") || "";
+        var remarks = dmp_defDetail.get("remarks") || "";
+        
+        console.log("데이터맵에서 가져온 원본 내용:");
+        console.log("- description type:", typeof description);
+        console.log("- description length:", description ? description.length : 0);
+        console.log("- description preview:", description ? description.substring(0, 100) : "null/undefined");
+        console.log("- remarks type:", typeof remarks);
+        console.log("- remarks length:", remarks ? remarks.length : 0);
+        console.log("- remarks preview:", remarks ? remarks.substring(0, 100) : "null/undefined");
+        
+        // 에디터가 준비될 때까지 반복 확인
+        var maxAttempts = 15;
+        var attempts = 0;
+        
+        var setContentInterval = setInterval(function() {
+            attempts++;
+            console.log("에디터 설정 시도:", attempts);
+            
+            try {
+                var descEditorReady = false;
+                var remarksEditorReady = false;
+                
+                // description 에디터 확인 및 설정
+                if (typeof editor_description !== 'undefined' && editor_description) {
+                    console.log("description 에디터 발견");
+                    
+                    if (editor_description.setHTML && editor_description.getHTML) {
+                        console.log("description 에디터 메서드 확인됨");
+                        
+                        // 현재 에디터 내용 확인
+                        var currentDesc = "";
+                        try {
+                            currentDesc = editor_description.getHTML() || "";
+                            console.log("현재 description 에디터 내용:", currentDesc.substring(0, 50));
+                        } catch(e) {
+                            console.log("description 에디터 내용 가져오기 실패:", e);
+                        }
+                        
+                        var descContent = description;
+                        
+                        // HTML 엔티티 디코딩
+                        if (descContent && (descContent.includes('&lt;') || descContent.includes('&gt;') || descContent.includes('&quot;'))) {
+                            var originalDesc = descContent;
+                            descContent = scwin.fullyDecodeHtml(descContent);
+                            console.log("description HTML 디코딩:", originalDesc.substring(0, 50), "→", descContent.substring(0, 50));
+                        }
+                        
+                        // 빈 내용 처리
+                        if (!descContent || descContent.trim() === "" || descContent === "<p></p>" || descContent === "<br>") {
+                            if (scwin.currentMode === "new") {
+                                descContent = "";
+                            } else {
+                                descContent = "<p style='color: #999; font-style: italic;'>결함 설명이 없습니다.</p>";
+                            }
+                            console.log("description 빈 내용 처리 완료");
+                        }
+                        
+                        try {
+                            editor_description.setHTML(descContent);
+                            console.log("description 에디터 설정 완료 - 길이:", descContent.length);
+                            descEditorReady = true;
+                        } catch(setError) {
+                            console.log("description 에디터 setHTML 실패:", setError);
+                        }
+                    } else {
+                        console.log("description 에디터 메서드 아직 준비 안됨");
+                    }
+                } else {
+                    console.log("description 에디터가 아직 준비되지 않음");
+                }
+                
+                // remarks 에디터 확인 및 설정
+                if (typeof editor_remarks !== 'undefined' && editor_remarks) {
+                    console.log("remarks 에디터 발견");
+                    
+                    if (editor_remarks.setHTML && editor_remarks.getHTML) {
+                        console.log("remarks 에디터 메서드 확인됨");
+                        
+                        // 현재 에디터 내용 확인
+                        var currentRemarks = "";
+                        try {
+                            currentRemarks = editor_remarks.getHTML() || "";
+                            console.log("현재 remarks 에디터 내용:", currentRemarks.substring(0, 50));
+                        } catch(e) {
+                            console.log("remarks 에디터 내용 가져오기 실패:", e);
+                        }
+                        
+                        var remarksContent = remarks;
+                        
+                        // HTML 엔티티 디코딩
+                        if (remarksContent && (remarksContent.includes('&lt;') || remarksContent.includes('&gt;') || remarksContent.includes('&quot;'))) {
+                            var originalRemarks = remarksContent;
+                            remarksContent = scwin.fullyDecodeHtml(remarksContent);
+                            console.log("remarks HTML 디코딩:", originalRemarks.substring(0, 50), "→", remarksContent.substring(0, 50));
+                        }
+                        
+                        // 빈 내용 처리
+                        if (!remarksContent || remarksContent.trim() === "" || remarksContent === "<p></p>" || remarksContent === "<br>") {
+                            if (scwin.currentMode === "new") {
+                                remarksContent = "";
+                            } else {
+                                remarksContent = "<p style='color: #999; font-style: italic;'>비고사항이 없습니다.</p>";
+                            }
+                            console.log("remarks 빈 내용 처리 완료");
+                        }
+                        
+                        try {
+                            editor_remarks.setHTML(remarksContent);
+                            console.log("remarks 에디터 설정 완료 - 길이:", remarksContent.length);
+                            remarksEditorReady = true;
+                        } catch(setError) {
+                            console.log("remarks 에디터 setHTML 실패:", setError);
+                        }
+                    } else {
+                        console.log("remarks 에디터 메서드 아직 준비 안됨");
+                    }
+                } else {
+                    console.log("remarks 에디터가 아직 준비되지 않음");
+                }
+                
+                // 모든 에디터 설정 완료 확인
+                if (descEditorReady && remarksEditorReady) {
+                    clearInterval(setContentInterval);
+                    console.log("=== 모든 에디터 내용 설정 완료 ===");
+                    
+                    // 에디터 모드 설정
+                    setTimeout(function() {
+                        scwin.setEditorMode(scwin.currentMode === "edit" || scwin.currentMode === "new");
+                    }, 100);
+                    
+                    return;
+                }
+                
+            } catch(e) {
+                console.log("에디터 설정 시도 중 오류:", e);
+                if (attempts >= maxAttempts) {
+                    clearInterval(setContentInterval);
+                    console.error("에디터 설정 최대 시도 횟수 초과");
+                }
+            }
+            
+            if (attempts >= maxAttempts) {
+                clearInterval(setContentInterval);
+                console.error("에디터 설정 시간 초과");
+                
+                // 최종 시도로 강제 바인딩 새로고침
+                try {
+                    console.log("최종 시도 - 강제 바인딩 새로고침");
+                    
+                    // 데이터맵 바인딩 강제 새로고침
+                    if (typeof editor_description !== 'undefined' && editor_description && editor_description.refresh) {
+                        editor_description.refresh();
+                    }
+                    if (typeof editor_remarks !== 'undefined' && editor_remarks && editor_remarks.refresh) {
+                        editor_remarks.refresh();
+                    }
+                    
+                    // 또는 데이터맵 자체를 다시 설정
+                    var currentData = dmp_defDetail.getJSON();
+                    dmp_defDetail.setJSON(currentData);
+                    
+                } catch(finalError) {
+                    console.error("최종 바인딩 시도 실패:", finalError);
+                }
+            }
+        }, 200);
+        
+    } catch (e) {
+        console.error("에디터 내용 설정 실패:", e);
+    }
+};
+
+scwin.forceEditorDataBinding = function() {
+    console.log("=== 에디터 데이터 바인딩 강화 시작 ===");
+    
+    try {
+        // 데이터맵 내용 재확인
+        var description = dmp_defDetail.get("description") || "";
+        var remarks = dmp_defDetail.get("remarks") || "";
+        
+        console.log("강제 바인딩 - description:", description ? "있음(" + description.length + "자)" : "없음");
+        console.log("강제 바인딩 - remarks:", remarks ? "있음(" + remarks.length + "자)" : "없음");
+        
+        // 에디터 컴포넌트에 직접 데이터 설정
+        if (description && typeof editor_description !== 'undefined' && editor_description) {
+            setTimeout(function() {
+                try {
+                    editor_description.setHTML(description);
+                    console.log("description 강제 설정 완료");
+                } catch(e) {
+                    console.log("description 강제 설정 실패:", e);
+                }
+            }, 100);
+        }
+        
+        if (remarks && typeof editor_remarks !== 'undefined' && editor_remarks) {
+            setTimeout(function() {
+                try {
+                    editor_remarks.setHTML(remarks);
+                    console.log("remarks 강제 설정 완료");
+                } catch(e) {
+                    console.log("remarks 강제 설정 실패:", e);
+                }
+            }, 200);
+        }
+        
+    } catch(e) {
+        console.error("강제 바인딩 실패:", e);
+    }
 };
 
 /**
@@ -298,6 +520,7 @@ scwin.initializeFromParentData = function() {
                 if (detailData.defectData) {
                     console.log("상세 데이터 설정:", detailData.defectData);
                     dmp_defDetail.setJSON(detailData.defectData);
+                    scwin.currentDefectId = detailData.defectData.id || "";
                     
                     // 조회/수정 모드에서 파일 목록 로드
                     if (scwin.currentMode === "view" || scwin.currentMode === "edit") {
@@ -313,7 +536,7 @@ scwin.initializeFromParentData = function() {
                     }, 200);
                 }
             } 
-            // defectData가 있는 경우 (등록 모드)
+            // defectData가 직접 있는 경우 (등록 모드 또는 DefectList에서 온 경우)
             else if (paramData.defectData) {
                 var defectData = paramData.defectData;
                 console.log("전달받은 defectData:", defectData);
@@ -336,9 +559,28 @@ scwin.initializeFromParentData = function() {
                         console.log("사용자명 설정:", defectData.currentUserName);
                         // 필요시 추가 사용자 정보 설정
                     }
+                } else {
+                    // 조회/수정 모드인 경우 기존 데이터 설정
+                    console.log("조회/수정 모드 - 기존 데이터 설정");
+                    
+                    // defectData 자체가 결함 정보인 경우
+                    if (defectData.id) {
+                        dmp_defDetail.setJSON(defectData);
+                        scwin.currentDefectId = defectData.id;
+                    }
+                    // defectData 안에 또 다른 구조가 있는 경우
+                    else if (defectData.defectData && defectData.defectData.id) {
+                        dmp_defDetail.setJSON(defectData.defectData);
+                        scwin.currentDefectId = defectData.defectData.id;
+                    }
+                    
+                    // 파일 목록 로드
+                    setTimeout(function() {
+                        scwin.loadDefFileList();
+                    }, 200);
                 }
             }
-            // 직접 데이터가 전달된 경우
+            // 직접 데이터가 전달된 경우 (레거시 처리)
             else if (paramData.data) {
                 console.log("직접 데이터 전달됨:", paramData.data);
                 var directData = paramData.data;
@@ -353,7 +595,28 @@ scwin.initializeFromParentData = function() {
                     dmp_defDetail.set("isDeleted", "N");
                     dmp_defDetail.set("assignee", scwin.CURRENT_USER_ID);
                     dmp_defDetail.set("pjtId", scwin.CURRENT_PROJECT_ID);
+                } else if (directData.id) {
+                    dmp_defDetail.setJSON(directData);
+                    scwin.currentDefectId = directData.id;
+                    
+                    setTimeout(function() {
+                        scwin.loadDefFileList();
+                    }, 200);
                 }
+            }
+            // paramData 자체가 결함 데이터인 경우 (최종 대안)
+            else if (paramData.id) {
+                console.log("paramData 자체가 결함 데이터:", paramData);
+                scwin.currentMode = paramData.mode || "view";
+                scwin.CURRENT_PROJECT_ID = paramData.pjtId || "";
+                scwin.CURRENT_USER_ID = paramData.currentUserId || "1";
+                
+                dmp_defDetail.setJSON(paramData);
+                scwin.currentDefectId = paramData.id;
+                
+                setTimeout(function() {
+                    scwin.loadDefFileList();
+                }, 200);
             }
         } else {
             console.log("파라미터 데이터가 없음, 기본 등록 모드로 설정");
@@ -369,6 +632,7 @@ scwin.initializeFromParentData = function() {
         console.log("현재 모드:", scwin.currentMode);
         console.log("프로젝트 ID:", scwin.CURRENT_PROJECT_ID);
         console.log("사용자 ID:", scwin.CURRENT_USER_ID);
+        console.log("결함 ID:", scwin.currentDefectId);
         console.log("데이터맵 내용:", dmp_defDetail.getJSON());
         
         // 임시 데이터 정리 (UnitTest와 동일)
@@ -396,12 +660,11 @@ scwin.initializeFromParentData = function() {
         dmp_defDetail.set("isDeleted", "N");
     }
 };
-
 /**
  * 모드에 따른 초기화 (단위테스트 방식 적용)
  */
 scwin.initializeByMode = function() {
-    console.log("모드별 초기화:", scwin.currentMode);
+    console.log("=== 모드별 초기화:", scwin.currentMode, "===");
     
     // 파일 관련 초기화
     dlt_defAttVoList.setJSON([]);
@@ -419,6 +682,42 @@ scwin.initializeByMode = function() {
             break;
         default:
             scwin.initializeNewMode();
+    }
+    
+    // 팝업 제목 설정
+    scwin.setPopupTitle();
+    
+    console.log("=== 모드별 초기화 완료 ===");
+};
+
+/**
+ * 팝업 제목 설정
+ */
+scwin.setPopupTitle = function() {
+    try {
+        var title = "";
+        switch(scwin.currentMode) {
+            case "new": 
+                title = "새 결함 등록"; 
+                break;
+            case "edit": 
+                title = "결함 수정"; 
+                break;
+            case "view": 
+                title = "결함 상세보기"; 
+                break;
+            default: 
+                title = "결함 관리";
+        }
+        
+        var titleComponent = $p.getComponentById("spn_popupTitle");
+        if (titleComponent && titleComponent.setValue) {
+            titleComponent.setValue(title);
+            console.log("팝업 제목 설정:", title);
+        }
+        
+    } catch(e) {
+        console.log("제목 설정 실패:", e);
     }
 };
 
@@ -453,16 +752,46 @@ scwin.initializeEditMode = function() {
     scwin.setFormMode("edit");
     scwin.loadDefFileList();
 };
-
 /**
- * 조회 모드 초기화
+ * 조회 모드 초기화 (수정된 버전)
  */
 scwin.initializeViewMode = function() {
     console.log("조회 모드 초기화");
+    
+    // 폼 모드 설정
     scwin.setFormMode("view");
-    scwin.loadDefFileList();
+    
+    // 파일 목록 로드
+    setTimeout(function() {
+        scwin.loadDefFileList();
+    }, 100);
+    
+    // 에디터 내용 설정 (추가 지연)
+    setTimeout(function() {
+        console.log("조회 모드에서 에디터 내용 재설정");
+        scwin.setEditorContentFromData();
+    }, 300);
 };
-
+/**
+ * 수정 모드 초기화 (수정된 버전)
+ */
+scwin.initializeEditMode = function() {
+    console.log("수정 모드 초기화");
+    
+    // 폼 모드 설정
+    scwin.setFormMode("edit");
+    
+    // 파일 목록 로드
+    setTimeout(function() {
+        scwin.loadDefFileList();
+    }, 100);
+    
+    // 에디터 내용 설정
+    setTimeout(function() {
+        console.log("수정 모드에서 에디터 내용 설정");
+        scwin.setEditorContentFromData();
+    }, 300);
+};
 
 /**
  * 결함 팝업 표시 (외부에서 호출)
@@ -574,7 +903,191 @@ scwin.setFormMode = function(mode) {
         btn_delete.show();
     }
 };
+/**
+ * 폼 모드 설정
+ */
+scwin.setFormMode = function(mode) {
+    console.log("폼 모드 전환:", mode);
+    
+    try {
+        if (mode === "edit" || mode === "new") {
+            // 편집 모드
+            scwin.setFieldsReadOnly(false);
+            scwin.setEditorMode(true);
+            scwin.showFileUploadSection(true);
+            
+            // 버튼 상태 변경
+            if (typeof btn_save !== 'undefined' && btn_save.show) {
+                btn_save.show();
+            }
+            if (typeof btn_edit !== 'undefined' && btn_edit.hide) {
+                btn_edit.hide();
+            }
+            
+            if (mode === "new") {
+                if (typeof btn_delete !== 'undefined' && btn_delete.hide) {
+                    btn_delete.hide();
+                }
+            } else {
+                if (typeof btn_delete !== 'undefined' && btn_delete.show) {
+                    btn_delete.show();
+                }
+            }
+            
+        } else if (mode === "view") {
+            // 조회 모드
+            scwin.setFieldsReadOnly(true);
+            scwin.setEditorMode(false);
+            scwin.showFileUploadSection(false);
+            
+            // 버튼 상태 변경
+            if (typeof btn_save !== 'undefined' && btn_save.hide) {
+                btn_save.hide();
+            }
+            if (typeof btn_edit !== 'undefined' && btn_edit.show) {
+                btn_edit.show();
+            }
+            if (typeof btn_delete !== 'undefined' && btn_delete.show) {
+                btn_delete.show();
+            }
+        }
+        
+        console.log("폼 모드 전환 완료:", mode);
+        
+    } catch (e) {
+        console.error("setFormMode 오류:", e);
+    }
+};
 
+/**
+ * 필드 읽기 전용 설정
+ */
+scwin.setFieldsReadOnly = function(readOnly) {
+    try {
+        var editableFields = ["inp_name", "sel_priority", "sel_status", "cal_fixDueDate", "inp_assignee"];
+        
+        editableFields.forEach(function(fieldId) {
+            var field = $p.getComponentById(fieldId);
+            if (field && field.setReadOnly) {
+                field.setReadOnly(readOnly);
+            }
+        });
+        
+        console.log("필드 읽기 전용 설정:", readOnly);
+        
+    } catch(e) {
+        console.error("필드 읽기 전용 설정 오류:", e);
+    }
+};
+
+/**
+ * 에디터 모드 설정 (UnitTestPopup과 동일)
+ */
+scwin.setEditorMode = function(isEditMode) {
+    console.log("에디터 모드 전환:", isEditMode ? "편집" : "조회");
+    
+    try {
+        if (typeof editor_description !== 'undefined' && editor_description && editor_description.setReadOnly) {
+            editor_description.setReadOnly(!isEditMode);
+        }
+        
+        if (typeof editor_remarks !== 'undefined' && editor_remarks && editor_remarks.setReadOnly) {
+            editor_remarks.setReadOnly(!isEditMode);
+        }
+        
+        // 편집 모드에 따른 에디터 스타일 조정
+        if (typeof editor_description !== 'undefined' && editor_description) {
+            if (isEditMode) {
+                editor_description.setStyle("border: 1px solid #98BED6");
+            } else {
+                editor_description.setStyle("border: 1px solid #ddd; background-color: #f9f9f9");
+            }
+        }
+        
+        if (typeof editor_remarks !== 'undefined' && editor_remarks) {
+            if (isEditMode) {
+                editor_remarks.setStyle("border: 1px solid #98BED6");
+            } else {
+                editor_remarks.setStyle("border: 1px solid #ddd; background-color: #f9f9f9");
+            }
+        }
+        
+        // 조회 모드일 때 내용 업데이트
+        if (!isEditMode) {
+            scwin.updateViewContent();
+        }
+        
+        console.log("에디터 모드 설정 완료:", isEditMode ? "편집" : "조회");
+        
+    } catch(e) {
+        console.error("에디터 읽기전용 설정 실패:", e);
+    }
+};
+
+/**
+ * 조회 모드 내용 업데이트
+ */
+scwin.updateViewContent = function() {
+    console.log("=== 조회 모드 내용 업데이트 ===");
+    
+    try {
+        var description = dmp_defDetail.get("description") || "";
+        var remarks = dmp_defDetail.get("remarks") || "";
+        
+        console.log("업데이트할 내용:");
+        console.log("- description:", description ? "있음 (" + description.length + "자)" : "없음");
+        console.log("- remarks:", remarks ? "있음 (" + remarks.length + "자)" : "없음");
+        
+        // description 에디터 업데이트
+        if (typeof editor_description !== 'undefined' && editor_description && editor_description.setHTML) {
+            var descContent = description;
+            if (descContent && (descContent.includes('&lt;') || descContent.includes('&gt;') || descContent.includes('&quot;'))) {
+                descContent = scwin.fullyDecodeHtml(descContent);
+            }
+            if (!descContent || descContent.trim() === "") {
+                descContent = "<p style='color: #999; font-style: italic;'>결함 설명이 없습니다.</p>";
+            }
+            editor_description.setHTML(descContent);
+            console.log("description 에디터 업데이트 완료");
+        }
+        
+        // remarks 에디터 업데이트
+        if (typeof editor_remarks !== 'undefined' && editor_remarks && editor_remarks.setHTML) {
+            var remarksContent = remarks;
+            if (remarksContent && (remarksContent.includes('&lt;') || remarksContent.includes('&gt;') || remarksContent.includes('&quot;'))) {
+                remarksContent = scwin.fullyDecodeHtml(remarksContent);
+            }
+            if (!remarksContent || remarksContent.trim() === "") {
+                remarksContent = "<p style='color: #999; font-style: italic;'>비고사항이 없습니다.</p>";
+            }
+            editor_remarks.setHTML(remarksContent);
+            console.log("remarks 에디터 업데이트 완료");
+        }
+        
+        console.log("=== 조회 모드 내용 업데이트 완료 ===");
+        
+    } catch(e) {
+        console.error("내용 업데이트 실패:", e);
+    }
+};
+
+/**
+ * 파일 업로드 섹션 표시
+ */
+scwin.showFileUploadSection = function(show) {
+    try {
+        if (typeof grp_fileUpload !== 'undefined' && grp_fileUpload) {
+            if (show) {
+                grp_fileUpload.show();
+            } else {
+                grp_fileUpload.hide();
+            }
+        }
+        console.log("파일 업로드 섹션:", show ? "표시" : "숨김");
+    } catch(e) {
+        console.error("파일 업로드 섹션 표시 오류:", e);
+    }
+};
 /**
  * 필드 읽기 전용 설정
  */
@@ -613,7 +1126,53 @@ scwin.showFileUploadSection = function(show) {
  * 저장 버튼 클릭
  */
 scwin.btn_save_onclick = function(e) {
-    console.log("저장 버튼 클릭");
+    console.log("=== 저장 버튼 클릭 ===");
+    
+    // 에디터 내용을 먼저 데이터맵에 저장
+    try {
+        console.log("에디터 내용 데이터맵에 저장 시작");
+        
+        if (typeof editor_description !== 'undefined' && editor_description && editor_description.getHTML) {
+            var descriptionHTML = editor_description.getHTML();
+            console.log("결함 설명 에디터 내용 길이:", descriptionHTML ? descriptionHTML.length : 0);
+            
+            // 빈 내용 체크
+            var cleanDesc = descriptionHTML.replace(/<[^>]*>/g, '').trim();
+            if (cleanDesc === "") {
+                console.log("결함 설명이 비어있음");
+                dmp_defDetail.set("description", "");
+            } else {
+                dmp_defDetail.set("description", descriptionHTML);
+                console.log("결함 설명 저장 완료");
+            }
+        } else {
+            console.warn("editor_description을 찾을 수 없음");
+        }
+        
+        if (typeof editor_remarks !== 'undefined' && editor_remarks && editor_remarks.getHTML) {
+            var remarksHTML = editor_remarks.getHTML();
+            console.log("비고사항 에디터 내용 길이:", remarksHTML ? remarksHTML.length : 0);
+            
+            // 빈 내용 체크
+            var cleanRemarks = remarksHTML.replace(/<[^>]*>/g, '').trim();
+            if (cleanRemarks === "") {
+                console.log("비고사항이 비어있음");
+                dmp_defDetail.set("remarks", "");
+            } else {
+                dmp_defDetail.set("remarks", remarksHTML);
+                console.log("비고사항 저장 완료");
+            }
+        } else {
+            console.warn("editor_remarks를 찾을 수 없음");
+        }
+        
+        console.log("=== 최종 저장될 데이터 ===");
+        console.log("description:", dmp_defDetail.get("description") ? "있음" : "없음");
+        console.log("remarks:", dmp_defDetail.get("remarks") ? "있음" : "없음");
+        
+    } catch(e) {
+        console.error("에디터 내용 저장 실패:", e);
+    }
     
     // 유효성 검사
     if (!scwin.validateForm()) {
@@ -622,14 +1181,47 @@ scwin.btn_save_onclick = function(e) {
     
     // 현재 시간 설정
     var currentTime = new Date().toISOString();
+    console.log("현재 시간 설정:", currentTime);
     
-    if (scwin.currentMode === "new") {
-        dmp_defDetail.set("createdAt", currentTime);
-        dmp_defDetail.set("updatedAt", currentTime);
-        $c.sbm.execute($p, sbm_insertDef);
-    } else {
-        dmp_defDetail.set("updatedAt", currentTime);
-        $c.sbm.execute($p, sbm_updateDef);
+    // 모드에 따른 처리
+    try {
+        if (scwin.currentMode === "new") {
+            console.log("등록 모드 - 새 결함 등록");
+            
+            // 등록일시와 수정일시 설정
+            dmp_defDetail.set("createdAt", currentTime);
+            dmp_defDetail.set("updatedAt", currentTime);
+            
+            // 등록자 정보 설정
+            if (scwin.CURRENT_USER_ID) {
+                dmp_defDetail.set("assignee", scwin.CURRENT_USER_ID);
+            }
+            
+            // 프로젝트 ID 설정
+            if (scwin.CURRENT_PROJECT_ID) {
+                dmp_defDetail.set("pjtId", scwin.CURRENT_PROJECT_ID);
+            }
+            
+            console.log("등록 전 최종 데이터:", dmp_defDetail.getJSON());
+            $c.sbm.execute($p, sbm_insertDef);
+            
+        } else if (scwin.currentMode === "edit") {
+            console.log("수정 모드 - 기존 결함 수정");
+            
+            // 수정일시만 업데이트
+            dmp_defDetail.set("updatedAt", currentTime);
+            
+            console.log("수정 전 최종 데이터:", dmp_defDetail.getJSON());
+            $c.sbm.execute($p, sbm_updateDef);
+            
+        } else {
+            console.warn("알 수 없는 모드:", scwin.currentMode);
+            $c.win.alert("저장할 수 없는 상태입니다. 페이지를 새로고침해주세요.");
+        }
+        
+    } catch (saveError) {
+        console.error("저장 처리 중 오류:", saveError);
+        $c.win.alert("저장 중 오류가 발생했습니다: " + saveError.message);
     }
 };
 
@@ -637,20 +1229,73 @@ scwin.btn_save_onclick = function(e) {
  * 폼 유효성 검사
  */
 scwin.validateForm = function() {
-    var name = dmp_defDetail.get("name");
-    var description = dmp_defDetail.get("description");
+    console.log("폼 유효성 검사 시작");
     
-    if (!name || name.trim() === "") {
-        $c.win.alert("결함명을 입력해주세요.");
+    try {
+        var name = dmp_defDetail.get("name");
+        var description = dmp_defDetail.get("description");
+        
+        console.log("유효성 검사 데이터:");
+        console.log("- name:", name);
+        console.log("- description:", description ? "있음" : "없음");
+        
+        if (!name || name.trim() === "") {
+            console.log("결함명 누락");
+            $c.win.alert("결함명을 입력해주세요.");
+            
+            // 결함명 필드에 포커스
+            try {
+                var nameField = $p.getComponentById("inp_name");
+                if (nameField && nameField.focus) {
+                    nameField.focus();
+                }
+            } catch(e) {
+                console.log("결함명 필드 포커스 실패:", e);
+            }
+            
+            return false;
+        }
+        
+        if (!description || description.trim() === "" || description === "<p></p>" || description === "<p><br></p>") {
+            console.log("결함 설명 누락");
+            $c.win.alert("결함 설명을 입력해주세요.");
+            
+            // 에디터에 포커스
+            try {
+                if (typeof editor_description !== 'undefined' && editor_description && editor_description.focus) {
+                    editor_description.focus();
+                }
+            } catch(e) {
+                console.log("에디터 포커스 실패:", e);
+            }
+            
+            return false;
+        }
+        
+        // 추가 유효성 검사
+        var priority = dmp_defDetail.get("priority");
+        var status = dmp_defDetail.get("status");
+        
+        if (!priority || priority.trim() === "") {
+            console.log("우선순위 누락");
+            $c.win.alert("우선순위를 선택해주세요.");
+            return false;
+        }
+        
+        if (!status || status.trim() === "") {
+            console.log("상태 누락");
+            $c.win.alert("상태를 선택해주세요.");
+            return false;
+        }
+        
+        console.log("폼 유효성 검사 통과");
+        return true;
+        
+    } catch (validationError) {
+        console.error("유효성 검사 중 오류:", validationError);
+        $c.win.alert("유효성 검사 중 오류가 발생했습니다.");
         return false;
     }
-    
-    if (!description || description.trim() === "") {
-        $c.win.alert("결함 설명을 입력해주세요.");
-        return false;
-    }
-    
-    return true;
 };
 
 /**
@@ -659,15 +1304,33 @@ scwin.validateForm = function() {
 scwin.sbm_insertDef_submitdone = function(e) {
     console.log("결함 등록 완료:", e);
     
-    var elHeader = e.responseJSON.elHeader;
-    
-    if (!elHeader || elHeader.resSuc == false) {
-        $c.win.alert(`에러코드: ${elHeader.resCode}\n에러메시지: ${elHeader.resMsg}`);
-        return;
+    try {
+        var responseData = e.responseJSON;
+        var elHeader = responseData ? responseData.elHeader : null;
+        
+        if (!elHeader || elHeader.resSuc == false) {
+            var errorMsg = "등록에 실패했습니다.";
+            if (elHeader && elHeader.resMsg) {
+                errorMsg += "\n오류메시지: " + elHeader.resMsg;
+            }
+            if (elHeader && elHeader.resCode) {
+                errorMsg += "\n오류코드: " + elHeader.resCode;
+            }
+            console.error("등록 실패:", errorMsg);
+            $c.win.alert(errorMsg);
+            return;
+        }
+        
+        console.log("결함 등록 성공");
+        $c.win.alert("등록되었습니다.");
+        
+        // 등록 성공 후 팝업 닫기
+        scwin.closeDefectPopup();
+        
+    } catch (error) {
+        console.error("등록 응답 처리 중 오류:", error);
+        $c.win.alert("등록 처리 중 오류가 발생했습니다.");
     }
-    
-    $c.win.alert("등록되었습니다.");
-    scwin.closeDefectPopup();
 };
 
 /**
@@ -676,16 +1339,37 @@ scwin.sbm_insertDef_submitdone = function(e) {
 scwin.sbm_updateDef_submitdone = function(e) {
     console.log("결함 수정 완료:", e);
     
-    var elHeader = e.responseJSON.elHeader;
-    
-    if (!elHeader || elHeader.resSuc == false) {
-        $c.win.alert(`에러코드: ${elHeader.resCode}\n에러메시지: ${elHeader.resMsg}`);
-        return;
+    try {
+        var responseData = e.responseJSON;
+        var elHeader = responseData ? responseData.elHeader : null;
+        
+        if (!elHeader || elHeader.resSuc == false) {
+            var errorMsg = "수정에 실패했습니다.";
+            if (elHeader && elHeader.resMsg) {
+                errorMsg += "\n오류메시지: " + elHeader.resMsg;
+            }
+            if (elHeader && elHeader.resCode) {
+                errorMsg += "\n오류코드: " + elHeader.resCode;
+            }
+            console.error("수정 실패:", errorMsg);
+            $c.win.alert(errorMsg);
+            return;
+        }
+        
+        console.log("결함 수정 성공");
+        $c.win.alert("수정되었습니다.");
+        
+        // 수정 성공 후 조회 모드로 전환
+        scwin.currentMode = "view";
+        scwin.setFormMode("view");
+        
+        // 파일 목록 새로고침
+        scwin.loadDefFileList();
+        
+    } catch (error) {
+        console.error("수정 응답 처리 중 오류:", error);
+        $c.win.alert("수정 처리 중 오류가 발생했습니다.");
     }
-    
-    $c.win.alert("수정되었습니다.");
-    scwin.setFormMode("view");
-    scwin.loadDefFileList();
 };
 
 /**
@@ -758,7 +1442,7 @@ scwin.loadDefFileList = function() {
         return;
     }
     
-    $c.sbm.execute($p, sbm_selectDefFileList);
+    // $c.sbm.execute($p, sbm_selectDefFileList);
 };
 
 /**
@@ -800,6 +1484,136 @@ scwin.sbm_selectDefFileList_submitdone = function(e) {
 scwin.sbm_selectDefFileList_submiterror = function(e) {
     console.error("파일 목록 조회 실패:", e);
     dlt_defAttVoList.setJSON([]);
+};
+
+/**
+ * 에디터 모드 설정 (UnitTestPopup과 동일)
+ */
+scwin.setEditorMode = function(isEditMode) {
+    console.log("=== 에디터 모드 전환:", isEditMode ? "편집" : "조회", "===");
+    
+    try {
+        // description 에디터 설정
+        if (typeof editor_description !== 'undefined' && editor_description) {
+            if (editor_description.setReadOnly) {
+                editor_description.setReadOnly(!isEditMode);
+                console.log("description 에디터 읽기전용 설정:", !isEditMode);
+            }
+            
+            // 에디터 스타일 조정
+            if (isEditMode) {
+                editor_description.setStyle("border: 2px solid #98BED6; background-color: white;");
+            } else {
+                editor_description.setStyle("border: 1px solid #ddd; background-color: #f8f9fa;");
+            }
+        } else {
+            console.warn("description 에디터를 찾을 수 없음");
+        }
+        
+        // remarks 에디터 설정
+        if (typeof editor_remarks !== 'undefined' && editor_remarks) {
+            if (editor_remarks.setReadOnly) {
+                editor_remarks.setReadOnly(!isEditMode);
+                console.log("remarks 에디터 읽기전용 설정:", !isEditMode);
+            }
+            
+            // 에디터 스타일 조정
+            if (isEditMode) {
+                editor_remarks.setStyle("border: 2px solid #98BED6; background-color: white;");
+            } else {
+                editor_remarks.setStyle("border: 1px solid #ddd; background-color: #f8f9fa;");
+            }
+        } else {
+            console.warn("remarks 에디터를 찾을 수 없음");
+        }
+        
+        // 조회 모드일 때 내용 업데이트
+        if (!isEditMode) {
+            setTimeout(function() {
+                scwin.updateViewContent();
+            }, 100);
+        }
+        
+        console.log("=== 에디터 모드 설정 완료 ===");
+        
+    } catch(e) {
+        console.error("에디터 읽기전용 설정 실패:", e);
+    }
+};
+
+/**
+ * 에디터 내용 설정 (UnitTestPopup과 동일)
+ */
+scwin.setEditorContent = function(description, remarks) {
+    try {
+        console.log("에디터 내용 설정 시작");
+        
+        if (editor_description) {
+            var descContent = description || "";
+            
+            if (descContent && (descContent.includes('&lt;') || descContent.includes('&gt;') || descContent.includes('&quot;'))) {
+                descContent = scwin.fullyDecodeHtml(descContent);
+            }
+            
+            if (!descContent || descContent.trim() === "") {
+                descContent = "<p>결함 설명이 없습니다.</p>";
+            }
+            
+            if (editor_description.setHTML) {
+                editor_description.setHTML(descContent);
+                console.log("결함 설명 에디터 설정 완료");
+            }
+        }
+        
+        if (editor_remarks) {
+            var remarksContent = remarks || "";
+            
+            if (remarksContent && (remarksContent.includes('&lt;') || remarksContent.includes('&gt;') || remarksContent.includes('&quot;'))) {
+                remarksContent = scwin.fullyDecodeHtml(remarksContent);
+            }
+            
+            if (!remarksContent || remarksContent.trim() === "") {
+                remarksContent = "<p>비고사항이 없습니다.</p>";
+            }
+            
+            if (editor_remarks.setHTML) {
+                editor_remarks.setHTML(remarksContent);
+                console.log("비고사항 에디터 설정 완료");
+            }
+        }
+        
+    } catch (error) {
+        console.error("에디터 내용 설정 중 오류:", error);
+    }
+};
+
+/**
+ * HTML 엔티티 완전 디코딩
+ */
+scwin.fullyDecodeHtml = function(str) {
+    if (!str) return str;
+    
+    var result = str;
+    var attempts = 0;
+    var maxAttempts = 5;
+    
+    while (attempts < maxAttempts && (result.includes('&lt;') || result.includes('&gt;') || result.includes('&quot;'))) {
+        attempts++;
+        var previousResult = result;
+        
+        result = result
+            .replace(/&lt;/g, '<')
+            .replace(/&gt;/g, '>')
+            .replace(/&quot;/g, '"')
+            .replace(/&#39;/g, "'")
+            .replace(/&apos;/g, "'")
+            .replace(/&nbsp;/g, ' ')
+            .replace(/&amp;/g, '&');
+        
+        if (result === previousResult) break;
+    }
+    
+    return result;
 };
 
 /**
@@ -1149,7 +1963,22 @@ scwin.updateRelatedTestStatus = function(testId, newStatus) {
 						<w2:textbox label="결함 설명" style="font-weight: bold; font-size: 14px;" tagname="h4"></w2:textbox>
 						<span style="color: red;">*</span>
 					</xf:group>
-					<xf:textarea id="txa_description" ref="data:dmp_defDetail.description" style="width: 100%; height: 120px; border: 1px solid #ddd; border-radius: 4px; padding: 10px; font-family: inherit; line-height: 1.5;"></xf:textarea>
+					<w2:editor id="editor_description" 
+                        style="width: 100%; height: 200px;" 
+                        ref="data:dmp_defDetail.description"
+                        toolbarSet="Basic"
+                        enterMode="2"
+                        shiftEnterMode="1"
+                        startupFocus="false"
+                        resize_enabled="true"
+                        colorButton_enableMore="false"
+                        disableNativeSpellChecker="false"
+                        removePlugins="elementspath"
+                        skin="moono-lisa"
+                        language="ko"
+                        uiColor="#AADC6E"
+                        toolbar="[['Bold','Italic','Underline','Strike'],['NumberedList','BulletedList'],['TextColor','BGColor'],['Link','Unlink']]">
+                    </w2:editor>
 				</xf:group>
 
 				<!-- 비고사항 -->
@@ -1157,7 +1986,22 @@ scwin.updateRelatedTestStatus = function(testId, newStatus) {
 					<xf:group class="titbox" style="margin-bottom: 10px;">
 						<w2:textbox label="비고사항" style="font-weight: bold; font-size: 14px;" tagname="h4"></w2:textbox>
 					</xf:group>
-					<xf:textarea id="txa_remarks" ref="data:dmp_defDetail.remarks" style="width: 100%; height: 80px; border: 1px solid #ddd; border-radius: 4px; padding: 10px; font-family: inherit; line-height: 1.5;"></xf:textarea>
+					<w2:editor id="editor_remarks" 
+                        style="width: 100%; height: 150px;" 
+                        ref="data:dmp_defDetail.remarks"
+                        toolbarSet="Basic"
+                        enterMode="2"
+                        shiftEnterMode="1"
+                        startupFocus="false"
+                        resize_enabled="true"
+                        colorButton_enableMore="false"
+                        disableNativeSpellChecker="false"
+                        removePlugins="elementspath"
+                        skin="moono-lisa"
+                        language="ko"
+                        uiColor="#AADC6E"
+                        toolbar="[['Bold','Italic','Underline','Strike'],['NumberedList','BulletedList'],['TextColor','BGColor'],['Link','Unlink']]">
+                    </w2:editor>
 				</xf:group>
 			</xf:group>
 
