@@ -1,4 +1,4 @@
-package com.demo.proworks.def.vo;
+package com.demo.proworks.cmt.vo;
 
 import com.inswave.elfw.annotation.ElDto;
 import com.inswave.elfw.annotation.ElDtoField;
@@ -10,13 +10,13 @@ public class CmtListVo extends com.demo.proworks.cmmn.ProworksCommVO {
     private static final long serialVersionUID = 1L;
 
     @ElDtoField(logicalName = "코멘트 관리List", physicalName = "cmtVoList", type = "com.demo.proworks.def.CmtVo", typeKind = "List", fldYn = "", length = 0, dotLen = 0, baseValue = "", desc = "")
-    private java.util.List<com.demo.proworks.def.vo.CmtVo> cmtVoList;
+    private java.util.List<com.demo.proworks.cmt.vo.CmtVo> cmtVoList;
 
-    public java.util.List<com.demo.proworks.def.vo.CmtVo> getCmtVoList(){
+    public java.util.List<com.demo.proworks.cmt.vo.CmtVo> getCmtVoList(){
         return cmtVoList;
     }
 
-    public void setCmtVoList(java.util.List<com.demo.proworks.def.vo.CmtVo> cmtVoList){
+    public void setCmtVoList(java.util.List<com.demo.proworks.cmt.vo.CmtVo> cmtVoList){
         this.cmtVoList = cmtVoList;
     }
 

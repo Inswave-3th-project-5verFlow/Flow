@@ -1,4 +1,4 @@
-package com.demo.proworks.def.web;
+package com.demo.proworks.cmt.web;
 
 import java.util.List;
 
@@ -7,10 +7,9 @@ import javax.annotation.Resource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.demo.proworks.def.service.CmtService;
-import com.demo.proworks.def.vo.CmtVo;
-import com.demo.proworks.def.vo.CmtListVo;
-
+import com.demo.proworks.cmt.service.CmtService;
+import com.demo.proworks.cmt.vo.CmtListVo;
+import com.demo.proworks.cmt.vo.CmtVo;
 import com.inswave.elfw.annotation.ElDescription;
 import com.inswave.elfw.annotation.ElService;
 import com.inswave.elfw.annotation.ElValidator;

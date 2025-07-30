@@ -1,4 +1,4 @@
-package com.demo.proworks.def.service.impl;
+package com.demo.proworks.cmt.service.impl;
 
 import java.util.List;
 
@@ -7,9 +7,9 @@ import javax.annotation.Resource;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
-import com.demo.proworks.def.service.CmtService;
-import com.demo.proworks.def.vo.CmtVo;
-import com.demo.proworks.def.dao.CmtDAO;
+import com.demo.proworks.cmt.dao.CmtDAO;
+import com.demo.proworks.cmt.service.CmtService;
+import com.demo.proworks.cmt.vo.CmtVo;
 
 /**  
  * @subject     : 코멘트 관리 관련 처리를 담당하는 ServiceImpl

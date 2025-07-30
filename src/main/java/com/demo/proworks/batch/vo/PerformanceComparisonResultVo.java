@@ -1,4 +1,4 @@
-package com.demo.proworks.att.vo;
+package com.demo.proworks.batch.vo;
 
 import com.inswave.elfw.annotation.ElDto;
 import com.inswave.elfw.annotation.ElDtoField;

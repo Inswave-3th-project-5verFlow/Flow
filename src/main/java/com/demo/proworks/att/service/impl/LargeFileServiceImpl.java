@@ -29,8 +29,8 @@ import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.UploadPartRequest;
 import com.amazonaws.services.s3.model.UploadPartResult;
 import com.demo.proworks.att.dao.AttDAO;
-import com.demo.proworks.att.service.LargeFileService;
 import com.demo.proworks.att.vo.AttVo;
+import com.demo.proworks.batch.service.LargeFileService;
 import com.demo.proworks.unit.service.impl.FileUploadPerformanceLogger;
 import com.inswave.elfw.log.AppLog;
 

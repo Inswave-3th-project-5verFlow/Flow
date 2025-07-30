@@ -15,7 +15,7 @@
 	2025/07/27              우민지             최초 생성
  -->
 <mapper namespace="com.demo.proworks.def">
-    <insert id="insertCmt" parameterType="com.demo.proworks.def.vo.CmtVo">
+    <insert id="insertCmt" parameterType="com.demo.proworks.cmt.vo.CmtVo">
     	<!-- 코멘트 관리를 등록한다. -->	
     		
         INSERT INTO CMT   /* QueryID : com.demo.proworks.def.insertCmt */
@@ -46,7 +46,7 @@
         )          
     </insert>	
 	
-    <update id="updateCmt" parameterType="com.demo.proworks.def.vo.CmtVo">
+    <update id="updateCmt" parameterType="com.demo.proworks.cmt.vo.CmtVo">
     	<!-- 코멘트 관리를 갱신한다. -->
     	
         UPDATE CMT    /* QueryID : com.demo.proworks.def.updateCmt */      
@@ -65,7 +65,7 @@
                 ID         = #{id}        
     </update>
 	
-    <delete id="deleteCmt" parameterType="com.demo.proworks.def.vo.CmtVo">
+    <delete id="deleteCmt" parameterType="com.demo.proworks.cmt.vo.CmtVo">
     	<!-- 코멘트 관리를 삭제한다. -->
     	
         DELETE FROM CMT   /* QueryID : com.demo.proworks.def.deleteCmt */ 
@@ -73,7 +73,7 @@
                 ID         = #{id}                
     </delete>
 	
-    <select id="selectCmt" parameterType="com.demo.proworks.def.vo.CmtVo" resultType="com.demo.proworks.def.vo.CmtVo">
+    <select id="selectCmt" parameterType="com.demo.proworks.cmt.vo.CmtVo" resultType="com.demo.proworks.cmt.vo.CmtVo">
     	<!-- 코멘트 관리를 상세 조회한다. -->	
         SELECT     /* QueryID : com.demo.proworks.def.selectCmt */
             ID as id, ISSUE_ID as issueId, DEFECT_ID as defectId, PARENT_ID as parentId, CONTENT as content, CREATED_AT as createdAt, UPDATED_AT as updatedAt, USER_ID as userId, DEPTH as depth, IS_DELETED as isDeleted
@@ -82,7 +82,7 @@
                 ID         = #{id}        			
     </select>
 	
-    <select id="selectListCmt" parameterType="com.demo.proworks.def.vo.CmtVo" resultType="com.demo.proworks.def.vo.CmtVo">
+    <select id="selectListCmt" parameterType="com.demo.proworks.cmt.vo.CmtVo" resultType="com.demo.proworks.cmt.vo.CmtVo">
     	<!-- 코멘트 관리 목록을 조회한다. -->
            SELECT    /* QueryID : com.demo.proworks.def.selectListCmt */
                ID as id, ISSUE_ID as issueId, DEFECT_ID as defectId, PARENT_ID as parentId, CONTENT as content, CREATED_AT as createdAt, UPDATED_AT as updatedAt, USER_ID as userId, DEPTH as depth, IS_DELETED as isDeleted		       
@@ -99,7 +99,7 @@
             WHERE PAGE = #{pageIndex}
     </select>
 	
-    <select id="selectListCountCmt" parameterType="com.demo.proworks.def.vo.CmtVo" resultType="long">
+    <select id="selectListCountCmt" parameterType="com.demo.proworks.cmt.vo.CmtVo" resultType="long">
     <!-- 코멘트 관리 목록의 카운트를 조회한다. -->
     
          SELECT    /* QueryID : com.demo.proworks.def.selectListCountCmt */

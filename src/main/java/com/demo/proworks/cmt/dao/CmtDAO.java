@@ -1,12 +1,12 @@
-package com.demo.proworks.def.dao;
+package com.demo.proworks.cmt.dao;
 
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
 import com.inswave.elfw.exception.ElException;
-import com.demo.proworks.def.vo.CmtVo;
-import com.demo.proworks.def.dao.CmtDAO;
+import com.demo.proworks.cmt.dao.CmtDAO;
+import com.demo.proworks.cmt.vo.CmtVo;
 
 /**  
  * @subject     : 코멘트 관리 관련 처리를 담당하는 DAO
@@ -31,7 +31,7 @@ public class CmtDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
      * @throws ElException
      */
     public CmtVo selectCmt(CmtVo vo) throws ElException {
-        return (CmtVo) selectByPk("com.demo.proworks.def.selectCmt", vo);
+        return (CmtVo) selectByPk("com.demo.proworks.cmt.selectCmt", vo);
     }
 
     /**
@@ -42,7 +42,7 @@ public class CmtDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
      * @throws ElException
      */
     public List<CmtVo> selectListCmt(CmtVo vo) throws ElException {      	
-        return (List<CmtVo>)list("com.demo.proworks.def.selectListCmt", vo);
+        return (List<CmtVo>)list("com.demo.proworks.cmt.selectListCmt", vo);
     }
 
     /**
@@ -53,7 +53,7 @@ public class CmtDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
      * @throws ElException
      */
     public long selectListCountCmt(CmtVo vo)  throws ElException{               
-        return (Long)selectByPk("com.demo.proworks.def.selectListCountCmt", vo);
+        return (Long)selectByPk("com.demo.proworks.cmt.selectListCountCmt", vo);
     }
         
     /**
@@ -64,7 +64,7 @@ public class CmtDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
      * @throws ElException
      */
     public int insertCmt(CmtVo vo) throws ElException {    	
-        return insert("com.demo.proworks.def.insertCmt", vo);
+        return insert("com.demo.proworks.cmt.insertCmt", vo);
     }
 
     /**
@@ -75,7 +75,7 @@ public class CmtDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
      * @throws ElException
      */
     public int updateCmt(CmtVo vo) throws ElException {
-        return update("com.demo.proworks.def.updateCmt", vo);
+        return update("com.demo.proworks.cmt.updateCmt", vo);
     }
 
     /**
@@ -86,7 +86,7 @@ public class CmtDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
      * @throws ElException
      */
     public int deleteCmt(CmtVo vo) throws ElException {
-        return delete("com.demo.proworks.def.deleteCmt", vo);
+        return delete("com.demo.proworks.cmt.deleteCmt", vo);
     }
 
 }

@@ -1,4 +1,4 @@
-package com.demo.proworks.att.web;
+package com.demo.proworks.batch.web;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -13,10 +13,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.amazonaws.services.s3.model.S3Object;
-import com.demo.proworks.att.service.LargeFileService;
 import com.demo.proworks.att.vo.AttVo;
-import com.demo.proworks.att.vo.PerformanceComparisonResultVo;
-import com.demo.proworks.att.vo.SimpleResponseVo;
+import com.demo.proworks.batch.service.LargeFileService;
+import com.demo.proworks.batch.vo.PerformanceComparisonResultVo;
+import com.demo.proworks.batch.vo.SimpleResponseVo;
 import com.demo.proworks.unit.service.impl.FileUploadPerformanceLogger;
 import com.inswave.elfw.annotation.ElDescription;
 import com.inswave.elfw.annotation.ElService;
@@ -288,256 +288,255 @@ public class LargeFileController {
 	}
 
 	/**
-	 * 대용량 파일 업로드 성능 개선 Before/After 비교 데모 (수정된 버전)
-	 */
-	@ElService(key = "BeforeAfterComparisonDemo")
-	@RequestMapping(value = "BeforeAfterComparisonDemo")
-	@ElDescription(sub = "성능 개선 Before/After 비교", desc = "기존 방식과 개선 방식의 상세한 성능 비교를 VO로 반환한다.")
-	public PerformanceComparisonResultVo beforeAfterComparisonDemo(@RequestParam("file") MultipartFile file,
-			@RequestParam(value = "refType", defaultValue = "TEST") String refType) throws Exception {
+ * 대용량 파일 업로드 성능 개선 Before/After 비교 데모 (50MB 기준)
+ */
+@ElService(key = "BeforeAfterComparisonDemo")
+@RequestMapping(value = "BeforeAfterComparisonDemo")
+@ElDescription(sub = "성능 개선 Before/After 비교", desc = "기존 방식과 개선 방식의 상세한 성능 비교를 VO로 반환한다.")
+public PerformanceComparisonResultVo beforeAfterComparisonDemo(@RequestParam("file") MultipartFile file,
+		@RequestParam(value = "refType", defaultValue = "UNIT_TEST") String refType) throws Exception {
 
-		AppLog.info("=== 성능 개선 Before/After 비교 데모 시작 ===");
-		AppLog.info("참조 타입: " + refType);
+	AppLog.info("=== 성능 개선 Before/After 비교 데모 시작 ===");
+	AppLog.info("참조 타입: " + refType);
 
-		PerformanceComparisonResultVo resultVo = new PerformanceComparisonResultVo();
+	PerformanceComparisonResultVo resultVo = new PerformanceComparisonResultVo();
 
+	try {
+		long fileSizeMB = file.getSize() / 1024 / 1024;
+		String fileName = file.getOriginalFilename();
+
+		AppLog.info("비교 테스트 파일: " + fileName + " (" + fileSizeMB + "MB)");
+
+		// 기본 정보 설정
+		resultVo.setSuccess("true");
+		resultVo.setDemoTitle("대용량 파일 처리 성능 개선 Before vs After");
+		resultVo.setFileName(fileName);
+		resultVo.setFileSizeMB(String.valueOf(fileSizeMB));
+		resultVo.setTestTimestamp(
+				new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date()));
+
+		// 시스템 환경 정보
+		resultVo.setSystemCpuCores(String.valueOf(Runtime.getRuntime().availableProcessors()));
+		resultVo.setSystemMaxMemoryMB(String.valueOf(Runtime.getRuntime().maxMemory() / 1024 / 1024));
+
+		// === BEFORE: 기존 방식 테스트 ===
+		performanceLogger.logSystemResources("BEFORE_TEST_START");
+		long beforeStartTime = System.currentTimeMillis();
+
+		// 메모리 사용량 측정 (Before)
+		long beforeMemoryUsed = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
+
+		AppLog.info("BEFORE 테스트 시작 - 기존 방식 (전체 파일 메모리 로드)");
+		String beforeRefId = "TC_138";
+		
+		AttVo beforeResult = null;
+		boolean beforeSuccess = false;
+		String beforeErrorMessage = null;
+		
 		try {
-			long fileSizeMB = file.getSize() / 1024 / 1024;
-			String fileName = file.getOriginalFilename();
-
-			AppLog.info("비교 테스트 파일: " + fileName + " (" + fileSizeMB + "MB)");
-
-			// 기본 정보 설정
-			resultVo.setSuccess("true");
-			resultVo.setDemoTitle("대용량 파일 처리 성능 개선 Before vs After");
-			resultVo.setFileName(fileName);
-			resultVo.setFileSizeMB(String.valueOf(fileSizeMB));
-			resultVo.setTestTimestamp(
-					new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new java.util.Date()));
-
-			// 시스템 환경 정보
-			resultVo.setSystemCpuCores(String.valueOf(Runtime.getRuntime().availableProcessors()));
-			resultVo.setSystemMaxMemoryMB(String.valueOf(Runtime.getRuntime().maxMemory() / 1024 / 1024));
-
-			// === BEFORE: 기존 방식 테스트 ===
-			performanceLogger.logSystemResources("BEFORE_TEST_START");
-			long beforeStartTime = System.currentTimeMillis();
-
-			// 메모리 사용량 측정 (Before)
-			long beforeMemoryUsed = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
-
-			AppLog.info("BEFORE 테스트 시작 - 기존 방식 (전체 파일 메모리 로드)");
-			String beforeRefId = "TC_138_BEFORE_" + System.currentTimeMillis();
+			beforeResult = largeFileService.uploadLargeFileTraditional(file, refType, beforeRefId);
+			beforeSuccess = true;
+		} catch (Exception beforeException) {
+			beforeErrorMessage = beforeException.getMessage();
+			AppLog.error("BEFORE 테스트 실패: " + beforeErrorMessage);
 			
-			AttVo beforeResult = null;
-			boolean beforeSuccess = false;
-			String beforeErrorMessage = null;
-			
-			try {
-				beforeResult = largeFileService.uploadLargeFileTraditional(file, refType, beforeRefId);
-				beforeSuccess = true;
-			} catch (Exception beforeException) {
-				beforeErrorMessage = beforeException.getMessage();
-				AppLog.error("BEFORE 테스트 실패: " + beforeErrorMessage);
+			// OutOfMemoryError인 경우 즉시 메모리 정리
+			if (beforeErrorMessage.contains("OutOfMemoryError") || beforeErrorMessage.contains("Java heap space")) {
+				AppLog.info("OutOfMemoryError 감지 - 강제 메모리 정리 시작");
+				System.gc();
+				System.runFinalization();
+				System.gc();
 				
-				// OutOfMemoryError인 경우 즉시 메모리 정리
-				if (beforeErrorMessage.contains("OutOfMemoryError") || beforeErrorMessage.contains("Java heap space")) {
-					AppLog.info("OutOfMemoryError 감지 - 강제 메모리 정리 시작");
-					System.gc();
-					System.runFinalization();
-					System.gc();
-					
-					// 메모리 정리 후 잠시 대기
-					try {
-						Thread.sleep(2000);
-					} catch (InterruptedException ie) {
-						Thread.currentThread().interrupt();
-					}
-					
-					AppLog.info("메모리 정리 완료 - After 테스트 진행");
+				// 메모리 정리 후 잠시 대기
+				try {
+					Thread.sleep(2000);
+				} catch (InterruptedException ie) {
+					Thread.currentThread().interrupt();
 				}
-			}
-
-			long beforeDuration = System.currentTimeMillis() - beforeStartTime;
-			long afterBeforeMemoryUsed = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
-			long beforeMemoryDelta = Math.max(afterBeforeMemoryUsed - beforeMemoryUsed, 0);
-
-			double beforeThroughput = 0;
-			if (beforeDuration > 0 && beforeSuccess) {
-				beforeThroughput = (file.getSize() / 1024.0 / 1024.0) / (beforeDuration / 1000.0);
-			}
-
-			performanceLogger.logSystemResources("BEFORE_TEST_COMPLETE");
-			AppLog.info("BEFORE 테스트 완료: " + beforeDuration + "ms, " + String.format("%.2f", beforeThroughput) + "MB/s");
-
-			// BEFORE 결과를 VO에 설정
-			resultVo.setBeforeMethodName("기존 방식 (Traditional Upload)");
-			resultVo.setBeforeDescription("전체 파일을 메모리에 로드 후 단일 업로드 - OutOfMemoryError 위험");
-			resultVo.setBeforeDuration(String.valueOf(beforeDuration));
-			resultVo.setBeforeDurationSeconds(String.format("%.2f", beforeDuration / 1000.0));
-			resultVo.setBeforeThroughput(beforeSuccess ? String.format("%.2f", beforeThroughput) : "실패");
-			resultVo.setBeforeMemoryUsedMB(String.valueOf(beforeMemoryDelta));
-			resultVo.setBeforeFileId(beforeResult != null ? beforeResult.getFileId() : "FAILED");
-
-			// === AFTER: 개선 방식 테스트 (항상 실행) ===
-			// 강제 메모리 정리 (공정한 비교를 위해)
-			AppLog.info("=== 강제 메모리 정리 시작 ===");
-			System.gc();
-			System.runFinalization();
-			System.gc();
-			Thread.sleep(2000); // 충분한 GC 시간 확보
-			
-			// 메모리 상태 확인
-			long availableMemory = Runtime.getRuntime().maxMemory() - (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
-			AppLog.info("사용 가능한 메모리: " + (availableMemory / 1024 / 1024) + "MB");
-
-			performanceLogger.logSystemResources("AFTER_TEST_START");
-			long afterStartTime = System.currentTimeMillis();
-
-			// 메모리 사용량 측정 (After)
-			long afterMemoryUsed = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
-
-			AppLog.info("AFTER 테스트 시작 - 개선 방식 (멀티파트 업로드)");
-			String afterRefId = "TC_138_AFTER_" + System.currentTimeMillis();
-			
-			AttVo afterResult = null;
-			boolean afterSuccess = false;
-			String afterErrorMessage = null;
-			
-			try {
-				afterResult = largeFileService.uploadLargeFile(file, refType, afterRefId);
-				afterSuccess = true;
-			} catch (Exception afterException) {
-				afterErrorMessage = afterException.getMessage();
-				AppLog.error("AFTER 테스트 실패: " + afterErrorMessage);
-			}
-
-			long afterDuration = System.currentTimeMillis() - afterStartTime;
-			long afterAfterMemoryUsed = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
-			long afterMemoryDelta = Math.max(afterAfterMemoryUsed - afterMemoryUsed, 0);
-
-			double afterThroughput = 0;
-			if (afterDuration > 0 && afterSuccess) {
-				afterThroughput = (file.getSize() / 1024.0 / 1024.0) / (afterDuration / 1000.0);
-			}
-
-			performanceLogger.logSystemResources("AFTER_TEST_COMPLETE");
-			AppLog.info("AFTER 테스트 완료: " + afterDuration + "ms, " + String.format("%.2f", afterThroughput) + "MB/s");
-
-			// AFTER 결과를 VO에 설정
-			resultVo.setAfterMethodName("개선 방식 (Multipart Upload)");
-			resultVo.setAfterDescription("5MB 청크로 분할하여 최대 4개 스레드 병렬 업로드 - 메모리 안전");
-			resultVo.setAfterDuration(String.valueOf(afterDuration));
-			resultVo.setAfterDurationSeconds(String.format("%.2f", afterDuration / 1000.0));
-			resultVo.setAfterThroughput(afterSuccess ? String.format("%.2f", afterThroughput) : "실패");
-			resultVo.setAfterMemoryUsedMB(String.valueOf(afterMemoryDelta));
-			resultVo.setAfterFileId(afterResult != null ? afterResult.getFileId() : "FAILED");
-
-			// === 개선 효과 계산 및 결론 ===
-			if (beforeSuccess && afterSuccess) {
-				// 둘 다 성공한 경우 - 정상적인 성능 비교
-				double speedImprovement = beforeDuration > 0
-						? ((double) (beforeDuration - afterDuration) / beforeDuration) * 100
-						: 0;
-				double throughputImprovement = beforeThroughput > 0
-						? ((afterThroughput - beforeThroughput) / beforeThroughput) * 100
-						: 0;
-				double memoryEfficiency = beforeMemoryDelta > 0
-						? ((double) (beforeMemoryDelta - afterMemoryDelta) / beforeMemoryDelta) * 100
-						: 0;
-				double speedupFactor = afterDuration > 0 ? (double) beforeDuration / afterDuration : 1.0;
-
-				resultVo.setSpeedImprovement(String.format("%.1f%%", speedImprovement));
-				resultVo.setThroughputImprovement(String.format("%.1f%%", throughputImprovement));
-				resultVo.setMemoryEfficiency(String.format("%.1f%%", memoryEfficiency));
-				resultVo.setSpeedupFactor(String.format("%.1fx", speedupFactor));
-
-				resultVo.setMemoryAdvantage(String.format("메모리 사용량 %.0f%% 절약 (%dMB → %dMB)", 
-					memoryEfficiency, beforeMemoryDelta, afterMemoryDelta));
-				resultVo.setSpeedAdvantage(String.format("처리 속도 %.1f%% 향상 (%dms → %dms)", 
-					speedImprovement, beforeDuration, afterDuration));
-
-				String conclusion = String.format(
-					"대용량 파일 처리 성능이 %.1f%% 개선되었으며, 메모리 효율성 %.1f%% 향상으로 시스템 안정성을 확보했습니다.",
-					speedImprovement, memoryEfficiency);
-				resultVo.setConclusion(conclusion);
-
-			} else if (!beforeSuccess && afterSuccess) {
-				// Before 실패, After 성공 - 이것이 가장 중요한 케이스!
-				resultVo.setSpeedImprovement("측정불가");
-				resultVo.setThroughputImprovement("무한대");
-				resultVo.setMemoryEfficiency("95%+");
-				resultVo.setSpeedupFactor("∞");
-
-				resultVo.setMemoryAdvantage("기존 방식: OutOfMemoryError 발생 → 개선 방식: 안정적 처리");
-				resultVo.setSpeedAdvantage("기존 방식: 시스템 크래시 → 개선 방식: 정상 완료");
 				
-				String conclusion = String.format(
-					"🎯 완벽한 성능 개선 증명! 기존 방식은 OutOfMemoryError로 실패했지만, " +
-					"개선된 멀티파트 업로드는 %.1f초 만에 안정적으로 완료했습니다. " +
-					"이것이 바로 대용량 파일 처리에서 메모리 효율성의 중요성을 보여주는 완벽한 사례입니다!",
-					afterDuration / 1000.0);
-				resultVo.setConclusion(conclusion);
-
-			} else if (beforeSuccess && !afterSuccess) {
-				// Before 성공, After 실패 - 예상치 못한 상황
-				resultVo.setSpeedImprovement("측정불가");
-				resultVo.setThroughputImprovement("측정불가");
-				resultVo.setMemoryEfficiency("측정불가");
-				resultVo.setSpeedupFactor("측정불가");
-
-				resultVo.setConclusion("예상치 못한 상황: 개선 방식에서 오류가 발생했습니다. 추가 조사가 필요합니다.");
-
-			} else {
-				// 둘 다 실패
-				resultVo.setSpeedImprovement("측정불가");
-				resultVo.setThroughputImprovement("측정불가");
-				resultVo.setMemoryEfficiency("측정불가");
-				resultVo.setSpeedupFactor("측정불가");
-
-				resultVo.setConclusion("두 방식 모두 실패했습니다. 시스템 상태를 확인해야 합니다.");
+				AppLog.info("메모리 정리 완료 - After 테스트 진행");
 			}
-
-			// 공통 기술적 장점
-			resultVo.setStabilityAdvantage("멀티파트 업로드: 네트워크 장애 시 청크 단위 재전송으로 복원력 향상");
-			resultVo.setScalabilityAdvantage("청크 기반 병렬 처리로 GB 단위 파일까지 안전하게 처리 가능");
-
-			// 특별한 경우: Before가 OutOfMemoryError로 실패한 경우 강조
-			if (!beforeSuccess && beforeErrorMessage != null && 
-				(beforeErrorMessage.contains("OutOfMemoryError") || beforeErrorMessage.contains("Java heap space"))) {
-				
-				resultVo.setMemoryAdvantage("🚨 기존 방식: OutOfMemoryError 크래시 → 🚀 개선 방식: 메모리 안전 보장");
-				resultVo.setSpeedAdvantage("🚨 기존 방식: 시스템 불안정 → 🚀 개선 방식: 안정적 대용량 처리");
-				
-				if (afterSuccess) {
-					String specialConclusion = String.format(
-						"🎉 대성공! 기존 방식은 OutOfMemoryError로 완전히 실패했지만, " +
-						"개선된 멀티파트 업로드는 %.2f초 만에 파일을 안정적으로 처리했습니다. " +
-						"이것이 바로 대용량 파일 처리 기술의 진정한 가치입니다!",
-						afterDuration / 1000.0);
-					resultVo.setConclusion(specialConclusion);
-				}
-			}
-
-			// 상세 로깅
-			AppLog.info("=== 성능 개선 Before/After 비교 결과 ===");
-			AppLog.info("파일 크기: " + fileSizeMB + "MB");
-			AppLog.info("BEFORE: " + (beforeSuccess ? "성공" : "실패") + " - " + beforeDuration + "ms");
-			AppLog.info("AFTER: " + (afterSuccess ? "성공" : "실패") + " - " + afterDuration + "ms");
-			
-			if (!beforeSuccess && afterSuccess) {
-				AppLog.info("🎯 완벽한 데모 성공: 기존 방식 실패 → 개선 방식 성공!");
-			}
-
-		} catch (Exception e) {
-			AppLog.error("성능 비교 데모 실패: " + e.getMessage());
-			resultVo.setSuccess("false");
-			resultVo.setErrorMessage("데모 실패: " + e.getMessage());
 		}
 
-		return resultVo;
+		long beforeDuration = System.currentTimeMillis() - beforeStartTime;
+		long afterBeforeMemoryUsed = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
+		long beforeMemoryDelta = Math.max(afterBeforeMemoryUsed - beforeMemoryUsed, 0);
+
+		double beforeThroughput = 0;
+		if (beforeDuration > 0 && beforeSuccess) {
+			beforeThroughput = (file.getSize() / 1024.0 / 1024.0) / (beforeDuration / 1000.0);
+		}
+
+		performanceLogger.logSystemResources("BEFORE_TEST_COMPLETE");
+		AppLog.info("BEFORE 테스트 완료: " + beforeDuration + "ms, " + String.format("%.2f", beforeThroughput) + "MB/s");
+
+		// BEFORE 결과를 VO에 설정
+		resultVo.setBeforeMethodName("기존 방식 (getBytes Upload)");
+		resultVo.setBeforeDescription("file.getBytes()로 전체 파일을 메모리에 로드 후 단일 업로드");
+		resultVo.setBeforeDuration(String.valueOf(beforeDuration));
+		resultVo.setBeforeDurationSeconds(String.format("%.2f", beforeDuration / 1000.0));
+		resultVo.setBeforeThroughput(beforeSuccess ? String.format("%.2f", beforeThroughput) : "실패");
+		resultVo.setBeforeMemoryUsedMB(String.valueOf(beforeMemoryDelta));
+		resultVo.setBeforeFileId(beforeResult != null ? beforeResult.getFileId() : "FAILED");
+
+		// === AFTER: 개선 방식 테스트 (항상 실행) ===
+		// 강제 메모리 정리 (공정한 비교를 위해)
+		AppLog.info("=== 강제 메모리 정리 시작 ===");
+		System.gc();
+		System.runFinalization();
+		System.gc();
+		Thread.sleep(2000); // 충분한 GC 시간 확보
+		
+		// 메모리 상태 확인
+		long availableMemory = Runtime.getRuntime().maxMemory() - (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory());
+		AppLog.info("사용 가능한 메모리: " + (availableMemory / 1024 / 1024) + "MB");
+
+		performanceLogger.logSystemResources("AFTER_TEST_START");
+		long afterStartTime = System.currentTimeMillis();
+
+		// 메모리 사용량 측정 (After)
+		long afterMemoryUsed = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
+
+		AppLog.info("AFTER 테스트 시작 - 개선 방식 (멀티파트 업로드)");
+		String afterRefId = "TC_138";
+		
+		AttVo afterResult = null;
+		boolean afterSuccess = false;
+		String afterErrorMessage = null;
+		
+		try {
+			afterResult = largeFileService.uploadLargeFile(file, refType, afterRefId);
+			afterSuccess = true;
+		} catch (Exception afterException) {
+			afterErrorMessage = afterException.getMessage();
+			AppLog.error("AFTER 테스트 실패: " + afterErrorMessage);
+		}
+
+		long afterDuration = System.currentTimeMillis() - afterStartTime;
+		long afterAfterMemoryUsed = (Runtime.getRuntime().totalMemory() - Runtime.getRuntime().freeMemory()) / 1024 / 1024;
+		long afterMemoryDelta = Math.max(afterAfterMemoryUsed - afterMemoryUsed, 0);
+
+		double afterThroughput = 0;
+		if (afterDuration > 0 && afterSuccess) {
+			afterThroughput = (file.getSize() / 1024.0 / 1024.0) / (afterDuration / 1000.0);
+		}
+
+		performanceLogger.logSystemResources("AFTER_TEST_COMPLETE");
+		AppLog.info("AFTER 테스트 완료: " + afterDuration + "ms, " + String.format("%.2f", afterThroughput) + "MB/s");
+
+		// AFTER 결과를 VO에 설정
+		resultVo.setAfterMethodName("개선 방식 (Batch Processing)");
+		resultVo.setAfterDescription("청크 단위로 분할하여 배치 처리 - 메모리 효율적이고 안정적");
+		resultVo.setAfterDuration(String.valueOf(afterDuration));
+		resultVo.setAfterDurationSeconds(String.format("%.2f", afterDuration / 1000.0));
+		resultVo.setAfterThroughput(afterSuccess ? String.format("%.2f", afterThroughput) : "실패");
+		resultVo.setAfterMemoryUsedMB(String.valueOf(afterMemoryDelta));
+		resultVo.setAfterFileId(afterResult != null ? afterResult.getFileId() : "FAILED");
+
+		// === 개선 효과 계산 및 결론 ===
+		if (beforeSuccess && afterSuccess) {
+			// 둘 다 성공한 경우 - 정상적인 성능 비교
+			double speedImprovement = beforeDuration > 0
+					? ((double) (beforeDuration - afterDuration) / beforeDuration) * 100
+					: 0;
+			double throughputImprovement = beforeThroughput > 0
+					? ((afterThroughput - beforeThroughput) / beforeThroughput) * 100
+					: 0;
+			double memoryEfficiency = beforeMemoryDelta > 0
+					? ((double) (beforeMemoryDelta - afterMemoryDelta) / beforeMemoryDelta) * 100
+					: 0;
+			double speedupFactor = afterDuration > 0 ? (double) beforeDuration / afterDuration : 1.0;
+
+			resultVo.setSpeedImprovement(String.format("%.1f%%", speedImprovement));
+			resultVo.setThroughputImprovement(String.format("%.1f%%", throughputImprovement));
+			resultVo.setMemoryEfficiency(String.format("%.1f%%", memoryEfficiency));
+			resultVo.setSpeedupFactor(String.format("%.1fx", speedupFactor));
+
+			resultVo.setMemoryAdvantage(String.format("메모리 사용량 %.0f%% 절약 (%dMB → %dMB)", 
+				memoryEfficiency, beforeMemoryDelta, afterMemoryDelta));
+			resultVo.setSpeedAdvantage(String.format("처리 속도 %.1f%% 향상 (%dms → %dms)", 
+				speedImprovement, beforeDuration, afterDuration));
+
+			String conclusion = String.format(
+				"대용량 파일 처리 성능이 %.1f%% 개선되었으며, 메모리 효율성 %.1f%% 향상으로 시스템 안정성을 확보했습니다.",
+				speedImprovement, memoryEfficiency);
+			resultVo.setConclusion(conclusion);
+
+		} else if (!beforeSuccess && afterSuccess) {
+			// Before 실패, After 성공 - 이것이 가장 중요한 케이스!
+			resultVo.setSpeedImprovement("측정불가");
+			resultVo.setThroughputImprovement("무한대");
+			resultVo.setMemoryEfficiency("95%+");
+			resultVo.setSpeedupFactor("∞");
+
+			resultVo.setMemoryAdvantage("기존 방식: OutOfMemoryError 발생 → 개선 방식: 안정적 처리");
+			resultVo.setSpeedAdvantage("기존 방식: 시스템 크래시 → 개선 방식: 정상 완료");
+			
+			String conclusion = String.format(
+				"🎯 완벽한 성능 개선 증명! 기존 방식은 OutOfMemoryError로 실패했지만, " +
+				"개선된 멀티파트 업로드는 %.1f초 만에 안정적으로 완료했습니다. " +
+				"이것이 바로 대용량 파일 처리에서 메모리 효율성의 중요성을 보여주는 완벽한 사례입니다!",
+				afterDuration / 1000.0);
+			resultVo.setConclusion(conclusion);
+
+		} else if (beforeSuccess && !afterSuccess) {
+			// Before 성공, After 실패 - 예상치 못한 상황
+			resultVo.setSpeedImprovement("측정불가");
+			resultVo.setThroughputImprovement("측정불가");
+			resultVo.setMemoryEfficiency("측정불가");
+			resultVo.setSpeedupFactor("측정불가");
+
+			resultVo.setConclusion("예상치 못한 상황: 개선 방식에서 오류가 발생했습니다. 추가 조사가 필요합니다.");
+
+		} else {
+			// 둘 다 실패
+			resultVo.setSpeedImprovement("측정불가");
+			resultVo.setThroughputImprovement("측정불가");
+			resultVo.setMemoryEfficiency("측정불가");
+			resultVo.setSpeedupFactor("측정불가");
+
+			resultVo.setConclusion("두 방식 모두 실패했습니다. 시스템 상태를 확인해야 합니다.");
+		}
+
+		resultVo.setStabilityAdvantage("멀티파트 업로드: 네트워크 장애 시 청크 단위 재전송으로 복원력 향상");
+		resultVo.setScalabilityAdvantage("청크 기반 병렬 처리로 GB 단위 파일까지 안전하게 처리 가능");
+
+		// 특별한 경우: Before가 OutOfMemoryError로 실패한 경우 강조
+		if (!beforeSuccess && beforeErrorMessage != null && 
+			(beforeErrorMessage.contains("OutOfMemoryError") || beforeErrorMessage.contains("Java heap space"))) {
+			
+			resultVo.setMemoryAdvantage("🚨 기존 방식: OutOfMemoryError 크래시 → 🚀 개선 방식: 메모리 안전 보장");
+			resultVo.setSpeedAdvantage("🚨 기존 방식: 시스템 불안정 → 🚀 개선 방식: 안정적 대용량 처리");
+			
+			if (afterSuccess) {
+				String specialConclusion = String.format(
+					"🎉 대성공! 기존 방식은 OutOfMemoryError로 완전히 실패했지만, " +
+					"개선된 멀티파트 업로드는 %.2f초 만에 파일을 안정적으로 처리했습니다. " +
+					"이것이 바로 대용량 파일 처리 기술의 진정한 가치입니다!",
+					afterDuration / 1000.0);
+				resultVo.setConclusion(specialConclusion);
+			}
+		}
+
+		// 상세 로깅
+		AppLog.info("=== 성능 개선 Before/After 비교 결과 ===");
+		AppLog.info("파일 크기: " + fileSizeMB + "MB");
+		AppLog.info("BEFORE: " + (beforeSuccess ? "성공" : "실패") + " - " + beforeDuration + "ms");
+		AppLog.info("AFTER: " + (afterSuccess ? "성공" : "실패") + " - " + afterDuration + "ms");
+		
+		if (!beforeSuccess && afterSuccess) {
+			AppLog.info("🎯 완벽한 데모 성공: 기존 방식 실패 → 개선 방식 성공!");
+		}
+
+	} catch (Exception e) {
+		AppLog.error("성능 비교 데모 실패: " + e.getMessage());
+		resultVo.setSuccess("false");
+		resultVo.setErrorMessage("데모 실패: " + e.getMessage());
 	}
 
+	return resultVo;
+}
+	
 	/**
 	 * 260MB 파일 업로드 데모 (면접/발표용)
 	 */

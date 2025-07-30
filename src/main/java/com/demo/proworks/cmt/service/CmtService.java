@@ -1,8 +1,8 @@
-package com.demo.proworks.def.service;
+package com.demo.proworks.cmt.service;
 
 import java.util.List;
 
-import com.demo.proworks.def.vo.CmtVo;
+import com.demo.proworks.cmt.vo.CmtVo;
 
 /**  
  * @subject     : 코멘트 관리 관련 처리를 담당하는 인터페이스
