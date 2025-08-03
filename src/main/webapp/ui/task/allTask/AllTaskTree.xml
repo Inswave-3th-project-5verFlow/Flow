@@ -55,7 +55,6 @@ scwin.onpageload = function () {
 
     btn_search.hide();
     var taskData = $p.getParameter("taskData");
-    console.log(taskData);
     dmp_projectId.set("pjtId", taskData.currentPjtId);
 
     $c.sbm.execute(sbm_designTaskTreeList);

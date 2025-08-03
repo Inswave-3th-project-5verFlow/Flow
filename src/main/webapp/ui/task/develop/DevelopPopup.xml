@@ -303,7 +303,7 @@ scwin.btn_delete_onclick = function (e) {
 scwin.sbm_deleteTaskDetail_submitdone = function (e) {
     // error 수신시
     var elHeader = e.responseJSON.elHeader;
-    if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+    if (elHeader == null || elHeader == "" || elHeader == "undefined" || elHeader.resSuc == false) {
         $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
         return false;
     } else {
@@ -330,7 +330,6 @@ scwin.btn_reset_onclick = function (e) {
 
 // 테스트 등록 버튼
 scwin.btn_test_reg_onclick = function (e) {
-    console.log(dmp_taskDetail.get("taskId"));
     let taskId = dmp_taskDetail.get("taskId"); // 개발 업무ID
     let taskName = dmp_taskDetail.get("taskName"); // 개발 업무명
     scwin.navigateToTaskTab(taskId,taskName, true);
@@ -351,7 +350,6 @@ scwin.navigateToTaskTab = function (taskId, taskName, flag) {
             openRegisterPopup: flag, 
             timestamp: new Date().getTime(),
         };
-        console.log("선택된 개발업무ID : ", taskId);
 
         // 메인페이지의 openTab 함수 호출 (수정된 방식)
         // 팝업 -> developlist -> 메인페이지로 2단계 거쳐서 접근
