@@ -342,8 +342,6 @@ scwin.onpageload = function () {
     let userId = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_ID;
     let pjtId = $p.parent().scwin.SEL_PJT_ID;
 
-    console.log('로그인한 userID : ' , userId);
-    console.log('현재 pjtID : ' , pjtId);
     dmp_searchVo.set("userId", userId);
     dmp_searchVo.set("pjtId", pjtId);
 
@@ -361,7 +359,6 @@ scwin.loadTaskList = function() {
 
 scwin.sbm_selectTaskList_submitdone = function(e) {
     var elData = e.responseJSON.elData;
-    console.log(elData);
     if (elData && elData.designVoList) {
         dlt_designVoList.setJSON(elData.designVoList);
         scwin.renderKanbanBoard();
@@ -373,7 +370,7 @@ scwin.sbm_selectTaskList_submitdone = function(e) {
 
 scwin.renderKanbanBoard = function() {
     var taskData = dlt_designVoList.getAllJSON();
-    console.log("renderKanbanBoard >> taskData : ", taskData);
+
     var waitingTasks = taskData.filter(task => task.taskStatus === "대기");
     var progressTasks = taskData.filter(task => task.taskStatus === "진행중");
     var completedTasks = taskData.filter(task => task.taskStatus === "완료");
@@ -395,12 +392,6 @@ scwin.updateColumnCounts = function(waiting, progress, completed) {
     var progressCount = document.getElementById(scwin.getRealId('progress_count'));
     var completedCount = document.getElementById(scwin.getRealId('completed_count'));
     
-    console.log("카운트 업데이트:", {
-        waitingCount: waitingCount,
-        progressCount: progressCount, 
-        completedCount: completedCount
-    });
-    
     if (waitingCount) waitingCount.textContent = waiting + "개";
     if (progressCount) progressCount.textContent = progress + "개";
     if (completedCount) completedCount.textContent = completed + "개";
@@ -408,16 +399,13 @@ scwin.updateColumnCounts = function(waiting, progress, completed) {
 
 
 scwin.renderColumn = function(columnId, tasks) {
-    console.log("컬럼 렌더링 시도:", columnId, "업무 개수:", tasks.length);
     
     var columnBody = document.getElementById(columnId);
     if (!columnBody) {
         console.error("컬럼을 찾을 수 없습니다:", columnId);
-        console.log("사용 가능한 요소들:", document.querySelectorAll('[id*="tasks"]'));
         return;
     }
     
-    console.log("컬럼 찾음:", columnId, columnBody);
     columnBody.innerHTML = '';
     
     if (tasks.length === 0) {
@@ -430,7 +418,6 @@ scwin.renderColumn = function(columnId, tasks) {
         columnBody.appendChild(taskCard);
     });
     
-    console.log("컬럼 렌더링 완료:", columnId);
 };
 
 scwin.createTaskCard = function(task) {
@@ -474,7 +461,6 @@ scwin.createTaskCard = function(task) {
 
 // 업무 상세 팝업 열기 함수를 여기로 이동 (createTaskCard보다 먼저 정의)
 scwin.openTaskDetailPopup = function(taskId) {
-    console.log("업무 상세 팝업 열기:", taskId);
     
     var taskData = dlt_designVoList.getAllJSON();
     var task = null;
@@ -511,7 +497,6 @@ scwin.openTaskDetailPopup = function(taskId) {
         dataObject: jsnPopupData
     };
     
-    console.log("설계 업무 여부", task.isDesign);
     if(task.isDesign === "1") $p.openPopup("/InsWebApp/ui/task/design/DesignPopup.xml", options);
     else if(task.isDesign === "0") $p.openPopup("/InsWebApp/ui/task/develop/DevelopPopup.xml", options);
     
@@ -555,11 +540,6 @@ scwin.handleDragStart = function(e) {
     e.target.classList.add('dragging');
     e.dataTransfer.effectAllowed = 'move';
     
-    console.log("드래그 시작:", {
-        taskId: scwin.draggedTaskId,
-        originalStatus: scwin.originalStatus,
-        element: e.target
-    });
 };
 
 scwin.handleDragOver = function(e) {
@@ -572,35 +552,27 @@ scwin.handleDragOver = function(e) {
 
 scwin.handleDrop = function(e) {
     e.preventDefault();
-    
-    console.log("드롭 이벤트 발생:", {
-        draggedTaskId: scwin.draggedTaskId,
-        originalStatus: scwin.originalStatus
-    });
-    
+
     if (!scwin.draggedTaskId) {
-        console.log("드래그된 업무 ID가 없습니다.");
+        console.error("드래그된 업무 ID가 없습니다.");
         return;
     }
     
     var dropTarget = scwin.findDropTarget(e.target);
     if (!dropTarget) {
-        console.log("유효한 드롭 타겟을 찾지 못했습니다.");
+        console.error("유효한 드롭 타겟을 찾지 못했습니다.");
         return;
     }
     
-    console.log("드롭 타겟 찾음:", dropTarget.id);
     
     var newStatus = scwin.getStatusFromColumn(dropTarget.id);
-    console.log("새로운 상태:", newStatus);
     
     if (!newStatus || newStatus === scwin.originalStatus) {
-        console.log("같은 상태로 이동하거나 잘못된 컬럼입니다.");
+        console.error("같은 상태로 이동하거나 잘못된 컬럼입니다.");
         scwin.cleanupDrag();
         return;
     }
     
-    console.log("상태 업데이트 실행:", scwin.draggedTaskId, scwin.originalStatus, "→", newStatus);
     scwin.updateTaskStatus(scwin.draggedTaskId, newStatus);
     
     scwin.cleanupDrag();
@@ -629,7 +601,6 @@ scwin.findDropTarget = function(element) {
             return current;
         }
         current = current.parentElement;
-        console.log(current);
     }
     return null;
 };
@@ -644,7 +615,6 @@ scwin.getStatusFromColumn = function(columnId) {
 };
 
 scwin.updateTaskStatus = function(taskId, newStatus) {
-    console.log("업무 상태 업데이트 시작:", taskId, "→", newStatus);
     
     var taskData = dlt_designVoList.getAllJSON();
     var updatedTask = null;
@@ -652,7 +622,6 @@ scwin.updateTaskStatus = function(taskId, newStatus) {
     
     for (var i = 0; i < taskData.length; i++) {
         if (taskData[i].taskId === taskId) {
-            console.log("업무 찾음:", taskData[i]);
             taskData[i].taskStatus = newStatus;
             taskData[i].rowStatus = "U";
             updatedTask = taskData[i];
@@ -665,8 +634,6 @@ scwin.updateTaskStatus = function(taskId, newStatus) {
         console.error("업무를 찾을 수 없습니다:", taskId);
         return;
     }
-    
-    console.log("업데이트될 업무:", updatedTask);
     
     // 즉시 DataCollection 업데이트 및 화면 반영
     dlt_designVoList.setCellData(updatedIndex, "taskStatus", newStatus);
@@ -683,13 +650,11 @@ scwin.updateTaskStatus = function(taskId, newStatus) {
         }
     };
     
-    console.log("서버 요청 데이터:", reqObj);
     $c.sbm.execute($p, sbm_saveDesignVoList, reqObj);
 };
 
 
 scwin.sbm_saveDesignVoList_submitdone = function (e) {
-    console.log("업무 상태 업데이트 완료:", e);
     
     var elHeader = e.responseJSON.elHeader;
     if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
@@ -698,7 +663,6 @@ scwin.sbm_saveDesignVoList_submitdone = function (e) {
         scwin.loadTaskList();
         return false;
     } else {
-        console.log("업무 상태 업데이트 성공");
         
         // DataCollection에 변경된 데이터를 다시 설정 !!!
         dlt_designVoList.setJSON(dlt_designVoList.getAllJSON());
@@ -713,7 +677,6 @@ scwin.sbm_saveDesignVoList_submitdone = function (e) {
 
 // 팝업 닫기 액션
 scwin.detailPopup_closeAction = function(argRuntimeID, argJsnInfo) {
-    console.log("팝업 닫기:", argJsnInfo);
     scwin.refreshBoard();
     return true;
 };
@@ -724,7 +687,6 @@ scwin.refreshBoard = function() {
 
 // DesignPopup.xml 호환성을 위한 함수들 추가
 scwin.btn_search_onclick = function() {
-    console.log("팝업에서 부모 새로고침 요청");
     scwin.refreshBoard();
 };
 

@@ -14,9 +14,6 @@ import com.demo.proworks.wbs.service.WbsProgressService;
 import com.demo.proworks.wbs.service.WbsStatusPropagationService;
 import com.demo.proworks.wbs.vo.WbsVo;
 import com.inswave.elfw.log.AppLog;
-import com.inswave.elfw.util.ControllerContextUtil;
-import com.inswave.elfw.util.ElBeanUtils;
-import com.inswave.elfw.view.ElMappingJacksonObjectMapper;
 import com.demo.proworks.task.design.dao.DesignDAO;
 
 /**
@@ -156,7 +153,7 @@ public class DesignServiceImpl implements DesignService {
 				wbsProgressService.calculateAndUpdateProgress(wbsVo.getTaskId(), wbsVo.getPjtId());
 
 			} catch (Exception e) {
-				System.err.println("insertDesign 후 WBS 로직 처리 오류: " + e.getMessage());
+				AppLog.debug("insertDesign 후 WBS 로직 처리 오류: " + e.getMessage());
 				// WBS 로직 실패해도 기본 삽입은 성공으로 처리
 			}
 		}
@@ -185,7 +182,7 @@ public class DesignServiceImpl implements DesignService {
 		int result;
 
 		if (isParentChanged) {
-			System.out.println("상위업무 변경 감지 : taskName=" + designVo.getTaskName() + ", taskId=" + designVo.getTaskId()
+			AppLog.debug("상위업무 변경 감지 : taskName=" + designVo.getTaskName() + ", taskId=" + designVo.getTaskId()
 					+ ", 이전상위=" + currentData.getPtTaskId() + ", 새상위=" + designVo.getPtTaskId());
 
 			// 1) 자신의 업무 정보 + depth 업데이트
@@ -193,8 +190,7 @@ public class DesignServiceImpl implements DesignService {
 
 			// 2) 자신의 하위 업무들의 depth 연쇄 업데이트
 			int result2 = updateChildTasksDepth(designVo);
-
-			System.out.println("기본업데이트=" + result + ", 하위업데이트=" + result2);
+			AppLog.debug("기본업데이트=" + result + ", 하위업데이트=" + result2);
 
 			// 3) 상위업무 변경 시 WBS 로직 처리
 			if (result > 0) {
@@ -216,7 +212,7 @@ public class DesignServiceImpl implements DesignService {
 					wbsProgressService.calculateAndUpdateProgress(wbsVo.getTaskId(), wbsVo.getPjtId());
 
 				} catch (Exception e) {
-					System.err.println("상위업무 변경 시 WBS 로직 처리 오류: " + e.getMessage());
+					AppLog.debug("상위업무 변경 시 WBS 로직 처리 오류: " + e.getMessage());
 					// WBS 로직 실패해도 기본 수정은 성공으로 처리
 				}
 			}
@@ -252,7 +248,7 @@ public class DesignServiceImpl implements DesignService {
 				}
 
 			} catch (Exception e) {
-				System.err.println("updateDesign 후 WBS 로직 처리 오류: " + e.getMessage());
+				AppLog.debug("updateDesign 후 WBS 로직 처리 오류: " + e.getMessage());
 				// WBS 로직 실패해도 기본 수정은 성공으로 처리
 			}
 		}
@@ -281,11 +277,11 @@ public class DesignServiceImpl implements DesignService {
 				updatedCount += result;
 			}
 
-			System.out.println("하위 업무 depth 업데이트 완료: " + updatedCount + "건");
+			AppLog.debug("하위 업무 depth 업데이트 완료: " + updatedCount + "건");
 			return updatedCount;
 
 		} catch (Exception e) {
-			System.err.println("하위 업무 depth 업데이트 중 오류: " + e.getMessage());
+			AppLog.debug("하위 업무 depth 업데이트 중 오류: " + e.getMessage());
 			throw e;
 		}
 	}
@@ -300,7 +296,7 @@ public class DesignServiceImpl implements DesignService {
 		boolean changed = !currentPtTaskId.equals(updatedPtTaskId);
 
 		if (changed) {
-			System.out.println("상위업무 변경 감지: " + currentPtTaskId + " → " + updatedPtTaskId);
+			AppLog.debug("상위업무 변경 감지: " + currentPtTaskId + " → " + updatedPtTaskId);
 		}
 
 		return changed;
@@ -336,7 +332,7 @@ public class DesignServiceImpl implements DesignService {
 				}
 
 			} catch (Exception e) {
-				System.err.println("deleteDesign 후 WBS 로직 처리 오류: " + e.getMessage());
+				AppLog.debug("deleteDesign 후 WBS 로직 처리 오류: " + e.getMessage());
 				// WBS 로직 실패해도 기본 삭제는 성공으로 처리
 			}
 		}

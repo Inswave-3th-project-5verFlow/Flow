@@ -33,9 +33,10 @@ public class DesignDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstrac
 		return (DesignVo) selectByPk("com.demo.proworks.task.design.selectDesign", vo);
 	}
 
+
 	/**
 	 * 하위 업무 정보 목록을 새로운 depth와 함께 조회한다.
-	 * 
+	 * 상위업무 변경 시 모든 하위업무들의 depth 재계산용
 	 * @param DesignVo 설계 업무 정보
 	 * @return List<DesignVo> 설계 업무 정보
 	 * @throws ElException
