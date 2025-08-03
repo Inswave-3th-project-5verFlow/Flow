@@ -9,29 +9,38 @@ import com.demo.proworks.wbs.dao.WbsDAO;
 import com.demo.proworks.wbs.service.WbsStatusPropagationService;
 import com.demo.proworks.wbs.service.WbsProgressService;
 import com.demo.proworks.wbs.vo.WbsVo;
+import com.inswave.elfw.log.AppLog;
 
 /**
- * WBS 상태 전파 서비스 구현체
+ * @subject : WBS 상태 전파 서비스 구현체
+ * @description : WBS 상태 전파 서비스 구현체
+ * @author : 김성민
+ * @since : 2025/07/24
+ * @modification ===========================================================
+ *               DATE AUTHOR DESC
+ *               ===========================================================
+ *               2025/07/24 김성민 최초 생성
  * 
- * @author 김성민
- * @since 2025/07/24
  */
 @Service("wbsStatusPropagationServiceImpl")
 public class WbsStatusPropagationServiceImpl implements WbsStatusPropagationService {
 
+	/** WbsDAO */
 	@Resource(name = "wbsDAO")
 	private WbsDAO wbsDAO;
 
+	/** WbsProgressService */
 	@Resource(name = "wbsProgressServiceImpl")
 	private WbsProgressService wbsProgressService;
 
-	// =====================================================
-	// public
-	// =====================================================
-
 	/**
-	 * 하위 업무 추가 시 상위 업무 상태를 자동 조정한다. 규칙1: 상위 업무가 대기 상태 → 진행중으로 변경 규칙2: 상위 업무가 완료 상태
-	 * → 진행중으로 변경 (하위 업무 추가로 인해)
+	 * 하위 업무 추가 시 상위 업무 상태를 자동 조정한다.
+	 *
+	 * @process 1. 상위 업무 정보를 조회한다.
+	 *          2. 상위 업무가 대기 상태면 진행중으로 변경한다.
+	 *          3. 상위 업무가 완료 상태면 진행중으로 변경한다.
+	 * 
+	 * @param  childTask 추가된 하위 업무 WbsVo
 	 */
 	@Override
 	public void propagateOnChildInsert(WbsVo childTask) {
@@ -49,7 +58,7 @@ public class WbsStatusPropagationServiceImpl implements WbsStatusPropagationServ
 			WbsVo parentTask = wbsDAO.selectWbs(parentParam);
 
 			if (parentTask == null) {
-				System.out.println("상위 업무를 찾을 수 없음: " + parentTaskId);
+				AppLog.debug("상위 업무를 찾을 수 없음: " + parentTaskId);
 				return;
 			}
 
@@ -61,14 +70,14 @@ public class WbsStatusPropagationServiceImpl implements WbsStatusPropagationServ
 				parentTask.setTaskStatus(WbsConstants.TaskStatus.IN_PROGRESS);
 				// 진척률은 calculateAndUpdateProgress에서 계산하도록 함
 				statusChanged = true;
-				System.out.println(String.format("상위 업무 %s: 대기 → 진행중 (하위업무 추가)", parentTaskId));
+				AppLog.debug(String.format("상위 업무 %s: 대기 → 진행중 (하위업무 추가)", parentTaskId));
 			}
 			// 규칙2: 상위 업무가 완료 상태면 진행중으로 변경
 			else if (WbsConstants.TaskStatus.COMPLETED.equals(parentStatus)) {
 				parentTask.setTaskStatus(WbsConstants.TaskStatus.IN_PROGRESS);
 				// 진척률은 calculateAndUpdateProgress에서 계산하도록 함
 				statusChanged = true;
-				System.out.println(String.format("상위 업무 %s: 완료 → 진행중 (하위업무 추가)", parentTaskId));
+				AppLog.debug(String.format("상위 업무 %s: 완료 → 진행중 (하위업무 추가)", parentTaskId));
 			}
 
 			// 상태가 변경된 경우에만 업데이트 (진척률은 별도로 계산됨)
@@ -77,13 +86,19 @@ public class WbsStatusPropagationServiceImpl implements WbsStatusPropagationServ
 			}
 
 		} catch (Exception e) {
-			System.err.println("하위 업무 추가 시 상위 업무 상태 조정 실패: " + e.getMessage());
+			AppLog.debug("하위 업무 추가 시 상위 업무 상태 조정 실패: " + e.getMessage());
 		}
 	}
 
 	/**
-	 * 상위 업무 상태 변경 시 하위 업무들의 상태를 자동 조정한다. 규칙3: 상위 업무가 진행중 → 완료로 변경 시 모든 하위 업무를 완료로
-	 * 변경
+	 * 상위 업무 상태 변경 시 하위 업무들의 상태를 자동 조정한다.
+	 *
+	 * @process 1. 상태 변경 여부를 확인한다.
+	 *          2. 상위 업무가 진행중에서 완료로 변경되면 모든 하위 업무를 완료로 변경한다.
+	 * 
+	 * @param  parentTask 상태가 변경된 상위 업무 WbsVo
+	 * @param  oldStatus 변경 전 상태
+	 * @param  newStatus 변경 후 상태
 	 */
 	@Override
 	public void propagateOnParentUpdate(WbsVo parentTask, String oldStatus, String newStatus) {
@@ -102,16 +117,23 @@ public class WbsStatusPropagationServiceImpl implements WbsStatusPropagationServ
 					&& WbsConstants.TaskStatus.COMPLETED.equals(newStatus)) {
 
 				updateAllChildrenStatus(parentTaskId, projectId, WbsConstants.TaskStatus.COMPLETED);
-				System.out.println(String.format("상위 업무 %s 완료로 인해 모든 하위 업무를 완료 처리", parentTaskId));
+				AppLog.debug(String.format("상위 업무 %s 완료로 인해 모든 하위 업무를 완료 처리", parentTaskId));
 			}
 
 		} catch (Exception e) {
-			System.err.println("상위 업무 변경 시 하위 업무 상태 조정 실패: " + e.getMessage());
+			AppLog.debug("상위 업무 변경 시 하위 업무 상태 조정 실패: " + e.getMessage());
 		}
 	}
 
 	/**
-	 * 하위 업무 상태 변경이 상위 업무에 미치는 영향을 처리한다. 규칙5: 모든 하위 업무가 완료되면 상위 업무도 완료로 변경 (재귀적 적용)
+	 * 하위 업무 상태 변경이 상위 업무에 미치는 영향을 처리한다.
+	 *
+	 * @process 1. 상위 업무 정보를 조회한다.
+	 *          2. 모든 하위 업무가 완료되었는지 확인한다.
+	 *          3. 모든 하위 업무가 완료되면 상위 업무도 완료로 변경한다.
+	 *          4. 재귀적으로 상위의 상위 업무도 처리한다.
+	 * 
+	 * @param  childTask 상태가 변경된 하위 업무 WbsVo
 	 */
 	@Override
 	public void propagateOnChildUpdate(WbsVo childTask) {
@@ -138,7 +160,7 @@ public class WbsStatusPropagationServiceImpl implements WbsStatusPropagationServ
 			boolean allChildrenCompleted = areAllChildrenCompleted(parentTaskId, projectId);
 
 			if (allChildrenCompleted) {
-				System.out.println(String.format("모든 하위 업무가 완료되어 상위 업무 %s 상태를 완료로 변경", parentTaskId));
+				AppLog.debug(String.format("모든 하위 업무가 완료되어 상위 업무 %s 상태를 완료로 변경", parentTaskId));
 				parentTask.setTaskStatus(WbsConstants.TaskStatus.COMPLETED);
 				adjustRateByStatus(parentTask);
 				wbsDAO.updateWbs(parentTask);
@@ -148,12 +170,16 @@ public class WbsStatusPropagationServiceImpl implements WbsStatusPropagationServ
 			}
 
 		} catch (Exception e) {
-			System.err.println("하위 업무 변경 시 상위 업무 상태 조정 실패: " + e.getMessage());
+			AppLog.debug("하위 업무 변경 시 상위 업무 상태 조정 실패: " + e.getMessage());
 		}
 	}
 
 	/**
-	 * 업무 삭제 시 관련 업무들의 상태를 조정한다. 삭제된 업무의 상위 업무들의 진척률을 재계산한다.
+	 * 업무 삭제 시 관련 업무들의 상태를 조정한다.
+	 *
+	 * @process 1. 삭제된 업무의 상위 업무들의 진척률을 재계산한다.
+	 * 
+	 * @param  deletedTask 삭제된 업무 WbsVo
 	 */
 	@Override
 	public void propagateOnTaskDelete(WbsVo deletedTask) {
@@ -164,20 +190,20 @@ public class WbsStatusPropagationServiceImpl implements WbsStatusPropagationServ
 			// 상위 업무가 있으면 진척률 재계산
 			if (parentTaskId != null && !parentTaskId.trim().isEmpty()) {
 				wbsProgressService.calculateAndUpdateProgress(parentTaskId, projectId);
-				System.out.println(String.format("업무 삭제로 인한 상위업무 %s 진척률 재계산 완료", parentTaskId));
+				AppLog.debug(String.format("업무 삭제로 인한 상위업무 %s 진척률 재계산 완료", parentTaskId));
 			}
 
 		} catch (Exception e) {
-			System.err.println("업무 삭제 시 상태 조정 실패: " + e.getMessage());
+			AppLog.debug("업무 삭제 시 상태 조정 실패: " + e.getMessage());
 		}
 	}
 
-	// =====================================================
-	// private
-	// =====================================================
-
 	/**
-	 * 모든 하위 업무의 상태를 변경한다. pt_task_id로 연결된 모든 하위 업무를 재귀적으로 처리한다.
+	 * 모든 하위 업무의 상태를 변경한다.
+	 *
+	 * @param  parentTaskId 상위 업무 ID
+	 * @param  projectId 프로젝트 ID
+	 * @param  newStatus 새로운 상태
 	 */
 	private void updateAllChildrenStatus(String parentTaskId, String projectId, String newStatus) {
 		try {
@@ -197,12 +223,16 @@ public class WbsStatusPropagationServiceImpl implements WbsStatusPropagationServ
 			}
 
 		} catch (Exception e) {
-			System.err.println("하위 업무 상태 변경 실패: " + e.getMessage());
+			AppLog.debug("하위 업무 상태 변경 실패: " + e.getMessage());
 		}
 	}
 
 	/**
 	 * 모든 하위 업무가 완료 상태인지 확인한다.
+	 *
+	 * @param  parentTaskId 상위 업무 ID
+	 * @param  projectId 프로젝트 ID
+	 * @return 모든 하위 업무가 완료이면 true, 아니면 false
 	 */
 	private boolean areAllChildrenCompleted(String parentTaskId, String projectId) {
 		try {
@@ -223,13 +253,16 @@ public class WbsStatusPropagationServiceImpl implements WbsStatusPropagationServ
 			return true;
 
 		} catch (Exception e) {
-			System.err.println("하위 업무 완료 상태 확인 실패: " + e.getMessage());
+			AppLog.debug("하위 업무 완료 상태 확인 실패: " + e.getMessage());
 			return false;
 		}
 	}
 
 	/**
 	 * 업무의 상태를 업데이트한다.
+	 *
+	 * @param  task 업무 WbsVo
+	 * @param  newStatus 새로운 상태
 	 */
 	private void updateTaskStatus(WbsVo task, String newStatus) {
 		try {
@@ -237,12 +270,14 @@ public class WbsStatusPropagationServiceImpl implements WbsStatusPropagationServ
 			adjustRateByStatus(task);
 			wbsDAO.updateWbs(task);
 		} catch (Exception e) {
-			System.err.println("업무 상태 업데이트 실패: " + task.getTaskId());
+			AppLog.debug("업무 상태 업데이트 실패: " + task.getTaskId());
 		}
 	}
 
 	/**
-	 * 상태에 따른 진척률 자동 조정
+	 * 상태에 따라 진척률을 자동 조정한다.
+	 *
+	 * @param  wbsVo WBS 정보 WbsVo
 	 */
 	private void adjustRateByStatus(WbsVo wbsVo) {
 		String status = wbsVo.getTaskStatus();

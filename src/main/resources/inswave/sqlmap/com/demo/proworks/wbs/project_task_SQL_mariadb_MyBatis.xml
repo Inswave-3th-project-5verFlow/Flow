@@ -18,7 +18,7 @@
 -->
 <mapper namespace="com.demo.proworks.wbs">
 	<insert id="insertWbs" parameterType="com.demo.proworks.wbs.vo.WbsVo">
-		<!-- WBS를 등록한다. (트리거가 task_id 자동 생성) -->
+		<!-- WBS를 등록한다 -->
 		INSERT INTO PROJECT_TASK /* QueryID : com.demo.proworks.wbs.insertWbs */
 		(
 		<trim prefix="" suffix="" suffixOverrides=",">

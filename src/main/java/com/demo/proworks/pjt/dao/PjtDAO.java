@@ -25,67 +25,64 @@ public class PjtDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
 	/**
 	 * 프로젝트 정보 상세 조회한다.
 	 * 
-	 * @param PjtVo 프로젝트 정보
+	 * @param  pjtVo 프로젝트 정보 PjtVo
 	 * @return PjtVo 프로젝트 정보
 	 * @throws ElException
 	 */
-	public PjtVo selectPjt(PjtVo vo) throws ElException {
-		return (PjtVo) selectByPk("com.demo.proworks.pjt.selectPjt", vo);
+	public PjtVo selectPjt(PjtVo pjtVo) throws ElException {
+		return (PjtVo) selectByPk("com.demo.proworks.pjt.selectPjt", pjtVo);
 	}
 
 	/**
 	 * 페이징을 처리하여 프로젝트 정보 목록조회를 한다.
 	 * 
-	 * @param PjtVo 프로젝트 정보
+	 * @param  pjtVo 프로젝트 정보 PjtVo
 	 * @return List<PjtVo> 프로젝트 정보
 	 * @throws ElException
 	 */
-	public List<PjtVo> selectListPjt(PjtVo vo) throws ElException {
-		return (List<PjtVo>) list("com.demo.proworks.pjt.selectListPjt", vo);
+	public List<PjtVo> selectListPjt(PjtVo pjtVo) throws ElException {
+		return (List<PjtVo>) list("com.demo.proworks.pjt.selectListPjt", pjtVo);
 	}
 
 	/**
 	 * 프로젝트 정보 목록 조회의 전체 카운트를 조회한다.
 	 * 
-	 * @param PjtVo 프로젝트 정보
+	 * @param  pjtVo 프로젝트 정보 PjtVo
 	 * @return 프로젝트 정보 조회의 전체 카운트
 	 * @throws ElException
 	 */
-	public long selectListCountPjt(PjtVo vo) throws ElException {
-		return (Long) selectByPk("com.demo.proworks.pjt.selectListCountPjt", vo);
+	public long selectListCountPjt(PjtVo pjtVo) throws ElException {
+		return (Long) selectByPk("com.demo.proworks.pjt.selectListCountPjt", pjtVo);
 	}
 
 	/**
 	 * 프로젝트 정보를 등록한다.
 	 * 
-	 * @param PjtVo 프로젝트 정보
-	 * @return 번호
+	 * @param  pjtVo 프로젝트 정보 PjtVo
 	 * @throws ElException
 	 */
-	public int insertPjt(PjtVo vo) throws ElException {
-		return insert("com.demo.proworks.pjt.insertPjt", vo);
+	public void insertPjt(PjtVo pjtVo) throws ElException {
+		insert("com.demo.proworks.pjt.insertPjt", pjtVo);
 	}
 
 	/**
 	 * 프로젝트 정보를 갱신한다.
 	 * 
-	 * @param PjtVo 프로젝트 정보
-	 * @return 번호
+	 * @param  pjtVo 프로젝트 정보 PjtVo
 	 * @throws ElException
 	 */
-	public int updatePjt(PjtVo vo) throws ElException {
-		return update("com.demo.proworks.pjt.updatePjt", vo);
+	public void updatePjt(PjtVo pjtVo) throws ElException {
+		update("com.demo.proworks.pjt.updatePjt", pjtVo);
 	}
 
 	/**
 	 * 프로젝트 정보를 삭제한다.
 	 * 
-	 * @param PjtVo 프로젝트 정보
-	 * @return 번호
+	 * @param  pjtVo 프로젝트 정보 PjtVo
 	 * @throws ElException
 	 */
-	public int deletePjt(PjtVo vo) throws ElException {
-		return delete("com.demo.proworks.pjt.deletePjt", vo);
+	public void deletePjt(PjtVo pjtVo) throws ElException {
+		delete("com.demo.proworks.pjt.deletePjt", pjtVo);
 	}
 
 	/**
@@ -102,12 +99,11 @@ public class PjtDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
 	/**
 	 * 프로젝트 유저 그룹에 프로젝트를 등록한다.
 	 * 
-	 * @param PjtVo 프로젝트 정보
-	 * @return 번호
+	 * @param  pjtVo 프로젝트 정보 PjtVo
 	 * @throws ElException
 	 */
-	public int insertPug(PjtVo vo) throws ElException {
-		return insert("com.demo.proworks.pjt.insertPug", vo);
+	public void insertPug(PjtVo pjtVo) throws ElException {
+		insert("com.demo.proworks.pjt.insertPug", pjtVo);
 	}
 
 }

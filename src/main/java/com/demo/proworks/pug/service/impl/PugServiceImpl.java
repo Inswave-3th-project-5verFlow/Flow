@@ -26,18 +26,20 @@ import com.demo.proworks.pug.dao.PugDAO;
 @Service("pugServiceImpl")
 public class PugServiceImpl implements PugService {
 
+	/** PugDAO */
 	@Resource(name = "pugDAO")
 	private PugDAO pugDAO;
 
+	/** MessageSource */
 	@Resource(name = "messageSource")
 	private MessageSource messageSource;
 
 	/**
-	 * 프로젝트 유저 그룹 매핑 정보 목록을 조회합니다.
+	 * 프로젝트 유저 그룹 매핑 정보 목록을 조회한다.
 	 *
-	 * @process 1. 프로젝트 유저 그룹 매핑 정보 페이징 처리하여 목록을 조회한다. 2. 결과 List<PugVo>을(를) 리턴한다.
+	 * @process 1. 프로젝트 유저 그룹 매핑 정보 페이징 처리하여 목록을 조회한다.
 	 * 
-	 * @param pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
+	 * @param  pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
 	 * @return 프로젝트 유저 그룹 매핑 정보 목록 List<PugVo>
 	 * @throws Exception
 	 */
@@ -52,7 +54,7 @@ public class PugServiceImpl implements PugService {
 	 *
 	 * @process 1. 프로젝트 유저 그룹 매핑 정보 조회하여 전체 카운트를 리턴한다.
 	 * 
-	 * @param pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
+	 * @param  pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
 	 * @return 프로젝트 유저 그룹 매핑 정보 목록 전체 카운트
 	 * @throws Exception
 	 */
@@ -63,9 +65,9 @@ public class PugServiceImpl implements PugService {
 	/**
 	 * 프로젝트 유저 그룹 매핑 정보를 상세 조회한다.
 	 *
-	 * @process 1. 프로젝트 유저 그룹 매핑 정보를 상세 조회한다. 2. 결과 PugVo을(를) 리턴한다.
+	 * @process 1. 프로젝트 유저 그룹 매핑 정보를 상세 조회한다.
 	 * 
-	 * @param pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
+	 * @param  pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
 	 * @return 단건 조회 결과
 	 * @throws Exception
 	 */
@@ -80,12 +82,11 @@ public class PugServiceImpl implements PugService {
 	 *
 	 * @process 1. 프로젝트 유저 그룹 매핑 정보를 등록 처리 한다.
 	 * 
-	 * @param pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
-	 * @return 번호
+	 * @param  pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
 	 * @throws Exception
 	 */
-	public int insertPug(PugVo pugVo) throws Exception {
-		return pugDAO.insertPug(pugVo);
+	public void insertPug(PugVo pugVo) throws Exception {
+		pugDAO.insertPug(pugVo);
 	}
 
 	/**
@@ -93,12 +94,11 @@ public class PugServiceImpl implements PugService {
 	 *
 	 * @process 1. 프로젝트 유저 그룹 매핑 정보를 갱신 처리 한다.
 	 * 
-	 * @param pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
-	 * @return 번호
+	 * @param  pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
 	 * @throws Exception
 	 */
-	public int updatePug(PugVo pugVo) throws Exception {
-		return pugDAO.updatePug(pugVo);
+	public void updatePug(PugVo pugVo) throws Exception {
+		pugDAO.updatePug(pugVo);
 	}
 
 	/**
@@ -106,21 +106,20 @@ public class PugServiceImpl implements PugService {
 	 *
 	 * @process 1. 프로젝트 유저 그룹 매핑 정보를 삭제 처리 한다.
 	 * 
-	 * @param pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
-	 * @return 번호
+	 * @param  pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
 	 * @throws Exception
 	 */
-	public int deletePug(PugVo pugVo) throws Exception {
-		return pugDAO.deletePug(pugVo);
+	public void deletePug(PugVo pugVo) throws Exception {
+		pugDAO.deletePug(pugVo);
 	}
 
 	/**
 	 * 메뉴 그룹 목록을 조회한다.
 	 *
-	 * @process 1. 프로젝트 유저 그룹 매핑 정보를 삭제 처리 한다.
+	 * @process 1. 메뉴 그룹 목록을 조회한다.
 	 * 
-	 * @param pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
-	 * @return 번호
+	 * @param  pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
+	 * @return 메뉴 그룹 목록
 	 * @throws Exception
 	 */	
 	public List<PugVo> selectListGrp(PugVo pugVo) throws Exception {		
@@ -130,8 +129,10 @@ public class PugServiceImpl implements PugService {
 	
 	/**
 	 * 전체 유저 목록의 카운트를 조회한다.
+	 *
+	 * @process 1. 전체 유저 목록의 카운트를 조회한다.
 	 * 
-	 * @param pugUserVo 유저 검색 조건이 담긴 VO
+	 * @param  pugUserVo 유저 검색 조건이 담긴 PugUserVo
 	 * @return 유저 목록 전체 개수
 	 * @throws Exception
 	 */
@@ -141,8 +142,10 @@ public class PugServiceImpl implements PugService {
 
 	/**
 	 * 유저 목록을 페이징 처리하여 조회한다.
+	 *
+	 * @process 1. 유저 목록을 페이징 처리하여 조회한다.
 	 * 
-	 * @param pugUserVo 유저 검색 조건 및 페이징 정보가 담긴 VO
+	 * @param  pugUserVo 유저 검색 조건 및 페이징 정보가 담긴 PugUserVo
 	 * @return 유저 목록 List<PugUserVo>
 	 * @throws Exception
 	 */

@@ -55,17 +55,26 @@
         </xf:model>
         <w2:layoutInfo/>
         <w2:publicInfo method=""/>
-        <script lazy="false" type="text/javascript"><![CDATA[
+        <script lazy="false" type="text/javascript"><![CDATA[/**
+ * @method
+ * @name scwin.onpageload
+ * @description 페이지 로드 시 초기화 작업을 수행한다.
+ * @example
+ * scwin.onpageload();
+ */
 scwin.onpageload = function () {
     var usrId = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_ID;
     var pjtVo = { "userId": usrId };
-    console.log("pjtVo : ", pjtVo); // {"userId": 1}
     // 단일 submission 실행
     $c.sbm.execute(sbm_getDashboardData, { "pjtVo": pjtVo });
 };
 
 /**
- * 통합 대시보드 데이터 조회 완료 시 처리
+ * @method
+ * @name scwin.sbm_getDashboardData_submitdone
+ * @description 대쉬보드 조회 서브미션 완료 후 처리
+ * @example
+ * scwin.sbm_getDashboardData_submitdone(e)
  */
 scwin.sbm_getDashboardData_submitdone = function (e) {
 
@@ -77,14 +86,13 @@ scwin.sbm_getDashboardData_submitdone = function (e) {
         return false;
     }
 
-
     // 응답받은 통합 데이터를 각 DataMap과 DataList에 분배
     dmp_projectSummary.setJSON(elData.dashboardVo);
     dlt_projectChartData.setJSON(elData.pjtChartVo);
     dlt_taskChartData.setJSON(elData.taskChartVo);
     dlt_issueChartData.setJSON(elData.irrChartVo);
     
-    // 모든 데이터가 준비되었으므로 차트를 한 번에 렌더링
+    // 차트 일괄 초기화
     scwin.initFusionChart(projectPieChart, "프로젝트 현황", { "showPercentValues": "1" });
     scwin.initFusionChart(taskPieChart, "업무별 현황", { "yAxisName": "업무 수" });
     scwin.initFusionChart(issuePieChart, "이슈 / 리스크 현황", { "yAxisName": "이슈 수" });
@@ -115,7 +123,7 @@ scwin.initFusionChart = function (chartObj, captionText, customAttrs) {
 
     chartObj.setChartAttribute(finalAttrs);
     
-    // FusionCharts 3.19 색상 변경 API 사용 - 파스텔톤 파랑 계열
+    // 파스텔톤 파랑 계열
     chartObj.setPlotColor([
         "#FF6B6B","#FFE66D", "#4ECDC4", "#A8E6CF","#FF6B6B"
     ]);

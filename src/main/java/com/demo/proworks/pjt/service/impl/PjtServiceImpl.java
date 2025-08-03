@@ -25,9 +25,11 @@ import com.demo.proworks.pjt.vo.PjtVo;
 @Service("pjtServiceImpl")
 public class PjtServiceImpl implements PjtService {
 
+	/** PjtDAO */
 	@Resource(name = "pjtDAO")
 	private PjtDAO pjtDAO;
 
+	/** MessageSource */
 	@Resource(name = "messageSource")
 	private MessageSource messageSource;
 
@@ -38,7 +40,7 @@ public class PjtServiceImpl implements PjtService {
 	 *          2. 각 프로젝트의 task 기반 진행률을 계산하여 설정한다.
 	 *          3. 결과 List<PjtVo>을(를) 리턴한다.
 	 * 
-	 * @param pjtVo 프로젝트 정보 PjtVo
+	 * @param  pjtVo 프로젝트 정보 PjtVo
 	 * @return 프로젝트 정보 목록 List<PjtVo>
 	 * @throws Exception
 	 */
@@ -59,7 +61,7 @@ public class PjtServiceImpl implements PjtService {
 	 *
 	 * @process 1. 프로젝트 정보 조회하여 전체 카운트를 리턴한다.
 	 * 
-	 * @param pjtVo 프로젝트 정보 PjtVo
+	 * @param  pjtVo 프로젝트 정보 PjtVo
 	 * @return 프로젝트 정보 목록 전체 카운트
 	 * @throws Exception
 	 */
@@ -72,7 +74,7 @@ public class PjtServiceImpl implements PjtService {
 	 *
 	 * @process 1. 프로젝트 정보를 상세 조회한다. 2. 결과 PjtVo을(를) 리턴한다.
 	 * 
-	 * @param pjtVo 프로젝트 정보 PjtVo
+	 * @param  pjtVo 프로젝트 정보 PjtVo
 	 * @return 단건 조회 결과
 	 * @throws Exception
 	 */
@@ -86,14 +88,12 @@ public class PjtServiceImpl implements PjtService {
 	 * 프로젝트 정보를 등록 처리 한다.
 	 *
 	 * @process 1. 프로젝트 정보를 등록 처리 한다. 2. 프로젝트 유저 그룹에 프로젝트를 등록한다.
-	 * @param pjtVo 프로젝트 정보 PjtVo
-	 * @return 번호
+	 * @param  pjtVo 프로젝트 정보 PjtVo
 	 * @throws Exception
 	 */
-	public int insertPjt(PjtVo pjtVo) throws Exception {
-		int row = pjtDAO.insertPjt(pjtVo);
+	public void insertPjt(PjtVo pjtVo) throws Exception {
+		pjtDAO.insertPjt(pjtVo);
 		pjtDAO.insertPug(pjtVo);
-		return row;
 	}
 
 	/**
@@ -101,12 +101,11 @@ public class PjtServiceImpl implements PjtService {
 	 *
 	 * @process 1. 프로젝트 정보를 갱신 처리 한다.
 	 * 
-	 * @param pjtVo 프로젝트 정보 PjtVo
-	 * @return 번호
+	 * @param  pjtVo 프로젝트 정보 PjtVo
 	 * @throws Exception
 	 */
-	public int updatePjt(PjtVo pjtVo) throws Exception {
-		return pjtDAO.updatePjt(pjtVo);
+	public void updatePjt(PjtVo pjtVo) throws Exception {
+		pjtDAO.updatePjt(pjtVo);
 	}
 
 	/**
@@ -114,12 +113,11 @@ public class PjtServiceImpl implements PjtService {
 	 *
 	 * @process 1. 프로젝트 정보를 삭제 처리 한다.
 	 * 
-	 * @param pjtVo 프로젝트 정보 PjtVo
-	 * @return 번호
+	 * @param  pjtVo 프로젝트 정보 PjtVo
 	 * @throws Exception
 	 */
-	public int deletePjt(PjtVo pjtVo) throws Exception {
-		return pjtDAO.deletePjt(pjtVo);
+	public void deletePjt(PjtVo pjtVo) throws Exception {
+		pjtDAO.deletePjt(pjtVo);
 	}
 
 }

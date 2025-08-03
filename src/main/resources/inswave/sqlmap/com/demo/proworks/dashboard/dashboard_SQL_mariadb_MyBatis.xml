@@ -11,56 +11,64 @@
 -->
 <mapper namespace="com.demo.proworks.dashboard">
 
-    <!-- 대시보드 요약 정보 조회 -->
-    <select id="selectDashboardSummary" parameterType="com.demo.proworks.pjt.vo.PjtVo" resultType="com.demo.proworks.dashboard.vo.DashboardVo">
-/* QueryID : com.demo.proworks.dashboard.selectDashboardSummary */
-        SELECT
-            (SELECT COUNT(DISTINCT pug.PJT_ID)
-               FROM PROJECT_USER_GROUP pug
-              WHERE pug.USER_ID = #{userId}) AS totalProjects,
+	<select id="selectDashboardSummary" parameterType="com.demo.proworks.pjt.vo.PjtVo"
+		resultType="com.demo.proworks.dashboard.vo.DashboardVo">
+		<!-- 대시보드 요약 정보 조회 -->
+		/* QueryID : com.demo.proworks.dashboard.selectDashboardSummary */
+		SELECT
+		(SELECT COUNT(DISTINCT pug.PJT_ID)
+		FROM PROJECT_USER_GROUP pug
+		WHERE pug.USER_ID = #{userId}) AS totalProjects,
 
-            (SELECT COUNT(t.TASK_ID)
-               FROM PROJECT_TASK t
-              WHERE t.USER_ID = #{userId}) AS totalTasks,
+		(SELECT COUNT(t.TASK_ID)
+		FROM PROJECT_TASK t
+		WHERE t.USER_ID = #{userId}) AS totalTasks,
 
-            (SELECT COUNT(ir.id)
-               FROM issues_risks ir
-              WHERE ir.USER_ID = #{userId}) AS totalIssues
-</select>
+		(SELECT COUNT(ir.id)
+		FROM issues_risks ir
+		WHERE ir.USER_ID = #{userId}) AS totalIssues
+	</select>
 
-    <!-- 프로젝트 현황 차트 데이터 조회 -->
-    <select id="selectProjectStatusChart" parameterType="com.demo.proworks.pjt.vo.PjtVo" resultType="com.demo.proworks.dashboard.vo.ChartVo">
-/* QueryID : com.demo.proworks.dashboard.selectProjectStatusChart */
-SELECT p.PJT_STATUS AS label,
-       COUNT(DISTINCT p.PJT_ID) AS value
-FROM PJT p
-LEFT JOIN PROJECT_USER_GROUP pug ON p.PJT_ID = pug.PJT_ID
-WHERE p.USER_ID = #{userId} OR pug.USER_ID = #{userId}
-GROUP BY p.PJT_STATUS;
-</select>
+	<select id="selectProjectStatusChart" parameterType="com.demo.proworks.pjt.vo.PjtVo"
+		resultType="com.demo.proworks.dashboard.vo.ChartVo">
+		<!-- 프로젝트 현황 차트 데이터 조회 -->
+		/* QueryID : com.demo.proworks.dashboard.selectProjectStatusChart */
+		SELECT p.PJT_STATUS AS label,
+		COUNT(DISTINCT p.PJT_ID) AS value
+		FROM PJT
+		p
+		LEFT JOIN PROJECT_USER_GROUP pug ON p.PJT_ID = pug.PJT_ID
+		WHERE p.USER_ID = #{userId} OR pug.USER_ID = #{userId}
+		GROUP BY p.PJT_STATUS;
+	</select>
 
-    <!-- 업무 단계별 현황 차트 데이터 조회 -->
-    <select id="selectTaskStatusChart" parameterType="com.demo.proworks.pjt.vo.PjtVo" resultType="com.demo.proworks.dashboard.vo.ChartVo">
-/* QueryID : com.demo.proworks.dashboard.selectTaskStatusChart */
-        SELECT
-            t.IS_DESIGN AS label,
-            COUNT(DISTINCT t.TASK_ID) AS value
-        FROM PROJECT_TASK t
-        WHERE t.USER_ID = #{userId}
-        GROUP BY t.IS_DESIGN
-        ORDER BY t.TASK_ID
-</select>
+	<select id="selectTaskStatusChart" parameterType="com.demo.proworks.pjt.vo.PjtVo"
+		resultType="com.demo.proworks.dashboard.vo.ChartVo">
+		<!-- 업무 단계별 현황 차트 데이터 조회 -->
+		/* QueryID : com.demo.proworks.dashboard.selectTaskStatusChart */
+		SELECT
+		t.IS_DESIGN AS label,
+		COUNT(DISTINCT t.TASK_ID) AS value
+		FROM
+		PROJECT_TASK t
+		WHERE t.USER_ID = #{userId}
+		GROUP BY t.IS_DESIGN
+		ORDER BY t.TASK_ID
+	</select>
 
-    <!-- 이슈/리스크 현황 차트 데이터 조회 -->
-    <select id="selectIssueStatusChart" parameterType="com.demo.proworks.pjt.vo.PjtVo" resultType="com.demo.proworks.dashboard.vo.ChartVo">
-/* QueryID : com.demo.proworks.dashboard.selectIssueStatusChart */
-        SELECT
-            ir.status AS label,
-            COUNT(ir.id) AS value
-        FROM issues_risks ir
-        WHERE ir.USER_ID = #{userId}
-        GROUP BY ir.status
-        ORDER BY ir.status
-</select>
+
+	<select id="selectIssueStatusChart" parameterType="com.demo.proworks.pjt.vo.PjtVo"
+		resultType="com.demo.proworks.dashboard.vo.ChartVo">
+		<!-- 이슈/리스크 현황 차트 데이터 조회 -->
+		/* QueryID : com.demo.proworks.dashboard.selectIssueStatusChart */
+		SELECT
+		ir.status AS label,
+		COUNT(ir.id) AS value
+		FROM issues_risks ir
+		WHERE
+		ir.USER_ID = #{userId}
+		GROUP BY ir.status
+		ORDER BY ir.status
+	</select>
 
 </mapper>

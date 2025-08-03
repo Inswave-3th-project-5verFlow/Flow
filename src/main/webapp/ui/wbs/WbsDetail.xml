@@ -216,8 +216,6 @@ scwin.receiveTaskData = function (returnData) {
 
         dmp_taskDetail.set("ptTaskId", selectedTask.taskId);
         dmp_taskDetail.set("ptTaskName", selectedTask.taskName);
-        console.log("그리드에서 넘어온 부모 뎁스 !!!!!!")
-        console.log(selectedTask.taskDepth);
         dmp_taskDetail.set("taskDepth", parseInt(selectedTask.taskDepth) + 1);
         dmp_taskDetail.set("deTaskId", selectedTask.taskId);
         scwin.showToast("상위업무가 '" + selectedTask.taskName + "'으로 설정되었습니다", "info");
@@ -417,7 +415,6 @@ scwin.showToast = function(message, type = 'success', duration = 3000) {
             $c.win.alert(message);
         }
     } catch (e) {
-        console.error("토스트 표시 중 오류:", e);
         $c.win.alert(message);
     }
 };

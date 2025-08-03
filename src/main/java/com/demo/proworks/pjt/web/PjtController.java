@@ -33,7 +33,7 @@ public class PjtController {
 	private PjtService pjtService;
 
 	/**
-	 * 프로젝트 정보 목록을 조회합니다.
+	 * 프로젝트 정보 목록을 조회한다.
 	 *
 	 * @param pjtVo 프로젝트 정보
 	 * @return 목록조회 결과
@@ -43,7 +43,6 @@ public class PjtController {
 	@RequestMapping(value = "PjtList")
 	@ElDescription(sub = "프로젝트 정보 목록조회", desc = "페이징을 처리하여 프로젝트 정보 목록 조회를 한다.")
 	public PjtListVo selectListPjt(PjtVo pjtVo) throws Exception {
-
 		List<PjtVo> pjtList = pjtService.selectListPjt(pjtVo);
 		long totCnt = pjtService.selectListCountPjt(pjtVo);
 
@@ -82,7 +81,6 @@ public class PjtController {
 	@RequestMapping(value = "PjtIns")
 	@ElDescription(sub = "프로젝트 정보 등록처리", desc = "프로젝트 정보를 등록 처리 한다.")
 	public void insertPjt(PjtVo pjtVo) throws Exception {
-
 		pjtService.insertPjt(pjtVo);
 	}
 
@@ -97,7 +95,6 @@ public class PjtController {
 	@ElValidator(errUrl = "/pjt/pjtRegister", errContinue = true)
 	@ElDescription(sub = "프로젝트 정보 갱신처리", desc = "프로젝트 정보를 갱신 처리 한다.")
 	public void updatePjt(PjtVo pjtVo) throws Exception {
-
 		pjtService.updatePjt(pjtVo);
 	}
 

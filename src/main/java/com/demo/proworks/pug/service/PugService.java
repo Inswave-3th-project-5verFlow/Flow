@@ -49,28 +49,25 @@ public interface PugService {
 	 * 프로젝트 유저 그룹 매핑 정보를 등록 처리 한다.
 	 *
 	 * @param pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
-	 * @return 번호
 	 * @throws Exception
 	 */
-	public int insertPug(PugVo pugVo) throws Exception;
+	public void insertPug(PugVo pugVo) throws Exception;
 
 	/**
 	 * 프로젝트 유저 그룹 매핑 정보를 갱신 처리 한다.
 	 *
 	 * @param pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
-	 * @return 번호
 	 * @throws Exception
 	 */
-	public int updatePug(PugVo pugVo) throws Exception;
+	public void updatePug(PugVo pugVo) throws Exception;
 
 	/**
 	 * 프로젝트 유저 그룹 매핑 정보를 삭제 처리 한다.
 	 *
 	 * @param pugVo 프로젝트 유저 그룹 매핑 정보 PugVo
-	 * @return 번호
 	 * @throws Exception
 	 */
-	public int deletePug(PugVo pugVo) throws Exception;
+	public void deletePug(PugVo pugVo) throws Exception;
 
 	/**
 	 * 메뉴 그룹 목록을 조회힌다.

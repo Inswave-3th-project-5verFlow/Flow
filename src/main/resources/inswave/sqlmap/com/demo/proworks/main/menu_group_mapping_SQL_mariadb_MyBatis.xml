@@ -5,17 +5,18 @@
 <mapper namespace="com.demo.proworks.main">
 
 	<select id="selectListMenu" parameterType="com.demo.proworks.main.vo.MenuVo" resultType="com.demo.proworks.main.vo.MenuVo">
-<!-- 그룹 ID로 메뉴 목록을 조회한다 -->
-		SELECT /* QueryID : com.demo.proworks.main.selectListMenu */ 
+		<!-- 그룹 ID로 메뉴 목록을 조회한다 -->
+		SELECT /* QueryID : com.demo.proworks.main.selectListMenu */
 		m.menu_id as menuId,
 		m.menu_name as menuName,
 		m.parent_menu_id as parentMenuId,
 		m.depth as depth,
 		m.url as menuUrl
 		FROM menu_group_mapping mg
-		LEFT JOIN menu m ON m.menu_id = mg.menu_id
+		LEFT JOIN
+		menu m ON m.menu_id = mg.menu_id
 		WHERE
 		grp_id = #{grpId}
-</select>
-	
+	</select>
+
 </mapper>
