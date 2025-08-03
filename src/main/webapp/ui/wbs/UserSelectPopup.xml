@@ -41,8 +41,7 @@
 		<w2:layoutInfo />
 		<w2:publicInfo method="" />
 
-		<script lazy="false" type="text/javascript"><![CDATA[
-scwin.onpageload = function () {
+		<script lazy="false" type="text/javascript"><![CDATA[scwin.onpageload = function () {
     // 팝업 파라미터에서 프로젝트 ID 추출
     const popupData = $p.getParameter("params");
     if (popupData && popupData.pjtId) {

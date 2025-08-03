@@ -27,7 +27,7 @@ public class DashboardDAO extends ProworksDefaultAbstractDAO {
     /**
      * 대시보드 요약 정보를 조회한다.
      *
-     * @param pjtVo 프로젝트 정보 PjtVo (userId를 포함)
+     * @param pjtVo 프로젝트 정보 PjtVo
      * @return DashboardVo 대시보드 요약 정보
      * @throws ElException
      */
@@ -38,7 +38,7 @@ public class DashboardDAO extends ProworksDefaultAbstractDAO {
     /**
      * 프로젝트 현황 차트 데이터를 조회한다.
      *
-     * @param pjtVo 프로젝트 정보 PjtVo (userId를 포함)
+     * @param pjtVo 프로젝트 정보 PjtVo
      * @return List<ChartVo> 프로젝트 현황 차트 데이터
      * @throws ElException
      */
@@ -49,7 +49,7 @@ public class DashboardDAO extends ProworksDefaultAbstractDAO {
     /**
      * 업무 단계별 현황 차트 데이터를 조회한다.
      *
-     * @param pjtVo 프로젝트 정보 PjtVo (userId를 포함)
+     * @param pjtVo 프로젝트 정보 PjtVo
      * @return List<ChartVo> 업무 단계별 현황 차트 데이터
      * @throws ElException
      */
@@ -60,7 +60,7 @@ public class DashboardDAO extends ProworksDefaultAbstractDAO {
     /**
      * 이슈/리스크 현황 차트 데이터를 조회한다.
      *
-     * @param pjtVo 프로젝트 정보 PjtVo (userId를 포함)
+     * @param pjtVo 프로젝트 정보 PjtVo
      * @return List<ChartVo> 이슈/리스크 현황 차트 데이터
      * @throws ElException
      */

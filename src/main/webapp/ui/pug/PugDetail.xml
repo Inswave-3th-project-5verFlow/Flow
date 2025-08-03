@@ -223,7 +223,6 @@ scwin.showToast = function (message, type = 'success', duration = 3000) {
             $c.win.alert(message);
         }
     } catch (e) {
-        console.error("토스트 표시 중 오류:", e);
         $c.win.alert(message);
     }
 };

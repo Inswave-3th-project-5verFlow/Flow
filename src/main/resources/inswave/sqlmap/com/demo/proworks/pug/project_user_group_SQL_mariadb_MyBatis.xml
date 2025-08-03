@@ -16,7 +16,7 @@
 -->
 <mapper namespace="com.demo.proworks.pug">
 	<insert id="insertPug" parameterType="com.demo.proworks.pug.vo.PugVo">
-<!-- 프로젝트 유저 그룹 매핑 정보를 등록한다. -->
+		<!-- 프로젝트 유저 그룹 매핑 정보를 등록한다. -->
 		INSERT INTO PROJECT_USER_GROUP /* QueryID : com.demo.proworks.pug.insertPug */ (
 		<if test="pjtId != null"> PJT_ID  </if>
 		<if test="userId!= null"> , USER_ID </if>
@@ -26,11 +26,10 @@
 		<if test="userId!= null"> , #{userId} </if>
 		<if test="grpId != null"> , #{grpId}  </if>
 		)
-</insert>
+	</insert>
 
 	<update id="updatePug" parameterType="com.demo.proworks.pug.vo.PugVo">
 		<!-- 프로젝트 유저 그룹 매핑 정보를 갱신한다. -->
-
 		UPDATE PROJECT_USER_GROUP /* QueryID : com.demo.proworks.pug.updatePug */
 		SET
 		PUG_ID = #{pugId}
@@ -42,7 +41,6 @@
 
 	<delete id="deletePug" parameterType="com.demo.proworks.pug.vo.PugVo">
 		<!-- 프로젝트 유저 그룹 매핑 정보를 삭제한다. -->
-
 		DELETE FROM PROJECT_USER_GROUP /* QueryID : com.demo.proworks.pug.deletePug */
 		WHERE
 		PUG_ID = #{pugId}

@@ -5,121 +5,114 @@ import org.springframework.stereotype.Repository;
 import com.inswave.elfw.exception.ElException;
 import com.demo.proworks.wbs.vo.WbsVo;
 
-/**
- * @subject : WBS 관련 처리를 담당하는 DAO
- * @description : WBS 관련 처리를 담당하는 DAO
- * @author : 김성민
- * @since : 2025/07/09
- * @modification ===========================================================
- *               DATE AUTHOR DESC
- *               ===========================================================
- *               2025/07/09 김성민 최초 생성 2025/07/19 김성민 STG 테이블 관련 코드 제거
- * 
- */
 @Repository("wbsDAO")
 public class WbsDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDAO {
 
 	/**
 	 * WBS 상세 조회한다.
 	 * 
-	 * @param WbsVo WBS
+	 * @param  wbsVo WBS 정보 WbsVo
 	 * @return WbsVo WBS
 	 * @throws ElException
 	 */
-	public WbsVo selectWbs(WbsVo vo) throws ElException {
-		return (WbsVo) selectByPk("com.demo.proworks.wbs.selectWbs", vo);
+	public WbsVo selectWbs(WbsVo wbsVo) throws ElException {
+		return (WbsVo) selectByPk("com.demo.proworks.wbs.selectWbs", wbsVo);
 	}
 
 	/**
 	 * WBS를 등록한다.
 	 * 
-	 * @param WbsVo WBS
-	 * @return 번호
+	 * @param  wbsVo WBS 정보 WbsVo
 	 * @throws ElException
 	 */
-	public int insertWbs(WbsVo vo) throws ElException {
-		return insert("com.demo.proworks.wbs.insertWbs", vo);
+	public void insertWbs(WbsVo wbsVo) throws ElException {
+		insert("com.demo.proworks.wbs.insertWbs", wbsVo);
 	}
 
 	/**
 	 * WBS를 갱신한다.
 	 * 
-	 * @param WbsVo WBS
-	 * @return 번호
+	 * @param  wbsVo WBS 정보 WbsVo
 	 * @throws ElException
 	 */
-	public int updateWbs(WbsVo vo) throws ElException {
-		return update("com.demo.proworks.wbs.updateWbs", vo);
+	public void updateWbs(WbsVo wbsVo) throws ElException {
+		update("com.demo.proworks.wbs.updateWbs", wbsVo);
 	}
 
 	/**
 	 * WBS를 삭제한다.
 	 * 
-	 * @param WbsVo WBS
-	 * @return 번호
+	 * @param  wbsVo WBS 정보 WbsVo
 	 * @throws ElException
 	 */
-	public int deleteWbs(WbsVo vo) throws ElException {
-		return delete("com.demo.proworks.wbs.deleteWbs", vo);
+	public void deleteWbs(WbsVo wbsVo) throws ElException {
+		delete("com.demo.proworks.wbs.deleteWbs", wbsVo);
 	}
 
 	/**
 	 * 페이징을 처리하여 전체 WBS 계층 구조를 조회한다.
 	 * 
-	 * @param WbsVo WBS
+	 * @param  wbsVo WBS 정보 WbsVo
 	 * @return List<WbsVo> WBS
 	 * @throws ElException
 	 */
-	public List<WbsVo> selectListWbsAll(WbsVo vo) throws ElException {
-		return (List<WbsVo>) list("com.demo.proworks.wbs.selectListWbsAll", vo);
+	public List<WbsVo> selectListWbsAll(WbsVo wbsVo) throws ElException {
+		return (List<WbsVo>) list("com.demo.proworks.wbs.selectListWbsAll", wbsVo);
 	}
 
 	/**
 	 * 전체 WBS 카운트를 조회한다.
 	 * 
-	 * @param WbsVo WBS
+	 * @param  wbsVo WBS 정보 WbsVo
 	 * @return WBS 조회의 전체 카운트
 	 * @throws ElException
 	 */
-	public long selectListCountWbsAll(WbsVo vo) throws ElException {
-		return (Long) selectByPk("com.demo.proworks.wbs.selectListCountWbsAll", vo);
+	public long selectListCountWbsAll(WbsVo wbsVo) throws ElException {
+		return (Long) selectByPk("com.demo.proworks.wbs.selectListCountWbsAll", wbsVo);
 	}
 
 	/**
 	 * 페이징을 처리하여 검색 조건에 따른 WBS 계층 구조를 조회한다.
 	 * 
-	 * @param WbsVo WBS
+	 * @param  wbsVo WBS 정보 WbsVo
 	 * @return List<WbsVo> WBS
 	 * @throws ElException
 	 */
-	public List<WbsVo> selectListWbsSearch(WbsVo vo) throws ElException {
-		return (List<WbsVo>) list("com.demo.proworks.wbs.selectListWbsSearch", vo);
+	public List<WbsVo> selectListWbsSearch(WbsVo wbsVo) throws ElException {
+		return (List<WbsVo>) list("com.demo.proworks.wbs.selectListWbsSearch", wbsVo);
 	}
 
 	/**
 	 * 검색 조건에 따른 WBS 카운트를 조회한다.
 	 * 
-	 * @param WbsVo WBS
+	 * @param  wbsVo WBS 정보 WbsVo
 	 * @return WBS 조회의 카운트
 	 * @throws ElException
 	 */
-	public long selectListCountWbsSearch(WbsVo vo) throws ElException {
-		return (Long) selectByPk("com.demo.proworks.wbs.selectListCountWbsSearch", vo);
+	public long selectListCountWbsSearch(WbsVo wbsVo) throws ElException {
+		return (Long) selectByPk("com.demo.proworks.wbs.selectListCountWbsSearch", wbsVo);
 	}
 
 
 	/**
 	 * 진척률 업데이트
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @throws ElException
 	 */
-	public int updateRate(WbsVo vo) throws ElException {
-		return update("com.demo.proworks.wbs.updateRate", vo);
+	public void updateRate(WbsVo wbsVo) throws ElException {
+		update("com.demo.proworks.wbs.updateRate", wbsVo);
 	}
 	
 	/**
 	 * 모든 하위 업무 조회
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @return List<WbsVo> WBS
+	 * @throws ElException
 	 */
-	public List<WbsVo> selectAllChildrenByParent(WbsVo vo) throws ElException {
-		return (List<WbsVo>) list("com.demo.proworks.wbs.selectAllChildrenByParent", vo);
+	public List<WbsVo> selectAllChildrenByParent(WbsVo wbsVo) throws ElException {
+		return (List<WbsVo>) list("com.demo.proworks.wbs.selectAllChildrenByParent", wbsVo);
 	}
 
 }

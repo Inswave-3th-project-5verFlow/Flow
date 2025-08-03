@@ -49,27 +49,24 @@ public interface PjtService {
      * 프로젝트 정보를 등록 처리 한다.
      *
      * @param  pjtVo 프로젝트 정보 PjtVo
-     * @return 번호
      * @throws Exception
      */
-	public int insertPjt(PjtVo pjtVo) throws Exception;
+	public void insertPjt(PjtVo pjtVo) throws Exception;
 	
     /**
      * 프로젝트 정보를 갱신 처리 한다.
      *
      * @param  pjtVo 프로젝트 정보 PjtVo
-     * @return 번호
      * @throws Exception
      */
-	public int updatePjt(PjtVo pjtVo) throws Exception;
+	public void updatePjt(PjtVo pjtVo) throws Exception;
 	
     /**
      * 프로젝트 정보를 삭제 처리 한다.
      *
      * @param  pjtVo 프로젝트 정보 PjtVo
-     * @return 번호
      * @throws Exception
      */
-	public int deletePjt(PjtVo pjtVo) throws Exception;
+	public void deletePjt(PjtVo pjtVo) throws Exception;
 	
 }

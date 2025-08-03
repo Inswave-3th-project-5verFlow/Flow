@@ -119,7 +119,7 @@ public class PugController {
 				pugService.deletePug(pugVo);
 				break;
 			default:
-				// 예외처리 또는 무시
+				//
 				break;
 			}
 		}
@@ -139,12 +139,9 @@ public class PugController {
 
 		// 사용자 목록 조회
 		List<PugUserVo> userList = pugService.selectListPugUser(pugUserVo);
-		System.out.println(userList.size());
 		// 사용자 목록 전체 건수 조회
 		long totCnt = pugService.selectListCountPugUser(pugUserVo);
-		System.out.println("================");
-		System.out.println(totCnt);
-		// 결과 객체 구성
+
 		PugUserListVo retUserList = new PugUserListVo();
 		retUserList.setPugUserVoList(userList);
 		retUserList.setTotalCount(totCnt);

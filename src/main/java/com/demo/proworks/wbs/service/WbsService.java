@@ -19,21 +19,37 @@ public interface WbsService {
 	
 	/**
 	 * 전체 WBS 목록을 조회한다.
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @return 전체 WBS 목록
+	 * @throws Exception
 	 */
 	public List<WbsVo> selectListWbsAll(WbsVo wbsVo) throws Exception;
 	
 	/**
 	 * 검색 조건에 따른 WBS 목록을 조회한다.
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @return 검색 조건에 맞는 WBS 목록
+	 * @throws Exception
 	 */
 	public List<WbsVo> selectListWbsSearch(WbsVo wbsVo) throws Exception;
 	
 	/**
 	 * 전체 WBS 카운트를 조회한다.
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @return 전체 WBS 카운트
+	 * @throws Exception
 	 */
 	public long selectListCountWbsAll(WbsVo wbsVo) throws Exception;
 	
 	/**
 	 * 검색 조건에 따른 WBS 카운트를 조회한다.
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @return 검색 조건에 맞는 WBS 카운트
+	 * @throws Exception
 	 */
 	public long selectListCountWbsSearch(WbsVo wbsVo) throws Exception;
 	
@@ -50,29 +66,31 @@ public interface WbsService {
 	 * WBS를 등록 처리 한다.
 	 *
 	 * @param wbsVo WBS WbsVo
-	 * @return 번호
 	 * @throws Exception
 	 */
-	public int insertWbs(WbsVo wbsVo) throws Exception;
+	public void insertWbs(WbsVo wbsVo) throws Exception;
 	
 	/**
 	 * WBS를 갱신 처리 한다.
 	 *
 	 * @param wbsVo WBS WbsVo
-	 * @return 번호
 	 * @throws Exception
 	 */
-	public int updateWbs(WbsVo wbsVo) throws Exception;
+	public void updateWbs(WbsVo wbsVo) throws Exception;
 	
 	/**
 	 * WBS를 삭제 처리 한다.
 	 *
 	 * @param wbsVo WBS WbsVo
-	 * @return 번호
 	 * @throws Exception
 	 */
-	public int deleteWbs(WbsVo wbsVo) throws Exception;
+	public void deleteWbs(WbsVo wbsVo) throws Exception;
 	
-	// 진척률 계산
+	/**
+	 * 진척률을 계산한다.
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @throws Exception
+	 */
 	public void calcProgress(WbsVo wbsVo) throws Exception;
 }
