@@ -79,13 +79,11 @@ public class IssServiceImpl implements IssService {
 		List<String> uploadedS3Keys = new ArrayList<>();
 
 		try {
-			// 1. 이슈 등록
 			issDAO.insertIss(issVo);
 			String issueId = issVo.getId();
 			if (issueId == null)
 				throw new RuntimeException("이슈 ID 생성 실패");
 
-			// 2. 파일 업로드
 			if (files != null && files.length > 0) {
 				for (MultipartFile file : files) {
 					if (!file.isEmpty()) {
@@ -115,7 +113,6 @@ public class IssServiceImpl implements IssService {
 		String extension = getFileExtension(originalName);
 		String storedName = s3Key.substring(s3Key.lastIndexOf("/") + 1);
 
-		// file 테이블 insert (AUTO_INCREMENT로 ID 자동 생성)
 		AttVo fileVo = new AttVo();
 		fileVo.setOriginalFileName(originalName);
 		fileVo.setStoredFileName(storedName);
@@ -124,13 +121,11 @@ public class IssServiceImpl implements IssService {
 		fileVo.setS3Key(s3Key);
 		attDAO.insertFile(fileVo);
 
-		// insertFile 후 자동 생성된 fileId를 가져옴 (숫자)
-		String fileId = fileVo.getFileId(); // 이게 "4" 같은 숫자 문자열
+		String fileId = fileVo.getFileId(); 
 
-		// attachment 테이블 insert
 		AttVo attachmentVo = new AttVo();
-		attachmentVo.setId(UUID.randomUUID().toString()); // attachment 테이블의 PK
-		attachmentVo.setFileId(fileId); // 위에서 생성된 숫자 ID 사용
+		attachmentVo.setId(UUID.randomUUID().toString()); 
+		attachmentVo.setFileId(fileId);
 		attachmentVo.setRefType(refType);
 		attachmentVo.setRefId(refId);
 		attachmentVo.setIsDeleted("N");
@@ -155,25 +150,21 @@ public class IssServiceImpl implements IssService {
 			System.out.println("=== 이슈 수정 with 파일 시작 ===");
 			System.out.println("수정할 이슈 ID: " + issVo.getId());
 
-			// 1. 이슈 ID 유효성 검사
 			if (issVo.getId() == null || issVo.getId().trim().isEmpty()) {
 				throw new RuntimeException("수정할 이슈 ID가 필요합니다.");
 			}
 
-			// 2. 기존 이슈 존재 여부 확인
 			IssVo existingIssue = issDAO.selectIss(issVo);
 			if (existingIssue == null) {
 				throw new RuntimeException("수정할 이슈를 찾을 수 없습니다. ID: " + issVo.getId());
 			}
 
-			// 3. 이슈 정보 수정
 			int updateResult = issDAO.updateIss(issVo);
 			if (updateResult <= 0) {
 				throw new RuntimeException("이슈 정보 수정 실패");
 			}
 			System.out.println("이슈 정보 수정 완료");
 
-			// 4. 새로운 파일 업로드 (기존 파일은 유지)
 			if (files != null && files.length > 0) {
 				for (MultipartFile file : files) {
 					if (!file.isEmpty()) {
@@ -190,7 +181,6 @@ public class IssServiceImpl implements IssService {
 		} catch (Exception e) {
 			System.err.println("이슈 수정 실패: " + e.getMessage());
 
-			// 새로 업로드된 파일들 S3에서 삭제 (롤백)
 			for (String s3Key : uploadedS3Keys) {
 				try {
 					amazonS3.deleteObject(bucketName, s3Key);
@@ -204,7 +194,7 @@ public class IssServiceImpl implements IssService {
 	}
 
 	/**
-	 * [프로웍스용] 기존 로컬 업로드된 파일 정보를 기반으로 S3에 파일을 업로드하고, 이슈 및 첨부 파일 정보를 DB에 저장함.
+	 * 기존 로컬 업로드된 파일 정보를 기반으로 S3에 파일을 업로드하고, 이슈 및 첨부 파일 정보를 DB에 저장함.
 	 *
 	 * @param issVo            이슈 정보
 	 * @param fileList         로컬에 임시 저장된 파일 목록
@@ -213,7 +203,6 @@ public class IssServiceImpl implements IssService {
 	@Override
 	@Transactional
 	public void insertIssWithStoredFiles(IssVo issVo, List<File> fileList, List<String> originalNameList) {
-		// 1. 이슈 등록 (ID 자동 생성)
 		issDAO.insertIss(issVo);
 		String issId = issVo.getId();
 
@@ -221,19 +210,16 @@ public class IssServiceImpl implements IssService {
 			throw new IllegalStateException("이슈 ID가 생성되지 않았습니다.");
 		}
 
-		// 2. 파일 업로드 및 등록
 		for (int i = 0; i < fileList.size(); i++) {
 			File file = fileList.get(i);
 			String originalName = originalNameList.get(i);
 
-			// 1) S3 업로드
 			String s3Key = s3Uploader.upload(file, "issues");
 			String bucket = bucketName;
 
 			System.out.println("s3Key" + s3Key);
 			System.out.println("bucket" + bucket);
 
-			// 2) file 테이블 등록
 			AttVo attVo = new AttVo();
 			attVo.setOriginalFileName(originalName);
 			attVo.setStoredFileName(file.getName());
@@ -245,17 +231,15 @@ public class IssServiceImpl implements IssService {
 
 			System.out.println("attVo" + attVo);
 
-			// insertFile() 호출 시 fileId 생성됨
 			attDAO.insertFile(attVo);
 
 			if (attVo.getFileId() == null) {
 				throw new IllegalStateException("파일 ID가 생성되지 않았습니다.");
 			}
 
-			// 3) file_attachments 테이블 등록
 			attVo.setRefType("ISSUE");
 			attVo.setRefId(issId);
-			attDAO.insertFileAttachment(attVo); // 이 메서드는 내부적으로 insertFileAttachment 호출
+			attDAO.insertFileAttachment(attVo); 
 		}
 	}
 

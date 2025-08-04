@@ -16,7 +16,6 @@ import com.demo.proworks.out.vo.OutVo;
  * DATE				AUTHOR				DESC
  * ===========================================================
  * 2025/07/07			 우민지	 		최초 생성
- * 2025/07/22			 우민지	 		파일 관련 메서드 추가
  * 
  */
 public interface OutService {

@@ -28,28 +28,25 @@ import com.inswave.elfw.exception.ElException;
 import com.inswave.elfw.log.AppLog;
 
 /**
- * @subject : 테스트결함관리 관련 처리를 담당하는 컨트롤러 (Enhanced)
- * @description : 테스트결함관리 관련 처리를 담당하는 컨트롤러 (UnitTest 패턴 적용)
+ * @subject : 테스트결함관리 관련 처리를 담당하는 컨트롤러
+ * @description : 테스트결함관리 관련 처리를 담당하는 컨트롤러
  * @author : 우민지
  * @since : 2025/07/23
  * @modification ===========================================================
  *               DATE AUTHOR DESC
  *               ===========================================================
  *               2025/07/23 우민지 최초 생성
- *               2025/07/29 시스템 UnitTest 패턴 적용 및 강화
  * 
  */
 @Controller
 public class DefController {
 
-	/** DefService */
 	@Resource(name = "defServiceImpl")
 	private DefService defService;
 
 	@Resource(name = "attServiceImpl")
 	private AttService attService;
 
-	// ========== 기본 CRUD 메서드들 ==========
 
 	/**
 	 * 테스트결함관리 목록을 조회합니다.
@@ -103,25 +100,13 @@ public class DefController {
 
 		DefVo selectDefVo = defService.selectDefDetail(defVo);
 
-		AppLog.debug("===== 컨트롤러 응답 데이터 =====");
-		AppLog.debug("응답 전체: {}", selectDefVo);
-
-		if (selectDefVo != null) {
-			AppLog.debug("응답 결함 ID: {}", selectDefVo.getId());
-			AppLog.debug("응답 결함명: {}", selectDefVo.getName());
-			AppLog.debug("응답 상태: {}", selectDefVo.getStatus());
-			AppLog.debug("응답 우선순위: {}", selectDefVo.getPriority());
-			AppLog.debug("설명 길이: {}", selectDefVo.getDescription() != null ? selectDefVo.getDescription().length() : "null");
-		} else {
-			AppLog.warn("조회 결과가 null입니다.");
-		}
-
+		
 		AppLog.debug("===== 컨트롤러 결함 상세 조회 완료 =====");
 		return selectDefVo;
 	}
 
 	/**
-	 * 테스트결함관리를 등록 처리 한다. (단순 등록)
+	 * 테스트결함관리를 등록 처리 한다. 
 	 */
 	@ElService(key = "DEF001Ins")
 	@RequestMapping(value = "DEF001Ins")
@@ -165,7 +150,6 @@ public class DefController {
 		AppLog.debug("결함 삭제 완료: {}", defVo.getId());
 	}
 
-	// ========== 파일 관련 메서드들 (UnitTest 패턴 적용) ==========
 
 	/**
 	 * 결함을 파일과 함께 등록 처리 한다. (트랜잭션)
@@ -224,12 +208,10 @@ public class DefController {
 		AppLog.debug("=== 결함 파일 수정 시작 ===");
 
 		try {
-			// MultipartHttpServletRequest로 캐스팅
 			MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 
-			// 1. 결함 정보 세팅 (id 필수!)
 			DefVo defVo = new DefVo();
-			defVo.setId(request.getParameter("id")); // 수정 시 id 필수
+			defVo.setId(request.getParameter("id"));
 			defVo.setTestId(request.getParameter("testId"));
 			defVo.setTestName(request.getParameter("testName"));
 			defVo.setName(request.getParameter("name"));
@@ -244,29 +226,24 @@ public class DefController {
 			AppLog.debug("수정할 결함 정보: {}", defVo);
 			AppLog.debug("결함 ID: {}", defVo.getId());
 
-			// id가 없으면 오류
 			if (defVo.getId() == null || defVo.getId().trim().isEmpty()) {
 				throw new RuntimeException("수정할 결함 ID가 필요합니다.");
 			}
 
-			// 2. 실제 파일 객체들 받아오기
 			List<MultipartFile> fileList = multipartRequest.getFiles("files");
 			AppLog.debug("받은 파일 개수: {}", (fileList != null ? fileList.size() : 0));
 
-			// 3. MultipartFile 배열로 변환 (null이 아닌 파일만)
 			List<MultipartFile> validFiles = new ArrayList<>();
 			if (fileList != null) {
 				for (MultipartFile file : fileList) {
 					if (file != null && !file.isEmpty()) {
 						validFiles.add(file);
-//						AppLog.debug("유효한 파일: {} (크기: {})" + ", " +  file.getOriginalFilename(), file.getSize());
 					}
 				}
 			}
 
 			MultipartFile[] files = validFiles.toArray(new MultipartFile[0]);
 
-			// 4. 서비스 호출 (수정 메서드)
 			DefVo result = defService.updateDefWithFiles(defVo, files);
 
 			AppLog.debug("파일과 함께 결함 수정 완료: {}", result.getId());
@@ -288,7 +265,6 @@ public class DefController {
 		AppLog.debug("=== 결함 파일 목록 조회 ===");
 		AppLog.debug("요청 데이터: {}", defVo != null ? defVo.toString() : "null");
 
-		// null 체크
 		if (defVo == null) {
 			AppLog.warn("defVo가 null입니다.");
 			AttListVo emptyResult = new AttListVo();
@@ -304,12 +280,10 @@ public class DefController {
 			return emptyResult;
 		}
 
-		// ProworksCommVO 객체 생성해서 AttService에 위임
 		ProworksCommVO fileParam = new ProworksCommVO();
-		fileParam.setRefType("DEFECT"); // 결함용 참조 타입
+		fileParam.setRefType("DEFECT"); 
 		fileParam.setRefId(defVo.getId());
 
-//		AppLog.debug("파일 조회 파라미터: refType={}, refId={}", fileParam.getRefType(), fileParam.getRefId());
 
 		List<AttVo> attList = attService.getFileList(fileParam);
 		AppLog.debug("조회된 파일 개수: {}", (attList != null ? attList.size() : 0));
@@ -337,7 +311,6 @@ public class DefController {
 		}
 
 		try {
-			// DefService를 통해 파일 삭제
 			int result = defService.deleteDefFile(fileId);
 
 			if (result <= 0) {
@@ -374,7 +347,6 @@ public class DefController {
 		}
 	}
 
-	// ========== 자동 생성 기능 관련 컨트롤러 메서드들 ==========
 
 	/**
 	 * 결함 상태 업데이트 (완료 시 관련 테스트 상태도 업데이트)
@@ -448,7 +420,6 @@ public class DefController {
 		AppLog.debug("결함 담당자 변경 완료: {}", defVo.getId());
 	}
 
-	// ========== 통계 및 분석 관련 메서드들 ==========
 
 	/**
 	 * 결함 통계 조회
@@ -537,7 +508,6 @@ public class DefController {
 		return priorityStats;
 	}
 
-	// ========== 특수 조회 메서드들 ==========
 
 	/**
 	 * 프로젝트별 결함 목록 조회
@@ -624,7 +594,6 @@ public class DefController {
 		return retDefList;
 	}
 
-	// ========== 일괄 처리 메서드들 ==========
 
 	/**
 	 * 여러 결함의 상태를 일괄 업데이트
@@ -636,7 +605,6 @@ public class DefController {
 	public Map<String, Object> updateMultipleDefStatus(@RequestParam("defectIds") List<String> defectIds,
 			@RequestParam("newStatus") String newStatus) throws Exception {
 
-//		AppLog.debug("일괄 상태 업데이트 요청: {} 건, 새 상태: {}", defectIds.size(), newStatus);
 
 		Map<String, Object> result = new HashMap<>();
 
@@ -648,7 +616,6 @@ public class DefController {
 			result.put("totalCount", defectIds.size());
 			result.put("updatedCount", updatedCount);
 
-//			AppLog.debug("일괄 상태 업데이트 성공: {} / {} 건", updatedCount, defectIds.size());
 
 		} catch (Exception e) {
 			AppLog.error("일괄 상태 업데이트 실패: {}", e.getMessage());
@@ -661,7 +628,6 @@ public class DefController {
 		return result;
 	}
 
-	// ========== 검증 및 유틸리티 메서드들 ==========
 
 	/**
 	 * 결함 ID 중복 체크
@@ -683,7 +649,6 @@ public class DefController {
 			result.put("count", duplicateCount);
 			result.put("message", duplicateCount > 0 ? "이미 존재하는 결함 ID입니다." : "사용 가능한 결함 ID입니다.");
 
-//			AppLog.debug("결함 ID 중복 체크 완료: {} (중복: {})", defVo.getId(), duplicateCount > 0);
 
 		} catch (Exception e) {
 			AppLog.error("결함 ID 중복 체크 실패: {}", e.getMessage());
@@ -757,7 +722,6 @@ public class DefController {
 		return result;
 	}
 
-	// ========== 삭제 관련 메서드들 (UnitTest 패턴) ==========
 
 	/**
 	 * 결함을 파일과 함께 안전하게 삭제
@@ -775,7 +739,6 @@ public class DefController {
 		}
 
 		try {
-			// 1. 결함 존재 여부 확인
 			DefVo existingDef = defService.selectDef(defVo);
 			if (existingDef == null) {
 				throw new RuntimeException("해당 결함을 찾을 수 없습니다.");
@@ -783,7 +746,6 @@ public class DefController {
 
 			AppLog.debug("삭제 대상: {}", existingDef.getName());
 
-			// 2. 서비스에서 파일과 결함 삭제
 			int deleteResult = defService.deleteDef(defVo);
 
 			if (deleteResult <= 0) {
@@ -813,17 +775,14 @@ public class DefController {
 		}
 
 		try {
-			// 1. 파일 삭제 시도 (실패해도 무시)
 			try {
 				AppLog.debug("관련 파일 삭제 시도: {}", defectId);
 				attService.deleteFilesByRef("DEFECT", defectId);
 				AppLog.debug("관련 파일 삭제 완료");
 			} catch (Exception fileException) {
 				AppLog.warn("파일 삭제 실패 (무시하고 계속): {}", fileException.getMessage());
-				// 파일 삭제 실패는 무시
 			}
 
-			// 2. 결함 삭제
 			int result = defService.deleteDef(defVo);
 
 			if (result <= 0) {
