@@ -30,7 +30,7 @@ public class AttDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
      * file 테이블에 파일 정보를 등록한다.
      *  
      * @param  AttVo 파일 정보
-     * @return int 등록 결과
+     * @return 등록 결과
      * @throws ElException
      */
     public int insertFile(AttVo vo) throws ElException {
@@ -41,7 +41,7 @@ public class AttDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
      * file_attachments 테이블에 첨부 정보를 등록한다.
      *  
      * @param  AttVo 첨부 정보
-     * @return int 등록 결과
+     * @return 등록 결과
      * @throws ElException
      */
     public int insertFileAttachment(AttVo vo) throws ElException {
@@ -52,7 +52,7 @@ public class AttDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
      * 파일첨부 정보를 수정한다.
      *  
      * @param  AttVo 파일첨부
-     * @return int 수정 결과
+     * @return 수정 결과
      * @throws ElException
      */
     public int updateFileAttachment(AttVo vo) throws ElException {
@@ -74,7 +74,7 @@ public class AttDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
      * 파일 상세 정보를 조회한다. (JOIN)
      *  
      * @param  String fileId
-     * @return AttVo 파일 상세 정보
+     * @return 파일 상세 정보
      * @throws ElException
      */
     public AttVo selectFileInfo(String fileId) throws ElException {
@@ -85,7 +85,7 @@ public class AttDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
      * 파일첨부 목록을 조회한다. (JOIN)
      *  
      * @param  AttVo 파일첨부 검색 조건
-     * @return List<AttVo> 파일첨부 목록
+     * @return 파일첨부 목록
      * @throws ElException
      */
     public List<AttVo> selectFileList(AttVo vo) throws ElException {      	
@@ -96,7 +96,7 @@ public class AttDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
      * 참조 정보로 파일 목록을 조회한다.
      *  
      * @param  검색 조건 (IssVo vo)
-     * @return List<AttVo> 파일 목록
+     * @return 파일 목록
      * @throws ElException
      */
     public List<AttVo> selectFileListByRef(ProworksCommVO vo) throws ElException {
@@ -104,7 +104,7 @@ public class AttDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
     }
 
     /**
-     * 임시 업로드 파일들의 참조 정보를 업데이트한다. (트랜잭션용)
+     * 임시 업로드 파일들의 참조 정보를 업데이트한다.
      *  
      * @param  Map<String, String> 업데이트 조건
      * @return int 업데이트 결과
@@ -118,7 +118,7 @@ public class AttDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
      * 임시 업로드 파일들을 삭제한다. (롤백용)
      *  
      * @param  String tempRefId 임시 참조 ID
-     * @return int 삭제 결과
+     * @return 삭제 결과
      * @throws ElException
      */
     public int deleteTempFiles(String tempRefId) throws ElException {
@@ -126,10 +126,10 @@ public class AttDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
     }
     
     /**
-     * 파일첨부 정보를 완전 삭제한다. (Hard Delete - 새로 추가)
+     * 파일첨부 정보를 삭제한다.
      *  
      * @param  String fileId
-     * @return int 삭제 결과
+     * @return 삭제 결과
      * @throws ElException
      */
     public int hardDeleteFileAttachment(String fileId) throws ElException {
@@ -137,7 +137,7 @@ public class AttDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
     }
     
     /**
-     * 파일 정보 완전 삭제 (Hard Delete - 새로 추가)
+     * 파일 정보 완전 삭제
      *  
      * @param  String fileId
      * @return int 삭제 결과
@@ -148,11 +148,11 @@ public class AttDAO extends com.demo.proworks.cmmn.dao.ProworksDefaultAbstractDA
     }
     
     
-        /**
-     * 특정 참조타입/참조ID의 모든 파일 완전 삭제 (UnitTest 등에서 사용)
+    /**
+     * 특정 참조타입/참조ID의 모든 파일 완전 삭제
      *  
      * @param  Map<String, String> refType, refId
-     * @return int 삭제 결과
+     * @return 삭제 결과
      * @throws ElException
      */
     public int hardDeleteFilesByRef(Map<String, String> paramMap) throws ElException {

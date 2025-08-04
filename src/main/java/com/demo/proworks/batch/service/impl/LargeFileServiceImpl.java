@@ -1,4 +1,4 @@
-package com.demo.proworks.att.service.impl;
+package com.demo.proworks.batch.service.impl;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,10 +35,7 @@ import com.demo.proworks.unit.service.impl.FileUploadPerformanceLogger;
 import com.inswave.elfw.log.AppLog;
 
 /**
- * 수정된 대용량 파일 처리 서비스 구현체
- * - UnitTest 패턴을 참고하여 DB 저장 로직 개선
- * - 트랜잭션 및 예외 처리 개선
- * - fileId 생성 및 관리 방식 개선
+ * 대용량 파일 처리 서비스
  */
 @Service("largeFileServiceImpl")
 public class LargeFileServiceImpl implements LargeFileService {
@@ -58,16 +55,14 @@ public class LargeFileServiceImpl implements LargeFileService {
     @Value("${file.upload.path}")
     private String uploadPath;
     
-    // 멀티파트 업로드 설정
-    private static final long MULTIPART_THRESHOLD = 5 * 1024 * 1024; // 5MB
-    private static final long PART_SIZE = 5 * 1024 * 1024; // 5MB per part
-    private static final int MAX_THREADS = 4; // 병렬 업로드 스레드 수
+    private static final long MULTIPART_THRESHOLD = 5 * 1024 * 1024; 
+    private static final long PART_SIZE = 5 * 1024 * 1024; 
+    private static final int MAX_THREADS = 4; 
     
-    // 성능 비교용 통계 저장소 (실제 환경에서는 Redis/DB 사용)
     private final Map<String, Map<String, Object>> uploadStats = new HashMap<>();
     
     /**
-     * 대용량 파일 업로드 (개선된 멀티파트 방식)
+     * 대용량 파일 업로드
      */
     @Override
     public AttVo uploadLargeFile(MultipartFile file, String refType, String refId) throws Exception {
@@ -75,9 +70,7 @@ public class LargeFileServiceImpl implements LargeFileService {
         performanceLogger.logSystemResources("UPLOAD_START");
         
         try {
-            // 파일 크기에 따라 업로드 방식 결정
             if (file.getSize() < MULTIPART_THRESHOLD) {
-                AppLog.info("파일 크기가 작아 단일 업로드 사용: " + (file.getSize() / 1024 / 1024) + "MB");
                 return uploadSinglePart(file, refType, refId, sessionId);
             }
             
@@ -91,7 +84,7 @@ public class LargeFileServiceImpl implements LargeFileService {
     }
     
     /**
-     * 기존 방식 파일 업로드 (비교용)
+     * 기존 방식 파일 업로드
      */
     @Override
     public AttVo uploadLargeFileTraditional(MultipartFile file, String refType, String refId) throws Exception {
@@ -109,7 +102,7 @@ public class LargeFileServiceImpl implements LargeFileService {
     }
     
     /**
-     * 멀티파트 업로드 실행 (개선된 버전)
+     * 멀티파트 업로드 실행
      */
     private AttVo uploadMultipart(MultipartFile file, String refType, String refId, String sessionId) throws Exception {
         String fileName = file.getOriginalFilename();
@@ -149,7 +142,7 @@ public class LargeFileServiceImpl implements LargeFileService {
                 int bytesRead = inputStream.read(partData);
                 
                 if (bytesRead != partSize) {
-                    throw new IOException("파일 읽기 오류: 예상 크기와 실제 읽은 크기가 다름");
+                    throw new IOException("파일 읽기 오류");
                 }
                 
                 // 비동기 파트 업로드
@@ -169,30 +162,23 @@ public class LargeFileServiceImpl implements LargeFileService {
                 remainingBytes -= partSize;
                 partNumber++;
                 
-                AppLog.debug("파트 " + currentPartNumber + " 업로드 큐에 추가: " + (partSize / 1024 / 1024) + "MB");
             }
             
-            // 3. 모든 파트 업로드 완료 대기
             for (CompletableFuture<PartETag> future : futures) {
                 partETags.add(future.get());
             }
             
-            AppLog.info("모든 파트 업로드 완료. 총 " + partETags.size() + " 개 파트");
             
-            // 4. 멀티파트 업로드 완료
             CompleteMultipartUploadRequest completeRequest = new CompleteMultipartUploadRequest(
                 bucketName, s3Key, uploadId, partETags);
             amazonS3.completeMultipartUpload(completeRequest);
             
-            // 5. DB에 파일 정보 저장 (UnitTest 패턴 적용)
             AttVo resultVo = saveFileToDatabase(file, refType, refId, s3Key, storedFileName);
             
-            // 6. 성능 로깅
             performanceLogger.logUploadComplete(sessionId, fileName, fileSize, 
                 System.currentTimeMillis(), "MULTIPART_UPLOAD");
             performanceLogger.logSystemResources("MULTIPART_UPLOAD_COMPLETE");
             
-            // 성능 통계 저장
             saveUploadStats(uploadId, "MULTIPART_UPLOAD", fileSize, System.currentTimeMillis(), partETags.size());
             
             AppLog.info("멀티파트 업로드 성공: " + fileName + " -> " + s3Key);
@@ -243,7 +229,7 @@ public class LargeFileServiceImpl implements LargeFileService {
     }
     
     /**
-     * 단일 파트 업로드 (5MB 미만 파일용)
+     * 단일 파트 업로드
      */
     private AttVo uploadSinglePart(MultipartFile file, String refType, String refId, String sessionId) throws Exception {
         String fileName = file.getOriginalFilename();
@@ -266,7 +252,7 @@ public class LargeFileServiceImpl implements LargeFileService {
     }
     
     /**
-     * 기존 방식 업로드 (비교용)
+     * 기존 방식 업로드
      */
     private AttVo uploadTraditionalMethod(MultipartFile file, String refType, String refId, String sessionId) throws Exception {
         String fileName = file.getOriginalFilename();
@@ -274,12 +260,10 @@ public class LargeFileServiceImpl implements LargeFileService {
         String storedFileName = UUID.randomUUID().toString() + "." + fileExtension;
         String s3Key = uploadPath + "/" + refType + "/" + refId + "/" + storedFileName;
         
-        // 기존 방식: 한 번에 전체 파일 업로드
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(file.getSize());
         metadata.setContentType(file.getContentType());
         
-        // 메모리에 전체 파일 로드 (기존 방식의 단점)
         byte[] fileBytes = file.getBytes();
         java.io.ByteArrayInputStream inputStream = new java.io.ByteArrayInputStream(fileBytes);
         
@@ -291,7 +275,6 @@ public class LargeFileServiceImpl implements LargeFileService {
             System.currentTimeMillis(), "TRADITIONAL_UPLOAD");
         performanceLogger.logSystemResources("TRADITIONAL_UPLOAD_COMPLETE");
         
-        // 성능 통계 저장
         saveUploadStats(UUID.randomUUID().toString(), "TRADITIONAL_UPLOAD", file.getSize(), System.currentTimeMillis(), 1);
         
         return resultVo;
@@ -310,21 +293,17 @@ public class LargeFileServiceImpl implements LargeFileService {
         AppLog.info("테스트 파일: " + fileName + " (" + (fileSize / 1024 / 1024) + "MB)");
         
         try {
-            // 1. 기존 방식 테스트
             long traditionalStartTime = System.currentTimeMillis();
             AttVo traditionalResult = uploadLargeFileTraditional(file, refType, refId + "_traditional");
             long traditionalDuration = System.currentTimeMillis() - traditionalStartTime;
             
-            // 메모리 정리
             System.gc();
             Thread.sleep(1000);
             
-            // 2. 개선된 방식 테스트  
             long multipartStartTime = System.currentTimeMillis();
             AttVo multipartResult = uploadLargeFile(file, refType, refId + "_multipart");
             long multipartDuration = System.currentTimeMillis() - multipartStartTime;
             
-            // 3. 성능 비교 결과 생성
             double traditionalThroughput = (fileSize / 1024.0 / 1024.0) / (traditionalDuration / 1000.0);
             double multipartThroughput = (fileSize / 1024.0 / 1024.0) / (multipartDuration / 1000.0);
             double improvementPercent = ((double) traditionalDuration - multipartDuration) / traditionalDuration * 100;
@@ -342,7 +321,6 @@ public class LargeFileServiceImpl implements LargeFileService {
             comparisonResult.put("traditionalResult", traditionalResult);
             comparisonResult.put("multipartResult", multipartResult);
             
-            // 성능 비교 로깅
             performanceLogger.logUploadMethodComparison("TRADITIONAL", fileSize, traditionalDuration, 
                 "기존 단일 업로드 방식");
             performanceLogger.logUploadMethodComparison("MULTIPART", fileSize, multipartDuration, 
@@ -424,10 +402,9 @@ public class LargeFileServiceImpl implements LargeFileService {
         return statistics;
     }
     
-    // ===== Private Helper Methods =====
     
     /**
-     * DB에 파일 정보 저장 (올바른 AUTO_INCREMENT 패턴)
+     * DB에 파일 정보 저장
      */
     private AttVo saveFileToDatabase(MultipartFile file, String refType, String refId, String s3Key, String storedFileName) throws Exception {
         String originalFileName = file.getOriginalFilename();
@@ -449,28 +426,23 @@ public class LargeFileServiceImpl implements LargeFileService {
             
             attDAO.insertFile(fileVo);
             
-            // insertFile 후 자동 생성된 file.id를 가져옴
-            String fileId = fileVo.getFileId(); // "47" 같은 숫자 문자열
+            String fileId = fileVo.getFileId();
             AppLog.debug("file 테이블 저장 완료, 자동 생성된 fileId: " + fileId);
 
-            // 2. file_attachments 테이블 insert (id도 AUTO_INCREMENT, file_id는 위에서 생성된 값)
             AttVo attachmentVo = new AttVo();
-            // id는 설정하지 않음 - AUTO_INCREMENT로 자동 생성됨
-            attachmentVo.setFileId(fileId); // file 테이블에서 생성된 ID 사용
+            attachmentVo.setFileId(fileId);
             attachmentVo.setRefType(refType);
             attachmentVo.setRefId(refId);
             attachmentVo.setIsDeleted("N");
             
             attDAO.insertFileAttachment(attachmentVo);
             
-            // insertFileAttachment 후 자동 생성된 file_attachments.id를 가져옴
-            String attachmentId = attachmentVo.getId(); // AUTO_INCREMENT로 생성된 ID
+            String attachmentId = attachmentVo.getId();
             AppLog.debug("file_attachments 테이블 저장 완료, 자동 생성된 attachmentId: " + attachmentId);
 
-            // 3. 반환용 AttVo 설정
             AttVo resultVo = new AttVo();
-            resultVo.setId(attachmentId);        // file_attachments.id (AUTO_INCREMENT)
-            resultVo.setFileId(fileId);          // file.id (AUTO_INCREMENT)
+            resultVo.setId(attachmentId); 
+            resultVo.setFileId(fileId);   
             resultVo.setRefType(refType);
             resultVo.setRefId(refId);
             resultVo.setOriginalFileName(originalFileName);

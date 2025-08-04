@@ -87,6 +87,14 @@ public interface AttService {
      */
 	public AttVo getFileInfo(String fileId) throws Exception;
 	
+	/**
+     * 참조 연관 파일 일괄 삭제 처리
+     * 특정 참조 타입과 참조 ID에 연관된 모든 파일을 삭제한다. 
+     *
+     * @param  refType String 참조 타입 (ISSUE_RISK, DEFECT 등)
+     * @param  refId String 참조 ID
+     * @throws Exception
+     */
 	void deleteFilesByRef(String refType, String refId) throws Exception;
 	
 }

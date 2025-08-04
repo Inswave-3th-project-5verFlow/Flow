@@ -8,8 +8,6 @@ import java.util.UUID;
 
 import javax.annotation.Resource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +25,11 @@ import com.demo.proworks.def.service.DefService;
 import com.demo.proworks.def.vo.DefVo;
 import com.demo.proworks.unit.dao.UnitTestDao;
 import com.demo.proworks.unit.vo.UnitTestVo;
+import com.inswave.elfw.log.AppLog;
 
 /**  
- * @subject     : 테스트결함관리 관련 처리를 담당하는 ServiceImpl (Enhanced)
- * @description	: 테스트결함관리 관련 처리를 담당하는 ServiceImpl (UnitTest 패턴 적용 및 기능 강화)
+ * @subject     : 테스트결함관리 관련 처리를 담당하는 ServiceImpl
+ * @description	: 테스트결함관리 관련 처리를 담당하는 ServiceImpl
  * @author      : 우민지
  * @since       : 2025/07/23
  * @modification
@@ -38,13 +37,11 @@ import com.demo.proworks.unit.vo.UnitTestVo;
  * DATE				AUTHOR				DESC
  * ===========================================================
  * 2025/07/23			 우민지	 		최초 생성
- * 2025/07/29			 시스템			UnitTest 패턴 적용 및 강화
  * 
  */
 @Service("defServiceImpl")
 public class DefServiceImpl implements DefService {
 
-    private static final Logger logger = LoggerFactory.getLogger(DefServiceImpl.class);
 
     @Resource(name="defDAO")
     private DefDAO defDAO;
@@ -70,21 +67,19 @@ public class DefServiceImpl implements DefService {
     @Value("${file.upload.path}")
     private String uploadPath;
     
-    // 참조 타입 상수
     private static final String REF_TYPE_DEFECT = "DEFECT";
 
-    // ========== 기본 CRUD 메서드들 ==========
 
     /**
      * 테스트결함관리 목록을 조회합니다.
      */
     @Override
     public List<DefVo> selectListDef(DefVo defVo) throws Exception {
-        logger.debug("결함 목록 조회 시작: {}", defVo);
+        AppLog.debug("결함 목록 조회 시작: " + defVo);
         
         List<DefVo> list = defDAO.selectListDef(defVo);
         
-        logger.debug("결함 목록 조회 완료: {} 건", list.size());
+        AppLog.debug("결함 목록 조회 완료: " + list.size() + " 건");
         return list;
     }
 
@@ -93,11 +88,11 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public long selectListCountDef(DefVo defVo) throws Exception {
-        logger.debug("결함 목록 카운트 조회: {}", defVo);
+        AppLog.debug("결함 목록 카운트 조회: " + defVo);
         
         long count = defDAO.selectListCountDef(defVo);
         
-        logger.debug("결함 목록 카운트: {}", count);
+        AppLog.debug("결함 목록 카운트: " + count);
         return count;
     }
 
@@ -106,14 +101,14 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public DefVo selectDef(DefVo defVo) throws Exception {
-        logger.debug("결함 상세 조회: {}", defVo);
+        AppLog.debug("결함 상세 조회: " + defVo);
         
         DefVo resultVO = defDAO.selectDef(defVo);
         
         if (resultVO == null) {
-            logger.warn("결함을 찾을 수 없습니다: {}", defVo.getId());
+            AppLog.warn("결함을 찾을 수 없습니다: " + defVo.getId());
         } else {
-            logger.debug("결함 상세 조회 완료: {}", resultVO.getId());
+            AppLog.debug("결함 상세 조회 완료: " + resultVO.getId());
         }
         
         return resultVO;
@@ -124,29 +119,15 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public DefVo selectDefDetail(DefVo defVo) throws Exception {
-        logger.debug("===== 결함 상세 조회 시작 =====");
-        logger.debug("요청 파라미터: {}", defVo);
-        logger.debug("결함 ID: {}", defVo.getId());
+        AppLog.debug("===== 결함 상세 조회 시작 =====");
         
         if (isEmpty(defVo.getId())) {
             throw new Exception("조회할 결함 ID가 필요합니다.");
         }
         
         DefVo result = defDAO.selectDef(defVo);
-        
-        logger.debug("===== 조회 결과 확인 =====");
-        if (result != null) {
-            logger.debug("결함명: {}", result.getName());
-            logger.debug("상태: {}", result.getStatus());
-            logger.debug("우선순위: {}", result.getPriority());
-            logger.debug("담당자: {}", result.getAssignee());
-            logger.debug("설명 길이: {}", result.getDescription() != null ? result.getDescription().length() : "null");
-        } else {
-            logger.warn("조회 결과가 null입니다.");
-            throw new Exception("해당 결함을 찾을 수 없습니다.");
-        }
-        
-        logger.debug("===== 결함 상세 조회 완료 =====");
+     
+        AppLog.debug("===== 결함 상세 조회 완료 =====");
         return result;
     }
 
@@ -155,22 +136,19 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public String insertDef(DefVo defVo) throws Exception {
-        logger.debug("결함 등록 시작: {}", defVo);
+        AppLog.debug("결함 등록 시작: " + defVo);
         
-        // 필수값 검증
         validateRequiredFields(defVo);
         
-        // 결함 ID 생성
         String defectId = generateDefectId();  
         defVo.setId(defectId);
         
-        // 기본값 설정
         setDefaultValues(defVo);
         
         int result = defDAO.insertDef(defVo);
         
         if (result > 0) {
-            logger.debug("결함 등록 완료: {}", defectId);
+            AppLog.debug("결함 등록 완료: " + defectId);
             return defectId;
         } else {
             throw new Exception("결함 등록에 실패했습니다.");
@@ -182,14 +160,12 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public int updateDef(DefVo defVo) throws Exception {
-        logger.debug("결함 수정: {}", defVo);
+        AppLog.debug("결함 수정: " + defVo);
         
-        // 필수값 검증
         if (isEmpty(defVo.getId())) {
             throw new Exception("수정할 결함 ID가 필요합니다.");
         }
         
-        // 수정일시 설정
         defVo.setUpdatedAt(getCurrentTimestamp());
         
         int result = defDAO.updateDef(defVo);
@@ -198,7 +174,7 @@ public class DefServiceImpl implements DefService {
             throw new Exception("해당 결함을 찾을 수 없거나 수정할 수 없습니다.");
         }
         
-        logger.debug("결함 수정 완료: {}", defVo.getId());
+        AppLog.debug("결함 수정 완료: " + defVo.getId());
         return result;
     }
 
@@ -207,27 +183,25 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public int deleteDef(DefVo defVo) throws Exception {
-        logger.debug("결함 삭제 시작: {}", defVo);
+        AppLog.debug("결함 삭제 시작: " + defVo);
         
         String defectId = defVo.getId();
         if (isEmpty(defectId)) {
             throw new Exception("삭제할 결함 ID가 필요합니다.");
         }
         
-        // 1. 결함 존재 여부 확인
         DefVo existingDef = defDAO.selectDef(defVo);
         if (existingDef == null) {
             throw new Exception("해당 결함을 찾을 수 없습니다.");
         }
         
-        logger.debug("삭제 대상 결함: {}", existingDef.getName());
+        AppLog.debug("삭제 대상 결함: " + existingDef.getName());
         
-        // 2. 관련 파일 삭제 시도 (실패해도 무시)
         try {
             deleteRelatedFilesSafely(defectId);
-            logger.debug("관련 파일 삭제 완료");
+            AppLog.debug("관련 파일 삭제 완료");
         } catch (Exception e) {
-            logger.warn("관련 파일 삭제 실패 (무시하고 계속): {}", e.getMessage());
+            AppLog.warn("관련 파일 삭제 실패 (무시하고 계속): " + e.getMessage());
         }
         
         // 3. 결함 삭제
@@ -237,11 +211,10 @@ public class DefServiceImpl implements DefService {
             throw new Exception("결함 삭제에 실패했습니다.");
         }
         
-        logger.debug("결함 삭제 완료: {}", defectId);
+        AppLog.debug("결함 삭제 완료: " + defectId);
         return result;
     }
     
-    // ========== 파일 관련 메서드들 (UnitTest 패턴 적용) ==========
     
     /**
      * 결함과 파일을 함께 등록
@@ -252,8 +225,8 @@ public class DefServiceImpl implements DefService {
         List<String> uploadedS3Keys = new ArrayList<>();
 
         try {
-            logger.debug("=== 결함 with 파일 등록 시작 ===");
-            logger.debug("결함 정보: {}", defVo);
+            AppLog.debug("=== 결함 with 파일 등록 시작 ===");
+            AppLog.debug("결함 정보: " + defVo);
             
             // 1. 결함 등록
             String defectId = insertDef(defVo);
@@ -265,22 +238,22 @@ public class DefServiceImpl implements DefService {
                     if (!file.isEmpty()) {
                         AttVo attVo = uploadAndSaveFile(file, REF_TYPE_DEFECT, defectId);
                         uploadedS3Keys.add(attVo.getS3Key());
-                        logger.debug("파일 업로드 완료: {}", file.getOriginalFilename());
+                        AppLog.debug("파일 업로드 완료: " + file.getOriginalFilename());
                     }
                 }
             }
 
-            logger.debug("=== 결함 with 파일 등록 완료 ===");
+            AppLog.debug("=== 결함 with 파일 등록 완료 ===");
             return defVo;
 
         } catch (Exception e) {
-            logger.error("결함 등록 실패: {}", e.getMessage());
+            AppLog.error("결함 등록 실패: " + e.getMessage());
 
             // 업로드된 파일들 S3에서 삭제 (롤백)
             for (String s3Key : uploadedS3Keys) {
                 try {
                     amazonS3.deleteObject(bucketName, s3Key);
-                    logger.debug("S3 파일 롤백: {}", s3Key);
+                    AppLog.debug("S3 파일 롤백: " + s3Key);
                 } catch (Exception ignored) {
                 }
             }
@@ -298,49 +271,44 @@ public class DefServiceImpl implements DefService {
         List<String> uploadedS3Keys = new ArrayList<>();
 
         try {
-            logger.debug("=== 결함 수정 with 파일 시작 ===");
-            logger.debug("수정할 결함 ID: {}", defVo.getId());
+            AppLog.debug("=== 결함 수정 with 파일 시작 ===");
+            AppLog.debug("수정할 결함 ID: " + defVo.getId());
 
-            // 1. 결함 ID 유효성 검사
             if (isEmpty(defVo.getId())) {
                 throw new RuntimeException("수정할 결함 ID가 필요합니다.");
             }
 
-            // 2. 기존 결함 존재 여부 확인
             DefVo existingDef = defDAO.selectDef(defVo);
             if (existingDef == null) {
                 throw new RuntimeException("수정할 결함을 찾을 수 없습니다. ID: " + defVo.getId());
             }
 
-            // 3. 결함 정보 수정
             int updateResult = updateDef(defVo);
             if (updateResult <= 0) {
                 throw new RuntimeException("결함 정보 수정 실패");
             }
-            logger.debug("결함 정보 수정 완료");
+            AppLog.debug("결함 정보 수정 완료");
 
-            // 4. 새로운 파일 업로드 (기존 파일은 유지)
             if (files != null && files.length > 0) {
                 for (MultipartFile file : files) {
                     if (!file.isEmpty()) {
                         AttVo attVo = uploadAndSaveFile(file, REF_TYPE_DEFECT, defVo.getId());
                         uploadedS3Keys.add(attVo.getS3Key());
-                        logger.debug("새 파일 업로드: {}", file.getOriginalFilename());
+                        AppLog.debug("새 파일 업로드: " + file.getOriginalFilename());
                     }
                 }
             }
 
-            logger.debug("=== 결함 수정 with 파일 완료 ===");
+            AppLog.debug("=== 결함 수정 with 파일 완료 ===");
             return defVo;
 
         } catch (Exception e) {
-            logger.error("결함 수정 실패: {}", e.getMessage());
+            AppLog.error("결함 수정 실패: " + e.getMessage());
 
-            // 새로 업로드된 파일들 S3에서 삭제 (롤백)
             for (String s3Key : uploadedS3Keys) {
                 try {
                     amazonS3.deleteObject(bucketName, s3Key);
-                    logger.debug("S3 파일 롤백: {}", s3Key);
+                    AppLog.debug("S3 파일 롤백: " + s3Key);
                 } catch (Exception ignored) {
                 }
             }
@@ -354,7 +322,7 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public List<AttVo> selectDefFileList(DefVo defVo) throws Exception {
-        logger.debug("결함 첨부파일 목록 조회: {}", defVo);
+        AppLog.debug("결함 첨부파일 목록 조회: " + defVo);
         
         if (isEmpty(defVo.getId())) {
             throw new Exception("결함 ID가 필요합니다.");
@@ -366,7 +334,7 @@ public class DefServiceImpl implements DefService {
         
         List<AttVo> fileList = attService.getFileList(commVO);
         
-        logger.debug("결함 첨부파일 목록 조회 완료: {} 건", fileList.size());
+        AppLog.debug("결함 첨부파일 목록 조회 완료: " + fileList.size() + " 건");
         return fileList;
     }
     
@@ -376,7 +344,7 @@ public class DefServiceImpl implements DefService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int deleteDefFile(String fileId) throws Exception {
-        logger.debug("결함 첨부파일 삭제: {}", fileId);
+        AppLog.debug("결함 첨부파일 삭제: " + fileId);
         
         if (isEmpty(fileId)) {
             throw new Exception("삭제할 파일 ID가 필요합니다.");
@@ -386,16 +354,15 @@ public class DefServiceImpl implements DefService {
             // AttService를 통해 파일 삭제 (S3 + DB)
             attService.deleteFile(fileId);
             
-            logger.debug("결함 첨부파일 삭제 완료: {}", fileId);
+            AppLog.debug("결함 첨부파일 삭제 완료: " + fileId);
             return 1;
             
         } catch (Exception e) {
-            logger.error("결함 첨부파일 삭제 실패: {} - {}", fileId, e.getMessage());
+            AppLog.error("결함 첨부파일 삭제 실패: " + fileId + " - " + e.getMessage());
             throw new RuntimeException("파일 삭제 중 오류 발생: " + e.getMessage(), e);
         }
     }
     
-    // ========== 자동 생성 기능 구현 ==========
     
     /**
      * 단위테스트 실패 시 자동으로 결함을 생성한다.
@@ -403,16 +370,14 @@ public class DefServiceImpl implements DefService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public String createDefectFromFailedTest(UnitTestVo unitTestVo) throws Exception {
-        logger.info("단위테스트 실패로 인한 결함 자동 생성 시작: {}", unitTestVo.getTestCaseId());
+        AppLog.info("단위테스트 실패로 인한 결함 자동 생성 시작: " + unitTestVo.getTestCaseId());
         
         try {
-            // 1. 이미 해당 테스트케이스에 대한 결함이 존재하는지 확인
             DefVo existingDefect = findExistingDefect(unitTestVo.getTestCaseId());
             
             if (existingDefect != null) {
-                logger.info("기존 결함이 존재합니다: {}", existingDefect.getId());
+                AppLog.info("기존 결함이 존재합니다: " + existingDefect.getId());
                 
-                // 기존 결함이 완료 상태라면 새로 생성, 아니면 기존 결함 업데이트
                 if ("완료".equals(existingDefect.getStatus())) {
                     return createNewDefect(unitTestVo);
                 } else {
@@ -420,12 +385,11 @@ public class DefServiceImpl implements DefService {
                     return existingDefect.getId();
                 }
             } else {
-                // 2. 새로운 결함 생성
                 return createNewDefect(unitTestVo);
             }
             
         } catch (Exception e) {
-            logger.error("결함 자동 생성 실패: {}", e.getMessage(), e);
+            AppLog.error("결함 자동 생성 실패: " + e.getMessage(), e);
             throw new Exception("결함 자동 생성 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
@@ -436,22 +400,20 @@ public class DefServiceImpl implements DefService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateTestStatusOnDefectComplete(String defectId) throws Exception {
-        logger.info("결함 완료로 인한 단위테스트 상태 업데이트 시작: {}", defectId);
+        AppLog.info("결함 완료로 인한 단위테스트 상태 업데이트 시작: " + defectId);
         
         try {
-            // 1. 결함 정보 조회
             DefVo defVo = new DefVo();
             defVo.setId(defectId);
             DefVo defect = defDAO.selectDef(defVo);
             
             if (defect == null) {
-                logger.warn("결함을 찾을 수 없습니다: {}", defectId);
+                AppLog.warn("결함을 찾을 수 없습니다: " + defectId);
                 return;
             }
             
-            // 2. 관련 단위테스트 조회
             if (isEmpty(defect.getTestId())) {
-                logger.warn("결함에 연관된 테스트 ID가 없습니다: {}", defectId);
+                AppLog.warn("결함에 연관된 테스트 ID가 없습니다: " + defectId);
                 return;
             }
             
@@ -460,24 +422,23 @@ public class DefServiceImpl implements DefService {
             UnitTestVo unitTest = unitTestDao.selectUnitTestDetail(unitTestVo);
             
             if (unitTest == null) {
-                logger.warn("연관된 단위테스트를 찾을 수 없습니다: {}", defect.getTestId());
+                AppLog.warn("연관된 단위테스트를 찾을 수 없습니다: " + defect.getTestId());
                 return;
             }
             
-            // 3. 단위테스트 상태를 '성공'으로 변경
             unitTest.setTestStatus("SUC");
             unitTest.setUpdatedAt(getCurrentTimestamp());
             
             int result = unitTestDao.updateTestStatus(unitTest);
             
             if (result > 0) {
-                logger.info("단위테스트 상태 업데이트 완료: {} -> 성공", unitTest.getTestCaseId());
+                AppLog.info("단위테스트 상태 업데이트 완료: " + unitTest.getTestCaseId() + " -> 성공");
             } else {
-                logger.warn("단위테스트 상태 업데이트 실패: {}", unitTest.getTestCaseId());
+                AppLog.warn("단위테스트 상태 업데이트 실패: " + unitTest.getTestCaseId());
             }
             
         } catch (Exception e) {
-            logger.error("단위테스트 상태 업데이트 실패: {}", e.getMessage(), e);
+            AppLog.error("단위테스트 상태 업데이트 실패: " + e.getMessage(), e);
             throw new Exception("단위테스트 상태 업데이트 중 오류가 발생했습니다: " + e.getMessage());
         }
     }
@@ -488,7 +449,7 @@ public class DefServiceImpl implements DefService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public void updateDefectStatus(DefVo defVo) throws Exception {
-        logger.info("결함 상태 변경: {} -> {}", defVo.getId(), defVo.getStatus());
+        AppLog.info("결함 상태 변경: " + defVo.getId() + " -> " + defVo.getStatus());
         
         // 1. 결함 상태 업데이트
         defVo.setUpdatedAt(getCurrentTimestamp());
@@ -505,27 +466,24 @@ public class DefServiceImpl implements DefService {
         int result = defDAO.updateDef(defVo);
         
         if (result > 0) {
-            // 2. 상태 변경 이력 기록
             try {
                 defDAO.insertDefectStatusHistory(defVo);
             } catch (Exception e) {
-                logger.warn("상태 변경 이력 기록 실패: {}", e.getMessage());
-                // 이력 기록 실패해도 상태 변경은 성공으로 처리
+                AppLog.warn("상태 변경 이력 기록 실패: " + e.getMessage());
             }
-            logger.info("결함 상태 변경 완료: {}", defVo.getId());
+            AppLog.info("결함 상태 변경 완료: " + defVo.getId());
         } else {
             throw new Exception("결함 상태 변경에 실패했습니다.");
         }
     }
     
-    // ========== 통계 및 분석 메서드들 ==========
     
     /**
      * 결함 통계 정보 조회
      */
     @Override
     public Map<String, Object> selectDefectStatistics(DefVo defVo) throws Exception {
-        logger.debug("결함 통계 조회: {}", defVo);
+        AppLog.debug("결함 통계 조회: " + defVo);
         
         Map<String, Object> result = new HashMap<>();
         
@@ -573,7 +531,7 @@ public class DefServiceImpl implements DefService {
             result.put("completionRate", 0.0);
         }
         
-        logger.debug("결함 통계 조회 완료: {}", result);
+        AppLog.debug("결함 통계 조회 완료: " + result);
         return result;
     }
     
@@ -582,7 +540,7 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public Map<String, Object> selectDefectStatisticsByProject(DefVo defVo) throws Exception {
-        logger.debug("프로젝트별 결함 통계 조회: {}", defVo);
+        AppLog.debug("프로젝트별 결함 통계 조회: " + defVo);
         
         if (isEmpty(defVo.getPjtId())) {
             throw new Exception("프로젝트 ID가 필요합니다.");
@@ -596,11 +554,11 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public List<DefVo> selectUpcomingDefects(DefVo defVo) throws Exception {
-        logger.debug("임박 결함 목록 조회: {}", defVo);
+        AppLog.debug("임박 결함 목록 조회: " + defVo);
         
         List<DefVo> upcomingList = defDAO.selectUpcomingDefects(defVo);
         
-        logger.debug("임박 결함 목록 조회 완료: {} 건", upcomingList.size());
+        AppLog.debug("임박 결함 목록 조회 완료: " + upcomingList.size() + " 건");
         return upcomingList;
     }
     
@@ -609,7 +567,7 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public List<Map<String, Object>> selectDefectStatsByStatus(DefVo defVo) throws Exception {
-        logger.debug("상태별 결함 통계 조회: {}", defVo);
+        AppLog.debug("상태별 결함 통계 조회: " + defVo);
         
         return defDAO.selectDefectStatsByStatus(defVo);
     }
@@ -619,7 +577,7 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public List<Map<String, Object>> selectDefectStatsByPriority(DefVo defVo) throws Exception {
-        logger.debug("우선순위별 결함 통계 조회: {}", defVo);
+        AppLog.debug("우선순위별 결함 통계 조회: " + defVo);
         
         return defDAO.selectDefectStatsByPriority(defVo);
     }
@@ -631,7 +589,7 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public List<DefVo> selectDefectsByTestId(DefVo defVo) throws Exception {
-        logger.debug("테스트 케이스 연관 결함 조회: {}", defVo);
+        AppLog.debug("테스트 케이스 연관 결함 조회: " + defVo);
         
         if (isEmpty(defVo.getTestId())) {
             throw new Exception("테스트 케이스 ID가 필요합니다.");
@@ -645,7 +603,7 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public List<DefVo> selectIncompleteDefects(DefVo defVo) throws Exception {
-        logger.debug("미완료 결함 목록 조회: {}", defVo);
+        AppLog.debug("미완료 결함 목록 조회: " + defVo);
         
         // 완료 상태가 아닌 결함들 조회
         defVo.setStatus("!완료"); // 완료가 아닌 조건으로 설정 (SQL에서 처리)
@@ -658,7 +616,7 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public List<DefVo> selectDefectsByAssignee(DefVo defVo) throws Exception {
-        logger.debug("담당자별 결함 조회: {}", defVo);
+        AppLog.debug("담당자별 결함 조회: " + defVo);
         
         if (isEmpty(defVo.getAssignee())) {
             throw new Exception("담당자 ID가 필요합니다.");
@@ -667,14 +625,13 @@ public class DefServiceImpl implements DefService {
         return defDAO.selectListDef(defVo);
     }
     
-    // ========== 상태 관리 메서드들 ==========
     
     /**
      * 결함 상태 업데이트 (단순)
      */
     @Override
     public int updateDefStatus(DefVo defVo) throws Exception {
-        logger.debug("결함 상태 업데이트: {}", defVo);
+        AppLog.debug("결함 상태 업데이트: " + defVo);
         
         if (isEmpty(defVo.getId()) || isEmpty(defVo.getStatus())) {
             throw new Exception("결함 ID와 상태가 필요합니다.");
@@ -688,7 +645,7 @@ public class DefServiceImpl implements DefService {
             throw new Exception("해당 결함을 찾을 수 없거나 상태를 업데이트할 수 없습니다.");
         }
         
-        logger.debug("결함 상태 업데이트 완료: {}", defVo.getId());
+        AppLog.debug("결함 상태 업데이트 완료: " + defVo.getId());
         return result;
     }
     
@@ -698,7 +655,7 @@ public class DefServiceImpl implements DefService {
     @Transactional(rollbackFor = Exception.class)
     @Override
     public int updateMultipleDefStatus(List<String> defectIds, String newStatus) throws Exception {
-        logger.debug("일괄 상태 업데이트: {} 건, 새 상태: {}", defectIds.size(), newStatus);
+        AppLog.debug("일괄 상태 업데이트: " + defectIds.size() + " 건, 새 상태: " + newStatus);
         
         if (defectIds == null || defectIds.isEmpty()) {
             throw new Exception("업데이트할 결함 ID 목록이 필요합니다.");
@@ -723,12 +680,11 @@ public class DefServiceImpl implements DefService {
                 }
                 
             } catch (Exception e) {
-                logger.warn("개별 결함 상태 업데이트 실패: {} - {}", defectId, e.getMessage());
-                // 개별 실패는 로그만 남기고 계속 진행
+                AppLog.warn("개별 결함 상태 업데이트 실패: " + defectId + " - " + e.getMessage());
             }
         }
         
-        logger.debug("일괄 상태 업데이트 완료: {} / {} 건", updatedCount, defectIds.size());
+        AppLog.debug("일괄 상태 업데이트 완료: " + updatedCount + " / " + defectIds.size() + " 건");
         return updatedCount;
     }
     
@@ -737,7 +693,7 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public int updateDefPriority(DefVo defVo) throws Exception {
-        logger.debug("결함 우선순위 업데이트: {}", defVo);
+        AppLog.debug("결함 우선순위 업데이트: " + defVo);
         
         if (isEmpty(defVo.getId()) || isEmpty(defVo.getPriority())) {
             throw new Exception("결함 ID와 우선순위가 필요합니다.");
@@ -751,7 +707,7 @@ public class DefServiceImpl implements DefService {
             throw new Exception("해당 결함을 찾을 수 없거나 우선순위를 업데이트할 수 없습니다.");
         }
         
-        logger.debug("결함 우선순위 업데이트 완료: {}", defVo.getId());
+        AppLog.debug("결함 우선순위 업데이트 완료: " + defVo.getId());
         return result;
     }
     
@@ -760,7 +716,7 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public int updateDefAssignee(DefVo defVo) throws Exception {
-        logger.debug("결함 담당자 변경: {}", defVo);
+        AppLog.debug("결함 담당자 변경: " + defVo);
         
         if (isEmpty(defVo.getId()) || isEmpty(defVo.getAssignee())) {
             throw new Exception("결함 ID와 담당자가 필요합니다.");
@@ -774,18 +730,17 @@ public class DefServiceImpl implements DefService {
             throw new Exception("해당 결함을 찾을 수 없거나 담당자를 변경할 수 없습니다.");
         }
         
-        logger.debug("결함 담당자 변경 완료: {}", defVo.getId());
+        AppLog.debug("결함 담당자 변경 완료: " + defVo.getId());
         return result;
     }
     
-    // ========== 검증 및 유틸리티 메서드들 ==========
     
     /**
      * 결함 ID 중복 체크
      */
     @Override
     public int checkDuplicateDefectId(DefVo defVo) throws Exception {
-        logger.debug("결함 ID 중복 체크: {}", defVo.getId());
+        AppLog.debug("결함 ID 중복 체크: " + defVo.getId());
         
         if (isEmpty(defVo.getId())) {
             return 0;
@@ -800,7 +755,7 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public boolean isDefectExists(String defectId) throws Exception {
-        logger.debug("결함 존재 여부 확인: {}", defectId);
+        AppLog.debug("결함 존재 여부 확인: " + defectId);
         
         if (isEmpty(defectId)) {
             return false;
@@ -818,7 +773,7 @@ public class DefServiceImpl implements DefService {
      */
     @Override
     public boolean hasRelatedDefects(String testId) throws Exception {
-        logger.debug("테스트 케이스 연관 결함 존재 여부 확인: {}", testId);
+        AppLog.debug("테스트 케이스 연관 결함 존재 여부 확인: " + testId);
         
         if (isEmpty(testId)) {
             return false;
@@ -831,7 +786,6 @@ public class DefServiceImpl implements DefService {
         return relatedDefects != null && !relatedDefects.isEmpty();
     }
     
-    // ========== Private Helper Methods ==========
     
     /**
      * 기존 결함 존재 여부 확인
@@ -847,7 +801,7 @@ public class DefServiceImpl implements DefService {
      * 새로운 결함 생성
      */
     private String createNewDefect(UnitTestVo unitTestVo) throws Exception {
-        logger.info("새로운 결함 생성: {}", unitTestVo.getTestCaseId());
+        AppLog.info("새로운 결함 생성: " + unitTestVo.getTestCaseId());
         
         String defectId = generateDefectId();
         
@@ -856,7 +810,7 @@ public class DefServiceImpl implements DefService {
         defVo.setTestId(unitTestVo.getTestCaseId());
         defVo.setTestName(unitTestVo.getTestCaseName());
         defVo.setName(generateDefectName(unitTestVo));
-        defVo.setDescription(generateDefectDescription(unitTestVo));
+        defVo.setDescription(unitTestVo.getDescription());
         defVo.setPriority(mapPriorityToDefect(unitTestVo.getPriority()));
         defVo.setStatus("대기");
         defVo.setAssignee(unitTestVo.getAssignee());
@@ -869,7 +823,7 @@ public class DefServiceImpl implements DefService {
         int result = defDAO.insertDef(defVo);
         
         if (result > 0) {
-            logger.info("결함 생성 완료: {}", defectId);
+            AppLog.info("결함 생성 완료: " + defectId);
             return defectId;
         } else {
             throw new Exception("결함 생성에 실패했습니다.");
@@ -880,7 +834,7 @@ public class DefServiceImpl implements DefService {
      * 기존 결함 업데이트
      */
     private void updateExistingDefect(DefVo existingDefect, UnitTestVo unitTestVo) throws Exception {
-        logger.info("기존 결함 업데이트: {}", existingDefect.getId());
+        AppLog.info("기존 결함 업데이트: " + existingDefect.getId());
         
         existingDefect.setStatus("대기");
         existingDefect.setDescription(updateDefectDescription(existingDefect.getDescription(), unitTestVo));
@@ -923,52 +877,44 @@ public class DefServiceImpl implements DefService {
     }
     
     /**
-     * 안전한 파일 삭제 (트랜잭션 없음)
+     * 안전한 파일 삭제
      */
     private void deleteRelatedFilesSafely(String defectId) {
         try {
-            logger.debug("관련 파일 삭제 시작: {}", defectId);
+            AppLog.debug("관련 파일 삭제 시작: " + defectId);
             
-            // 1. 해당 결함의 모든 파일 목록 조회
             ProworksCommVO searchVo = new ProworksCommVO();
             searchVo.setRefType(REF_TYPE_DEFECT);
             searchVo.setRefId(defectId);
             
             List<AttVo> fileList = attDAO.selectFileListByRef(searchVo);
-            logger.debug("삭제 대상 파일 수: {}", fileList.size());
+            AppLog.debug("삭제 대상 파일 수: " + fileList.size());
 
-            // 2. 각 파일을 개별적으로 삭제
             for (AttVo fileVo : fileList) {
                 try {
-                    // S3에서 파일 삭제
                     if (fileVo.getS3Key() != null && !fileVo.getS3Key().trim().isEmpty()) {
                         amazonS3.deleteObject(bucketName, fileVo.getS3Key());
-                        logger.debug("S3 파일 삭제 성공: {}", fileVo.getOriginalFileName());
+                        AppLog.debug("S3 파일 삭제 성공: " + fileVo.getOriginalFileName());
                     }
                     
-                    // DB에서 file_attachments 삭제
                     attDAO.hardDeleteFileAttachment(fileVo.getFileId());
-                    logger.debug("file_attachments 삭제 성공: {}", fileVo.getFileId());
+                    AppLog.debug("file_attachments 삭제 성공: " + fileVo.getFileId());
                     
-                    // DB에서 file 삭제
                     attDAO.hardDeleteFile(fileVo.getFileId());
-                    logger.debug("file 테이블 삭제 성공: {}", fileVo.getFileId());
+                    AppLog.debug("file 테이블 삭제 성공: " + fileVo.getFileId());
                     
                 } catch (Exception fileException) {
-                    logger.error("개별 파일 삭제 실패: {} - {}", fileVo.getFileId(), fileException.getMessage());
-                    // 개별 파일 삭제 실패해도 다른 파일은 계속 처리
+                    AppLog.error("개별 파일 삭제 실패: " + fileVo.getFileId() + " - " + fileException.getMessage());
                 }
             }
             
-            logger.debug("관련 파일 삭제 처리 완료");
+            AppLog.debug("관련 파일 삭제 처리 완료");
             
         } catch (Exception e) {
-            logger.error("파일 삭제 중 오류: {}", e.getMessage());
-            // 예외를 던지지 않음 - 파일 삭제 실패해도 결함 삭제는 계속 진행
+            AppLog.error("파일 삭제 중 오류: " + e.getMessage());
         }
     }
     
-    // Helper methods (UnitTest와 동일)
     
     /**
      * 결함 ID 생성
@@ -987,24 +933,6 @@ public class DefServiceImpl implements DefService {
             unitTestVo.getTestCaseName());
     }
     
-    /**
-     * 결함 설명 생성
-     */
-    private String generateDefectDescription(UnitTestVo unitTestVo) {
-        StringBuilder sb = new StringBuilder();
-        sb.append("단위테스트 실패로 인해 자동 생성된 결함입니다.\n\n");
-        sb.append("▣ 테스트 케이스 정보:\n");
-        sb.append("- 테스트 ID: ").append(unitTestVo.getTestCaseId()).append("\n");
-        sb.append("- 테스트명: ").append(unitTestVo.getTestCaseName()).append("\n");
-        sb.append("- 테스트 대상: ").append(unitTestVo.getTestTarget()).append("\n");
-        sb.append("- 실행일시: ").append(unitTestVo.getExecutionDate()).append("\n");
-        
-        if (unitTestVo.getActualResult() != null && !unitTestVo.getActualResult().trim().isEmpty()) {
-            sb.append("- 실제 결과: ").append(unitTestVo.getActualResult()).append("\n");
-        }
-        
-        return sb.toString();
-    }
     
     /**
      * 기존 결함 설명 업데이트

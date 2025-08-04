@@ -60,7 +60,6 @@ public class UnitTestServiceImpl implements UnitTestService {
     @Value("${file.upload.path}")
     private String uploadPath;
     
-    // 참조 타입 상수
     private static final String REF_TYPE_UNIT_TEST = "UNIT_TEST";
     
     /**
@@ -70,7 +69,6 @@ public class UnitTestServiceImpl implements UnitTestService {
 	public List<UnitTestVo> selectUnitTestList(UnitTestVo unitTestVo) throws Exception{
 	    AppLog.debug("단위테스트 케이스 목록 조회 시작: {}", unitTestVo);
 	    
-	    // 현재 사용자 권한 정보 설정
 	    return unitTestDao.selectUnitTestList(unitTestVo);
 	}
     
@@ -133,21 +131,16 @@ public class UnitTestServiceImpl implements UnitTestService {
     public String insertUnitTest(UnitTestVo unitTestVo) throws Exception {
 	    AppLog.debug("단위테스트 케이스 등록 시작: {}", unitTestVo);
 	    
-	    // 필수값 검증
 	    validateRequiredFields(unitTestVo);
 	    
-	    // 테스트 케이스 ID 생성 (시퀀스 기반)
 	    String testCaseId = generateTestCaseId();
 	    unitTestVo.setTestCaseId(testCaseId);
 	    
-	    // 기본값 설정
 	    setDefaultValues(unitTestVo);
 	    
-	    // 1. 테스트 케이스 등록
 	    int result = unitTestDao.insertUnitTest(unitTestVo);
 	    
 	    if (result > 0) {
-	        // 2. project_task의 isTest 필드 업데이트
 	        try {
 	            int updateResult = unitTestDao.updateProjectTaskIsTest(unitTestVo);
 	            AppLog.debug("project_task.isTest 업데이트 완료 for taskId: {} (업데이트된 행 수: {})"+ 
@@ -155,7 +148,6 @@ public class UnitTestServiceImpl implements UnitTestService {
 	        } catch (Exception e) {
 	            AppLog.debug("project_task.isTest 업데이트 실패 (taskId: {}): {}"+ 
 	                unitTestVo.getTaskId(), e.getMessage());
-	            // 필요에 따라 예외를 던지거나 로그만 남길 수 있습니다
 	        }
 	        
 	        AppLog.debug("단위테스트 케이스 등록 완료: {}", testCaseId);
@@ -177,11 +169,9 @@ public class UnitTestServiceImpl implements UnitTestService {
             AppLog.debug("=== 단위테스트 케이스 with 파일 등록 시작 ===");
             AppLog.debug("단위테스트 케이스 정보: {}", unitTestVo);
 
-            // 1. 단위테스트 케이스 등록
             String testCaseId = insertUnitTest(unitTestVo);
             unitTestVo.setTestCaseId(testCaseId);
 
-            // 2. 파일 업로드
             if (files != null && files.length > 0) {
                 for (MultipartFile file : files) {
                     if (!file.isEmpty()) {
@@ -198,7 +188,6 @@ public class UnitTestServiceImpl implements UnitTestService {
         } catch (Exception e) {
             AppLog.error("단위테스트 케이스 등록 실패: {}", e.getMessage());
 
-            // 업로드된 파일들 S3에서 삭제 (롤백)
             for (String s3Key : uploadedS3Keys) {
                 try {
                     amazonS3.deleteObject(bucketName, s3Key);
@@ -244,27 +233,22 @@ public class UnitTestServiceImpl implements UnitTestService {
 
         try {
             AppLog.debug("=== 단위테스트 케이스 수정 with 파일 시작 ===");
-            AppLog.debug("수정할 테스트 케이스 ID: {}", unitTestVo.getTestCaseId());
 
-            // 1. 테스트 케이스 ID 유효성 검사
             if (unitTestVo.getTestCaseId() == null || unitTestVo.getTestCaseId().trim().isEmpty()) {
                 throw new RuntimeException("수정할 테스트 케이스 ID가 필요합니다.");
             }
 
-            // 2. 기존 테스트 케이스 존재 여부 확인
             UnitTestVo existingTestCase = unitTestDao.selectUnitTestDetail(unitTestVo);
             if (existingTestCase == null) {
                 throw new RuntimeException("수정할 테스트 케이스를 찾을 수 없습니다. ID: " + unitTestVo.getTestCaseId());
             }
 
-            // 3. 테스트 케이스 정보 수정
             int updateResult = updateUnitTest(unitTestVo);
             if (updateResult <= 0) {
                 throw new RuntimeException("테스트 케이스 정보 수정 실패");
             }
             AppLog.debug("테스트 케이스 정보 수정 완료");
 
-            // 4. 새로운 파일 업로드 (기존 파일은 유지)
             if (files != null && files.length > 0) {
                 for (MultipartFile file : files) {
                     if (!file.isEmpty()) {
@@ -281,7 +265,6 @@ public class UnitTestServiceImpl implements UnitTestService {
         } catch (Exception e) {
             AppLog.error("단위테스트 케이스 수정 실패: {}", e.getMessage());
 
-            // 새로 업로드된 파일들 S3에서 삭제 (롤백)
             for (String s3Key : uploadedS3Keys) {
                 try {
                     amazonS3.deleteObject(bucketName, s3Key);
@@ -304,7 +287,6 @@ public class UnitTestServiceImpl implements UnitTestService {
     public List<AttVo> selectUnitTestFileList(UnitTestVo unitTestVo) throws Exception {
         AppLog.debug("첨부파일 목록 조회: {}", unitTestVo);
         
-        // AttService 조회용 파라미터 설정
         ProworksCommVO commVO = new ProworksCommVO();
         commVO.setRefType(REF_TYPE_UNIT_TEST);
         commVO.setRefId(unitTestVo.getTestCaseId());
@@ -328,7 +310,6 @@ public class UnitTestServiceImpl implements UnitTestService {
         }
         
         try {
-            // AttService를 통해 파일 완전 삭제 (S3 + DB)
             attService.deleteFile(fileId);
             
             AppLog.debug("첨부파일 Hard Delete 완료: {}", fileId);
@@ -349,7 +330,6 @@ public class UnitTestServiceImpl implements UnitTestService {
 	        throw new Exception("삭제할 테스트 케이스 ID가 필요합니다.");
 	    }
 	    
-	    // 1. 테스트 케이스 존재 여부 확인
 	    UnitTestVo existingTest = unitTestDao.selectUnitTestDetail(unitTestVo);
 	    if (existingTest == null) {
 	        throw new Exception("해당 테스트 케이스를 찾을 수 없습니다.");
@@ -357,16 +337,13 @@ public class UnitTestServiceImpl implements UnitTestService {
 	    
 	    AppLog.debug("삭제 대상 테스트 케이스: {}", existingTest.getTestCaseName());
 	    
-	    // 2. 관련 파일 삭제 시도 (실패해도 무시)
 	    try {
 	        deleteRelatedFilesSafely(testCaseId);
 	        AppLog.debug("관련 파일 삭제 완료");
 	    } catch (Exception e) {
 	        AppLog.warn("관련 파일 삭제 실패 (무시하고 계속): {}", e.getMessage());
-	        // 파일 삭제 실패해도 테스트 케이스는 삭제 진행
 	    }
 	    
-	    // 3. 테스트 케이스 삭제
 	    int result = unitTestDao.deleteUnitTest(unitTestVo);
 	    
 	    if (result == 0) {
@@ -429,7 +406,6 @@ public class UnitTestServiceImpl implements UnitTestService {
 	    try {
 	        AppLog.debug("관련 파일 삭제 시작 (비트랜잭션): {}", testCaseId);
 	        
-	        // 1. 해당 테스트 케이스의 모든 파일 목록 조회
 	        ProworksCommVO searchVo = new ProworksCommVO();
 	        searchVo.setRefType("UNIT_TEST");
 	        searchVo.setRefId(testCaseId);
@@ -437,7 +413,6 @@ public class UnitTestServiceImpl implements UnitTestService {
 	        List<AttVo> fileList = attDAO.selectFileListByRef(searchVo);
 	        AppLog.debug("삭제 대상 파일 수: {}", fileList.size());
 	
-	        // 2. S3에서 각 파일들 물리 삭제
 	        for (AttVo fileVo : fileList) {
 	            try {
 	                if (fileVo.getS3Key() != null && !fileVo.getS3Key().trim().isEmpty()) {
@@ -446,24 +421,19 @@ public class UnitTestServiceImpl implements UnitTestService {
 	                }
 	            } catch (Exception s3Exception) {
 	                AppLog.error("S3 파일 삭제 실패: {} - {}", fileVo.getOriginalFileName());
-	                // S3 삭제 실패해도 계속 진행
 	            }
 	        }
 	
-	        // 3. DB에서 파일 레코드들 개별 삭제
 	        for (AttVo fileVo : fileList) {
 	            try {
-	                // file_attachments 먼저 삭제
 	                attDAO.hardDeleteFileAttachment(fileVo.getFileId());
 	                AppLog.debug("file_attachments 삭제: {}", fileVo.getFileId());
 	                
-	                // file 테이블 삭제
 	                attDAO.hardDeleteFile(fileVo.getFileId());
 	                AppLog.debug("file 테이블 삭제: {}", fileVo.getFileId());
 	                
 	            } catch (Exception dbException) {
 	                AppLog.error("DB 파일 레코드 삭제 실패: {} - {}", fileVo.getFileId());
-	                // 개별 삭제 실패해도 계속 진행
 	            }
 	        }
 	        
@@ -471,7 +441,6 @@ public class UnitTestServiceImpl implements UnitTestService {
 	        
 	    } catch (Exception e) {
 	        AppLog.error("관련 파일 삭제 실패: {}", e.getMessage());
-	        // 예외를 던지지 않음 (테스트 케이스 삭제는 계속 진행)
 	    }
 	}
 	
@@ -494,7 +463,7 @@ public class UnitTestServiceImpl implements UnitTestService {
 	        
 	    } catch (Exception e) {
 	        AppLog.error("테스트 케이스 DB 삭제 실패: {} - {}", unitTestVo.getTestCaseId());
-	        throw e; // 트랜잭션 롤백을 위해 예외 재발생
+	        throw e; 
 	    }
 	}
     
@@ -600,7 +569,6 @@ public class UnitTestServiceImpl implements UnitTestService {
         return result;
     }
     
-    // ===== Private 메서드 =====
     
     /**
      * 파일 업로드 및 저장
@@ -612,7 +580,6 @@ public class UnitTestServiceImpl implements UnitTestService {
         String extension = getFileExtension(originalName);
         String storedName = s3Key.substring(s3Key.lastIndexOf("/") + 1);
 
-        // file 테이블 insert (AUTO_INCREMENT로 ID 자동 생성)
         AttVo fileVo = new AttVo();
         fileVo.setOriginalFileName(originalName);
         fileVo.setStoredFileName(storedName);
@@ -621,13 +588,11 @@ public class UnitTestServiceImpl implements UnitTestService {
         fileVo.setS3Key(s3Key);
         attDAO.insertFile(fileVo);
 
-        // insertFile 후 자동 생성된 fileId를 가져옴 (숫자)
-        String fileId = fileVo.getFileId(); // 이게 "4" 같은 숫자 문자열
+        String fileId = fileVo.getFileId(); 
 
-        // attachment 테이블 insert
         AttVo attachmentVo = new AttVo();
-        attachmentVo.setId(UUID.randomUUID().toString()); // attachment 테이블의 PK
-        attachmentVo.setFileId(fileId); // 위에서 생성된 숫자 ID 사용
+        attachmentVo.setId(UUID.randomUUID().toString()); 
+        attachmentVo.setFileId(fileId); 
         attachmentVo.setRefType(refType);
         attachmentVo.setRefId(refId);
         attachmentVo.setIsDeleted("N");
@@ -638,16 +603,13 @@ public class UnitTestServiceImpl implements UnitTestService {
     
     /**
      * 테스트 케이스 ID 생성 (시퀀스 기반)
-     * TC_001, TC_002, ... TC_010, ... TC_100 형태로 생성
      */
     private String generateTestCaseId() throws Exception {
         AppLog.debug("테스트 케이스 ID 생성 시작");
         
         try {
-            // 현재 최대 시퀀스 번호 조회
             int nextSequence = unitTestDao.getNextTestCaseSequence();
             
-            // TC_001 형태로 포맷팅 (3자리 패딩)
             String testCaseId = String.format("TC_%03d", nextSequence);
             
             AppLog.debug("생성된 테스트 케이스 ID: {}", testCaseId);

@@ -2660,7 +2660,7 @@ scwin.onProjectChange = function(projectId) {
     
     scwin.CURRENT_PROJECT_ID = projectId;
     scwin.getCurrentUserInfo();
-    scwin.adjustUIByPermission();
+    // scwin.adjustUIByPermission();
     
     if (projectId && projectId !== "") {
         scwin.searchUnitTestsByProject();

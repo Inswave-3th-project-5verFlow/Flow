@@ -60,26 +60,11 @@ public interface LargeFileService {
     
     /**
      * 파일 업로드 성능 비교 테스트
-     * - 기존 방식 vs 개선 방식 성능 비교
-     * - 상세 메트릭 수집
-     * - 처리량, 속도, 메모리 사용량 비교
      * 
      * @param file 테스트할 파일
      * @param refType 참조 타입
      * @param refId 참조 ID  
      * @return 성능 비교 결과 맵
-     * <ul>
-     *   <li>fileName - 파일명</li>
-     *   <li>fileSize - 파일 크기 (bytes)</li>
-     *   <li>fileSizeMB - 파일 크기 (MB)</li>
-     *   <li>traditionalDuration - 기존 방식 소요 시간 (ms)</li>
-     *   <li>multipartDuration - 개선 방식 소요 시간 (ms)</li>
-     *   <li>traditionalThroughput - 기존 방식 처리량 (MB/s)</li>
-     *   <li>multipartThroughput - 개선 방식 처리량 (MB/s)</li>
-     *   <li>improvementPercent - 성능 개선율 (%)</li>
-     *   <li>traditionalResult - 기존 방식 업로드 결과 (AttVo)</li>
-     *   <li>multipartResult - 개선 방식 업로드 결과 (AttVo)</li>
-     * </ul>
      * @throws Exception 테스트 실패 시
      */
     Map<String, Object> performanceComparisonTest(MultipartFile file, String refType, String refId) throws Exception;
@@ -91,15 +76,6 @@ public interface LargeFileService {
      * 
      * @param uploadId 업로드 ID
      * @return 진행률 정보 맵
-     * <ul>
-     *   <li>status - 업로드 상태 (IN_PROGRESS, COMPLETED, FAILED, NOT_FOUND)</li>
-     *   <li>progress - 진행률 (0-100)</li>
-     *   <li>uploadedParts - 업로드 완료된 파트 수</li>
-     *   <li>totalParts - 전체 파트 수</li>
-     *   <li>uploadedBytes - 업로드 완료된 바이트 수</li>
-     *   <li>totalBytes - 전체 파일 크기</li>
-     *   <li>estimatedTimeRemaining - 예상 남은 시간 (초)</li>
-     * </ul>
      * @throws Exception 조회 실패 시
      */
     Map<String, Object> getUploadProgress(String uploadId) throws Exception;
@@ -110,15 +86,6 @@ public interface LargeFileService {
      * - 시스템 성능 분석 데이터
      * 
      * @return 통계 정보 맵
-     * <ul>
-     *   <li>totalUploads - 총 업로드 수</li>
-     *   <li>totalBytes - 총 업로드 바이트 수</li>
-     *   <li>totalMB - 총 업로드 크기 (MB)</li>
-     *   <li>averageDuration - 평균 업로드 시간 (ms)</li>
-     *   <li>averageThroughput - 평균 처리량 (MB/s)</li>
-     *   <li>successRate - 성공률 (%)</li>
-     *   <li>methodStats - 방법별 통계 (Map)</li>
-     * </ul>
      * @throws Exception 조회 실패 시
      */
     Map<String, Object> getLargeFileUploadStatistics() throws Exception;

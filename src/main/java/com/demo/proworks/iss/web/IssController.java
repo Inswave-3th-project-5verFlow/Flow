@@ -104,12 +104,9 @@ public class IssController {
 	@ElDescription(sub = "이슈리스크관리 파일 등록처리", desc = "이슈리스크관리를 파일과 함께 등록 처리 한다.")
 	public void insertIssWithFiles(HttpServletRequest request) throws Exception {
 
-	    System.out.println("=== 이슈 파일 등록 시작 ===");
 	
-	    // MultipartHttpServletRequest로 캐스팅
 	    MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 	
-	    // 1. 이슈 정보 세팅
 	    IssVo issVo = new IssVo();
 	    issVo.setPjtId(request.getParameter("pjtId"));
 	    issVo.setName(request.getParameter("name"));
@@ -121,29 +118,22 @@ public class IssController {
 	    issVo.setResponsePlan(request.getParameter("responsePlan"));
 	    issVo.setResolvedDate(request.getParameter("resolvedDate"));
 	
-	    System.out.println("이슈 정보: " + issVo);
 	
-	    // 2. 실제 파일 객체들 받아오기
 	    List<MultipartFile> fileList = multipartRequest.getFiles("files");
-	    System.out.println("받은 파일 개수: " + (fileList != null ? fileList.size() : 0));
 	
-	    // 3. MultipartFile 배열로 변환 (null이 아닌 파일만)
 	    List<MultipartFile> validFiles = new ArrayList<>();
 	    if (fileList != null) {
 	        for (MultipartFile file : fileList) {
 	            if (file != null && !file.isEmpty()) {
 	                validFiles.add(file);
-	                System.out.println("유효한 파일: " + file.getOriginalFilename() + " (크기: " + file.getSize() + ")");
 	            }
 	        }
 	    }
 	
 	    MultipartFile[] files = validFiles.toArray(new MultipartFile[0]);
 	
-	    // 4. 서비스 호출 (기존 방식 사용)
 	    issService.insertIssWithFiles(issVo, files);
 	    
-	    System.out.println("=== 이슈 파일 등록 완료 ===");
 	}
 
 	/**
@@ -165,12 +155,9 @@ public class IssController {
 	@ElDescription(sub = "이슈리스크관리 파일 갱신처리", desc = "이슈리스크관리를 파일과 함께 갱신 처리 한다.")
 	public void updateIssWithFiles(HttpServletRequest request) throws Exception {
 
-	    System.out.println("=== 이슈 파일 수정 시작 ===");
 	    
-	    // MultipartHttpServletRequest로 캐스팅
 	    MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest) request;
 	
-	    // 1. 이슈 정보 세팅 (ID 필수!)
 	    IssVo issVo = new IssVo();
 	    issVo.setId(request.getParameter("id"));  // 수정 시 ID 필수
 	    issVo.setPjtId(request.getParameter("pjtId"));
@@ -183,35 +170,25 @@ public class IssController {
 	    issVo.setResponsePlan(request.getParameter("responsePlan"));
 	    issVo.setResolvedDate(request.getParameter("resolvedDate"));
 	
-	    System.out.println("수정할 이슈 정보: " + issVo);
-	    System.out.println("이슈 ID: " + issVo.getId());
-	
-	    // ID가 없으면 오류
 	    if (issVo.getId() == null || issVo.getId().trim().isEmpty()) {
 	        throw new RuntimeException("수정할 이슈 ID가 필요합니다.");
 	    }
 	
-	    // 2. 실제 파일 객체들 받아오기
 	    List<MultipartFile> fileList = multipartRequest.getFiles("files");
-	    System.out.println("받은 파일 개수: " + (fileList != null ? fileList.size() : 0));
 	
-	    // 3. MultipartFile 배열로 변환 (null이 아닌 파일만)
 	    List<MultipartFile> validFiles = new ArrayList<>();
 	    if (fileList != null) {
 	        for (MultipartFile file : fileList) {
 	            if (file != null && !file.isEmpty()) {
 	                validFiles.add(file);
-	                System.out.println("유효한 파일: " + file.getOriginalFilename() + " (크기: " + file.getSize() + ")");
 	            }
 	        }
 	    }
 	
 	    MultipartFile[] files = validFiles.toArray(new MultipartFile[0]);
 	
-	    // 4. 서비스 호출 (수정 메서드)
 	    issService.updateIssWithFiles(issVo, files);
 	    
-	    System.out.println("=== 이슈 파일 수정 완료 ===");
 	}
 
 	/**
@@ -224,7 +201,6 @@ public class IssController {
 		issService.deleteIss(issVo);
 	}
 
-	// ===== 이슈 관련 파일 처리 (AttService 위임) =====
 
 	/**
 	 * 이슈리스크 파일 업로드 (별도)
@@ -236,9 +212,6 @@ public class IssController {
 	public List<AttVo> uploadIssFiles(@RequestParam("files") MultipartFile[] files,
 			@RequestParam("issueId") String issueId) throws Exception {
 
-		System.out.println("=== 이슈 별도 파일 업로드 ===");
-		System.out.println("이슈 ID: " + issueId);
-		System.out.println("파일 개수: " + files.length);
 
 		try {
 			// AttService에 위임
@@ -257,23 +230,17 @@ public class IssController {
 	@ElDescription(sub = "이슈리스크 파일 목록 조회", desc = "이슈리스크의 파일 목록을 조회한다.")
 	public AttListVo getIssFileList(IssVo issVo) throws Exception {
 	
-		System.out.println("=== 이슈 파일 목록 조회 ===");
-	    System.out.println("요청 데이터: " + issVo.toString());
 	    
-	    // ProworksCommVO 객체 생성해서 AttService에 위임
 	    ProworksCommVO fileParam = new ProworksCommVO();
 	    fileParam.setRefType("ISSUE");
 	    fileParam.setRefId(issVo.getId());
 	    
-	    System.out.println("파일 조회 파라미터: refType=" + fileParam.getRefType() + ", refId=" + fileParam.getRefId());
 	    
 	    List<AttVo> attList = attService.getFileList(fileParam);
-	    System.out.println("조회된 파일 개수: " + (attList != null ? attList.size() : 0));
 
 	    AttListVo retAttList = new AttListVo();
 	    retAttList.setAttVoList(attList);
 	    
-	    System.out.println("=== 이슈 파일 목록 조회 완료 ===");
 	    return retAttList;
 	}
 
@@ -285,40 +252,12 @@ public class IssController {
 	@ElDescription(sub = "이슈리스크 파일 삭제", desc = "이슈리스크의 파일을 삭제한다.")
 	@ResponseBody
 	public void deleteIssFile(@RequestParam("fileId") String fileId) throws Exception {
-		System.out.println("=== 이슈 파일 삭제 ===");
-		System.out.println("파일 ID: " + fileId);
 
 		try {
-			// AttService에 위임
 			attService.deleteFile(fileId);
-			System.out.println("이슈 파일 삭제 성공");
 		} catch (Exception e) {
-			System.err.println("이슈 파일 삭제 실패: " + e.getMessage());
 			throw new ElException("파일 삭제 중 오류가 발생했습니다: " + e.getMessage());
 		}
 	}
 
-	// ===== 프로웍스 표준 헤더 생성 =====
-
-	/**
-	 * 프로웍스 성공 헤더 생성
-	 */
-	private Map<String, Object> createSuccessHeader() {
-		Map<String, Object> header = new HashMap<String, Object>();
-		header.put("resSuc", true);
-		header.put("resCode", "0000");
-		header.put("resMsg", "정상 처리되었습니다.");
-		return header;
-	}
-
-	/**
-	 * 프로웍스 에러 헤더 생성
-	 */
-	private Map<String, Object> createErrorHeader(String errorMsg) {
-		Map<String, Object> header = new HashMap<String, Object>();
-		header.put("resSuc", false);
-		header.put("resCode", "9999");
-		header.put("resMsg", errorMsg);
-		return header;
-	}
 }

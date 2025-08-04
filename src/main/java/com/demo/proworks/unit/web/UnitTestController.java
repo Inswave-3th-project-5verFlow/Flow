@@ -43,7 +43,6 @@ import com.inswave.elfw.log.AppLog;
 @Controller
 public class UnitTestController {
 
-	private static final Logger logger = LoggerFactory.getLogger(UnitTestController.class);
 
 	@Resource(name = "unitTestServiceImpl")
 	private UnitTestService unitTestService;

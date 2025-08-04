@@ -10,8 +10,8 @@ import com.demo.proworks.def.vo.DefVo;
 import com.demo.proworks.unit.vo.UnitTestVo;
 
 /**  
- * @subject     : 테스트결함관리 관련 처리를 담당하는 인터페이스 (Enhanced)
- * @description : 테스트결함관리 관련 처리를 담당하는 인터페이스 (UnitTest와 유사한 구조로 개선)
+ * @subject     : 테스트결함관리 관련 처리를 담당하는 인터페이스
+ * @description : 테스트결함관리 관련 처리를 담당하는 인터페이스
  * @author      : 우민지
  * @since       : 2025/07/23
  * @modification
@@ -19,12 +19,10 @@ import com.demo.proworks.unit.vo.UnitTestVo;
  * DATE				AUTHOR				DESC
  * ===========================================================
  * 2025/07/23			 우민지	 		최초 생성
- * 2025/07/29			 시스템			UnitTest 패턴 적용 및 강화
  * 
  */
 public interface DefService {
     
-    // ========== 기본 CRUD 메서드들 ==========
     
     /**
      * 테스트결함관리 페이징 처리하여 목록을 조회한다.
@@ -89,7 +87,6 @@ public interface DefService {
      */
     public int deleteDef(DefVo defVo) throws Exception;
     
-    // ========== 파일 관련 메서드들 (UnitTest 패턴 적용) ==========
     
     /**
      * 결함과 파일을 함께 등록한다.
@@ -156,7 +153,6 @@ public interface DefService {
      */
     public void updateDefectStatus(DefVo defVo) throws Exception;
     
-    // ========== 통계 및 분석 메서드들 ==========
     
     /**
      * 결함 통계 정보를 조회한다.
@@ -203,7 +199,6 @@ public interface DefService {
      */
     public List<Map<String, Object>> selectDefectStatsByPriority(DefVo defVo) throws Exception;
     
-    // ========== 특수 조회 메서드들 ==========
     
     /**
      * 특정 테스트 케이스와 연관된 결함 목록 조회
@@ -232,7 +227,6 @@ public interface DefService {
      */
     public List<DefVo> selectDefectsByAssignee(DefVo defVo) throws Exception;
     
-    // ========== 상태 관리 메서드들 ==========
     
     /**
      * 결함 상태 업데이트 (단순)
@@ -271,7 +265,6 @@ public interface DefService {
      */
     public int updateDefAssignee(DefVo defVo) throws Exception;
     
-    // ========== 검증 및 유틸리티 메서드들 ==========
     
     /**
      * 결함 ID 중복 체크

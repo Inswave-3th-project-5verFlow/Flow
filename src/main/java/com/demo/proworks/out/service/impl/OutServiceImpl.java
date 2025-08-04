@@ -84,7 +84,7 @@ public class OutServiceImpl implements OutService {
     }
 
     /**
-     * 산출물과 파일을 함께 등록한다. (트랜잭션)
+     * 산출물과 파일을 함께 등록한다.
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -92,18 +92,13 @@ public class OutServiceImpl implements OutService {
         List<String> uploadedS3Keys = new ArrayList<>();
 
         try {
-            System.out.println("=== 산출물 등록 with 파일 시작 ===");
-            System.out.println("산출물 정보: " + outVo.toString());
 
-            // 1. 산출물 등록
             outDAO.insertOut(outVo);
             String outputId = outVo.getId();
             if (outputId == null) {
                 throw new RuntimeException("산출물 ID 생성 실패");
             }
-            System.out.println("산출물 등록 완료, ID: " + outputId);
 
-            // 2. 파일 업로드 및 연결
             if (files != null && files.length > 0) {
                 for (MultipartFile file : files) {
                     if (!file.isEmpty()) {
@@ -114,19 +109,14 @@ public class OutServiceImpl implements OutService {
                 }
             }
 
-            System.out.println("=== 산출물 등록 with 파일 완료 ===");
             return outVo;
 
         } catch (Exception e) {
-            System.err.println("산출물 등록 실패: " + e.getMessage());
 
-            // S3에서 업로드된 파일들 삭제 (롤백)
             for (String s3Key : uploadedS3Keys) {
                 try {
                     amazonS3.deleteObject(bucketName, s3Key);
-                    System.out.println("S3 파일 롤백 완료: " + s3Key);
                 } catch (Exception s3Exception) {
-                    System.err.println("S3 파일 롤백 실패: " + s3Key + " - " + s3Exception.getMessage());
                 }
             }
 
@@ -135,7 +125,7 @@ public class OutServiceImpl implements OutService {
     }
 
     /**
-     * 산출물과 파일을 함께 수정한다. (트랜잭션)
+     * 산출물과 파일을 함께 수정한다.
      */
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -143,49 +133,37 @@ public class OutServiceImpl implements OutService {
         List<String> uploadedS3Keys = new ArrayList<>();
 
         try {
-            System.out.println("=== 산출물 수정 with 파일 시작 ===");
-            System.out.println("수정할 산출물 ID: " + outVo.getId());
 
-            // 1. 산출물 ID 유효성 검사
             if (outVo.getId() == null || outVo.getId().trim().isEmpty()) {
                 throw new RuntimeException("수정할 산출물 ID가 필요합니다.");
             }
 
-            // 2. 기존 산출물 존재 여부 확인
             OutVo existingOutput = outDAO.selectOut(outVo);
             if (existingOutput == null) {
                 throw new RuntimeException("수정할 산출물을 찾을 수 없습니다. ID: " + outVo.getId());
             }
 
-            // 3. 산출물 정보 수정
             int updateResult = outDAO.updateOut(outVo);
             if (updateResult <= 0) {
                 throw new RuntimeException("산출물 정보 수정 실패");
             }
-            System.out.println("산출물 정보 수정 완료");
 
-            // 4. 새로운 파일 업로드 (기존 파일은 유지)
             if (files != null && files.length > 0) {
                 for (MultipartFile file : files) {
                     if (!file.isEmpty()) {
                         AttVo attVo = uploadAndSaveFile(file, "OUTPUT", outVo.getId());
                         uploadedS3Keys.add(attVo.getS3Key());
-                        System.out.println("새 파일 업로드: " + file.getOriginalFilename());
                     }
                 }
             }
 
-            System.out.println("=== 산출물 수정 with 파일 완료 ===");
             return outVo;
 
         } catch (Exception e) {
-            System.err.println("산출물 수정 실패: " + e.getMessage());
 
-            // 새로 업로드된 파일들 S3에서 삭제 (롤백)
             for (String s3Key : uploadedS3Keys) {
                 try {
                     amazonS3.deleteObject(bucketName, s3Key);
-                    System.out.println("S3 파일 롤백: " + s3Key);
                 } catch (Exception ignored) {
                 }
             }
@@ -198,21 +176,17 @@ public class OutServiceImpl implements OutService {
      * 단일 파일 업로드 및 DB 저장 (내부용)
      */
     private AttVo uploadAndSaveFile(MultipartFile file, String refType, String refId) throws Exception {
-        // 1. UUID로 파일명 생성
         String originalFileName = file.getOriginalFilename();
         String fileExtension = getFileExtension(originalFileName);
         String storedFileName = UUID.randomUUID().toString() + "." + fileExtension;
         String s3Key = uploadPath + "/" + refType + "/" + refId + "/" + storedFileName;
 
-        // 2. S3에 파일 업로드
         com.amazonaws.services.s3.model.ObjectMetadata metadata = new com.amazonaws.services.s3.model.ObjectMetadata();
         metadata.setContentLength(file.getSize());
         metadata.setContentType(file.getContentType());
 
         amazonS3.putObject(bucketName, s3Key, file.getInputStream(), metadata);
-        System.out.println("S3 업로드 완료: " + s3Key);
 
-        // 3. file 테이블에 저장
         AttVo fileVo = new AttVo();
         String fileId = "FILE_" + UUID.randomUUID().toString();
         
@@ -228,9 +202,7 @@ public class OutServiceImpl implements OutService {
         if (fileResult <= 0) {
             throw new RuntimeException("file 테이블 저장 실패");
         }
-        System.out.println("file 테이블 저장 완료: " + fileId);
 
-        // 4. file_attachments 테이블에 연결 정보 저장
         AttVo attachmentVo = new AttVo();
         attachmentVo.setId("ATT_" + UUID.randomUUID().toString());
         attachmentVo.setFileId(fileId);
@@ -242,7 +214,6 @@ public class OutServiceImpl implements OutService {
         if (attachResult <= 0) {
             throw new RuntimeException("file_attachments 테이블 저장 실패");
         }
-        System.out.println("file_attachments 테이블 저장 완료");
 
         // 5. 반환용 데이터 설정
         AttVo resultVo = new AttVo();
