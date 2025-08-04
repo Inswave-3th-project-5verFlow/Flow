@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
  * @modification ===========================================================
  *               DATE AUTHOR DESC
  *               ===========================================================
- *               2025/07/09 김성민 최초 생성
+ *               2025/07/09 김성민 최초 생성 
  *               2025/07/19 김성민 STG 테이블 관련 코드 제거
  * 
  */
@@ -35,10 +35,15 @@ public class WbsController {
 	private WbsService wbsService;
 
 	/**
-	 * WBS 목록을 조회 한다.
+	 * WBS 목록을 조회한다.
 	 *
-	 * @param wbsVo WBS
-	 * @return 단건 조회 결과
+	 * @process 1. 검색 조건 유무를 확인한다. 
+     *			2. 검색 조건이 있으면 검색 결과와 관련 계층을 조회한다. 
+     *			3. 검색 조건이 없으면 전체 계층 구조를 조회한다. 
+     *			4. 조회 결과를 페이징 정보와 함께 WbsListVo에 담아 반환한다.
+	 *
+	 * @param wbsVo WBS 정보 WbsVo
+	 * @return WBS 목록 조회 결과 WbsListVo
 	 * @throws Exception
 	 */
 	@ElService(key = "WbsList")
@@ -68,10 +73,12 @@ public class WbsController {
 	}
 
 	/**
-	 * WBS을 단건 조회 처리 한다.
+	 * WBS를 단건 조회한다.
 	 *
-	 * @param wbsVo WBS
-	 * @return 단건 조회 결과
+	 * @process 1. WBS를 단건 조회한다.
+	 *
+	 * @param wbsVo WBS 정보 WbsVo
+	 * @return 단건 조회 결과 WbsVo
 	 * @throws Exception
 	 */
 	@ElService(key = "WbsUpdView")
@@ -86,7 +93,10 @@ public class WbsController {
 	/**
 	 * WBS 목록을 다건 처리한다.
 	 *
-	 * @param wbsListVo WBS 목록 정보
+	 * @process 1. WBS 목록을 순회하며 각 항목의 rowStatus를 확인한다. 
+	 *			2. rowStatus에 따라 등록(C),수정(U), 삭제(D) 처리를 수행한다. 
+	 *
+	 * @param wbsListVo WBS 목록 정보 WbsListVo
 	 * @throws Exception
 	 */
 	@ElService(key = "WbsSave")
@@ -110,14 +120,17 @@ public class WbsController {
 				wbsService.deleteWbs(wbsVo);
 				break;
 			default:
-				// 예외처리 또는 무시
+				// 
 				break;
 			}
 		}
 	}
 
 	/**
-	 * 검색 조건이 있는지 확인
+	 * 검색 조건이 있는지 확인하여 검색모드와 전체조회모드를 구분한다.
+	 * 
+	 * @param wbsVo WBS 검색 조건이 포함된 VO 객체 WbsVo
+	 * @return 검색 조건이 있으면 true, 없으면 false
 	 */
 	private boolean hasSearchCondition(WbsVo wbsVo) {
 		return (wbsVo.getScTaskId() != null && !wbsVo.getScTaskId().trim().isEmpty())

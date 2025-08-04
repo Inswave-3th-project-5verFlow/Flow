@@ -1767,7 +1767,7 @@ scwin.btn_InitMultiupload_onclick = function (e) {
 							<w2:column width="80" inputType="text" style="" id="column1" value="산출물 ID" displayMode="label"></w2:column>
                             <w2:column width="200" inputType="text" style="" id="column3" value="산출물명" displayMode="label"></w2:column>
                             <w2:column width="100" inputType="text" style="" id="column9" value="산출물 유형" displayMode="label"></w2:column>
-                            <w2:column width="150" inputType="text" style="" id="columnPjt" value="프로젝트명" displayMode="label"></w2:column>
+                            <w2:column width="150" inputType="text" style="" id="columnPjt" value="프로젝트명" displayMode="label" hidden="true"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="column4" value="등록일시" displayMode="label"></w2:column>
                             <w2:column width="120" inputType="text" style="" id="column5" value="수정일시" displayMode="label"></w2:column>
 						</w2:row>

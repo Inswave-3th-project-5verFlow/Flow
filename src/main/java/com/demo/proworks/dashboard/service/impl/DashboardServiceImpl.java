@@ -33,7 +33,15 @@ public class DashboardServiceImpl implements DashboardService {
 	private DashboardDAO dashboardDAO;
 
 	/**
-	 * 대시보드 전체 데이터를 조회한다. (통합)
+	 * 대시보드 전체 데이터를 조회한다.
+	 *
+	 * @process 1. 프로젝트 요약 정보 및 각종 차트 데이터를 조회한다. 
+	 *			2. 업무 현황 차트의 라벨을 변환한다. (1:설계, 이외:개발) 
+	 *	 		3. 조회된 모든 데이터를 통합 VO에 담아 반환한다.
+	 * 
+	 * @param pjtVo 프로젝트 정보 PjtVo
+	 * @return 대시보드 전체 데이터 (요약정보, 프로젝트상태차트, 업무현황차트, 이슈리스크차트)
+	 * @throws Exception
 	 */
 	@Override
 	public DashboardDataVo getDashboardData(PjtVo pjtVo) throws Exception {
@@ -41,19 +49,20 @@ public class DashboardServiceImpl implements DashboardService {
 
 		// 프로젝트 요약 정보
 		DashboardVo summary = dashboardDAO.selectDashboardSummary(pjtVo);
-		// 프로젝트 상태 
+
+		// 프로젝트 상태
 		List<ChartVo> projectChart = dashboardDAO.selectProjectStatusChart(pjtVo);
+
 		// 업무 현황
 		List<ChartVo> taskChart = dashboardDAO.selectTaskStatusChart(pjtVo).stream().map(chart -> {
 			String newLabel = "1".equals(chart.getLabel()) ? "설계" : "개발";
 			chart.setLabel(newLabel);
-			AppLog.warn(chart.getLabel());
 			return chart;
 		}).collect(Collectors.toList());
+
 		// 이슈 리스크 현황
 		List<ChartVo> issueChart = dashboardDAO.selectIssueStatusChart(pjtVo);
 
-		// 2. 통합 VO에 데이터 담기
 		dashboardData.setPjtChartVo(projectChart);
 		dashboardData.setIrrChartVo(issueChart);
 		dashboardData.setTaskChartVo(taskChart);

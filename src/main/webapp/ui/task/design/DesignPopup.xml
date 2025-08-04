@@ -323,7 +323,7 @@ scwin.btn_delete_onclick = function (e) {
 scwin.sbm_deleteTaskDetail_submitdone = function (e) {
     // error 수신시
     var elHeader = e.responseJSON.elHeader;
-    if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+    if (elHeader == null || elHeader == "" || elHeader == "undefined" || elHeader.resSuc == false) {
         $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
         return false;
     } else {

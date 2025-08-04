@@ -648,11 +648,7 @@ scwin.onpageload = function() {
     scwin.getCurrentUserInfo();
     scwin.getProjectIdFromParent();
     
-    // 권한에 따른 UI 조정
-    // setTimeout(function() {
-    //     scwin.adjustUIByPermission();
-    // }, 200);
-    
+
     // 단위테스트 연동 파라미터 처리 후 조건부 검색
     var hasUnitTestParam = scwin.handleUnitTestParam();
     

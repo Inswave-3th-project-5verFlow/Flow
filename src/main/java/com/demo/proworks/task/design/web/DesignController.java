@@ -117,7 +117,7 @@ public class DesignController {
 	}
 
 	/**
-	 * 설계 업무 정보을 단건 조회 처리 한다.
+	 * 업무 정보을 단건 조회 처리 한다.
 	 *
 	 * @param designVo 설계 업무 정보
 	 * @return 단건 조회 결과
@@ -135,7 +135,7 @@ public class DesignController {
 	}
 
 	/**
-	 * 설계 업무 정보를 등록 처리 한다.
+	 * 업무 정보를 등록 처리 한다.
 	 *
 	 * @param designVo 설계 업무 정보
 	 * @throws Exception
@@ -148,7 +148,7 @@ public class DesignController {
 	}
 
 	/**
-	 * 설계 업무 정보를 갱신 처리 한다.
+	 * 업무 정보를 갱신 처리 한다.
 	 *
 	 * @param designVo 설계 업무 정보
 	 * @throws Exception
@@ -163,7 +163,7 @@ public class DesignController {
 	}
 
 	/**
-	 * 설계 업무 정보를 삭제 처리한다.
+	 * 업무 정보를 삭제 처리한다.
 	 *
 	 * @param designVo 설계 업무 정보
 	 * @throws Exception
@@ -176,7 +176,7 @@ public class DesignController {
 	}
 
 	/**
-	 * 설계 업무 정보의 상태에 따라서 통합 저장한다.
+	 * 업무 정보의 상태(rosStatus)에 따라서 통합 저장한다.
 	 *
 	 * @param designVoList 설계 업무들 정보
 	 * @throws Exception
@@ -213,6 +213,7 @@ public class DesignController {
 	public DesignListVo selectTreeListDesign(DesignVo designVo) throws Exception {
 
 
+		// 트리 구조는 전체 데이터가 필요하므로 페이징 제한 해제
 		designVo.setPageSize(9999);
 		designVo.setPageUnit(9999);
 		AppLog.debug("조회 전 Param: " + designVo);
@@ -237,10 +238,11 @@ public class DesignController {
 	 */
 	@ElService(key = "DEVELOP001Tree")
 	@RequestMapping(value = "DEVELOP001Tree")
-	@ElDescription(sub = "트리 구조로 설계 업무를 조회", desc = "트리 구조로 설계 업무를 조회한다.")
+	@ElDescription(sub = "트리 구조로 개발 업무를 조회", desc = "트리 구조로 개발 업무를 조회한다.")
 	public DesignListVo selectTreeListDevelop(DesignVo designVo) throws Exception {
 
-
+		
+		// 트리 구조는 전체 데이터가 필요하므로 페이징 제한 해제
 		designVo.setPageSize(9999);
 		designVo.setPageUnit(9999);
 		AppLog.debug("조회 전 Param: " + designVo);
@@ -268,6 +270,7 @@ public class DesignController {
 	@ElDescription(sub = "트리 구조로 모든 업무를 조회", desc = "트리 구조로 모든 업무를 조회한다.")
 	public DesignListVo selectTreeList(DesignVo designVo) throws Exception {
 
+		// 트리 구조는 전체 데이터가 필요하므로 페이징 제한 해제
 		designVo.setPageSize(9999);
 		designVo.setPageUnit(9999);
 		AppLog.debug("조회 전 Param: " + designVo);
@@ -295,6 +298,7 @@ public class DesignController {
 	@ElDescription(sub = "모든 단계의 업무를 정렬된 형태로 조회.", desc = "모든 단계의 업무를 정렬된 형태로 조회한다.")
 	public DesignListVo selectListTask(DesignVo designVo) throws Exception {
 
+		// 트리 구조는 전체 데이터가 필요하므로 페이징 제한 해제
 		designVo.setPageSize(9999);
 		designVo.setPageUnit(9999);
 		AppLog.debug("조회 전 Param: " + designVo);

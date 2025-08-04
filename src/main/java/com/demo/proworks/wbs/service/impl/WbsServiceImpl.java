@@ -31,20 +31,30 @@ import com.demo.proworks.wbs.constants.WbsConstants;
 @Service("wbsServiceImpl")
 public class WbsServiceImpl implements WbsService {
 
+	/** WbsDAO */
 	@Resource(name = "wbsDAO")
 	private WbsDAO wbsDAO;
 
+	/** MessageSource */
 	@Resource(name = "messageSource")
 	private MessageSource messageSource;
 	
+	/** WbsProgressService */
 	@Resource(name = "wbsProgressServiceImpl")
 	private WbsProgressService wbsProgressService;
 	
+	/** WbsStatusPropagationService */
 	@Resource(name = "wbsStatusPropagationServiceImpl")
 	private WbsStatusPropagationService wbsStatusPropagationService;
 
 	/**
 	 * 전체 WBS 계층 구조를 조회한다.
+	 *
+	 * @process 1. 전체 WBS 계층 구조를 조회한다.
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @return 전체 WBS 계층 구조 목록
+	 * @throws Exception
 	 */
 	public List<WbsVo> selectListWbsAll(WbsVo wbsVo) throws Exception {
 		return wbsDAO.selectListWbsAll(wbsVo);
@@ -52,6 +62,12 @@ public class WbsServiceImpl implements WbsService {
 
 	/**
 	 * 전체 WBS 카운트를 조회한다.
+	 *
+	 * @process 1. 전체 WBS 카운트를 조회한다.
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @return 전체 WBS 카운트
+	 * @throws Exception
 	 */
 	public long selectListCountWbsAll(WbsVo wbsVo) throws Exception {
 		return wbsDAO.selectListCountWbsAll(wbsVo);
@@ -59,6 +75,12 @@ public class WbsServiceImpl implements WbsService {
 
 	/**
 	 * 검색 조건에 따라 WBS 계층 구조를 조회한다.
+	 *
+	 * @process 1. 검색 조건에 맞는 WBS 계층 구조를 조회한다.
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @return 검색 조건에 맞는 WBS 계층 구조 목록
+	 * @throws Exception
 	 */
 	@Override
 	public List<WbsVo> selectListWbsSearch(WbsVo wbsVo) throws Exception {
@@ -67,6 +89,12 @@ public class WbsServiceImpl implements WbsService {
 
 	/**
 	 * 검색 조건에 따라 WBS 카운트를 조회한다.
+	 *
+	 * @process 1. 검색 조건에 맞는 WBS 카운트를 조회한다.
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @return 검색 조건에 맞는 WBS 카운트
+	 * @throws Exception
 	 */
 	public long selectListCountWbsSearch(WbsVo wbsVo) throws Exception {
 		return wbsDAO.selectListCountWbsSearch(wbsVo);
@@ -74,6 +102,12 @@ public class WbsServiceImpl implements WbsService {
 
 	/**
 	 * WBS를 상세 조회한다.
+	 *
+	 * @process 1. WBS를 상세 조회한다.
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @return 단건 조회 결과
+	 * @throws Exception
 	 */
 	public WbsVo selectWbs(WbsVo wbsVo) throws Exception {		
 		return wbsDAO.selectWbs(wbsVo);
@@ -81,9 +115,16 @@ public class WbsServiceImpl implements WbsService {
 
 	/**
 	 * WBS를 등록 처리 한다.
+	 *
+	 * @process 1. WBS를 등록한다.
+	 *          2. 등록 후 상위 업무 상태를 자동 조정한다.
+	 *          3. 상위 업무의 진척률을 재계산한다.
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @throws Exception
 	 */
-	public int insertWbs(WbsVo wbsVo) throws Exception {
-		int result = wbsDAO.insertWbs(wbsVo);
+	public void insertWbs(WbsVo wbsVo) throws Exception {
+		wbsDAO.insertWbs(wbsVo);
 		
 		// 등록 후 상위 업무 상태 자동 조정 및 진척률 재계산
 		try {
@@ -95,16 +136,21 @@ public class WbsServiceImpl implements WbsService {
 				wbsProgressService.calculateAndUpdateProgress(wbsVo.getPtTaskId(), wbsVo.getPjtId());
 			}
 		} catch (Exception e) {
-			System.err.println("상위 업무 상태 조정 또는 진척률 계산 실패: " + e.getMessage());
 		}
-		
-		return result;
 	}
 
 	/**
 	 * WBS를 갱신 처리 한다.
+	 *
+	 * @process 1. 기존 상태를 조회하여 상태 변경 여부를 확인한다.
+	 *          2. 상태에 따른 진척률을 자동 조정한다.
+	 *          3. WBS를 갱신한다.
+	 *          4. 상하위 업무 상태 전파 및 진척률 계산을 실행한다.
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @throws Exception
 	 */
-	public int updateWbs(WbsVo wbsVo) throws Exception {
+	public void updateWbs(WbsVo wbsVo) throws Exception {
 		// 기존 상태 조회
 		WbsVo existingTask = wbsDAO.selectWbs(wbsVo);
 		String oldStatus = existingTask.getTaskStatus();
@@ -113,7 +159,7 @@ public class WbsServiceImpl implements WbsService {
 		// 상태에 따른 진척률 자동 조정
 		adjustRateByStatus(wbsVo);
 		
-		int result = wbsDAO.updateWbs(wbsVo);
+		wbsDAO.updateWbs(wbsVo);
 		
 		// 상태 변경에 따른 상하위 업무 상태 전파 및 진척률 계산
 		try {
@@ -128,16 +174,21 @@ public class WbsServiceImpl implements WbsService {
 			// 진척률 계산
 			wbsProgressService.calculateAndUpdateProgress(wbsVo.getTaskId(), wbsVo.getPjtId());
 		} catch (Exception e) {
-			System.err.println("상태 전파 또는 진척률 계산 실패: " + e.getMessage());
+
 		}
-		
-		return result;
 	}
 
 	/**
 	 * WBS를 삭제 처리 한다.
+	 *
+	 * @process 1. 삭제 전 업무 정보를 저장한다.
+	 *          2. 업무를 삭제한다.
+	 *          3. 삭제 후 관련 업무들의 상태 조정 및 진척률 재계산을 실행한다.
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @throws Exception
 	 */
-	public int deleteWbs(WbsVo wbsVo) throws Exception {
+	public void deleteWbs(WbsVo wbsVo) throws Exception {
 		// 삭제 전 업무 정보 저장
 		WbsVo taskToDelete = null;
 		try {
@@ -147,30 +198,38 @@ public class WbsServiceImpl implements WbsService {
 		}
 		
 		// 업무 삭제
-		int result = wbsDAO.deleteWbs(wbsVo);
+		wbsDAO.deleteWbs(wbsVo);
 		
 		// 삭제 후 관련 업무들의 상태 조정 및 진척률 재계산  
 		if (taskToDelete != null) {
 			try {
 				wbsStatusPropagationService.propagateOnTaskDelete(taskToDelete);
 			} catch (Exception e) {
-				System.err.println("삭제 후 상태 조정 실패: " + e.getMessage());
+
 			}
 		}
-		
-		return result;
 	}
 
 
 	/**
-	 * 진척률 계산 (새로운 진척률 서비스로 위임)
+	 * 진척률을 계산한다.
+	 *
+	 * @process 1. 새로운 진척률 서비스로 위임하여 진척률을 계산한다.
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
+	 * @throws Exception
 	 */
 	public void calcProgress(WbsVo wbsVo) throws Exception {
 		wbsProgressService.calculateAndUpdateProgress(wbsVo.getTaskId(), wbsVo.getPjtId());
 	}
 
 	/**
-	 * 상태에 따른 진척률 자동 조정
+	 * 상태에 따라 진척률을 자동 조정한다.
+	 *
+	 * @process 1. 업무 상태에 따라 진척률을 자동 설정한다.
+	 *          2. 완료: 100%, 진행중: 50%, 대기: 0%
+	 * 
+	 * @param  wbsVo WBS 정보 WbsVo
 	 */
 	private void adjustRateByStatus(WbsVo wbsVo) {
 		String status = wbsVo.getTaskStatus();

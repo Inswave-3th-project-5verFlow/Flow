@@ -351,11 +351,11 @@ scwin.onpageload = function() {
     scwin.getProjectIdFromParent();
     
     // 권한에 따른 UI 조정 (값 변경 없이 속성만)
-    setTimeout(function() {
-        scwin.adjustUIByPermission();
+    //setTimeout(function() {
+    //    scwin.adjustUIByPermission();
         // UI 조정 후에도 다시 한 번 비움
-        scwin.immediateResetSearchFields();
-    }, 200);
+    //    scwin.immediateResetSearchFields();
+    //}, 200);
     
     // 개발업무 연동 파라미터 처리 (조건부 자동 팝업)
     scwin.handleTaskIdParamWithConditionalPopup();

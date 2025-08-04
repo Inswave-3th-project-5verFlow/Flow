@@ -97,14 +97,13 @@
 		</xf:model>
 		<w2:layoutInfo></w2:layoutInfo>
 		<w2:publicInfo method="" />
-		<script lazy="false" type="text/javascript"><![CDATA[scwin.userId = '';
+		<script lazy="false" type="text/javascript"><![CDATA[// 사용자 세션 정보 및 프로젝트 정보 초기화
+scwin.userId = '';
 scwin.pjtId = '';
 
 scwin.onpageload = function () {
     scwin.userId = $p.getComponentById("mf_pg_header").getWindow().scwin.USER_ID;
     scwin.pjtId = $p.parent().scwin.SEL_PJT_ID;
-    console.log('로그인한 userID : ', scwin.userId);
-    console.log('현재 pjtID : ', scwin.pjtId);
     dmp_designVo.set("userId", scwin.userId);
     dmp_designVo.set("pjtId", scwin.pjtId);
 
@@ -127,9 +126,7 @@ scwin.sbm_designList_submitdone = function (e) {
     var elData = e.responseJSON.elData;
     var elHeader = e.responseJSON.elHeader;
 
-    console.log("조회된 데이터 :", elData);
-
-    if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+    if (elHeader == null || elHeader == "" || elHeader == "undefined" || elHeader.resSuc == false) {
         $c.win.alert(`에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
         return false;
     }
@@ -192,7 +189,7 @@ scwin.btn_save_onclick = function (e) {
 
 scwin.sbm_saveDesignVoList_submitdone = function (e) {
     var elHeader = e.responseJSON.elHeader;
-    if (elHeader == null || elHeader == "" || elHeader == "undefiend" || elHeader.resSuc == false) {
+    if (elHeader == null || elHeader == "" || elHeader == "undefined" || elHeader.resSuc == false) {
         $c.win.alert($p, `에러코드 : ${elHeader.resCode}\n에러메시지 : ${elHeader.resMsg}`);
         return false;
     } else {
@@ -306,7 +303,6 @@ scwin.receiveTaskData = function (returnData) {
             dlt_designVoList.setCellData(currentRowIndex, "ptTaskName", selectedTask.taskName);
             dlt_designVoList.setCellData(currentRowIndex, "taskDepth", parseInt(selectedTask.taskDepth) + 1);
 
-            console.log(`상위업무 선택 완료: [${selectedTask.taskName}] (원본 depth: ${selectedTask.taskDepth}, 설정될 depth: ${parseInt(selectedTask.taskDepth) + 1})`);
             scwin.showToast("선택된 업무: " + selectedTask.taskName);
         }
     }
@@ -400,8 +396,6 @@ scwin.setTaskStatusStyle = function () {
 scwin.btn_excel_download_onclick = function (e) {
     // 전체 건수 확인
     var totalCount = scwin.globalElData ? scwin.globalElData.totalCount : 0;
-    console.log("전체 데이터 건수:", totalCount);
-    console.log("globalElData:", scwin.globalElData);
 
     if (totalCount === 0) {
         scwin.showToast("다운로드할 데이터가 없습니다.","info");
@@ -439,8 +433,6 @@ scwin.sbm_selectDesignVoListForExcel_submitdone = function (e) {
         scwin.showToast("다운로드할 데이터가 없습니다.","info");
         return;
     }
-
-    console.log("엑셀 다운로드 실제 조회된 데이터 건수:", elData.designVoList.length);
 
     // 임시로 그리드에 전체 데이터 설정
     var originalData = dlt_designVoList.getAllJSON();
@@ -488,7 +480,6 @@ scwin.grd_list_oncelldblclick = function (rowIndex, columnIndex, columnId) {
 
 // 엑셀 업로드
 scwin.btn_excel_upload_onclick = function (e) {
-    console.log("=== 엑셀 업로드 시작 ===");
 
     var options = {
         headerExist: "1",              // 첫 번째 행을 헤더로 사용
@@ -504,7 +495,6 @@ scwin.btn_excel_upload_onclick = function (e) {
 
     grd_list.advancedExcelUpload(options);
 
-    console.log("업로드 이후 데이터리스트 : ", dlt_designVoList);
 };
 
 /**
@@ -512,8 +502,6 @@ scwin.btn_excel_upload_onclick = function (e) {
  * 사용자가 쉽게 엑셀을 작성할 수 있도록 샘플 데이터와 가이드가 포함된 템플릿 제공
  */
 scwin.btn_excel_template_download_onclick = function (e) {
-    console.log("=== 엑셀 템플릿 다운로드 시작 ===");
-
     // 기존 데이터 백업
     var originalData = dlt_designVoList.getAllJSON();
 
@@ -611,7 +599,6 @@ scwin.handleWbsParam = function() {
         var wbsData = $p.getParameter("tabData");
         if (wbsData && wbsData.fromWbs && wbsData.selectedTaskId) {
             dmp_designVo.set("scTaskId", wbsData.selectedTaskId);
-            console.log("WBS에서 전달받은 업무ID:", wbsData.selectedTaskId);
         }
     } catch (e) {
         console.log("WBS 파라미터 처리 생략");

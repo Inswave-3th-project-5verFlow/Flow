@@ -22,9 +22,9 @@ import com.demo.proworks.pjt.vo.PjtVo;
 public interface DashboardService {
 
     /**
-     * 대시보드 전체 데이터를 조회한다. (통합)
+     * 대시보드 전체 데이터를 조회한다. 
      *
-     * @param pjtVo 프로젝트 정보 PjtVo (userId를 포함)
+     * @param pjtVo 프로젝트 정보 PjtVo
      * @return DashboardDataVO 대시보드 전체 데이터
      * @throws Exception
      */

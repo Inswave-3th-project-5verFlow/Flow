@@ -15,9 +15,21 @@ import com.inswave.elfw.annotation.ElDescription;
 import com.inswave.elfw.annotation.ElValidator;
 import com.inswave.elfw.annotation.ElService;
 
+/**
+ * @subject : 메인 화면 관련 처리를 담당하는 컨트롤러
+ * @description : 메인 화면 관련 처리를 담당하는 컨트롤러
+ * @author : 김성민
+ * @since : 2025/07/15
+ * @modification ===========================================================
+ *               DATE AUTHOR DESC
+ *               ===========================================================
+ *               2025/07/15 김성민 최초 생성
+ * 
+ */
 @Controller
 public class MainController {
 
+	/** MainService */
 	@Resource(name = "mainServiceImpl")
 	private MainService mainService;
 
@@ -38,6 +50,5 @@ public class MainController {
 		retPjtList.setMenuVo(list);
 		return retPjtList;
 	}
-
 
 }
